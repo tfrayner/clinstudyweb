@@ -180,7 +180,11 @@ sub dump_sample_entity {
     my %group = map { $_->type_id->value() => $_->name() } $visit->emergent_groups();
     $dump{emergent_group} = \%group;
 
-    my %tests = map { $_->test_id->name() => _get_test_value($_) } $visit->test_results();
+    # We only want those TestResults which have no parents. FIXME is
+    # there a better way via SQL::Abstract?
+    my %tests = map { $_->test_id->name() => _get_test_value($_) }
+                grep { $_->parent_test_results()->count() == 0 }
+                $visit->test_results();
     $dump{test_result} = \%tests;
 
     return \%dump;
