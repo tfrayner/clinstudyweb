@@ -1,5 +1,5 @@
 Package: ClinStudyWeb
-Version: 0.1.5
+Version: 0.1.6
 Date: 2010-03-01
 Title: Annotate affymetrix data by querying the ClinStudy database.
 Description: This package allows R to query the REST API provided by the ClinStudy web interface, retrieving sample annotation based on array filenames or barcodes and generating annotated AffyBatch objects from the result.
