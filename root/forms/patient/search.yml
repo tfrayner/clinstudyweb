@@ -94,6 +94,25 @@ elements:
                   attributes:
                     order_by: name
                 
+      - type: Block
+        nested_name: diagnoses
+        elements:
+
+          - type: Select
+            name: condition_name_id
+            label: Diagnosis
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - AutoSet
+            model_config:
+              resultset: ControlledVocab
+              condition:
+                category: DiagnosisCondition
+              label_column: value
+              attributes:
+                order_by: value
+                
   - type: Fieldset
     legend: Batch Query
 
