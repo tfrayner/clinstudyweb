@@ -1,0 +1,52 @@
+[% META title = 'Sample assay report' %]
+
+[% IF visitdata && visitdata.size > 0 %]
+  [% IF study_type.defined %]
+    <h4>Listing by study type; all "[% study_type %]" samples</h4>
+  [% END %]
+  [% IF platform.defined %]
+    <h5>Platform type: [% platform %]</h5>
+  [% END %]
+  
+<p class="text">Cell type with:
+   <font color="[%- site.rgb.green -%]">all assays run</font>;
+   <font color="[%- site.rgb.orange -%]">partial assays run</font>;
+   <font color="[%- site.rgb.red -%]">no assays run</font>;
+   <font color="[%- site.rgb.grey2 -%]">missing sample</font>
+</p>
+
+<table class="bigtable">
+  <tr>
+  <th>TRIAD ID</th>
+  <th>Visit Date</th>
+  [% FOREACH ct = celltypes -%]
+    <th>[% ct.value %]</th>
+  [%- END %]
+  </tr>
+[% FOREACH row = visitdata %]
+  <tr>
+  <td><a href="[% c.uri_for("/patient/view", row.visit.patient_id.id) %]">[% row.visit.patient_id.trial_id | html %]</a></td>
+  <td><a href="[% c.uri_for("/visit/view", row.visit.id) %]">[% row.visit.date | html %]</a></td>
+  [% FOREACH ct = celltypes -%]
+    [%- SET type = ct.value -%]
+        [%- IF row.sample.$type.defined -%]
+          [%- IF row.sample.$type >= 1 -%]
+            <td bgcolor="[% site.rgb.green %]">&nbsp;</td>
+          [%- ELSE -%]
+            [%- IF row.sample.$type > 0 -%]
+              <td bgcolor="[% site.rgb.orange %]">&nbsp;</td>
+            [%- ELSE -%]
+              <td bgcolor="[% site.rgb.red %]">&nbsp;</td>
+            [%- END -%]
+          [%- END -%]
+        [%- ELSE -%]
+          <td bgcolor="[% site.rgb.grey2 %]">&nbsp;</td>
+        [%- END -%]
+  [%- END %]
+  </tr>  
+[% END %]
+</table>
+
+[% ELSE %] 
+    <p>No clinical visits linked to this study type yet.</p> 
+[% END %] 

@@ -1,0 +1,70 @@
+[% META title = 'Visit List' %] 
+
+<a href="[% c.uri_for("/visit/search") | html %]">Search visit information</a>
+
+[% IF objects && objects.size > 0 %]
+
+  [% IF list_type.defined %]
+    <h4>Listing by [% list_type | html %]:</h4>
+  [% END %]
+  
+<fieldset class="data_view">
+<legend>Visits</legend>
+    <div>
+    <table id='visitList'>
+    <thead>
+      <tr>
+        <td>Date</td>
+        <td>Patient</td>
+        <td>Study</td>
+        <td>Nominal timepoint</td>
+        <td>Notes</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH visit = objects %] 
+        <tr> 
+        <td> [% visit.date | html %] &nbsp; </td>
+        <td> [% visit.patient_id.surname | html_entity %], [% visit.patient_id.firstname | html_entity %]</td>
+[% IF visit.patient_id.studies.blessed %]
+  [% SET studies = [ visit.patient_id.studies ] %]
+[% ELSE %]
+  [% SET studies = visit.patient_id.studies.list %]
+[% END %]
+        <td> [% SET studylist = [] %]
+             [% FOREACH study = studies %]
+               [% studylist.push(study.type_id.value) %]
+             [% END %]
+             [% studylist.sort.join(', ') %]&nbsp;
+        </td>
+        <td> [% IF visit.nominal_timepoint_id.defined %]
+               [% visit.nominal_timepoint_id.value | html %]
+             [% ELSE %]
+               &nbsp;
+             [% END %]</td>
+        <td> [% visit.notes | truncate(30) | html %] &nbsp; </td>
+        <td><a href="[% c.uri_for("/visit/view/$visit.id") | html %]">View</a></td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('visitList');
+        tableWidgetObj.setTableHeight(400);
+        tableWidgetObj.setColumnSort(Array('S','S','S','S',false,false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the Study ID
+    </script>
+
+[% ELSE %] 
+    <p>No visits found</p> 
+[% END %] 
+
+</fieldset>
+

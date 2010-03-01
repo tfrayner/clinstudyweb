@@ -1,0 +1,42 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='comorbiditiesList'>
+    <thead>
+      <tr>
+        <td>Comorbidity</td>
+        <td>Date</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      [% FOREACH comorbidity = objects.sort('date') %]
+      <tr>
+        <td>[% comorbidity.condition_name | html %]</td>
+        <td>[% IF comorbidity.date.defined %]
+              [% comorbidity.date | html %]
+            [% ELSE %]
+              Unknown date
+            [% END %]</td>
+        <td><a href="[% c.uri_for("/comorbidity/view/$comorbidity.id") | html %]">View</a>
+            <a href="[% c.uri_for("/comorbidity/edit/$comorbidity.id") | html %]">Edit</a> 
+            <a href="[% c.uri_for("/comorbidity/delete/$comorbidity.id") | html %]"
+               onclick="return confirm('Really delete comorbidity from [% comorbidity.date | html %] ?');">Delete</a></td>        
+      </tr>
+      [% END %]
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('comorbiditiesList');
+        tableWidgetObj.setTableHeight(100);
+        tableWidgetObj.setColumnSort(Array('S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the name column
+    </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

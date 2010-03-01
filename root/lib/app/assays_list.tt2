@@ -1,0 +1,43 @@
+[% DEFAULT tableHeight = 400 %]
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='assayList'>
+    <thead>
+      <tr>
+        <td>Date</td>
+        <td>Identifier</td>
+        <td>Filename</td>
+        <td>Batch name</td>
+        <td>Platform</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH assay = objects %] 
+        <tr> 
+        <td> [% assay.assay_batch_id.date | html %]</td>
+        <td> [% assay.identifier | html %]</td>
+        <td> [% assay.filename | html %] &nbsp; </td>
+        <td> [% assay.assay_batch_id.name | html %]</td>
+        <td> [% assay.assay_batch_id.platform_id.value | html %]</td>
+        <td><a href="[% c.uri_for("/assay/view/$assay.id") | html %]">View</a></td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('assayList');
+        tableWidgetObj.setTableHeight('[% tableHeight %]');
+        tableWidgetObj.setColumnSort(Array('S','S','S','S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the Study ID
+  </script>
+
+[% ELSE %] 
+    <p>No assays found</p> 
+[% END %] 

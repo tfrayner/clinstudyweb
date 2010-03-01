@@ -1,0 +1,10 @@
+[% META title = 'All Adverse Events' %]
+
+<h3>[% container.firstname | html %] [% container.surname | html %]
+([% container.trial_id | html %])</h3>
+
+<fieldset class="data_view">
+<legend>Adverse Events <span><a href="[% c.uri_for("/adverseevent/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/adverse_event_list.tt2 %]
+</fieldset>
+

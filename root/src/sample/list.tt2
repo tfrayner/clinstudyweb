@@ -1,0 +1,47 @@
+[% META title = 'Sample List' %] 
+
+<a href="[% c.uri_for("/sample/search") | html %]">Search sample information</a>
+
+[% IF objects && objects.size > 0 %]
+<fieldset class="data_view">
+<legend>Samples</legend>
+    <div>
+    <table id='sampleList'>
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Cell type</td>
+        <td>Material type</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH sample = objects %] 
+        <tr> 
+        <td> [% sample.name | html %]</td>
+        <td> [% sample.cell_type_id.value | html %]</td>
+        <td> [% sample.material_type_id.value | html %] &nbsp; </td>
+        <td><a href="[% c.uri_for("/sample/view/$sample.id") | html %]">View</a></td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('sampleList');
+        tableWidgetObj.setTableHeight(400);
+        tableWidgetObj.setColumnSort(Array('S','S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the sample name
+    </script>
+
+[% ELSE %] 
+    <p>No samples found</p> 
+[% END %] 
+
+</fieldset>
+

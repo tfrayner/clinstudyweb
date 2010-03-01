@@ -1,0 +1,11 @@
+[% META title = 'Comorbidity List' %]
+
+[% IF container %]
+    <p> Listing comorbidities for [% container.firstname | html %] [% container.surname | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Comorbidities <span><a href="[% c.uri_for("/comorbidity/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/comorbidities_list.tt2 %]
+</fieldset>
+

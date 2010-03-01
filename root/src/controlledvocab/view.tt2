@@ -1,0 +1,13 @@
+[% META title = 'Controlled Vocabulary Term Details' %]
+
+<fieldset class="data_view">
+<legend>Controlled Vocabulary Term <span><a href="[% c.uri_for("/controlledvocab/edit", object.id) | html %]">Edit</a></span></legend>
+<table id="cvInfo" class="horizontal">
+  <tbody>
+     <tr><th>Category:</th>
+         <td>[% object.category | html %]</td></tr>
+     <tr><th>Value:</th>
+         <td>[% object.value | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>

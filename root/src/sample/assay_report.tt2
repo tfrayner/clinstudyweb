@@ -1,0 +1,17 @@
+[% META title = 'Sample assay report' %]
+
+<div>
+  <h5>List patients by study type:</h5>
+  <table class="linklist">
+    [% FOREACH type = study_types.sort('value') %]
+    <tr>
+      <th>[% type.value %] :</th>
+      [% FOREACH platform = platforms.sort('value') %]
+        <td><a href="[% c.uri_for("/sample/assay_report_by_study_type", type.id, platform.id) %]">
+          [%- platform.value -%]
+        </a></td>
+      [% END %]
+    </tr>
+    [% END %]
+  </table>
+</div>

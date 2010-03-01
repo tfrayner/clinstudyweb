@@ -1,0 +1,10 @@
+[% META title = 'Associated Studies List' %]
+
+[% IF container %]
+    <p> Listing study associations for [% container.firstname | html %] [% container.surname | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Studies <span><a href="[% c.uri_for("/study/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/studies_list.tt2 %]
+</fieldset>

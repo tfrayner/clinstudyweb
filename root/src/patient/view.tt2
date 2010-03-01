@@ -1,0 +1,176 @@
+[% META title = 'Patient Details' %]
+
+<fieldset class="data_view">
+<legend>Core Patient Data <span><a href="[% c.uri_for("/patient/edit", object.id) %]">Edit</a></span></legend>
+<table id="patientInfo" class="horizontal">
+  <tbody>
+    <tr><th>Name:</th><td><b>[% object.firstname | html %] [% object.surname | html %]</b> &nbsp; </td></tr>
+    <tr><th>Hospital Number:</th><td>[% object.hospital_id | html %] &nbsp; </td></tr>
+    <tr><th>Date of Birth:</th><td>[% object.date_of_birth | html %] &nbsp; </td></tr>
+    <tr><th>Gender:</th><td>[% object.sex | html %] &nbsp; </td></tr>
+    <tr><th>Ethnicity:</th>
+        <td> [% IF object.ethnicity_id.defined %]
+               [% object.ethnicity_id.value | html %]
+             [% ELSE %]
+               Unknown
+             [% END %] </td></tr>
+    <tr><th>Home Centre:</th>
+        <td> [% IF object.home_centre_id.defined %]
+               [% object.home_centre_id.value | html %]
+             [% ELSE %]
+               N/A
+             [% END %] </td></tr>
+    <tr><th>Study ID:</th><td>[% object.trial_id | html %] &nbsp;</td></tr>
+    <tr><th>Entry date:</th><td>[% object.entry_date | html %] &nbsp;</td></tr>
+    <tr><th>Notes:</th>
+    <td>[% object.notes | html | html_line_break %]</td></tr>
+  </tbody>
+</table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Diagnoses <span><a href="[% c.uri_for("/diagnosis/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.diagnoses.blessed %]
+  [% SET objects = [ object.diagnoses ] %]
+[% ELSE %]
+  [% SET objects = object.diagnoses.list %]
+[% END %]
+[% INCLUDE app/diagnoses_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Associated Studies <span><a href="[% c.uri_for("/study/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.studies.blessed %]
+  [% SET objects = [ object.studies ] %]
+[% ELSE %]
+  [% SET objects = object.studies.list %]
+[% END %]
+[% INCLUDE app/studies_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Experimental Groups <span><a href="[% c.uri_for("/patient/edit", object.id) %]">Edit</a></span></legend>
+[% IF object.prior_groups.blessed %]
+  [% SET objects = [ object.prior_groups ] %]
+[% ELSE %]
+  [% SET objects = object.prior_groups.list %]
+[% END %]
+[% INCLUDE app/prior_groups_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Clinic Visits <span><a href="[% c.uri_for("/visit/add_to_patient", object.id) %]">Add</a></span></legend>
+[% IF object.visits.blessed %]
+  [% SET objects = [ object.visits ] %]
+[% ELSE %]
+  [% SET objects = object.visits.list %]
+[% END %]
+[% INCLUDE app/visit_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Previous Disease Events <span><a href="[% c.uri_for("/diseaseevent/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.disease_events.blessed %]
+  [% SET objects = [ object.disease_events ] %]
+[% ELSE %]
+  [% SET objects = object.disease_events.list %]
+[% END %]
+[% INCLUDE app/disease_events_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Study-specific data <span><a href="[% c.uri_for("/patient/edit_for_type", object.id) %]">Edit</a></span></legend>
+<table class="horizontal">
+<tr><th>System involvement:</th><td>
+[% IF object.system_involvement_types.size && object.system_involvement_types.size > 0 %]
+  [% FOREACH system = object.system_involvement_types %]
+    [% system.value | html %]</br>
+  [% END %]
+[% ELSE %]
+  None
+[% END %]
+</td></tr>
+
+<tr><th>Other Clinical Features:</th><td>
+[% IF object.clinical_feature_types.size && object.clinical_feature_types.size > 0 %]
+  [% FOREACH feature = object.clinical_feature_types %]
+    [% feature.value | html %]</br>
+  [% END %]
+[% ELSE %]
+  None
+[% END %]
+</td></tr>
+</table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Adverse Events <span><a href="[% c.uri_for("/adverseevent/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.adverses.blessed %]
+  [% SET objects = [ object.adverses ] %]
+[% ELSE %]
+  [% SET objects = object.adverses.list %]
+[% END %]
+[% INCLUDE app/adverse_event_list.tt2 %] 
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Comorbidities <span><a href="[% c.uri_for("/comorbidity/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.comorbidities.blessed %]
+  [% SET objects = [ object.comorbidities ] %]
+[% ELSE %]
+  [% SET objects = object.comorbidities.list %]
+[% END %]
+[% INCLUDE app/comorbidities_list.tt2 %] 
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Risk Factors <span><a href="[% c.uri_for("/riskfactor/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.risk_factors.blessed %]
+  [% SET objects = [ object.risk_factors ] %]
+[% ELSE %]
+  [% SET objects = object.risk_factors.list %]
+[% END %]
+[% INCLUDE app/risk_factors_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Prior Observations <span><a href="[% c.uri_for("/priorobservation/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.prior_observations.blessed %]
+  [% SET objects = [ object.prior_observations ] %]
+[% ELSE %]
+  [% SET objects = object.prior_observations.list %]
+[% END %]
+[% INCLUDE app/prior_observations_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Prior Treatments <span><a href="[% c.uri_for("/priortreatment/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.prior_treatments.blessed %]
+  [% SET objects = [ object.prior_treatments ] %]
+[% ELSE %]
+  [% SET objects = object.prior_treatments.list %]
+[% END %]
+[% INCLUDE app/prior_treatments_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Hospitalisation Events <span><a href="[% c.uri_for("/hospitalisation/add_to_patient", object.id) %]">Add</a></span></legend>
+[% IF object.hospitalisations.blessed %]
+  [% SET objects = [ object.hospitalisations ] %]
+[% ELSE %]
+  [% SET objects = object.hospitalisations.list %]
+[% END %]
+[% INCLUDE app/hospitalisation_list.tt2 %]
+</fieldset>
+
+<div class="linklist">
+  <h4>Patient Links</h4>
+  <p>From here, you can access the following:</p>
+
+  <ul>
+    <li><a href="[% c.uri_for("/testresult/list_by_patient",      object.id) %]">View all Test Results</a></li>
+    <li><a href="[% c.uri_for("/drug/list_by_patient",            object.id) %]">View all Drug Treatments</a></li>
+    <li><a href="[% c.uri_for("/adverseevent/list_by_patient",    object.id) %]">View all Adverse Events</a></li>
+    <li><a href="[% c.uri_for("/priortreatment/list_by_patient",  object.id) %]">View all Prior Treatments</a></li>
+  </ul>
+</div>

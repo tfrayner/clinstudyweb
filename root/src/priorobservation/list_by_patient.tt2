@@ -1,0 +1,10 @@
+[% META title = 'Prior Observation List' %]
+
+[% IF container %]
+    <p> Listing prior observations for [% container.firstname | html %] [% container.surname | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Prior Observations <span><a href="[% c.uri_for("/priorobservation/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/prior_observations_list.tt2 %]
+</fieldset>

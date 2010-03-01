@@ -1,0 +1,128 @@
+---
+indicator:     submit
+auto_fieldset: { legend: 'Simple query' }
+auto_constraint_class: %t
+
+elements:
+
+  - type: Block
+    name: simple
+    nested_name: simple
+    elements:
+
+      - type: Text
+        name: hospital_id
+        label: Hospital Number
+        constraints:
+          - Integer
+          - type: Length
+            max:  11
+            min:  1
+    
+      - type: Text
+        name: trial_id
+        label: Study ID
+        constraints:
+          - ASCII
+          - type: Length
+            max:  15
+            min:  1
+    
+      - type: Text
+        name: entry_date
+        label: Study Entry Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  1
+    
+      - type: Text
+        name: firstname
+        label: First Name
+        constraints:
+          - ASCII
+          - type: Length
+            max:  255
+            min:  1
+    
+      - type: Text
+        name: surname
+        label: Last Name
+        constraints:
+          - ASCII
+          - type: Length
+            max:  255
+            min:  1
+
+      - type: Block
+        nested_name: patient_prior_groups
+        elements:
+
+          - type: Select
+            name: prior_group_id
+            label: Prior Group
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - AutoSet
+            model_config:
+              resultset: PriorGroup
+              label_column: name
+              attributes:
+                order_by: name
+            
+      - type: Block
+        nested_name: visits
+        elements:
+
+          - type: Block
+            nested_name: visit_emergent_groups
+            elements: 
+              - type: Select
+                name: emergent_group_id
+                label: Emergent Group
+                empty_first: 1
+                empty_first_label: -select-
+                constraints:
+                  - AutoSet
+                model_config:
+                  resultset: EmergentGroup
+                  label_column: name
+                  attributes:
+                    order_by: name
+                
+  - type: Fieldset
+    legend: Batch Query
+
+  - type: Block
+    name: batch
+    nested_name: batch
+    elements:
+
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Query the database with a list of patient Study IDs. Note that
+          any text entered in the batch query area will override the
+          simple query settings above.
+
+      - type: Textarea
+        name: trial_id
+        label: List of Study IDs
+
+##########
+# Submit #
+##########
+
+  - type: Fieldset
+
+  - type: Submit
+    name: submit
+    label: ' '
+    value: Submit Form
+
