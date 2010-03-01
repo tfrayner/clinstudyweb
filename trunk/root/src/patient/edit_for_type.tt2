@@ -1,0 +1,29 @@
+[% META title = "Edit a patient" %]
+
+    <script type="text/javascript">
+        DHTMLSuite.include("calendar"); 
+    </script>
+    <script type="text/javascript" src="[% c.uri_for('/static/js/calendar-popup.js')%]"></script>
+
+[% IF study_type %]
+  <h3>Editing [% study_type %] study-specific information</h3>
+[% END %]
+
+<div>
+<table id="patientInfo" class="horizontal">
+  <tbody>
+    <tr><th>Hospital ID:</th><td>[% object.hospital_id | html %] &nbsp;</td></tr>
+    <tr><th>Study ID:</th><td>[% object.trial_id | html %] &nbsp;</td></tr>
+    <tr><th>Name:</th><td>[% object.firstname | html %] [% object.surname | html %] &nbsp; </td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+
+<div>
+[% form %]
+
+(Required fields have been <font color="[% site.col.required %]">highlighted</font>.)
+
+</div>

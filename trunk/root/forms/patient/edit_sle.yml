@@ -1,0 +1,143 @@
+---
+indicator:     submit
+auto_fieldset: { legend: 'Study-Specific Patient Data' }
+auto_constraint_class: %t
+render_method: tt
+
+elements:
+
+  - type: Hidden
+    name: id
+
+#####################
+# SLE-specific info #
+#####################
+
+  - type: Select
+    name: clinical_feature_types
+    label: ACR Criteria
+    multiple: 1
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: See below for notes on each criterion.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: ClinicalFeature
+      label_column: value
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Malar rash</u>: Fixed erythema, flat or raised, over the malar
+      eminences, tending to spare the nasolabial folds.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Discoid rash</u>: Erythematous raised patches with adherent
+      keratotic scaling and follicular plugging; atrophic
+      scarring may occur in older lesions.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Photosensitivity</u>:	Skin rash as a result of unusual reaction
+      to sunlight, by patient history or physician observation.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Oral ulcers</u>: Oral or nasopharyngeal ulceration, usually
+      painless, observed by physician.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Arthritis</u>: Nonerosive arthritis involving 2 or more peripheral
+      joints, characterized by tenderness, swelling, or effusion.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Serositis</u>: a) Pleuritis -- convincing history of pleuritic pain
+      or rubbing heard by a physician or evidence of pleural effusion;
+      <br/><i>OR</i><br/> b) Pericarditis -- documented by ECG or rub or evidence of
+      pericardial effusion.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Renal disorder</u>: a) Persistent proteinuria greater than 0.5
+      grams per day or grater than 3+ if quantitation not performed;
+      <br/><i>OR</i><br/> b) Cellular casts -- may be red cell, hemoglobin, granular,
+      tubular, or mixed.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Neurologic disorder</u>: a) Seizures -- in the absence of offending
+      drugs or known metabolic derangements; e.g., uremia, ketoacidosis,
+      or electrolyte imbalance; <br/><i>OR</i><br/> b) Psychosis -- in the absence of
+      offending drugs or known metabolic derangements, e.g., uremia,
+      ketoacidosis, or electrolyte imbalance.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Hematologic disorder</u>: a) Hemolytic anemia -- with reticulocytosis;
+      <br/><i>OR</i><br/> b) Leukopenia -- less than 4,000/mm<sup>3</sup> total on 2 or more
+      occasions; <br/><i>OR</i><br/> c) Lyphopenia -- less than 1,500/mm<sup>3</sup> on
+      2 or more occasions; <br/><i>OR</i><br/> d) Thrombocytopenia -- less than
+      100,000/mm<sup>3</sup> in the absence of offending drugs.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Immunologic disorder</u>: a) Positive LE cell preparation; <br/><i>OR</i><br/> 
+      b) Anti-DNA: antibody to native DNA in abnormal titer; <br/><i>OR</i><br/> 
+      c) Anti-Sm: presence of antibody to Sm nuclear antigen; <br/><i>OR</i><br/> 
+      d) False positive serologic test for syphilis known to
+      be positive for at least 6 months and confirmed by Treponema
+      pallidum immobilization or fluorescent treponemal antibody
+      absorption test.
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content_xml: >-
+      <u>Antinuclear antibody</u>: An abnormal titer of antinuclear antibody
+      by immunofluorescence or an equivalent assay at any point in
+      time and in the absence of drugs known to be associated with
+      "drug-induced lupus" syndrome.
+      
+##########
+# Submit #
+##########
+
+  - type: Submit
+    name: submit
+    value: Submit Form
+

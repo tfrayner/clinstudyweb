@@ -1,0 +1,20 @@
+[% META title = 'Patients' %] 
+
+<a href="[% c.uri_for("/patient/search") | html %]">Search patient information</a>
+
+<div>
+   <ul><li>List patients by study type:</li>
+      <ul class="linklist">
+        [% FOREACH type = study_types.sort('value') %]
+          <li><a href="[% c.uri_for("/patient/list_by_study_type", type.id) %]">List [% type.value %] patients.</a></li>
+        [% END %]
+      </ul>
+   </ul>
+</div>
+
+<div class="linklist">
+<ul>
+   <li><a href="[% c.uri_for("/patient/add") %]">Add a new patient</a></li>
+</ul>
+</div>
+

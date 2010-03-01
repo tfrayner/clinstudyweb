@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ClinStudyAdminML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="clindb.xsd">
+  <Users>
+    <User username="admin" name="Admin" password="d033e22ae348aeb5660fc2140aec35850c4da997" date_created="2009-01-01 00:00:00" date_modified="2009-01-01 00:00:00" date_accessed="2009-01-01 00:00:00">
+      <UserRoles>
+        <UserRole role="admin"/>
+        <UserRole role="user"/>
+        <UserRole role="editor"/>
+      </UserRoles>
+    </User>
+    <User username="testuser" name="Test User" password="45c571a156ddcef41351a713bcddee5ba7e95460" date_created="2009-01-01 00:00:00" date_modified="2009-01-01 00:00:00" date_accessed="2009-01-01 00:00:00">
+      <UserRoles>
+        <UserRole role="user"/>
+      </UserRoles>
+    </User>
+    <User username="testeditor" name="Test Editor" password="7d4d68260b1600381598ba46c69aad3d491d6f31" date_created="2009-01-01 00:00:00" date_modified="2009-01-01 00:00:00" date_accessed="2009-01-01 00:00:00">
+      <UserRoles>
+        <UserRole role="user"/>
+        <UserRole role="editor"/>
+      </UserRoles>
+    </User>
+  </Users>
+</ClinStudyAdminML>

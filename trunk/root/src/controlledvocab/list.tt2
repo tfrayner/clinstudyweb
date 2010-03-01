@@ -1,0 +1,50 @@
+[% META title = 'Controlled Vocabulary List' %]
+
+<fieldset class="data_view">
+<legend>Terms <span><a href="[% c.uri_for("/controlledvocab/add") | html %]">Add</a></span></legend>
+[% IF objects && objects.size > 0 %]
+    <div>
+    <table id='cvList'>
+    <thead>
+      <tr>
+        <td>Category</td>
+        <td>Value</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH cv = objects.sort('category') %] 
+        <tr> 
+        <td> [% cv.category | html %] </td>
+        <td> [% cv.value    | html %] </td>
+        <td> <a href="[% c.uri_for("/controlledvocab/edit/$cv.id") | html %]">Edit</a>
+             <a href="[% c.uri_for("/controlledvocab/delete/$cv.id") | html %]"     
+             onclick="return confirm('Really delete term ?');">Delete</a> </td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('cvList');
+        tableWidgetObj.setTableHeight(800);
+        tableWidgetObj.setColumnSort(Array('S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %] 
+    <p>No controlled vocabulary terms yet!</p> 
+[% END %]
+</fieldset>
+
+[% IF c.check_any_user_role("admin") %]
+<div class="linklist">
+  <ul>
+    <li><a href="[% c.uri_for("/controlledvocab/add_category") | html %]">Add a term in a new category...</a></li>
+  </ul>
+</div>
+[% END %]

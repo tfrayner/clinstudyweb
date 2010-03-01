@@ -1,0 +1,10 @@
+[% META title = 'Risk Factors List' %]
+
+[% IF container %]
+    <p> Listing risk factors for [% container.firstname | html %] [% container.surname | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Risk Factors <span><a href="[% c.uri_for("/riskfactor/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/risk_factors_list.tt2 %]
+</fieldset>

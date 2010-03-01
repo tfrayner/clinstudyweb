@@ -1,0 +1,45 @@
+[% IF objects && objects.size > 0 %]
+    <div>
+      <table id='assayList'>
+      <thead>
+        <tr>
+          <td>Assay identifier</td>
+          <td>Date</td>
+          <td>Batch name</td>
+          <td>Operator</td>
+          <td>Filename</td>
+          <td>Channel</td>
+          <td>Notes</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH channel = objects %]
+        <tr>
+          <td>[% channel.assay_id.identifier | html %]</td>
+          <td>[% channel.assay_id.assay_batch_id.date | html  %]</td>
+          <td>[% channel.assay_id.assay_batch_id.name | html  %] &nbsp;</td>
+          <td>[% channel.assay_id.assay_batch_id.operator | html  %] &nbsp;</td>
+          <td>[% channel.assay_id.filename | html %] &nbsp; </td>
+          <td>[% channel.label_id.value | html %]</td>
+          <td>[% channel.assay_id.notes | truncate(70) | html %] &nbsp; </td>
+          <td><a href="[% c.uri_for("/assay/view/$channel.assay_id.id") | html %]">View</a></td>
+        </tr>
+      [% END %] 
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('assayList');
+        tableWidgetObj.setTableHeight('150');
+        tableWidgetObj.setColumnSort(Array('S','S','S','S','S',false,false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the second column
+    </script>
+[% ELSE %] 
+    <p>None</p> 
+[% END %] 

@@ -1,0 +1,10 @@
+[% META title = 'Prior Treatment List' %]
+
+[% IF container %]
+    <p> Listing prior treatments for [% container.firstname | html %] [% container.surname | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Prior Treatments <span><a href="[% c.uri_for("/priortreatment/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/prior_treatments_list.tt2 %]
+</fieldset>
