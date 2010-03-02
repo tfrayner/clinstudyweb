@@ -34,7 +34,9 @@ getCredentials ( title='Database Authentication', entryWidth=30, returnValOnCanc
 \references{ Tk package }
 \author{ Tim F Rayner }
 \seealso{
-  \code{\link{studyAffyBatch}}
+  \code{\link{csWebQuery}}
+  \code{\link{csWebAffyBatch}}
+  \code{\link{csWebRGList}}
 }
 \examples{
   \dontrun{getCredentials()}

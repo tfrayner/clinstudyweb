@@ -1,19 +1,17 @@
-\name{reannotateFromClinWeb}
-\alias{reannotateFromClinWeb}
+\name{csWebAffyBatch}
+\alias{csWebAffyBatch}
 
-\title{ Reannotate an ExpressionSet using the ClinStudy database }
+\title{ Generate an annotated AffyBatch }
 \description{
-  Given an ExpressionSet, or subclass thereof, replace the object pData
-  data frame with a new data set extracted from the database.
+  Retrieves sample annotation from the ClinStudyWeb database for a set of
+  CEL files, and uses it to annotate the returned AffyBatch object.
 }
 \usage{
-reannotateFromClinWeb ( data, uri, .opts=list(), cred=NULL )
+csWebAffyBatch ( files, uri, .opts=list(), cred=NULL, ... )
 }
 \arguments{
 
-  \item{data}{An ExpressionSet (or subclass such as AffyBatch) to
-    reannotate. The data sampleNames() must correspond to the original
-    CEL file names.}
+  \item{files}{A character vector of CEL file names.}
 
   \item{uri}{The URI for the clinical database web site.}
 
@@ -28,10 +26,6 @@ reannotateFromClinWeb ( data, uri, .opts=list(), cred=NULL )
 }
 \details{
 
-  As the ClinStudy database develops it is convenient to be able to
-  reannotate old data sets to account for new developments. This
-  function allows you to do this.
-
   This function will generally be used interactively; it asks the user for
   username and password. It has been set up this way to avoid the
   temptation to hard-code passwords in R scripts. If, however, you
@@ -40,15 +34,15 @@ reannotateFromClinWeb ( data, uri, .opts=list(), cred=NULL )
 
 }
 \value{
-  A reannotated ExpressionSet object.
+  An annotated AffyBatch object.
 }
 \references{ RCurl package }
 \author{ Tim F Rayner }
 \seealso{
-  \code{\link{queryClinWeb}}
+  \code{\link{csWebQuery}}
 }
 \examples{
-  \dontrun{reannotateFromClinWeb(data,
-                                 uri='http://my.webhost.com/' )}
+  \dontrun{csWebAffyBatch( files=c('T234 CD4.CEL','L123 CD8.CEL'),
+                           uri='http://my.webhost.com/' )}
 }
 

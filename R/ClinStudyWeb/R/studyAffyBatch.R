@@ -17,8 +17,7 @@
 ##
 ## $Id$
 
-## This is the main public method.
-studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
+csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
@@ -31,6 +30,19 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     cels <- affy::ReadAffy(filenames=as.character(p$filename), phenoData=ph, ...)
 
     return(cels)
+}
+
+csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
+
+    stopifnot( ! missing(files) )
+    stopifnot( ! missing(uri) )
+
+    targets <- .filenamesToTargets( files, uri, .opts, cred )
+    message("Reading data files...")
+
+    RG <- read.maimages(targets, ...)
+
+    return(RG)
 }
 
 .filenamesToPData <- function( files, ... ) {
@@ -106,7 +118,7 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .conformLists <- function(p) {
 
-    ## A list of all the variables
+    ## A list of all the variable names.
     vars <- Reduce(union, lapply(p, names))
 
     ## Make sure all the variables are represented in each list. This
@@ -131,9 +143,9 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     stopifnot( ! any(is.na(cred)) )
 
     ## This call relies on assay.file being the first argument to
-    ## queryClinWeb
+    ## csWebQuery
     message("Querying the database for annotation...")
-    p <- lapply(as.list(files), queryClinWeb,
+    p <- lapply(as.list(files), csWebQuery,
                 uri=uri, username=cred$username, password=cred$password, .opts=.opts)
 
     return(p)
@@ -141,6 +153,7 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .reannotateEset <- function( data, uri, .opts=list(), cred=NULL ) {
 
+    ## ExpressionSet or AffyBatch.
     files <- sampleNames(data)
 
     p <- .filenamesToPData(files, uri, .opts, cred)
@@ -153,6 +166,7 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .reannotateMAList <- function( data, uri, .opts=list(), cred=NULL ) {
 
+    ## MAList or RGList, both have similar targets structure.
     files <- data$targets$FileName
 
     stopifnot( all( ! is.na(files) ) )
@@ -165,16 +179,17 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 }
 
 ## Define a series of functions for various object signatures.
-setGeneric('reannotateFromClinWeb', def=function(data, uri, .opts=list(), cred=NULL)
-           standardGeneric('reannotateFromClinWeb'))
+setGeneric('csWebReannotate', def=function(data, uri, .opts=list(), cred=NULL)
+           standardGeneric('csWebReannotate'))
 
-setMethod('reannotateFromClinWeb', signature(data='ExpressionSet'), .reannotateEset)
-setMethod('reannotateFromClinWeb', signature(data='AffyBatch'), .reannotateEset)
-setMethod('reannotateFromClinWeb', signature(data='MAList'), .reannotateMAList)
+setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='AffyBatch'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='MAList'), .reannotateMAList)
+setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
-queryClinWeb <- function (assay.file=NULL, assay.barcode=NULL, uri, username, password, .opts) {
+csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, password, .opts) {
 
     if ( is.null(assay.file) && is.null(assay.barcode) )
         stop("Error: Either assay.file or assay.barcode must be specified")

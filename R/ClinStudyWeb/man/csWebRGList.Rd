@@ -1,17 +1,17 @@
-\name{studyAffyBatch}
-\alias{studyAffyBatch}
+\name{csWebRGList}
+\alias{csWebRGList}
 
-\title{ Generate an annotated AffyBatch }
+\title{ Generate an annotated RGList }
 \description{
-  Retrieves sample annotation from the ClinStudy database for a set of
-  CEL files, and uses it to annotate the returned AffyBatch object.
+  Retrieves sample annotation from the ClinStudyWeb database for a set of
+  data files, and uses it to annotate the returned RGList object.
 }
 \usage{
-studyAffyBatch ( files, uri, .opts=list(), cred=NULL, ... )
+csWebRGList ( files, uri, .opts=list(), cred=NULL, ... )
 }
 \arguments{
 
-  \item{files}{A character vector of CEL file names.}
+  \item{files}{A character vector of data file names.}
 
   \item{uri}{The URI for the clinical database web site.}
 
@@ -21,7 +21,7 @@ studyAffyBatch ( files, uri, .opts=list(), cred=NULL, ... )
     \code{getCredentials} function. This list should contain
     just two character entries, named ``username'' and ``password''.}
 
-  \item{...}{Additional arguments are passed to the \code{ReadAffy} object.}
+  \item{...}{Additional arguments are passed to the \code{read.maimages} object.}
 
 }
 \details{
@@ -34,15 +34,15 @@ studyAffyBatch ( files, uri, .opts=list(), cred=NULL, ... )
 
 }
 \value{
-  An annotated AffyBatch object.
+  An annotated RGList object.
 }
 \references{ RCurl package }
 \author{ Tim F Rayner }
 \seealso{
-  \code{\link{queryClinWeb}}
+  \code{\link{csWebQuery}}
 }
 \examples{
-  \dontrun{studyAffyBatch( files=c('T234 CD4.CEL','L123 CD8.CEL')
-                           uri='http://my.webhost.com/' )}
+  \dontrun{csWebRGList( files=c('T234_CD4.txt,'L123_CD8.txt'),
+                        uri='http://my.webhost.com/' )}
 }
 
