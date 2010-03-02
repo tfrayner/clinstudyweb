@@ -385,6 +385,11 @@ All table-derived elements are enclosed within grouping elements. This
 hashref gives the group name in cases where it's not as simple as
 adding 's' onto the end of the table class name.
 
+=item is_strict
+
+Boolean flag indicating whether or not to validate the exported XML
+document against the XML Schema (default=True).
+
 =back
 
 =head1 SEE ALSO

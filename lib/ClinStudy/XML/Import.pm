@@ -414,6 +414,11 @@ other ways; this order was chosen since it was the most succinct
 arrangement for the original use case. Defaults to an empty hash
 ref.
 
+=item is_strict
+
+Boolean flag indicating whether or not to validate the imported XML
+document against the XML Schema (default=True).
+
 =back
 
 =head2 METHODS
