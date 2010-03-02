@@ -33,7 +33,90 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(cels)
 }
 
-.filenamesToPData <- function( files, uri, .opts=list(), cred ) {
+.filenamesToPData <- function( files, ... ) {
+
+    p <- .batchDBQuery( files, ... )
+    p <- .conformLists(p)
+    p <- lapply(p, unlist)
+    p <- data.frame(do.call('rbind', p))
+
+    # Quick sanity check
+    stopifnot( all( p$filename == files ) )
+    
+    rownames(p) <- files
+
+    return(p)
+}
+
+.annotateTargetLabels <- function( x ) {
+
+    label <- x$label
+
+    stopifnot( ! is.na(label) )
+
+    x[[label]] <- x$sample_name
+
+    return(x)
+}
+
+.addRefLabels <- function( x, l ) {
+
+    if ( is.na(x[[l]]) )
+        x[[l]] <- 'Ref'
+
+    x <- x[ names(x) != 'label' ]
+
+    return(x)
+}
+
+.filenamesToTargets <- function( files, ... ) {
+
+    p <- .batchDBQuery( files, ... )
+
+    p <- lapply(p, .annotateTargetLabels)
+    p <- .conformLists(p)
+
+    labels <- Reduce(union, lapply(p, function(x) { x$label } ) )
+    for ( l in labels )
+        p <- lapply(p, .addRefLabels, l)
+
+    p <- lapply(p, unlist)
+    p <- data.frame(do.call('rbind', p))
+
+    # Quick sanity check.
+    stopifnot( all(p$filename == files) )
+
+    colnames(p)[colnames(p) == 'filename'  ] <- 'FileName'
+    colnames(p)[colnames(p) == 'identifier'] <- 'SlideNumber'
+    colnames(p)[colnames(p) == 'batch_date'] <- 'Date'
+
+    return(p)
+}
+
+.fillList <- function(x, vars) {
+
+    y <- x[vars]
+    names(y) <- vars
+
+    n <- unlist(lapply(y, is.null))
+    y[n] <- NA
+
+    return(y)
+}
+
+.conformLists <- function(p) {
+
+    ## A list of all the variables
+    vars <- Reduce(union, lapply(p, names))
+
+    ## Make sure all the variables are represented in each list. This
+    ## is a bit kludgey, but it does work.
+    p <- lapply(p, .fillList, vars)
+
+    return(p)
+}
+
+.batchDBQuery <- function( files, uri, .opts=list(), cred ) {
 
     ## We use tcltk to generate a nice echo-free password entry field.
     if ( is.null(cred) ) {
@@ -53,27 +136,10 @@ studyAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- lapply(as.list(files), queryClinWeb,
                 uri=uri, username=cred$username, password=cred$password, .opts=.opts)
 
-    ## A list of all the variables
-    vars <- Reduce(union, lapply(p, names))
-
-    ## Make sure all the variables are represented in each list. This
-    ## is a bit kludgey, but it does work.
-    p <- lapply(p, function(x) { y <- x[vars]
-                                 names(y) <- vars
-                                 n <- unlist(lapply(y, is.null))
-                                 y[n] <- NA
-                                 y } )
-    p <- lapply(p, unlist)
-    p <- data.frame(do.call('rbind', p))
-    rownames(p) <- files
-
     return(p)
 }
 
-reannotateFromClinWeb <- function( data, uri, .opts=list(), cred=NULL ) {
-
-    ## AffyBatch is apparently not a subclass of ExpressionSet.
-#    stopifnot(inherits(data, 'ExpressionSet'))
+.reannotateEset <- function( data, uri, .opts=list(), cred=NULL ) {
 
     files <- sampleNames(data)
 
@@ -84,6 +150,27 @@ reannotateFromClinWeb <- function( data, uri, .opts=list(), cred=NULL ) {
 
     return(data)
 }
+
+.reannotateMAList <- function( data, uri, .opts=list(), cred=NULL ) {
+
+    files <- data$targets$FileName
+
+    stopifnot( all( ! is.na(files) ) )
+
+    p <- .filenamesToTargets(files, uri, .opts, cred)
+
+    data$targets <- p
+
+    return(data)
+}
+
+## Define a series of functions for various object signatures.
+setGeneric('reannotateFromClinWeb', def=function(data, uri, .opts=list(), cred=NULL)
+           standardGeneric('reannotateFromClinWeb'))
+
+setMethod('reannotateFromClinWeb', signature(data='ExpressionSet'), .reannotateEset)
+setMethod('reannotateFromClinWeb', signature(data='AffyBatch'), .reannotateEset)
+setMethod('reannotateFromClinWeb', signature(data='MAList'), .reannotateMAList)
 
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
