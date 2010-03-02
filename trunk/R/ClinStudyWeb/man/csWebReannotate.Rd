@@ -1,10 +1,5 @@
-\name{csWebReannotate-methods}
-\docType{methods}
-\alias{csWebReannotate-methods}
-\alias{csWebReannotate, AffyBatch-method}
-\alias{csWebReannotate, ExpressionSet-method}
-\alias{csWebReannotate, RGList-method}
-\alias{csWebReannotate, MAList-method}
+\name{csWebReannotate}
+\alias{csWebReannotate}
 
 \title{ Reannotate a data object using the ClinStudyWeb database }
 \description{
@@ -16,29 +11,6 @@
 }
 \usage{
 csWebReannotate ( data, uri, .opts=list(), cred=NULL )
-}
-\section{Methods}{
-  \describe{
-
-    \item{data = "AffyBatch"}{ When passed an AffyBatch object, this
-      method will replace the pData slot with an updated annotation data
-      frame. The data sampleNames() must correspond to the original CEL
-      file names.}
-
-    \item{data = "ExpressionSet"}{ When passed an ExpressionSet object, this
-      method will replace the pData slot with an updated annotation data
-      frame. The data sampleNames() must correspond to the original CEL
-      file names.}
-
-    \item{data = "RGList"}{ The targets attribute of the supplied RGList
-      will be replaced with an updated targets data frame. The input
-      RGList object must contain a valid RGList$targets$FileName listing. }
-
-    \item{data = "MAList"}{ The targets attribute of the supplied MAList
-      will be replaced with an updated targets data frame. The input
-      MAList object must contain a valid MAList$targets$FileName listing. }
-
-  }
 }
 \arguments{
 
@@ -79,4 +51,3 @@ csWebReannotate ( data, uri, .opts=list(), cred=NULL )
   \dontrun{csWebReannotate(data,
                            uri='http://my.webhost.com/' )}
 }
-\keyword{methods}
