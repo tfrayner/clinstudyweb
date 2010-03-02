@@ -228,6 +228,7 @@ sub dump_assay_entity {
         filename   => $assay->filename(),
         'info.batch.name' => $batch->name(),
         batch_date => $batch->date(),
+        identifier => $assay->identifier(),
         operator   => $batch->operator(),
     );
 
