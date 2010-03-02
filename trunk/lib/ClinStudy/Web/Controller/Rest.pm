@@ -174,20 +174,34 @@ sub dump_sample_entity {
 
     $dump{gender} = $patient->sex();
 
-    my %prior = map { $_->type_id->value() => $_->name() } $patient->prior_groups();
+    my %prior = map { _xml_sanitize( $_->type_id->value() ) => $_->name() }
+                $patient->prior_groups();
     $dump{prior_group} = \%prior;
 
-    my %group = map { $_->type_id->value() => $_->name() } $visit->emergent_groups();
+    my %group = map { _xml_sanitize( $_->type_id->value() ) => $_->name() }
+                $visit->emergent_groups();
     $dump{emergent_group} = \%group;
 
     # We only want those TestResults which have no parents. FIXME is
     # there a better way via SQL::Abstract?
-    my %tests = map { $_->test_id->name() => _get_test_value($_) }
+    my %tests = map { _xml_sanitize( $_->test_id->name() ) => _get_test_value($_) }
                 grep { $_->parent_test_results()->count() == 0 }
                 $visit->test_results();
     $dump{test_result} = \%tests;
 
     return \%dump;
+}
+
+sub _xml_sanitize {
+
+    my ( $text ) = @_;
+
+    # Not as expressive as the full XML spec, but this should work for
+    # our purposes.
+    $text =~ s/^(?=[0-9\.-])/X/;
+    $text =~ s/[^[:alnum:]\.-]/_/g;
+
+    return $text;
 }
 
 sub _get_test_value {

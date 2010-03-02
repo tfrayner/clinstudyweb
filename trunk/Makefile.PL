@@ -50,6 +50,9 @@ requires 'DBD::mysql'                                     => '4.008';
 requires 'DBIx::Class'                                    => '0.08010';
 requires 'XML::LibXML'                                    => '1.7.0';
 
+# REST currently serialises via XML::Simple
+requires 'XML::Simple'                                    => '2.18';
+
 test_requires 'Test::DBIx::Class' => '0.09';
 
 catalyst;
