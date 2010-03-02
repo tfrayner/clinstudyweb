@@ -31,6 +31,11 @@ extends 'ClinStudy::XML::Import';
 
 use Storable qw(dclone);
 
+has 'is_constrained'    => ( is       => 'rw',
+                             isa      => 'Bool',
+                             required => 1,
+                             default  => 1 );
+
 our $VERSION = '0.01';
 
 my @load_order = qw(Patients AssayBatches);
@@ -170,7 +175,7 @@ sub _update_testresult_attrs {
                 $row_ref->{'controlled_value_id'} = $res[0]->id();
                 delete $row_ref->{'value'};
             }
-            else {
+            elsif ( $self->is_constrained() ) {
                 croak(sprintf(qq{Error: Attempting to load a TestResult for test "%s"}
                             . qq{ with an incorrect controlled_value "%s".\n},
                               $test->name(), $row_ref->{'value'} ));
@@ -301,7 +306,7 @@ sub load_object {
     my $class = $rs->result_source()->source_name();
 
     my $obj;
-    if ( $class eq 'ControlledVocab' ) {
+    if ( $class eq 'ControlledVocab' && $self->is_constrained() ) {
         $obj = $rs->find( $hashref );
         unless ( $obj ) {
             my $mess =
@@ -342,6 +347,20 @@ ClinStudy::XML::Loader - Perl extension for handling ClinStudy XML
 A module designed to handle validation of XML according to the
 ClinStudy schema, and loading of such XML into a database. This is a
 database-specific subclass of the ClinStudy::XML::Import class.
+
+=head2 ATTRIBUTES
+
+=over 2
+
+=item is_constrained
+
+Simple boolean flag indicating whether to raise an exception if the
+semantic framework previously loaded into the database is violated by
+the loaded document (default=True). Typically this is only set to
+False in certain specialised operations, for example merging
+ClinStudyML documents using a temporary SQLite database.
+
+=back
 
 =head1 SEE ALSO
 
