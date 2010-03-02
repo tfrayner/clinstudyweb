@@ -1,12 +1,12 @@
-\name{queryClinWeb}
-\alias{queryClinWeb}
+\name{csWebQuery}
+\alias{csWebQuery}
 
-\title{ Query the ClinStudy database via its REST API }
+\title{ Query the ClinStudyWeb database via its REST API }
 \description{
   Retrieves sample annotation for a given array barcode or filename.
 }
 \usage{
-queryClinWeb ( assay.file=NULL, assay.barcode=NULL, uri, username,
+csWebQuery ( assay.file=NULL, assay.barcode=NULL, uri, username,
 password, .opts )
 }
 \arguments{
@@ -30,9 +30,9 @@ password, .opts )
   password are also all required. Note that it is unwise to hard-code
   your authentication credentials in your R code as this is potentially
   highly insecure; rather, it is better to use an approach similar to
-  that used by the \code{studyAffyBatch} function, which prompts the user
+  that used by the \code{csWebAffyBatch} function, which prompts the user
   for username and password interactively and then passes those on to
-  \code{queryClinWeb}.
+  \code{csWebQuery}.
 
 }
 \value{
@@ -41,12 +41,12 @@ password, .opts )
 \references{ RCurl package }
 \author{ Tim F Rayner }
 \seealso{
-  \code{\link{studyAffyBatch}}
+  \code{\link{csWebAffyBatch}}
 }
 \examples{
-  \dontrun{queryClinWeb( assay.file='T234 CD4.CEL',
-                         uri='http://my.webhost.com/',
-                         username='johndoe',
-                         password='mylongandnowincrediblyinsecurepassword' )}
+  \dontrun{csWebQuery( assay.file='T234 CD4.CEL',
+                       uri='http://my.webhost.com/',
+                       username='johndoe',
+                       password='mylongandnowincrediblyinsecurepassword' )}
 }
 

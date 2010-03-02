@@ -34,20 +34,22 @@ importFrom(tcltk,
            tkwm.title
            )
 
+importClassesFrom(affy, AffyBatch)
 importClassesFrom(Biobase, ExpressionSet)
-
-importFrom(Biobase, sampleNames, 'pData<-')
+importClassesFrom(limma, MAList, RGList)
 
 importFrom(affy, ReadAffy)
+importFrom(Biobase, sampleNames, 'pData<-')
+importFrom(limma, read.maimages)
 
 importFrom(XML, xmlParse, xmlToList)
-
 importFrom(RCurl, getURLContent, curlEscape)
 
 export(
        getCredentials,
-       queryClinWeb,
-       reannotateFromClinWeb,
-       studyAffyBatch
+       csWebQuery,
+       csWebReannotate,
+       csWebAffyBatch,
+       csWebRGList
        )
 
