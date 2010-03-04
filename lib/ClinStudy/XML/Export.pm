@@ -76,7 +76,7 @@ has 'is_strict'         => ( is       => 'rw',
                              required => 1,
                              default  => 1 );
 
-sub elements_to_doc {
+sub _elements_to_doc {
 
     # This should probably be overridden in a subclass so one can
     # point to a specific XML schema/namespace.
@@ -100,10 +100,6 @@ sub elements_to_doc {
 
     $self->_add_elem_groups( $root, \%grouping );
 
-    if ( ! $self->validate($doc) && $self->is_strict() ) {
-        croak("Error: Generated XML document does not conform to schema.\n");
-    }
-
     return $doc;
 }
 
@@ -125,7 +121,12 @@ sub xml_all {
         }
     }
 
-    return $self->elements_to_doc( \@elements );
+    my $doc = $self->_elements_to_doc( \@elements );
+    if ( ! $self->validate($doc) && $self->is_strict() ) {
+        croak("Error: Generated XML document does not conform to schema.\n");
+    }
+
+    return $doc;
 }
 
 sub xml {
@@ -141,7 +142,12 @@ sub xml {
         push( @elements, $elem ) if defined $elem;
     }
 
-    return $self->elements_to_doc( \@elements );
+    my $doc = $self->_elements_to_doc( \@elements );
+    if ( ! $self->validate($doc) && $self->is_strict() ) {
+        croak("Error: Generated XML document does not conform to schema.\n");
+    }
+
+    return $doc;
 }
 
 sub cols_to_attrs {
