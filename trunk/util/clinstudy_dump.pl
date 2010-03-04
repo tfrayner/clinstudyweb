@@ -96,9 +96,29 @@ my $dumper = $dumper_class->new(
     schema_file => $xsd,
 );
 
-# FIXME this depends on our command-line options. Individual patient
-# or AssayBatch exports are not yet supported.
-my $xml = $dumper->xml_all();
+# Individual patient or AssayBatch exports where specified; otherwise,
+# dump everything.
+my $xml;
+if ( defined $trial_id || defined $batch_name ) {
+    my @objects;
+
+    if ( defined $trial_id ) {
+        my $patient = $schema->resultset('Patient')->find({trial_id => $trial_id})
+            or die("Unable to retrieve patient with trial ID $trial_id.\n");
+        push @objects, $patient;
+    }
+    if ( defined $batch_name ) {
+        my $batch = $schema->resultset('AssayBatch')->find({name => $batch_name})
+            or die("Unable to retrieve assay batch $batch_name.\n");
+        push @objects, $batch;
+    }
+
+    $xml = $dumper->xml(\@objects);
+}
+else {
+    $xml = $dumper->xml_all();
+}
+
 print $xml->toString(1);
 
 __END__
@@ -141,11 +161,11 @@ user metadata).
 
 =item -p
 
-The trial_id value of the Patient record to export. NOT YET SUPPORTED (FIXME).
+The trial_id value of the Patient record to export.
 
 =item -a
 
-The name of the AssayBatch to export. NOT YET SUPPORTED (FIXME).
+The name of the AssayBatch to export.
 
 =back
 

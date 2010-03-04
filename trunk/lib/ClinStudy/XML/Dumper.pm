@@ -29,6 +29,7 @@ use Moose;
 extends 'ClinStudy::XML::Export';
 
 use Carp;
+use List::Util qw(first);
 use Data::Dumper;
 
 our $VERSION = '0.01';
@@ -65,6 +66,73 @@ sub BUILD {
     });
 
     return;
+}
+
+sub xml {
+
+    my ( $self, $objects ) = @_;
+
+    # Check that the objects are of a supported class.
+    foreach my $row ( @$objects ) {
+        my $topclass = $row->result_source()->source_name();
+        unless ( first { $topclass eq $_ } qw(AssayBatch Patient) ) {
+            croak(qq{Error: Export of $topclass objects is not supported.\n});
+        }
+    }
+
+    my @elements;
+    foreach my $row ( @$objects ) {
+        my $topclass = $row->result_source()->source_name();
+ 
+        # Follow links from Patient to AssayBatch and vice versa. We
+        # need to retrieve AssayBatch before Patient in each case
+        # because otherwise Channel gets clobbered by the Export
+        # tracker hash.
+        if ( $topclass eq 'Patient' ) {
+            foreach my $batch ( $row->search_related('visits')
+                                    ->search_related('samples')
+                                    ->search_related('channels')
+                                    ->search_related('assay_id')
+                                    ->search_related('assay_batch_id') ) {
+                my $elem = $self->row_to_element( $batch, 'AssayBatch' );
+                push( @elements, $elem ) if defined $elem;
+            }
+            my $elem = $self->row_to_element( $row, $topclass );
+            push( @elements, $elem ) if defined $elem;
+        }
+        elsif ( $topclass eq 'AssayBatch' ) {
+            my $elem = $self->row_to_element( $row, $topclass );
+            push( @elements, $elem ) if defined $elem;
+            foreach my $patient ( $row->search_related('assays')
+                                      ->search_related('channels')
+                                      ->search_related('sample_id')
+                                      ->search_related('visit_id')
+                                      ->search_related('patient_id') ) {
+                my $elem = $self->row_to_element( $patient, 'Patient' );
+                push( @elements, $elem ) if defined $elem;                
+            }
+        }
+    }
+
+    my $doc = $self->_elements_to_doc( \@elements );
+
+    # Fix up document to remove assays referencing samples which have
+    # not been exported.
+    foreach my $assay ( $doc->findnodes('.//Assay') ) {
+        foreach my $channel ( $assay->findnodes('./Channels/Channel') ) {
+            my $sample_name = $channel->getAttribute('sample_ref');
+            my @samples = $doc->findnodes(qq{.//Sample[\@name="$sample_name"]});
+            unless ( scalar @samples ) {
+                $assay->unbindNode();
+            }
+        }
+    }
+
+    if ( ! $self->validate($doc) && $self->is_strict() ) {
+        croak("Error: Generated XML document does not conform to schema.\n");
+    }
+
+    return( $doc );
 }
 
 {
