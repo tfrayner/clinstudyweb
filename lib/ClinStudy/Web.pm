@@ -25,7 +25,7 @@ use warnings;
 use Scalar::Util qw(blessed);
 use Carp;
 
-use Catalyst::Runtime '5.80';
+use Catalyst::Runtime '5.70';
 
 # Set flags and add plugins for the application
 #
