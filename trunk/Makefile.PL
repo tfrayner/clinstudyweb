@@ -27,7 +27,7 @@ use inc::Module::Install;
 name 'ClinStudy-Web';
 all_from 'lib/ClinStudy/Web.pm';
 
-requires 'Catalyst::Runtime'                              => '5.8002';
+requires 'Catalyst::Runtime'                              => '5.71';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
 requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
