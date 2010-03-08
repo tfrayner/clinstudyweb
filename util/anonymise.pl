@@ -72,7 +72,7 @@ while ( my $p = $patient_rs->next() ) {
 
     my $dob = $name->[2];
     $dob ||= int(rand(100)) + 1900;
-    $dob .= "-" . int(rand(12)) . "-" . int(rand(28));
+    $dob .= "-" . (int(rand(12)) + 1) . "-" . (int(rand(28)) + 1);
     $p->set_column('date_of_birth', $dob);
 
     my $hospno = int(rand(1000000));
@@ -2850,7 +2850,7 @@ Gobert	Irvine	1898
 Gobert	John	1879
 Gobert	John L.	1916
 Gobert	John Rock	
-Gobert	John	L.	1916
+Gobert	John L.	1916
 Gobert	Louise	
 Gobert	Margaret	1855
 Gobert	Margret	1869
