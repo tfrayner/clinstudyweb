@@ -26,8 +26,6 @@ Wish List
   nesting, which raises all kinds of issues. In particular it seems to
   need a substantial rewrite of HTML::FormFu::Model::DBIC :-(
 
-- Support for clinstudy_dump.pl export of single patients/assay_batches.
-
 - SemanticValidator loader class to check CVs and Test names against
   the database prior to ClinStudyML loading?
 
