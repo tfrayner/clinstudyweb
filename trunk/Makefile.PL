@@ -27,7 +27,7 @@ use inc::Module::Install;
 name 'ClinStudy-Web';
 all_from 'lib/ClinStudy/Web.pm';
 
-requires 'Catalyst::Runtime'                              => '5.7014';
+requires 'Catalyst::Runtime'                              => '5.8002';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
 requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
@@ -54,6 +54,9 @@ requires 'XML::LibXML'                                    => '1.7.0';
 requires 'XML::Simple'                                    => '2.18';
 
 test_requires 'Test::DBIx::Class' => '0.09';
+
+catalyst_par_classes('DBD::mysql');
+catalyst_par_classes('Digest::SHA');
 
 catalyst;
 

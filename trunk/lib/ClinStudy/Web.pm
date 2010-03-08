@@ -25,7 +25,7 @@ use warnings;
 use Scalar::Util qw(blessed);
 use Carp;
 
-use Catalyst::Runtime '5.70';
+use Catalyst::Runtime '5.80';
 
 # Set flags and add plugins for the application
 #
@@ -56,7 +56,7 @@ our $VERSION = '0.01';
 # Configuration #
 #################
 #
-# Note that settings in clinstudyweb_web.yml (or other external
+# Note that settings in clinstudy_web.yml (or other external
 # configuration file that you set up manually) take precedence
 # over this when using ConfigLoader. Thus configuration
 # details given here can function as a default configuration,
