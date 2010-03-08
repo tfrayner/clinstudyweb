@@ -8,6 +8,9 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use ClinStudy::Web;
 
+require Digest::SHA;
+require DBD::mysql;
+
 ClinStudy::Web->run;
 
 1;

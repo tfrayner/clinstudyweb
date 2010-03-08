@@ -13,6 +13,9 @@ use Pod::Usage;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+require Digest::SHA;
+require DBD::mysql;
+
 my $debug             = 0;
 my $fork              = 0;
 my $help              = 0;

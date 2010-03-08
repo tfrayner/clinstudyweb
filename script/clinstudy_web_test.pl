@@ -8,6 +8,9 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Catalyst::Test 'ClinStudy::Web';
 
+require Digest::SHA;
+require DBD::mysql;
+
 my $help = 0;
 
 GetOptions( 'help|?' => \$help );
