@@ -43,10 +43,10 @@ requires 'Catalyst::Plugin::Authorization::Roles'         => '0.05';
 requires 'Catalyst::Authentication::Store::DBIx::Class'   => '0.104';
 requires 'parent'                                         => '0.221';
 requires 'Config::YAML'                                   => '1.42';
-requires 'Template'                                       => '2.20';
+requires 'Template'                                       => '2.19';
 requires 'Digest::SHA1'                                   => '2.11';
 requires 'Regexp::Common'                                 => '2.122';
-requires 'DBD::mysql'                                     => '4.008';
+requires 'DBD::mysql'                                     => '4.005';
 requires 'DBIx::Class'                                    => '0.08010';
 requires 'XML::LibXML'                                    => '1.7.0';
 
