@@ -55,10 +55,15 @@ requires 'XML::Simple'                                    => '2.18';
 
 test_requires 'Test::DBIx::Class' => '0.09';
 
+# Classes not included by PAR due to obfuscated linking.
 catalyst_par_classes('DBD::mysql');
 catalyst_par_classes('Digest::SHA');
 
-catalyst;
+# Include core perl modules in the PAR package.
+catalyst_par_core();
+
+# Core invocations for the Makefile.
+catalyst();
 
 install_script glob('script/*.pl');
 auto_install;
