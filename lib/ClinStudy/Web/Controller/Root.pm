@@ -174,9 +174,6 @@ sub raven_login : Global FormConfig('login.yml') {
             $c->detach();
         }
     }
-    else {
-        $c->stash->{error} = 'Login failed: ' . $result->msg;
-    }
 
     return;
 }

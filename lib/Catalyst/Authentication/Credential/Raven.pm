@@ -226,7 +226,7 @@ sub authenticate {
 	$c->log->debug('raven authenticate did not complete') if $c->debug;
     }
 
-    return $aa;
+    return;
 }
 
 sub _raven_process_user {
