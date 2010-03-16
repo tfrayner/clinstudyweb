@@ -1,7 +1,7 @@
 [% META title = 'Visit List' %]
 
 [% IF container %]
-    <p> Listing visits for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing visits for [% container.trial_id | html %] </p>
 [% END %]
 
 <fieldset class="data_view">

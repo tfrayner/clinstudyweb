@@ -1,7 +1,7 @@
 [% META title = 'Prior Observation List' %]
 
 [% IF container %]
-    <p> Listing prior observations for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing prior observations for [% container.trial_id | html %] </p>
 [% END %]
 
 <fieldset class="data_view">

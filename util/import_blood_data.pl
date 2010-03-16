@@ -155,8 +155,11 @@ sub get_visit_for_test {
     # Retrieve the corresponding Visit from $main_schema. Note that
     # there will be many unknown patients in the input, which we can't
     # do much about.
+
+    # N.B. due to anonymity concerns we are now mapping the data
+    # through study identifier, rather than hospital number.
     my $db_patient = $main_schema->resultset('Patient')->find({
-        hospital_id => $hosp_no,
+        trial_id => $hosp_no,
     });
     unless ( $db_patient ) {
         warn("WARNING: Unknown Hospital Number $hosp_no. Skipping this entry.\n");

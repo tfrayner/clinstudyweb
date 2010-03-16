@@ -4,8 +4,8 @@
 <legend>Core Patient Data <span><a href="[% c.uri_for("/patient/edit", object.id) %]">Edit</a></span></legend>
 <table id="patientInfo" class="horizontal">
   <tbody>
-    <tr><th>Name:</th><td><b>[% object.firstname | html %] [% object.surname | html %]</b> &nbsp; </td></tr>
-    <tr><th>Hospital Number:</th><td>[% object.hospital_id | html %] &nbsp; </td></tr>
+    <tr><th>Study ID:</th><td>[% object.trial_id | html %] &nbsp;</td></tr>
+    <tr><th>Entry date:</th><td>[% object.entry_date | html %] &nbsp;</td></tr>
     <tr><th>Date of Birth:</th><td>[% object.date_of_birth | html %] &nbsp; </td></tr>
     <tr><th>Gender:</th><td>[% object.sex | html %] &nbsp; </td></tr>
     <tr><th>Ethnicity:</th>
@@ -20,8 +20,6 @@
              [% ELSE %]
                N/A
              [% END %] </td></tr>
-    <tr><th>Study ID:</th><td>[% object.trial_id | html %] &nbsp;</td></tr>
-    <tr><th>Entry date:</th><td>[% object.entry_date | html %] &nbsp;</td></tr>
     <tr><th>Notes:</th>
     <td>[% object.notes | html | html_line_break %]</td></tr>
   </tbody>

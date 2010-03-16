@@ -42,7 +42,7 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
 
     $self->my_model_class( 'DB::Patient' );
-    $self->my_sort_field( 'surname' );
+    $self->my_sort_field( 'trial_id' );
     $self->my_container_namespace( undef );
 
     return $self;
@@ -123,7 +123,7 @@ sub add : Local {
 
         # Set our message and pass on to the edit_for_type view.
         $c->flash->{message}
-            = sprintf("Added %s %s", $patient->firstname, $patient->surname);
+            = sprintf("Added %s", $patient->trial_id);
         $c->res->redirect( $c->uri_for('edit_for_type', $patient->id) );
         $c->detach();
     }
@@ -176,7 +176,7 @@ sub edit : Local {
 
         # Set our message and pass back to list view.
         $c->flash->{message}
-            = sprintf("Updated %s %s", $patient->firstname, $patient->surname);
+            = sprintf("Updated %s", $patient->trial_id);
         $c->res->redirect( $c->uri_for('view', $id) );
         $c->detach();
     }
@@ -216,7 +216,7 @@ sub edit_for_type : Local {
     my @study_types = $patient->studies()->search_related('type_id');
     unless ( @study_types ) {
         $c->flash->{error} =
-            sprintf('No study type for patient %s', $patient->hospital_id());
+            sprintf('No study type for patient %s', $patient->trial_id());
         $c->res->redirect( $c->uri_for('view', $patient_id) );
         $c->detach();
     }
@@ -257,7 +257,7 @@ sub edit_for_type : Local {
             # go back to patient view).
             $c->flash->{message}
                 = ( $patient_id > 0 ? 'Updated ' : 'Added ' )
-                    . sprintf("%s %s", $patient->firstname, $patient->surname);
+                    . $patient->trial_id;
             $c->res->redirect( $c->uri_for('view', $patient_id) );
             $c->detach();
         }

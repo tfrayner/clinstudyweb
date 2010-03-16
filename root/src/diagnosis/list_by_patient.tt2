@@ -1,7 +1,7 @@
 [% META title = 'Diagnosis List' %]
 
 [% IF container %]
-    <p> Listing diagnoses for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing diagnoses for [% container.trial_id | html %] </p>
 [% END %]
 
 <fieldset class="data_view">

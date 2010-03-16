@@ -1,7 +1,7 @@
 [% META title = 'Prior Treatment List' %]
 
 [% IF container %]
-    <p> Listing prior treatments for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing prior treatments for [% container.trial_id | html %]</p>
 [% END %]
 
 <fieldset class="data_view">

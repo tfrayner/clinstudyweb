@@ -75,8 +75,7 @@ sub update_patient_name {
     my $lname = $names[-1];
     my $fname = join(q{ }, @names[0..$#names-1]);
 
-    $patient_info->{surname}   = $lname;
-    $patient_info->{firstname} = $fname;
+    # Anonymity prevails; we now discard the names.
 
     return;
 }
@@ -105,7 +104,7 @@ sub update_patient_hospital_id {
 
     return unless $id;
 
-    $patient_info->{hospital_id} = $id;
+    # Anonymity prevails; we no longer store these.
 
     return;
 }
@@ -180,10 +179,7 @@ sub find_or_create_patient {
         warn("Patient $id with entry date $entrydate not found in DB; creating new patient.\n");
     }
 
-    # Update patient name.
-    unless ( $db_patient && $db_patient->surname() ) {
-        $self->update_patient_name( \%patient_info, $data->{$PNAME} );
-    }
+    # Update patient name (NB now we do not - anonymity prevails).
 
     # Update patient entry date.
     $self->update_patient_entrydate( \%patient_info, $db_patient->entry_date )
@@ -194,10 +190,7 @@ sub find_or_create_patient {
         $self->update_patient_dob( \%patient_info, $data->{$DOB} );
     }
     
-    # Update patient Hospital Number.
-    unless ( $db_patient && $db_patient->hospital_id() ) {
-        $self->update_patient_hospital_id( \%patient_info, $data->{$HNUM} );
-    }
+    # Update patient Hospital Number (NB now we do not - anonymity prevails).
 
     # Update patient gender.
     unless ( $db_patient && $db_patient->sex() ) {

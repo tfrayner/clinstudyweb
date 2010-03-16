@@ -437,10 +437,7 @@ sub _clean_patient {
     # Split patient name into firstname/surname.
     if ( my $name = $patient->getAttribute('name') ) {
 
-        my ( $last, $first ) = split /[, ]+/, $name, 2;
-        
-        $patient->setAttribute('firstname', $first);
-        $patient->setAttribute('surname', $last);
+        # Don't record the names; anonymity prevails...
         $patient->removeAttribute('name')
     }
 

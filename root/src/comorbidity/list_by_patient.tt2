@@ -1,7 +1,7 @@
 [% META title = 'Comorbidity List' %]
 
 [% IF container %]
-    <p> Listing comorbidities for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing comorbidities for [% container.trial_id | html %] </p>
 [% END %]
 
 <fieldset class="data_view">

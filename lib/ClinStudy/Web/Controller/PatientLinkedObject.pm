@@ -73,11 +73,10 @@ sub set_my_updated_message {
     my $name = $self->_derive_nametag();
 
     $c->flash->{message}
-        = sprintf("%s %s for %s %s",
+        = sprintf("%s %s for %s",
                   ( $object_id && $object_id > 0 ? 'Updated ' : 'Added new '),
                   $name,
-                  $object->patient_id->firstname,
-                  $object->patient_id->surname,);
+                  $object->patient_id->trial_id,);
 }
 
 sub set_my_updating_message {
@@ -87,11 +86,10 @@ sub set_my_updating_message {
     my $name = $self->_derive_nametag();
 
     $c->stash->{message}    # I think we do mean to use the stash here, rather than flash.
-        = sprintf("%s %s for %s %s",
+        = sprintf("%s %s for %s",
                   ( $object_id && $object_id > 0 ? 'Updating a ' : 'Adding a new '),
                   $name,
-                  $object->patient_id->firstname,
-                  $object->patient_id->surname,);
+                  $object->patient_id->trial_id,);
 }
 
 sub set_my_deleted_message {
@@ -103,18 +101,16 @@ sub set_my_deleted_message {
 
     if ( defined $sort_field ) {
         $c->flash->{message}
-            = sprintf("Deleted %s %s's %s %s",
-                      $object->patient_id->firstname,
-                      $object->patient_id->surname,
+            = sprintf("Deleted %s %s for %s",
                       $object->$sort_field,
-                      $name, );
+                      $name,
+                      $object->patient_id->trial_id, );
     }
     else {
         $c->flash->{message}
-            = sprintf("Deleted %s %s's %s",
-                      $object->patient_id->firstname,
-                      $object->patient_id->surname,
-                      $name, );
+            = sprintf("Deleted %s for %s",
+                      $name,
+                      $object->patient_id->trial_id, );
     }
 }
 

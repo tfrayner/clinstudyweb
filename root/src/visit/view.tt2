@@ -1,7 +1,6 @@
 [% META title = 'Visit Details' %]
 
-<h3>[% object.patient_id.firstname | html %] [% object.patient_id.surname | html %]
-([% object.patient_id.trial_id | html %]), on [% object.date %]</h3>
+<h3>[% object.patient_id.trial_id | html %] on [% object.date %]</h3>
 
 <fieldset class="data_view">
 <legend>Visit <span><a href="[% c.uri_for("/visit/edit", object.id) | html %]">Edit</a>; <a href="[% c.uri_for("/visit/edit_for_type", object.id) | html %]">Study-Specific data</a></span></legend>

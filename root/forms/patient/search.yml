@@ -11,15 +11,6 @@ elements:
     elements:
 
       - type: Text
-        name: hospital_id
-        label: Hospital Number
-        constraints:
-          - Integer
-          - type: Length
-            max:  11
-            min:  1
-    
-      - type: Text
         name: trial_id
         label: Study ID
         constraints:
@@ -39,24 +30,6 @@ elements:
             max:  10
             min:  1
     
-      - type: Text
-        name: firstname
-        label: First Name
-        constraints:
-          - ASCII
-          - type: Length
-            max:  255
-            min:  1
-    
-      - type: Text
-        name: surname
-        label: Last Name
-        constraints:
-          - ASCII
-          - type: Length
-            max:  255
-            min:  1
-
       - type: Block
         nested_name: patient_prior_groups
         elements:
@@ -109,6 +82,25 @@ elements:
               resultset: ControlledVocab
               condition:
                 category: DiagnosisCondition
+              label_column: value
+              attributes:
+                order_by: value
+                
+      - type: Block
+        nested_name: studies
+        elements:
+
+          - type: Select
+            name: type_id
+            label: Study
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - AutoSet
+            model_config:
+              resultset: ControlledVocab
+              condition:
+                category: StudyType
               label_column: value
               attributes:
                 order_by: value
