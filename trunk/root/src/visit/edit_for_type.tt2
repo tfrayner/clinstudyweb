@@ -12,9 +12,7 @@
 <div>
 <table id="visitInfo" class="horizontal">
   <tbody>
-    <tr><th>Hospital ID:</th><td>[% object.patient_id.hospital_id | html %] &nbsp;</td></tr>
     <tr><th>Study ID:</th><td>[% object.patient_id.trial_id | html %] &nbsp;</td></tr>
-    <tr><th>Patient Name:</th><td>[% object.patient_id.firstname | html %] [% object.patient_id.surname | html %] &nbsp; </td></tr>
     <tr><th>Visit Date:</th><td>[% object.date | html %] &nbsp; </td></tr>
   </tbody>
 </table>

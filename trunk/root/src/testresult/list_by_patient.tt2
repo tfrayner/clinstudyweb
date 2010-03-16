@@ -1,7 +1,6 @@
 [% META title = 'All Test Results' %]
 
-<h3>[% container.firstname | html %] [% container.surname | html %]
-([% container.trial_id | html %])</h3>
+<h3>[% container.trial_id | html %]</h3>
 
 [% IF objects.defined %]
 <fieldset class="data_view">

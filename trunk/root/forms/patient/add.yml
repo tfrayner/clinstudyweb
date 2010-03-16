@@ -40,22 +40,6 @@ elements:
           This will be used to determine which web forms need to be completed.
 
   - type: Text
-    name: hospital_id
-    label: Hospital Number
-    constraints:
-      - Required
-      - Integer
-      - type: Length
-        max:  11
-        min:  1
-      - type: DBIC::Unique
-        model: DB::Patient
-        message: Must be a unique ID
-    label_attributes:
-      tooltipText: >-
-        The main Hospital Number assigned to this individual.
-
-  - type: Text
     name: trial_id
     label: TRIAD ID
     constraints:
@@ -86,32 +70,6 @@ elements:
       tooltipText: >-
         The date the patient was entered into TRIAD;
         click on the entry box for a pop-up calendar.
-
-  - type: Text
-    name: firstname
-    label: First Name
-    constraints:
-      - Required
-      - ASCII
-      - type: Length
-        max:  255
-        min:  1
-    label_attributes:
-      tooltipText: >-
-        The patient's given name.
-
-  - type: Text
-    name: surname
-    label: Last Name
-    constraints:
-      - Required
-      - ASCII
-      - type: Length
-        max:  255
-        min:  1
-    label_attributes:
-      tooltipText: >-
-        The patient's family name.
 
   - type: Select
     name: sex

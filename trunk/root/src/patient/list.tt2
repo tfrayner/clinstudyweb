@@ -15,7 +15,7 @@
     <thead>
       <tr>
         <td>Study ID</td>
-        <td>Patient Name</td>
+        <td>Entry Date</td>
         <td>Study</td>
         <td>Diagnosis</td>
         <td>&nbsp;</td>
@@ -24,8 +24,8 @@
     <tbody>
     [% FOREACH patient = objects %] 
         <tr> 
-        <td> [% patient.trial_id | html %] &nbsp; </td>
-        <td> [% patient.surname | html_entity %], [% patient.firstname | html_entity %] </td>
+        <td> [% patient.trial_id | html %] </td>
+        <td> [% patient.entry_date | html %] </td>
 [% IF patient.studies.blessed %]
   [% SET studies = [ patient.studies ] %]
 [% ELSE %]

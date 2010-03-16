@@ -1,7 +1,7 @@
 [% META title = 'Associated Studies List' %]
 
 [% IF container %]
-    <p> Listing study associations for [% container.firstname | html %] [% container.surname | html %] </p>
+    <p> Listing study associations for [% container.trial_id | html %] </p>
 [% END %]
 
 <fieldset class="data_view">

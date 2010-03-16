@@ -195,7 +195,7 @@ sub edit_for_type : Local {
     my @study_types = $visit->patient_id->studies()->search_related('type_id');
     unless ( @study_types ) {
         $c->flash->{error} =
-            sprintf('No study type for patient %s', $visit->patient_id->hospital_id());
+            sprintf('No study type for patient %s', $visit->patient_id->trial_id());
         $c->res->redirect( $c->uri_for('view', $visit_id) );
         $c->detach();
     }
