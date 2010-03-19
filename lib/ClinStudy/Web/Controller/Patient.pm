@@ -81,9 +81,13 @@ sub list_by_study_type : Local {
         $c->stash->{list_category} = $cv->value();
     }
     else {
-        $c->flash->{error} = 'No study type ID (this is a page navigation error).';
-        $c->res->redirect( $c->uri_for('/patient') );
-        $c->detach();
+
+        # Return a list of patients unconnected with any studies. We
+        # use raw SQL here for performance.
+        @patients = $c->model('DB::Patient')->search_literal(
+            'me.id not in (SELECT patient_id FROM study)');
+        $c->stash->{list_type}     = 'Study Type';
+        $c->stash->{list_category} = 'Non-assigned';
     }
 
     $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
