@@ -145,7 +145,7 @@ sub find_nearest_visit_date {
 
 sub get_visit_for_test {
 
-    my ( $self, $usdate, $hosp_no, $testname, $result, $main_schema ) = @_;
+    my ( $self, $usdate, $trial_id, $testname, $result, $main_schema ) = @_;
 
     my @dateparts = Decode_Date_US( $usdate );
     unless ( scalar @dateparts ) {
@@ -158,11 +158,12 @@ sub get_visit_for_test {
 
     # N.B. due to anonymity concerns we are now mapping the data
     # through study identifier, rather than hospital number.
+    my $date = sprintf("%04d-%02d-%02d", @dateparts);
     my $db_patient = $main_schema->resultset('Patient')->find({
-        trial_id => $hosp_no,
+        trial_id => $trial_id,
     });
     unless ( $db_patient ) {
-        warn("WARNING: Unknown Hospital Number $hosp_no. Skipping this entry.\n");
+        warn("WARNING: Unknown Study ID $trial_id. Skipping this entry ($date).\n");
         return;
     }
 
@@ -171,7 +172,6 @@ sub get_visit_for_test {
     my $db_test = $main_schema->resultset('Test')->find({
         name => $testname,
     }) or die("Error: No Test found with name $testname");
-    my $date = sprintf("%04d-%02d-%02d", @dateparts);
     my @preexisting = $db_patient->search_related('visits')
                                  ->search_related('test_results',
                                                   { 'test_results.date'    => $date,
@@ -316,7 +316,7 @@ foreach my $table ( keys %import_table ) {
 
         # Figure out the date and time, convert into a standard form.
         my ( $usdate ) = ( $record->resdate() =~ m! (\d+ / \d+ / \d+) !xms );
-        my   $hosp_no  =   $record->hospno();
+        my   $trial_id =   $record->hospno();
         my ( $time )   = ( $record->restime() =~ m! (\d+ : \d+ : \d+) !xms );
 
         TEST:
@@ -329,7 +329,7 @@ foreach my $table ( keys %import_table ) {
             if ( defined $result ) {
 
                 my ( $db_visit, $testdate ) = $builder->get_visit_for_test(
-                    $usdate, $hosp_no, $testname, $result, $main_schema,
+                    $usdate, $trial_id, $testname, $result, $main_schema,
                 );
                 next TEST unless $db_visit;
                 my $visitdate     = $db_visit->date();
