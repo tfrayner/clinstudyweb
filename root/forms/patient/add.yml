@@ -270,7 +270,7 @@ elements:
         empty_first_label: -select-
         constraints:
           - type: DependOn
-            others: date
+            others: start_date
             message: Required if Disease Event is given
           - AutoSet
         label_attributes:
