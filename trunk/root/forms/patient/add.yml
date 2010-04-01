@@ -297,11 +297,6 @@ elements:
             The commencement date of the disease event; click on the entry box
             for a pop-up calendar. This is for complete remission/relapse only;
             partial remission data can be entered as disease activity under Visit. 
-        constraints:
-          - type: Number
-          - type: Length
-            max:  15
-            min:  0
       - type: Hidden
         name: id
   - type: Hidden
