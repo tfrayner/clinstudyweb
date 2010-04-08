@@ -32,11 +32,12 @@ use Data::Dumper;
 
 sub parse_args {
 
-    my ( $xmlfile, $xsd, $want_help );
+    my ( $xmlfile, $xsd, $relaxed, $want_help );
 
     GetOptions(
         "x|xml=s"    => \$xmlfile,
-        "d|schema=s" => \$xsd,        
+        "d|schema=s" => \$xsd,
+        "r|relaxed"  => \$relaxed,
         "h|help"     => \$want_help,
     );
 
@@ -62,18 +63,19 @@ sub parse_args {
     my $parser = XML::LibXML->new();
     my $xml    = $parser->parse_file($xmlfile);
 
-    return( $xml, $xsd, \@files );
+    return( $xml, $xsd, $relaxed, \@files );
 }
 
-my ( $xml, $xsd, $files ) = parse_args();
+my ( $xml, $xsd, $relaxed, $files ) = parse_args();
 
 my $builder = ClinStudy::XML::Builder->new(
     schema_file => $xsd,
     document    => $xml,
+    is_strict   => ! $relaxed,
     root        => $xml->getDocumentElement(),
 );
 
-unless ( $builder->validate() ) {
+unless ( $relaxed || $builder->validate() ) {
     die("Error: Input XML not valid!\n");
 }
 
