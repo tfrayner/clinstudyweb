@@ -267,7 +267,11 @@ open (my $fh, '<', $tabfile)
 
 my $header = $csv->getline($fh);
 my %unused;
+LINE:
 while ( my $line = $csv->getline($fh) ) {
+
+    my $str = join('', @$line);
+    next LINE if $str =~ /^\s*#/;
 
     my %col;
     @col{@$header} = @$line;
