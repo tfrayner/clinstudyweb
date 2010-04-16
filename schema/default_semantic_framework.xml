@@ -110,6 +110,7 @@
     <ControlledVocab category="DoseFrequency" value="am"/>
     <ControlledVocab category="DoseFrequency" value="bd"/>
     <ControlledVocab category="DoseFrequency" value="od"/>
+    <ControlledVocab category="DoseFrequency" value="prn"/>
     <ControlledVocab category="DoseFrequency" value="once"/>
     <ControlledVocab category="DoseFrequency" value="pm"/>
     <ControlledVocab category="DoseFrequency" value="qds"/>
