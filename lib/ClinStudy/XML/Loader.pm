@@ -73,7 +73,7 @@ my %external_value_map = (
                 type_id              => 'DiseaseEventType',
             },
             Drug => {
-                type_id              => 'DrugType',
+                name_id              => 'DrugName',
                 locale_id            => 'DrugLocale',
                 dose_unit_id         => 'DoseUnit',
                 dose_freq_id         => 'DoseFrequency',

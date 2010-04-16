@@ -38,7 +38,8 @@ sub BUILD {
     # Set up our subclass config here.
     $self->load_order( [ qw( ControlledVocabs Tests Users ) ] );
 
-    $self->external_id_map( { Role => 'rolename' } );
+    $self->external_id_map( { Role            => 'rolename',
+                              ControlledVocab => 'accession' } );
 
     return;
 }

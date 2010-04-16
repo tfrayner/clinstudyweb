@@ -65,9 +65,9 @@ sub BUILD {
 
 sub row_to_element {
 
-    my ( $self, $row, $topclass, $parent_class ) = @_;
+    my ( $self, $row, $topclass, $parent_class, $parent_row ) = @_;
 
-    # NOTE $parent_class may be undefined.
+    # NOTE $parent_class and/or $parent_row may be undefined.
     
     my $source  = $row->result_source();
     my $class   = $source->source_name();
@@ -82,10 +82,20 @@ sub row_to_element {
         $element->setAttribute('category', $row->possible_value_id->category());
         $element->setAttribute('value', $row->possible_value_id->value());
     }
+    elsif ( $class eq 'RelatedVocab' ) {
+        my $rel_acc = $row->relationship_id->accession();
+        my $tar_acc = $row->target_id->accession();
+        my $parent_acc = $parent_row ? $parent_row->accession() : undef;
+        if ( $rel_acc ne $parent_acc && $tar_acc ne $parent_acc ) {
+            $element = XML::LibXML::Element->new($class);
+            $element->setAttribute('target_ref', $tar_acc);
+            $element->setAttribute('relationship_ref', $rel_acc);
+        }
+    }
     else {
 
         # General case.
-        $element = $self->SUPER::row_to_element( $row, $topclass, $parent_class );
+        $element = $self->SUPER::row_to_element( $row, $topclass, $parent_class, $parent_row );
     }
 
     return $element;

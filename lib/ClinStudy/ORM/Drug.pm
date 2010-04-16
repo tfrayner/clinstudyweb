@@ -10,13 +10,8 @@ __PACKAGE__->table("drug");
 __PACKAGE__->add_columns(
   "id",
   { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
-  "name",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 0,
-    size => 255,
-  },
+  "name_id",
+  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
   "dose",
   {
     data_type => "DECIMAL",
@@ -44,8 +39,6 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => 255,
   },
-  "type_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "locale_id",
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "visit_id",
@@ -56,9 +49,9 @@ __PACKAGE__->add_columns(
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("drug_visit_id", ["name", "visit_id"]);
-__PACKAGE__->add_unique_constraint("drug_prior_treatment_id", ["name", "prior_treatment_id"]);
-__PACKAGE__->add_unique_constraint("drug_hospitalisation_id", ["name", "hospitalisation_id"]);
+__PACKAGE__->add_unique_constraint("drug_visit_id", ["name_id", "visit_id"]);
+__PACKAGE__->add_unique_constraint("drug_prior_treatment_id", ["name_id", "prior_treatment_id"]);
+__PACKAGE__->add_unique_constraint("drug_hospitalisation_id", ["name_id", "hospitalisation_id"]);
 __PACKAGE__->belongs_to(
   "dose_unit_id",
   "ClinStudy::ORM::ControlledVocab",
@@ -70,9 +63,9 @@ __PACKAGE__->belongs_to(
   { id => "dose_freq_id" },
 );
 __PACKAGE__->belongs_to(
-  "type_id",
+  "name_id",
   "ClinStudy::ORM::ControlledVocab",
-  { id => "type_id" },
+  { id => "name_id" },
 );
 __PACKAGE__->belongs_to(
   "locale_id",
@@ -97,8 +90,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-11-09 15:01:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+Ph0NfSEgjyQ+mAwuDB+oA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-04-16 14:48:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VOw/owjfoL4Sc+euGC0R1g
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

@@ -89,7 +89,6 @@
     <xs:attribute name="dose_duration" type="decimalType"/>
     <xs:attribute name="duration_unit" type="varcharType"/>
     <xs:attribute name="dose_regime" type="varcharType"/>
-    <xs:attribute name="type" type="varcharType"/>
     <xs:attribute name="locale" type="varcharType"/>
   </xs:complexType>
 
