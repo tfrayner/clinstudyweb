@@ -11,6 +11,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="shortvarcharType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="31"/>
+      <xs:minLength value="1"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="passHashType">
     <xs:restriction base="xs:string">
       <xs:maxLength value="40"/>
@@ -30,8 +38,17 @@
   <!-- Types corresponding to database tables -->
 
   <xs:complexType name="controlledVocabType">
+    <xs:sequence>
+      <xs:element name="RelatedVocabs" type="relatedVocabGroup" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="accession" type="shortvarcharType" use="required"/>
     <xs:attribute name="category" type="varcharType" use="required"/>
     <xs:attribute name="value" type="varcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="relatedVocabType">
+    <xs:attribute name="target_ref" type="shortvarcharType" use="required"/>
+    <xs:attribute name="relationship_ref" type="shortvarcharType" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="testType">
@@ -68,6 +85,12 @@
   <xs:complexType name="controlledVocabGroup">
     <xs:sequence>
       <xs:element name="ControlledVocab" type="controlledVocabType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="relatedVocabGroup">
+    <xs:sequence>
+      <xs:element name="RelatedVocab" type="relatedVocabType" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -109,6 +132,10 @@
       <xs:selector xpath=".//User"/>
       <xs:field xpath="@username"/>
     </xs:unique>
+    <xs:key name="controlledVocabAccession">
+      <xs:selector xpath=".//ControlledVocab"/>
+      <xs:field xpath="@accession"/>
+    </xs:key>
     <xs:key name="controlledVocabKey">
       <xs:selector xpath=".//ControlledVocab"/>
       <xs:field xpath="@category"/>
@@ -118,6 +145,14 @@
       <xs:selector xpath=".//TestPossibleValue"/>
       <xs:field xpath="@category"/>
       <xs:field xpath="@value"/>
+    </xs:keyref>
+    <xs:keyref name="relatedVocabTargetKeyRef" refer="controlledVocabAccession">
+      <xs:selector xpath=".//RelatedVocab"/>
+      <xs:field xpath="@target_ref"/>
+    </xs:keyref>
+    <xs:keyref name="relatedVocabRelationshipKeyRef" refer="controlledVocabAccession">
+      <xs:selector xpath=".//RelatedVocab"/>
+      <xs:field xpath="@relationship_ref"/>
     </xs:keyref>
   </xs:element>
 

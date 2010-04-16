@@ -144,9 +144,9 @@ sub xml {
 
 sub row_to_element {
 
-    my ( $self, $row, $topclass, $parent_class ) = @_;
+    my ( $self, $row, $topclass, $parent_class, $parent_row ) = @_;
 
-    # NOTE $parent_class may be undefined.
+    # NOTE $parent_class and/or $parent_row may be undefined.
     
     my $source  = $row->result_source();
     my $class   = $source->source_name();

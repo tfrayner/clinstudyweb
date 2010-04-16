@@ -92,9 +92,11 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `controlled_vocab` (
   `id` int(11) NOT NULL auto_increment,
+  `accession` varchar(31) NOT NULL,
   `category` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY `accession` (`accession`),
   UNIQUE KEY `category` (`category`,`value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -106,6 +108,36 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `controlled_vocab` WRITE;
 /*!40000 ALTER TABLE `controlled_vocab` DISABLE KEYS */;
 /*!40000 ALTER TABLE `controlled_vocab` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `related_vocab`
+--
+
+DROP TABLE IF EXISTS `related_vocab`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `related_vocab` (
+  `controlled_vocab_id` int(11) NOT NULL,
+  `target_id` int(11) NOT NULL,
+  `relationship_id` int(11) NOT NULL,
+  PRIMARY KEY `cv_relationship` (`controlled_vocab_id`,`target_id`,`relationship_id`),
+  KEY `controlled_vocab_id` (`controlled_vocab_id`),
+  KEY `target_id` (`target_id`),
+  KEY `relationship_id` (`relationship_id`),
+  CONSTRAINT `related_vocab_ibfk_1` FOREIGN KEY (`controlled_vocab_id`) REFERENCES `controlled_vocab` (`id`),
+  CONSTRAINT `related_vocab_ibfk_2` FOREIGN KEY (`target_id`) REFERENCES `controlled_vocab` (`id`),
+  CONSTRAINT `related_vocab_ibfk_3` FOREIGN KEY (`relationship_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `related_vocab`
+--
+
+LOCK TABLES `related_vocab` WRITE;
+/*!40000 ALTER TABLE `related_vocab` DISABLE KEYS */;
+/*!40000 ALTER TABLE `related_vocab` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -212,20 +244,19 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `drug` (
   `id` int(11) NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL,
+  `name_id` int(11) NOT NULL,
   `dose` decimal(12,5) default NULL,
   `dose_unit_id` int(11) default NULL,
   `dose_freq_id` int(11) default NULL,
   `dose_duration` decimal(12,5) default NULL,
   `duration_unit_id` int(11) default NULL,
   `dose_regime` varchar(255) default NULL,
-  `type_id` int(11) default NULL,
   `locale_id` int(11) default NULL,
   `visit_id` int(11) default NULL,
   `prior_treatment_id` int(11) default NULL,
   `hospitalisation_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `type_id` (`type_id`),
+  KEY `name_id` (`name_id`),
   KEY `locale_id` (`locale_id`),
   KEY `dose_unit_id` (`dose_unit_id`),
   KEY `dose_freq_id` (`dose_freq_id`),
@@ -234,12 +265,12 @@ CREATE TABLE `drug` (
   KEY `prior_treatment_id` (`prior_treatment_id`),
   KEY `hospitalisation_id` (`hospitalisation_id`),
   -- Only one instance of a given drug allowed per visit (or whatever).
-  UNIQUE KEY `drug_visit_id` (`name`, `visit_id`),
-  UNIQUE KEY `drug_hospitalisation_id` (`name`, `hospitalisation_id`),
-  UNIQUE KEY `drug_prior_treatment_id` (`name`, `prior_treatment_id`),
+  UNIQUE KEY `drug_visit_id` (`name_id`, `visit_id`),
+  UNIQUE KEY `drug_hospitalisation_id` (`name_id`, `hospitalisation_id`),
+  UNIQUE KEY `drug_prior_treatment_id` (`name_id`, `prior_treatment_id`),
   CONSTRAINT `drug_ibfk_1` FOREIGN KEY (`dose_unit_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_2` FOREIGN KEY (`dose_freq_id`) REFERENCES `controlled_vocab` (`id`),
-  CONSTRAINT `drug_ibfk_3` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`),
+  CONSTRAINT `drug_ibfk_3` FOREIGN KEY (`name_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_4` FOREIGN KEY (`locale_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_5` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
   CONSTRAINT `drug_ibfk_6` FOREIGN KEY (`prior_treatment_id`) REFERENCES `prior_treatment` (`id`),

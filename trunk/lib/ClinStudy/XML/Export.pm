@@ -190,9 +190,9 @@ sub cols_to_attrs {
 sub row_to_element {
 
     # This is the recursive workhorse function of the module.
-    my ( $self, $row, $topclass, $parent_class ) = @_;
+    my ( $self, $row, $topclass, $parent_class, $parent_row ) = @_;
 
-    # NOTE $parent_class may be undefined.
+    # NOTE $parent_class and/or $parent_row may be undefined.
 
     my $source  = $row->result_source();
     my $class   = $source->source_name();
@@ -285,7 +285,7 @@ sub process_relationships {
 
         if ( $reltype eq 'multi' ) {
             foreach my $nextrow ( $row->search_related( $col ) ) {
-                my $nextelem  = $self->row_to_element( $nextrow, $topclass, $class );
+                my $nextelem  = $self->row_to_element( $nextrow, $topclass, $class, $row );
                 my $nextclass = $nextelem ? $nextelem->nodeName() : undef;
                 push( @{ $related_elem{$nextclass} }, $nextelem ) if defined $nextelem;
             }
