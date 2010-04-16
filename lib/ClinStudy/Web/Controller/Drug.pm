@@ -44,7 +44,7 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
 
     $self->my_model_class( 'DB::Drug' );
-    $self->my_sort_field( 'name' );
+    $self->my_sort_field( 'name_id' );
     $self->my_container_namespace( undef );
 
     return $self;
@@ -203,7 +203,7 @@ sub edit : Local {
             = sprintf("%s %s %s drug treatment",
                       ( $drug_id > 0 ? 'Updated ' : 'Added new '),
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
-                      $drug->name,);
+                      $drug->name_id->value(),);
 
         $c->res->redirect( $c->uri_for('view', $drug->id) );
         $c->detach();
@@ -215,7 +215,7 @@ sub edit : Local {
             = sprintf("%s %s %s drug treatment",
                       ( $drug_id && $drug_id > 0 ? 'Updating a ' : 'Adding a new '),
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
-                      $drug->name,);
+                      $drug->name_id->value(),);
 
         $form->model->default_values( $drug );
     }
@@ -258,7 +258,7 @@ sub delete : Local {
         $c->flash->{message}
             = sprintf("Deleted %s %s drug treatment",
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
-                      $drug->name, );
+                      $drug->name_id->value(), );
 
         $drug->delete;
 

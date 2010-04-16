@@ -7,7 +7,6 @@
         <tr>
           <td>Drug Name</td>
           <td>Drug Locale</td>
-          <td>Drug Type</td>
           <td>Drug Dosage</td>
           <td>Dose Units</td>
           <td>Dose Frequency</td>
@@ -17,17 +16,10 @@
       <tbody>
       [% FOREACH drug IN objects.sort('name') %]
         <tr> 
-          <td> [% drug.name | html %] </td>
+          <td> [% drug.name_id.value | html %] </td>
           <td>
           [% IF drug.locale_id.defined %]
             [% drug.locale_id.value | html %]
-          [% ELSE %]
-            N/A
-          [% END %]
-          </td>
-          <td>
-          [% IF drug.type_id.defined %]
-            [% drug.type_id.value | html %]
           [% ELSE %]
             N/A
           [% END %]
@@ -50,7 +42,7 @@
         <td><a href="[% c.uri_for("/drug/view/$drug.id") | html %]">View</a>
             <a href="[% c.uri_for("/drug/edit/$drug.id") | html %]">Edit</a> 
             <a href="[% c.uri_for("/drug/delete/$drug.id") | html %]"
-               onclick="return confirm('Really delete [% drug.name | html %] drug entry ?');">Delete</a></td>        
+               onclick="return confirm('Really delete [% drug.name_id.value | html %] drug entry ?');">Delete</a></td>        
         </tr>
       [% END %]
       </tbody>
@@ -63,7 +55,7 @@
       var tableWidgetObj = new DHTMLSuite.tableWidget();
       tableWidgetObj.setTableId('drugList[% tableCount %]');
       tableWidgetObj.setTableHeight('[% tableHeight %]');
-      tableWidgetObj.setColumnSort(Array('S','S','S',false,false,false,false,false));
+      tableWidgetObj.setColumnSort(Array('S','S',false,false,false,false,false));
       tableWidgetObj.init();
       tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
   </script>

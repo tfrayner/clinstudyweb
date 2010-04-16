@@ -13,21 +13,9 @@ elements:
   - type: Hidden
     name: id
 
-  - type: Text
-    name: name
-    label: Drug Name
-    constraints:
-      - Required
-      - ASCII
-      - type: Length
-        max:  255
-        min:  1
-    label_attributes:
-      tooltipText: The name of the drug.
-
   - type: Select
-    name: type_id
-    label: Drug Type
+    name: name_id
+    label: Drug Name
     empty_first: 1
     empty_first_label: -select-
     constraints:
@@ -36,10 +24,10 @@ elements:
     model_config:
       resultset: ControlledVocab
       condition:
-        category: DrugType
+        category: DrugName
       label_column: value
     label_attributes:
-      tooltipText: The type of drug used (i.e. is it immunosuppressive?).
+      tooltipText: The name of the drug.
       
   - type: Select
     name: locale_id

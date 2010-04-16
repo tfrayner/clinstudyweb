@@ -563,7 +563,7 @@ sub process_search_form {
                 # Merge %search with %$subsearch, and %attrs with
                 # %$subattrs. Note that key collisions are unlikely
                 # but possible; example would be simultaneous search for
-                # drugs.type_id from both Visit and Hospitalisation.
+                # drugs.name_id from both Visit and Hospitalisation.
                 @{$attrs{join}}{ keys %$subattrs } = values %$subattrs;
                 @search{ keys %$subsearch }        = values %$subsearch;
             }

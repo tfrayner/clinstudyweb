@@ -1,19 +1,13 @@
 [% META title = 'Drug Treatment Details' %]
 
-<h3>[% object.name | html -%] ([% object.locale_id.value | replace('_+', '-') | html %])</h3>
+<h3>[% object.name_id.value | html -%] ([% object.locale_id.value | replace('_+', '-') | html %])</h3>
 
 <fieldset class="data_view">
 <legend>Drug Treatment <span><a href="[% c.uri_for("/drug/edit", object.id) | html %]">Edit</a></span></legend>
 <table id="drugInfo" class="horizontal">
   <tbody>
      <tr><th>Drug Name:</th>
-         <td>[% object.name | html %]</td></tr>
-     <tr><th>Drug Type:</th>
-         <td>[%- IF object.type_id.defined -%]
-               [%- object.type_id.value | html -%]
-             [%- ELSE -%]
-               N/A
-             [%- END -%]</td></tr>
+         <td>[% object.name_id.value | html %]</td></tr>
      <tr><th>Drug Locale:</th>
          <td>[%- IF object.locale_id.defined -%]
                [%- object.locale_id.value | html -%]
