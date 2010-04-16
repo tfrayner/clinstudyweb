@@ -7,6 +7,7 @@
     <table id='cvList'>
     <thead>
       <tr>
+        <td>Accession</td>
         <td>Category</td>
         <td>Value</td>
         <td>&nbsp;</td>
@@ -15,11 +16,13 @@
     <tbody>
     [% FOREACH cv = objects.sort('category') %] 
         <tr> 
+        <td> [% cv.accession | html %] </td>
         <td> [% cv.category | html %] </td>
         <td> [% cv.value    | html %] </td>
-        <td> <a href="[% c.uri_for("/controlledvocab/edit/$cv.id") | html %]">Edit</a>
+        <td> <a href="[% c.uri_for("/controlledvocab/view/$cv.id") | html %]">View</a>
+             <a href="[% c.uri_for("/controlledvocab/edit/$cv.id") | html %]">Edit</a>
              <a href="[% c.uri_for("/controlledvocab/delete/$cv.id") | html %]"     
-             onclick="return confirm('Really delete term ?');">Delete</a> </td>
+             onclick="return confirm('Really delete term [% cv.accession | html %] ?');">Delete</a> </td>
         </tr> 
     [% END %]
     </tbody>

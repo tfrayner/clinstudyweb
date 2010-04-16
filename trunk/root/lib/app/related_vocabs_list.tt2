@@ -1,0 +1,40 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id="relatedList">
+      <thead>
+        <tr>
+          <td>Relationship Type</td>
+          <td>Accession</td>
+          <td>Category</td>
+          <td>Value</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH rel IN objects.sort('relationship_id') %]
+        <tr>
+          <td>[% rel.relationship_id.value | html %]</td>
+          <td>[% rel.target_id.accession | html %]</td>
+          <td>[% rel.target_id.category | html %]</td>
+          <td>[% rel.target_id.value | html %]</td>
+          <td><a href="[% c.uri_for("/controlledvocab/view/$rel.target_id.id") | html %]">View</a></td>
+        </tr>
+      [% END %]
+    </tbody>
+  </table>
+</div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('relatedList');
+      tableWidgetObj.setTableHeight('200');
+      tableWidgetObj.setColumnSort(Array('S','S','S','S',false));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+  </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]
+
