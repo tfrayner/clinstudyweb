@@ -6,7 +6,7 @@
   <tbody>
     <tr><th>Study ID:</th><td>[% object.trial_id | html %] &nbsp;</td></tr>
     <tr><th>Entry date:</th><td>[% object.entry_date | html %] &nbsp;</td></tr>
-    <tr><th>Date of Birth:</th><td>[% object.date_of_birth | html %] &nbsp; </td></tr>
+    <tr><th>Year of Birth:</th><td>[% object.year_of_birth | html %] &nbsp; </td></tr>
     <tr><th>Gender:</th><td>[% object.sex | html %] &nbsp; </td></tr>
     <tr><th>Ethnicity:</th>
         <td> [% IF object.ethnicity_id.defined %]

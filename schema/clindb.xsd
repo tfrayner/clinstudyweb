@@ -44,6 +44,12 @@
     <xs:restriction base="xs:date"/>
   </xs:simpleType>
 
+  <xs:simpleType name="yearType">
+    <xs:restriction base="xs:integer">
+      <xs:totalDigits value="4"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="tinyintType">
     <xs:restriction base="xs:byte"/>
   </xs:simpleType>
@@ -264,7 +270,7 @@
     </xs:sequence>
     <xs:attribute name="surname" type="varcharType"/>
     <xs:attribute name="firstname" type="varcharType"/>
-    <xs:attribute name="date_of_birth" type="dateType"/>
+    <xs:attribute name="year_of_birth" type="yearType"/>
     <xs:attribute name="sex" type="genderType"/>
     <xs:attribute name="trial_id" type="varcharType" use="required"/>
     <xs:attribute name="hospital_id" type="intType"/>

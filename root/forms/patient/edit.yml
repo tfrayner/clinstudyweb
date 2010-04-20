@@ -59,21 +59,18 @@ elements:
       tooltipText: The patient's sex.
 
   - type: Text
-    name: date_of_birth
-    label: Date of Birth
+    name: year_of_birth
+    label: Year of Birth
     constraints:
-      - type: DateTime
-        parser: &PARSER
-          strptime: '%Y-%m-%d'
+      - Required
+      - Integer
       - type: Length
-        max:  10
-        min:  1
-    inflators:
-      - type: DateTime
-        parser: *PARSER
-        strptime: '%Y-%m-%d'
+        message: Please supply a four-digit year
+        max:  4
+        min:  4
     label_attributes:
-      tooltipText: The patient's date of birth; click on the entry box for a pop-up calendar.
+      tooltipText: >-
+        The patient's year of birth.
 
   - type: Select
     name: ethnicity_id
