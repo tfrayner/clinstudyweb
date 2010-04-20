@@ -93,7 +93,9 @@ sub update_patient_dob {
         return;
     }
 
-    $patient_info->{date_of_birth} = sprintf("%d-%d-%d", $y, $m, $d);
+    # Anonymity prevails; we now only use the year of birth, rather
+    # than the entire date.
+    $patient_info->{year_of_birth} = $y;
 
     return;
 }
@@ -186,7 +188,7 @@ sub find_or_create_patient {
         if $db_patient;
     
     # Update patient DOB.
-    unless ( $db_patient && $db_patient->date_of_birth() ) {
+    unless ( $db_patient && $db_patient->year_of_birth() ) {
         $self->update_patient_dob( \%patient_info, $data->{$DOB} );
     }
     

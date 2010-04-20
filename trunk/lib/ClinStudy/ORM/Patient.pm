@@ -24,8 +24,8 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => 255,
   },
-  "date_of_birth",
-  { data_type => "DATE", default_value => undef, is_nullable => 1, size => 10 },
+  "year_of_birth",
+  { data_type => "YEAR", default_value => undef, is_nullable => 1, size => 4 },
   "sex",
   { data_type => "CHAR", default_value => undef, is_nullable => 1, size => 1 },
   "trial_id",
@@ -131,8 +131,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-02-26 11:28:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CO5Heb5tljHFxqvvLXilGA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-04-20 11:22:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ik7eWOR02yWpdFUfRMGZzg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

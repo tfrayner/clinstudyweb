@@ -70,10 +70,9 @@ while ( my $p = $patient_rs->next() ) {
     $p->set_column('firstname', $name->[1]);
     $p->set_column('surname'  , $name->[0]);
 
-    my $dob = $name->[2];
-    $dob ||= int(rand(100)) + 1900;
-    $dob .= "-" . (int(rand(12)) + 1) . "-" . (int(rand(28)) + 1);
-    $p->set_column('date_of_birth', $dob);
+    my $yob = $name->[2];
+    $yob ||= int(rand(100)) + 1900;
+    $p->set_column('year_of_birth', $yob);
 
     my $hospno = int(rand(1000000));
     until ( ! $schema->resultset('Patient')->find({'hospital_id' => $hospno}) ) {
