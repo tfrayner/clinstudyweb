@@ -205,7 +205,8 @@ sub edit : Local {
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
                       ( $drug->name_id   ? $drug->name_id->value   : 'drug' ) );
 
-        $c->res->redirect( $c->uri_for('view', $drug->id) );
+        my ( $id_method, $redirect ) = $c->_redirect_from_dbobj( $drug );
+        $c->res->redirect( $redirect );
         $c->detach();
     }
     else {
@@ -215,7 +216,7 @@ sub edit : Local {
             = sprintf("%s %s %s drug treatment",
                       ( $drug_id && $drug_id > 0 ? 'Updating a ' : 'Adding a new '),
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
-                      ( $drug->name_id   ? $drug->name_id->value   : 'drug' ) );
+                      ( $drug->name_id   ? $drug->name_id->value   : q{} ) );
 
         $form->model->default_values( $drug );
     }

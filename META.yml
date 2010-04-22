@@ -30,15 +30,15 @@ requires:
   Catalyst::Plugin::Session::State::Cookie: 0.09
   Catalyst::Plugin::Session::Store::FastMmap: 0.05
   Catalyst::Plugin::Static::Simple: 0.20
-  Catalyst::Runtime: 5.8002
+  Catalyst::Runtime: 5.71
   Config::YAML: 1.42
-  DBD::mysql: 4.008
+  DBD::mysql: 4.005
   DBIx::Class: 0.08010
   Digest::SHA1: 2.11
   HTML::FormFu: 0.03006
   HTML::FormFu::Model::DBIC: 0.03006
   Regexp::Common: 2.122
-  Template: 2.20
+  Template: 2.19
   XML::LibXML: 1.7.0
   XML::Simple: 2.18
   parent: 0.221
