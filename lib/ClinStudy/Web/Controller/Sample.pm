@@ -96,6 +96,9 @@ sub assay_report_by_study_type : Local {
         $c->stash->{platform} = $pt->value;
     }
 
+    # Note that visits only show up on the report page if they've been
+    # assigned a nominal timepoint. Such timepoints are how we know
+    # that a sample should have been taken.
     my @visits = $cv->search_related('studies')
                     ->search_related('patient_id')
                     ->search_related('visits', {nominal_timepoint_id => {'!=' => undef}},
@@ -158,6 +161,7 @@ sub assay_report_by_study_type : Local {
             visit   => $visit,
             sample  => \%sample,
         };
+
     }
     
     $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
