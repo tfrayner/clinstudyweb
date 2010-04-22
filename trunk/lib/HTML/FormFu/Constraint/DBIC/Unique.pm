@@ -37,7 +37,10 @@ sub constrain_value {
                        : $self->others;
 
         # Assumes we're running under Catalyst.
-        %others = map { $_ => $stash->{context}->request->parameters->{$_} } @others;
+        my $param = $stash->{context}->request->parameters;
+        %others = map { $_ => $param->{$_} }
+                  grep { defined $param->{$_} && $param->{$_} ne q{} } @others;
+
     }
     my $exists = eval { $rs->find({ %others, $field => $value }) };
     
