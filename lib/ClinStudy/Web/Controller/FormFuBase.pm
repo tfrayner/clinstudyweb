@@ -360,6 +360,17 @@ sub load_form {
     return $form;
 }
 
+sub camel_case {
+
+    my ( $term ) = @_;
+
+    # Taken from DBIx::Class::Schema::Loader::Base for (hopefully) a
+    # measure of consistency.
+    my $camel = join '', map { ucfirst $_ } split /[\W_]+/, lc $term;
+
+    return $camel;
+}
+
 # Don't override unless you know what you're doing.
 sub my_container_class {
     my ( $self ) = @_;
@@ -370,7 +381,7 @@ sub my_container_class {
     return unless $namespace;
 
     # We rely on a couple of conventions here.
-    my $dbclass   = 'DB::' . ucfirst( $namespace );
+    my $dbclass   = 'DB::' . camel_case( $namespace );
     my $dbfield   = $namespace . '_id';
     
     return ( $dbclass, $dbfield, $namespace );
