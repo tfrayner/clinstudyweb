@@ -1,0 +1,176 @@
+---
+indicator:     submit
+auto_fieldset: { legend: 'Visit' }
+auto_constraint_class: %t
+render_method: tt
+
+elements:
+
+  - type: Hidden
+    name: patient_id
+
+  - type: Text
+    name: date
+    label: Visit Date
+    constraints:
+      - Required
+      - type: DateTime
+        parser: &PARSER
+          strptime: '%Y-%m-%d'
+      - type: Length
+        max:  10
+        min:  1
+      - type:    DBIC::Unique
+        model:   DB::Visit
+        myself:  object
+        message: This visit already exists
+        others:  patient_id
+    inflators:
+      - type: DateTime
+        parser: *PARSER
+        strptime: '%Y-%m-%d'
+    label_attributes:
+      tooltipText: The date of the visit; click on the entry box for a pop-up calendar.
+
+  - type: Select
+    name: nominal_timepoint_id
+    label: Nominal Timepoint
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: NominalTimepoint
+      label_column: value
+    label_attributes:
+      tooltipText: The study timepoint to which this visit corresponds.
+
+  - type: Select
+    name: disease_activity_id
+    label: Disease Activity
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: DiseaseActivity
+      label_column: value
+    label_attributes:
+      tooltipText: >-
+        Flare defined as presence of 1 major or >= 3 minor items.
+        Low grade activity defined as 1-2 minor items.
+        Remission defined as Pred dose < 7.5 mg/day AND BVAS = 0 for >= 2 consecutive months.
+        Inactive disease at follow-up = 0 BVAS criteria met (differs from remission as don't need
+        2/12 duration or low pred dose).
+        For Remission/Relapse BVAS scored as ANY criterion (BVAS 1 or 2); When persistent activity
+        present for 3 months of FU then disregarded unless returns to BVAS 1 level (i.e., becomes new or worse).
+
+  - type: Block
+    nested_name: test_cont_results_0
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Haematuria
+        empty_first: 1
+        empty_first_label: -select-
+        model_config:
+          resultset: Test
+          condition:
+            name: Haematuria
+        label_attributes:
+          tooltipText: >-
+            Select the appropriate haematuria level.
+
+  - type: Block
+    nested_name: test_cont_results_1
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Proteinuria
+        empty_first: 1
+        empty_first_label: -select-
+        model_config:
+          resultset: Test
+          condition:
+            name: Proteinuria
+        label_attributes:
+          tooltipText: >-
+            Select the appropriate proteinuria level.
+
+  - type: Block
+    nested_name: test_value_results_0
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Text
+        name: value
+        label: eGFR
+        model_config:
+          resultset: Test
+          condition:
+            name: eGFR
+        label_attributes:
+          tooltipText: >-
+            Estimated Glomerular Filtration Rate (eGFR) derived
+            from x3 component (age,sex,Cr) MDRD including
+            adjustment for local (Addenbrooke's) creatinine.
+
+  - type: Block
+    nested_name: test_cont_results_2
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: CKD stage
+        empty_first: 1
+        empty_first_label: -select-
+        model_config:
+          resultset: Test
+          condition:
+            name: CKD
+        label_attributes:
+          tooltipText: >-
+            Chronic Kidney Disease stage.
+
+  - type: Select
+    name: emergent_groups
+    label: Patient Groups
+    multiple: 1
+    constraints:
+      - AutoSet
+    model_config:
+      resultset:    EmergentGroup
+      label_column: name
+      id_column:    id
+    label_attributes:
+      tooltipText: The groups to which the patient belongs at this visit.
+
+  - type: Textarea
+    name: notes
+    label: Notes
+    constraints:
+      - ASCII
+    label_attributes:
+      tooltipText: Any other notes on this visit.
+
+  - type: Submit
+    name: submit
+    value: Submit Form
+

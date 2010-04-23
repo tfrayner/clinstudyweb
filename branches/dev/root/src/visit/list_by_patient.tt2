@@ -1,0 +1,11 @@
+[% META title = 'Visit List' %]
+
+[% IF container %]
+    <p> Listing visits for [% container.trial_id | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Visits <span><a href="[% c.uri_for("/visit/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/visit_list.tt2 %]
+</fieldset>
+

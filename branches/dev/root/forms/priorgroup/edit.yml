@@ -1,0 +1,50 @@
+---
+indicator:     submit
+auto_fieldset: { legend: 'Prior Group' }
+auto_constraint_class: %t
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Text
+    name: name
+    label: Name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+      - type:    DBIC::Unique
+        model:   DB::PriorGroup
+        myself:  object
+        message: This group already exists
+        others:  type_id
+    label_attributes:
+      tooltipText: The name of the prior grouping; this should be unique within a given group type.
+
+  - type: Select
+    name: type_id
+    label: Type
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: PriorGroup
+      label_column: value
+    label_attributes:
+      tooltipText: The group type. This will contain all the groups representing a given classification scheme.
+
+  - type: Submit
+    name: submit
+    value: Submit Form
+
+constraints:
+  - SingleValue
+

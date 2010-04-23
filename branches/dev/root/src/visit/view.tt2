@@ -1,0 +1,64 @@
+[% META title = 'Visit Details' %]
+
+<h3>[% object.patient_id.trial_id | html %] on [% object.date %]</h3>
+
+<fieldset class="data_view">
+<legend>Visit <span><a href="[% c.uri_for("/visit/edit", object.id) | html %]">Edit</a>; <a href="[% c.uri_for("/visit/edit_for_type", object.id) | html %]">Study-Specific data</a></span></legend>
+<table class="horizontal">
+<tr><th>Nominal timepoint:</th>
+    <td>[% IF object.nominal_timepoint_id.defined -%]
+          [%- object.nominal_timepoint_id.value | html -%]
+        [%- ELSE %] N/A [% END %]</td></tr>
+
+<tr><th>Disease activity:</th>
+    <td>[% IF object.disease_activity_id.defined -%]
+          [%- object.disease_activity_id.value | html -%]
+        [%- ELSE %] N/A [% END %]</td></tr>
+<tr><th>Notes:</th>
+<td>[% object.notes | html | html_line_break %]</td></tr></table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Samples <span><a href="[% c.uri_for("/sample/add_to_visit", object.id) | html %]">Add</a></span></legend>
+[% IF object.samples.blessed %]
+  [% SET objects = [ object.samples ] %]
+[% ELSE %]
+  [% SET objects = object.samples.list %]
+[% END %]
+[% INCLUDE app/samples_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Patient Groups <span><a href="[% c.uri_for("/visit/edit", object.id) %]">Edit</a></span></legend>
+[% IF object.emergent_groups.blessed %]
+  [% SET objects = [ object.emergent_groups ] %]
+[% ELSE %]
+  [% SET objects = object.emergent_groups.list %]
+[% END %]
+[% INCLUDE app/emergent_groups_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Drugs <span><a href="[% c.uri_for("/drug/add_to_visit", object.id) | html %]">Add</a></span></legend>
+[% IF object.drugs.blessed %]
+  [% SET objects = [ object.drugs ] %]
+[% ELSE %]
+  [% SET objects = object.drugs.list %]
+[% END %]
+[% INCLUDE app/drug_list.tt2 %]
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Test Results <span><a href="[% c.uri_for("/testresult/add_to_visit", object.id) | html %]">Add</a></span></legend>
+[% IF object.test_results.blessed %]
+  [% SET allobjects = [ object.test_results ] %]
+[% ELSE %]
+  [% SET allobjects = object.test_results.list %]
+[% END %]
+[% SET objects = [] %]
+[% FOREACH result = allobjects %]
+  [% objects.push( result ) IF ! result.parent_test_results.defined %]
+[% END %]
+[% INCLUDE app/test_result_list.tt2 %]
+</fieldset>
+

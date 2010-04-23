@@ -1,0 +1,18 @@
+[% META title = 'All Drug Treatments' %]
+
+<h3>[% container.trial_id | html %]</h3>
+
+<fieldset class="data_view">
+<legend>Drugs</legend>
+[% SET tableHeight = 120 %]
+[% FOREACH date = drugs_by_date.keys.sort %]
+  <h5>[% IF date %]
+        [% date %]
+      [% ELSE %]
+        Unknown date
+      [% END %]</h5>
+  [% SET tableCount = loop.count %]
+  [% SET objects = drugs_by_date.$date %]
+  [% INCLUDE app/drug_list.tt2 %]
+[% END %]
+</fieldset>

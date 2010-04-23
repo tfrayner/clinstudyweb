@@ -1,0 +1,140 @@
+---
+
+# Copyright 2010 Tim Rayner, University of Cambridge
+# 
+# This file is part of ClinStudy::Web.
+# 
+# ClinStudy::Web is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# ClinStudy::Web is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# This is the mapping file for the import script used to dump data from
+# the SQLite blood staging database into our nascent new and shiny
+# schema. The staging database is maintained using the
+# access2sqlite.pl script, and is used to ensure relational
+# consistency before importing data into our main clinical database.
+
+import_mapping:
+
+    Albumin:
+        table:  exp_ct_biochem_concat
+        attr:   Albumin
+        
+    ANA:
+        table:  exp_ct_other_concat
+        attr:   ANA_elisa_ENA_DNA_Centromere
+        
+    ANCA_IF:
+        table:  exp_ct_other_concat
+        attr:   ANCA_IF
+
+    # This looks like a typo in the original AccessDB (MP0 rather than MPO; the latter is correct).
+    ANCA_MPO:
+        table:  exp_ct_other_concat
+        attr:   ANCA_MP0
+        
+    ANCA_PR3:
+        table:  exp_ct_other_concat
+        attr:   ANCA_PR3
+        
+    C3:
+        table:  exp_ct_other_concat
+        attr:   ComplementC3
+        
+    C4:
+        table:  exp_ct_other_concat
+        attr:   ComplementC4
+        
+    CD19percent:
+        table:  exp_ct_other_concat
+        attr:   CD19percent
+        
+    CD19tot:
+        table:  exp_ct_other_concat
+        attr:   CD19total
+        
+    CD3percent:
+        table:  exp_ct_other_concat
+        attr:   CD3percent
+        
+    CD3tot:
+        table:  exp_ct_other_concat
+        attr:   CD3total
+        
+    CD4percent:
+        table:  exp_ct_other_concat
+        attr:   CD4percent
+        
+    CD4tot:
+        table:  exp_ct_other_concat
+        attr:   CD4total
+        
+    CD56tot:
+        table:  exp_ct_other_concat
+        attr:   CD56total
+        
+    CD8percent:
+        table:  exp_ct_other_concat
+        attr:   CD8percent
+        
+    CD8tot:
+        table:  exp_ct_other_concat
+        attr:   CD8total
+        
+    Creatinine:
+        table:  exp_ct_biochem_concat
+        attr:   Creatinine
+        
+    CRP:
+        table:  exp_ct_biochem_concat
+        attr:   CRP
+        
+    Cyclosporin:
+        table:  exp_ct_biochem_concat
+        attr:   Ciclosporin
+        
+    ESR:
+        table:  exp_ct_haematol_concat
+        attr:   ESR
+        
+    Hb:
+        table:  exp_ct_haematol_concat
+        attr:   Haemoglobin
+        
+    IgA:
+        table:  exp_ct_other_concat
+        attr:   IgA
+        
+    IgG:
+        table:  exp_ct_other_concat
+        attr:   IgG
+        
+    IgM:
+        table:  exp_ct_other_concat
+        attr:   IgM
+        
+    Lymphs:
+        table:  exp_ct_haematol_concat
+        attr:   Lymphocytes
+        
+    Tacrolimus:
+        table:  exp_ct_biochem_concat
+        attr:   Tacrolimus
+        
+    Urea:
+        table:  exp_ct_biochem_concat
+        attr:   Urea
+        
+    WBC:
+        table:  exp_ct_haematol_concat
+        attr:   WBC

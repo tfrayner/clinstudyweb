@@ -1,0 +1,6 @@
+[% META title = "Edit a Prior Patient Grouping" %]
+
+[% form %]
+
+(Required fields have been <font color="[% site.col.required %]">highlighted</font>.)
+

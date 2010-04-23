@@ -1,0 +1,61 @@
+---
+indicator:     submit
+auto_fieldset: { legend: 'Controlled Vocabulary Term' }
+auto_constraint_class: %t
+render_method: tt
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Hidden
+    name: controlled_vocab_id
+
+  - type: Select
+    name: relationship_id
+    label: Relationship
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+      - type: DBIC::Unique
+        model: DB::RelatedVocab
+        myself: object
+        others:
+          - controlled_vocab_id
+          - target_id
+        message: This relationship is already present in the database.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: CVRelationshipType
+      label_column: value
+    label_attributes:
+      tooltipText: The relationship between source and target ControlledVocab terms.
+
+  - type: Select
+    name: target_id
+    label: Target CV
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category:
+          '!=': CVRelationshipType
+      label_column: accession
+    label_attributes:
+      tooltipText: The target ControlledVocab term.
+      
+  - type: Submit
+    name: submit
+    value: Submit Form
+
+constraints:
+  - SingleValue
+

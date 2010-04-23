@@ -1,0 +1,276 @@
+html, body {
+    margin:  0;
+    padding: 0;
+    height: 100%;
+}
+
+body { 
+    background-color: [% site.col.page %];
+    color: [% site.col.text %];
+    font-family: "Lucida Grande", "Lucida Sans Unicode", arial, helvetica, sans-serif;
+}
+
+#header {
+    background: [% site.col.head %] none repeat scroll 0 0;
+    text-align: center;
+    border: 1px solid [% site.col.line %];
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    width: 930px;
+    margin-left: 5px;
+}
+
+#footer {
+    width: 930px;
+    height: 20px;
+    background: [% site.col.head %] none repeat scroll 0 0;
+    text-align: center;
+    border: 1px solid [% site.col.line %];
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-left: 5px;
+}
+
+#content {
+    width: 930px;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    top: 50px;
+    border: 1px solid [% site.col.line %];
+    margin-left: 5px;
+}
+
+#userinfo {
+    font-size: 0.8em;
+    text-align: right;
+}
+
+#viewport {
+    padding: 20px;
+    width: 860px;
+}
+
+h1.title {
+    padding: 4px;
+    margin: 0px;
+}
+
+/* Fieldset needs to be wide enough to accommodate label, input and constraint errors */
+fieldset {
+    width: 100%;
+    border: 1px solid [% site.col.line %];
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: table;
+}
+
+fieldset legend {
+    background-color: [% site.rgb.yellow %];
+    color: [% site.col.text %];
+    border: 1px solid [% site.col.line %];
+    font-size: 1em;
+    padding: 5px;
+}
+
+fieldset legend span {
+    margin-bottom:  5px;
+    background-color: [% site.rgb.lightblue %];
+    color: [% site.col.text %];
+    border: 1px solid [% site.col.line %];
+    font-size: 0.9em;
+    padding: 6px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+}
+
+/* View fieldsets need to be wide enough to contain the various dynamic tables. */
+fieldset.data_view {
+    width: 100%;
+}
+
+fieldset.checkboxgroup {
+    width: 15em;
+    margin-left: 15em;
+}
+
+hr {
+    height: 1px;
+    color: [% site.col.page %];
+    background-color: [% site.col.page %];
+    border-top: 1px dotted [% site.col.line %];
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
+}
+
+hr.subsection {
+    width: 40%;
+    border-top: 1px dotted [% site.col.text %];
+}
+
+.required {
+    color: [% site.col.required %];
+}
+
+div.label, div.submit {
+    display: table-row;
+    padding-top: 7px;
+    width: 50em;
+}
+
+div.submit {
+    padding-left: 17em;
+}
+
+div.submit input[type="submit"]{
+    display: table-cell;
+    float: right;
+    margin-bottom: 10px;
+    width: 17em;
+}
+
+div.label label, div.label input, div.label select, div.label textarea, fieldset.checkboxgroup span {
+    display: table-cell;
+    width: 17em;
+    float: left;
+    margin-bottom: 10px;
+}
+
+div.label label {
+    text-align: right;
+    padding-right: 0.5em;
+}
+
+/* Make sure our hidden tags don't mess up the layout elsewhere. */
+input[type="hidden"] {
+    display: none;
+    border: none;
+    background-color: [% site.col.page %];
+}
+
+input[type="checkbox"] {
+    float: left;
+    width: 10em;
+}
+
+/* Align our constraint errors on the right side of the fieldset */
+span.error_message {
+    display: table-cell;
+    padding-left: 0.5em;
+    float: right;
+    width: 16em;
+}
+
+.text {
+    width: 50em;
+}
+
+.comment {
+    font-size: 8pt;
+    font-style: italic;
+}
+
+.message {
+    color: [% site.col.message %];
+}
+
+.error {
+    color: [% site.col.error %];
+    font-style: italic;
+}
+
+.horizontal th {
+    text-align: right;
+    padding-right: 4px;
+    width: 200px;
+}
+
+.horizontal td {
+    text-align: left;
+    width: 650px;
+}
+
+div.patient_data {
+    border-bottom: 1px solid [% site.col.line %];
+    border-left:   1px solid [% site.col.line %];
+    border-right:  1px solid [% site.col.line %];
+    background-color: [% site.col.panel %];
+    padding: 15px;
+    width: 900px;
+}
+
+div#first_panel {
+    border-top: 1px solid [% site.col.line %];
+}
+
+#DHTMLgoodies_formTooltipDiv{
+        color:#FFF;
+        font-family:arial;
+        font-weight:bold;
+        font-size:0.8em;
+        line-height:120%;
+}
+.DHTMLgoodies_formTooltip_closeMessage{
+        color:#FFF;
+        font-weight:normal;
+        font-size:0.7em;
+}
+
+div.navbar {
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid [% site.col.line %];
+    background-color: [% site.rgb.yellow %];
+    width: 100%;
+}
+
+.navbar span {
+    margin-bottom:  5px;
+    background-color: [% site.rgb.lightblue %];
+    color: [% site.col.text %];
+    border: 1px solid [% site.col.line %];
+    font-size: 0.9em;
+    padding: 3px
+}
+
+div.linklist {
+    padding: 10px;
+    margin: 10px;
+    width: 860px;
+}
+
+.linklist li {
+    margin:  2px;
+    background-color: [% site.rgb.lightblue %];
+    color: [% site.col.text %];
+    border: 1px solid [% site.col.line %];
+    font-size: 0.9em;
+    padding: 3px;
+    width: 20em;
+}
+
+.linklist tr {
+    padding: 2px;
+}
+
+.linklist th, td {
+    text-align: right;
+    padding: 2px;
+}
+
+.bigtable {
+    border: 1px solid [% site.col.line %];
+    font-size: 0.7em;
+    text-align: center;
+}
+
+.thawte_seal {
+    margin-left:  92%;
+    margin-right: 8%;
+}

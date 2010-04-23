@@ -1,0 +1,70 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id="treatmentList">
+      <thead>
+        <tr>
+          <td>Treatment type</td>
+          <td>Drugs</td>
+          <td>Value</td>
+          <td>Nominal timepoint</td>
+          <td>Date</td>
+          <td>Duration</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH treatment = objects.sort('date') %]
+      <tr>
+        <td>[% treatment.type_id.value | ucfirst | replace('_+', ' ') | html %]</td>
+        <td>[% IF treatment.drugs.blessed %]
+              [% SET drugs = [ treatment.drugs ] %]
+            [% ELSE %]
+              [% SET drugs = treatment.drugs.list %]
+            [% END %]
+            [% SET d = [] %]
+            [% FOR dr = drugs %]
+              [% d.push(dr.name_id.value) %]
+            [% END %]
+            [% d.sort.join('; ') | html %] &nbsp;</td>
+        <td>[% treatment.value | html %] &nbsp;</td>
+        <td>[%- IF treatment.nominal_timepoint_id.defined -%]
+              [%- treatment.nominal_timepoint_id.value | html -%]
+            [%- ELSE -%]
+              N/A
+            [%- END -%]</td>
+        <td>[% IF treatment.date.defined %]
+              [% treatment.date | html %]
+            [% ELSE %]
+              N/A
+            [% END %]</td>
+        <td>[% IF treatment.duration.defined -%]
+              [%- treatment.duration | format('%.1f') | html -%]
+              [%- IF treatment.duration_unit_id.defined -%]
+                [% treatment.duration_unit_id.value | html %]
+              [% END %]
+            [% ELSE %]
+              N/A
+            [% END %]</td>
+         <td><a href="[% c.uri_for("/priortreatment/view/$treatment.id") | html %]">View</a>
+             <a href="[% c.uri_for("/priortreatment/edit/$treatment.id") | html %]">Edit</a> 
+             <a href="[% c.uri_for("/priortreatment/delete/$treatment.id") | html %]"
+             onclick="return confirm('Really delete prior treatment from [% treatment.date | html %] ?');">Delete</a></td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('treatmentList');
+      tableWidgetObj.setTableHeight(100);
+      tableWidgetObj.setColumnSort(Array('S',false,'S','S',false,false));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+  </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

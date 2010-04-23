@@ -1,0 +1,48 @@
+[% META title = 'Transplant Details' %]
+
+  <h3>[% object.hospitalisation_id.patient_id.trial_id | html %]; hospitalisation date: [% object.hospitalisation_id.date %]</h3>
+
+<fieldset class="data_view">
+<legend>Transplant <span><a href="[% c.uri_for("/transplant/edit", object.id) %]">Edit</a></span></legend>
+<table id="transplantInfo" class="horizontal">
+  <tbody>
+     <tr><th>Transplant Date:</th>
+         <td>[% object.date | html %]</td></tr>
+     <tr><th>Transplant Number:</th>
+         <td>[% IF object.number.defined %]
+               [% object.number | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Organ Type:</th>
+         <td>[% object.organ_type_id.value | html %]</td></tr>
+     <tr><th>Sensitisation Status:</th>
+         <td>[% IF object.sensitisation_status_id.defined %]
+               [% object.sensitisation_status_id.value | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Reperfusion Quality:</th>
+         <td>[% IF object.reperfusion_quality_id.defined %]
+               [% object.reperfusion_quality_id.value | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Delayed Function (days):</th>
+         <td>[% IF object.days_delayed_function.defined %]
+               [% object.days_delayed_function | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Time Cold Ischaemic (minutes):</th>
+         <td>[% IF object.mins_cold_ischaemic.defined %]
+               [% object.mins_cold_ischaemic | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>HLA Mismatch:</th>
+         <td>[% IF object.hla_mismatch.defined %]
+               [% object.hla_mismatch | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Recipient CMV:</th>
+         <td>[% IF object.recip_cmv.defined %]
+               [% IF object.recip_cmv == 0 %] no [% ELSE %] YES [% END %]
+             [% ELSE %] Unknown [% END %]</td></tr>
+     <tr><th>Donor Age:</th>
+         <td>[% IF object.donor_age.defined %]
+               [% object.donor_age | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Donor Cause of Death:</th>
+         <td>[% IF object.donor_cause_of_death.defined %]
+               [% object.donor_cause_of_death | html %][% ELSE %]Unknown[% END %]</td></tr>
+     <tr><th>Donor Type:</th>
+         <td>[% object.donor_type_id.value | html %]</td></tr>
+     <tr><th>Donor CMV:</th>
+         <td>[% IF object.donor_cmv.defined %]
+               [% IF object.donor_cmv == 0 %] no [% ELSE %] YES [% END %]
+             [% ELSE %] Unknown [% END %]</td></tr>
+  </tbody>
+</table>
