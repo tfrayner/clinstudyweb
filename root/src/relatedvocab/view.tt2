@@ -2,7 +2,7 @@
 
 <fieldset class="data_view">
 <legend>CV Relationship <span><a href="[% c.uri_for("/relatedvocab/edit", object.id) | html %]">Edit</a></span></legend>
-<table id="rvInfo" class="horizontal">
+<table id="rvInfo">
   <tbody>
      <tr><th>&nbsp;</th><th>Accession</th><th>Category</th><th>Value</th></tr>
      <tr><th>Source CV:</th>
