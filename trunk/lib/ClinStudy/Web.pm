@@ -158,6 +158,9 @@ __PACKAGE__->deny_access( '/assayqcvalue' );
 __PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( admin ) ] );
 __PACKAGE__->deny_access( '/controlledvocab' );
 
+__PACKAGE__->allow_access_if( '/relatedvocab',   [ qw( admin ) ] );
+__PACKAGE__->deny_access( '/relatedvocab' );
+
 __PACKAGE__->allow_access_if( '/emergentgroup',   [ qw( admin ) ] );
 __PACKAGE__->deny_access( '/emergentgroup' );
 
@@ -173,12 +176,6 @@ __PACKAGE__->deny_access( '/test' );
 # access-all-areas.
 __PACKAGE__->allow_access_if( '/user',   [ qw( admin ) ] );
 
-# These should never be accessed directly.
-__PACKAGE__->deny_access( '/formfubase' );
-__PACKAGE__->deny_access( '/patientlinkedobject' );
-__PACKAGE__->deny_access( '/hospitalisationlinkedobject' );
-__PACKAGE__->deny_access( '/visitlinkedobject' );
-
 # Everyone needs to be able to add, modify or reset the password for
 # their own entry (the controller actions further check that the
 # logged-in user and the user to be changed are one and the
@@ -188,6 +185,12 @@ __PACKAGE__->allow_access( '/user/add' );
 __PACKAGE__->allow_access( '/user/modify' );
 __PACKAGE__->allow_access( '/user/reset' );
 __PACKAGE__->deny_access( '/user' );
+
+# These should never be accessed directly.
+__PACKAGE__->deny_access( '/formfubase' );
+__PACKAGE__->deny_access( '/patientlinkedobject' );
+__PACKAGE__->deny_access( '/hospitalisationlinkedobject' );
+__PACKAGE__->deny_access( '/visitlinkedobject' );
 
 # Areas to which access is always granted.
 __PACKAGE__->allow_access( '/default' );

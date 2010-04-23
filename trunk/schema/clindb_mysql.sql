@@ -118,10 +118,12 @@ DROP TABLE IF EXISTS `related_vocab`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `related_vocab` (
+  `id` int(11) NOT NULL auto_increment,
   `controlled_vocab_id` int(11) NOT NULL,
   `target_id` int(11) NOT NULL,
   `relationship_id` int(11) NOT NULL,
-  PRIMARY KEY `cv_relationship` (`controlled_vocab_id`,`target_id`,`relationship_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cv_relationship` (`controlled_vocab_id`,`target_id`,`relationship_id`),
   KEY `controlled_vocab_id` (`controlled_vocab_id`),
   KEY `target_id` (`target_id`),
   KEY `relationship_id` (`relationship_id`),

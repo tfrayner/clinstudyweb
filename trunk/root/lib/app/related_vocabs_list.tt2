@@ -17,7 +17,9 @@
           <td>[% rel.target_id.accession | html %]</td>
           <td>[% rel.target_id.category | html %]</td>
           <td>[% rel.target_id.value | html %]</td>
-          <td><a href="[% c.uri_for("/controlledvocab/view/$rel.target_id.id") | html %]">View</a></td>
+          <td><a href="[% c.uri_for("/relatedvocab/edit/$rel.id") | html %]">Edit</a>
+              <a href="[% c.uri_for("/relatedvocab/delete/$rel.id") | html %]"
+              onclick="return confirm('Really delete [% rel.relationship_id.value %] relationship?');">Delete</a></td>
         </tr>
       [% END %]
     </tbody>
