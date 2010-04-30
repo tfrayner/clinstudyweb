@@ -160,6 +160,8 @@ sub run {
         my $tiff_re = $self->_config->value('cimr.datapipeline.fileregexp.tiff');
         $tiff_re    = qr/\A $tiff_re \z/ixms;
         my @tiffs   = grep { $_ =~ $tiff_re } @$files;
+        my $tif_num = scalar @tiffs;
+        $self->logger->info("Found $tif_num new TIFF data files");
 
         # Extract the data.
         foreach my $file ( @tiffs ) {
@@ -173,6 +175,8 @@ sub run {
         my $text_re   = $self->_config->value('cimr.datapipeline.fileregexp.txt');
         $text_re      = qr/\A $text_re \z/ixms;
         my @extracted = grep { $_ =~ $text_re } @$files;
+        my $ext_num = scalar @extracted;
+        $self->logger->info("Found $ext_num new extracted data files");
         my ( $targets_file, $targets_fh, $num_swaps ) = $tgen->create( \@extracted );
 
         # Delete unused filenames from the cache; we'll look at them
