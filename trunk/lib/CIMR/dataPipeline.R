@@ -55,7 +55,7 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
 
     ## Sort out RG$genes$Status; Weight buffer and empty spots
     ## two-fold for print tip-loess normalisation.
-    adf <- read.table( adfFile, sep="\t", header=TRUE )
+    adf <- read.table( adfFile, sep="\t", header=TRUE, stringsAsFactors=FALSE )
     RG$genes$Name <- adf$Reporter.Name
 
     ## FIXME this shouldn't be necessary once everyone is using the
@@ -72,6 +72,9 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
 
     ## Remove buffer and empty spots from downstream analysis.
     MA$weights <- limma::modifyWeights(MA$weights, RG$genes$Status, c("buffer", "empty"), c(0, 0))
+
+    ## Remove spots marked as ambiguous (e.g. disagreement between probe library batches).
+    MA$weights <- limma::modifyWeights(MA$weights, RG$genes$Status, c("ambiguous"), c(0, 0))
 
     ## Filter out any spots with particularly poor correlation between
     ## dye swaps.
