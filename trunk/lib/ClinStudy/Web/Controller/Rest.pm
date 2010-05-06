@@ -173,6 +173,9 @@ sub dump_sample_entity {
     my $ethnicity = $patient->ethnicity_id();
     $dump{ethnicity} = $ethnicity ? $ethnicity->value() : undef;
 
+    my $disease_activity = $visit->disease_activity_id();
+    $dump{disease_activity} = $disease_activity ? $disease_activity->value() : undef;
+
     $dump{gender} = $patient->sex();
 
     my %prior = map { _xml_sanitize( $_->type_id->value() ) => $_->name() }
