@@ -74,7 +74,7 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
     MA$weights <- limma::modifyWeights(MA$weights, RG$genes$Status, c("buffer", "empty"), c(0, 0))
 
     ## Remove spots marked as ambiguous (e.g. disagreement between probe library batches).
-    MA$weights <- limma::modifyWeights(MA$weights, RG$genes$Status, c("ambiguous"), c(0, 0))
+    MA$weights <- limma::modifyWeights(MA$weights, RG$genes$Status, c("ambiguous"), 0)
 
     ## Filter out any spots with particularly poor correlation between
     ## dye swaps.
