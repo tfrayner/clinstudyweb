@@ -329,8 +329,10 @@ sub recalculate_aggregates {
         my $calc = $calcclass->new();
         eval { $calc->calculate( $container, $c->model('DB')->schema() ) };
         if ( $@ ) {
-            $c->flash->{error} .= "Error recalculating $calcname: $@;"
-                                . " please report this error to an admin.";
+
+            # Not a crisis, but we need to record such errors, ideally
+            # without disturbing the user.
+            $c->log->error( "Error recalculating $calcname: $@" );
         }
     }
 }
