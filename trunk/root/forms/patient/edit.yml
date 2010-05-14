@@ -62,7 +62,6 @@ elements:
     name: year_of_birth
     label: Year of Birth
     constraints:
-      - Required
       - Integer
       - type: Length
         message: Please supply a four-digit year
