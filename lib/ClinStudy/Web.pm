@@ -330,9 +330,14 @@ sub recalculate_aggregates {
         eval { $calc->calculate( $container, $c->model('DB')->schema() ) };
         if ( $@ ) {
 
-            # Not a crisis, but we need to record such errors, ideally
-            # without disturbing the user.
-            $c->log->error( "Error recalculating $calcname: $@" );
+            # Not a crisis, but we need to record such things, ideally
+            # without disturbing the user. Note that not all
+            # containers will necessarily have calculable data, so
+            # this is likely to happen often. It's not really an error.
+            my $contname = $container->result_source->source_name();
+            my @pks      = $container->result_source->primary_columns();
+            my $id       = join(":", map { $container->$_ } @pks );
+            $c->log->info( "Unable to calculate $calcname for $contname $id: $@" );
         }
     }
 }
