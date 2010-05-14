@@ -277,6 +277,9 @@ sub edit : Local {
         $self->_add_value_fields( $form, $test );
     }
 
+    # Re-process the form before rendering.
+    $form->process();
+
     # Now we check return values.
     if ( $form->submitted_and_valid() 
              && scalar grep { defined $form->param_value($_) }
@@ -317,6 +320,12 @@ sub edit : Local {
         $self->set_my_updating_message( $c, $result, $result_id );
     
         $form->model->default_values( $result );
+
+        # Add a default date for new results, as a convenience.
+        my $date_field = $form->get_field('date');
+        if ( ! defined( $date_field->value ) && defined $resultholder ) {
+            $date_field->value( $resultholder->date() );
+        }
     }
 
     $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $result);
@@ -416,8 +425,7 @@ sub _add_value_fields {
         $select->options([[ $test->id() => $test->name() ]]);
     }
 
-    # We need to reprocess the form after changing it.
-    $form->process();
+    return;
 }
 
 sub set_my_breadcrumbs {
