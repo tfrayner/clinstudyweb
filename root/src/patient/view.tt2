@@ -103,10 +103,10 @@
 
 <fieldset class="data_view">
 <legend>Adverse Events <span><a href="[% c.uri_for("/adverseevent/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.adverses.blessed %]
-  [% SET objects = [ object.adverses ] %]
+[% IF object.adverse_events.blessed %]
+  [% SET objects = [ object.adverse_events ] %]
 [% ELSE %]
-  [% SET objects = object.adverses.list %]
+  [% SET objects = object.adverse_events.list %]
 [% END %]
 [% INCLUDE app/adverse_event_list.tt2 %] 
 </fieldset>
