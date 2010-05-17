@@ -68,6 +68,11 @@ use File::Temp qw(tempfile);
 # standard XML Loader and Dumper classes.
 my ( undef, $tmpfile ) = tempfile( OPEN => 0 );
 my $dsn = "dbi:SQLite:$tmpfile";
+
+# FIXME now that CV accession is required this doesn't really work -
+# either we need a way to import the semantic framework alongside the
+# merged data, or we need to be able to deactivate the CV accession
+# requirement.
 DBICx::Deploy->deploy('ClinStudy::ORM' => $dsn);
 my $schema = ClinStudy::ORM->connect( $dsn );
 
