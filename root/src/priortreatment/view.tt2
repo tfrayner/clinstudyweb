@@ -7,11 +7,9 @@
 <table id="treatmentInfo" class="horizontal">
   <tbody>
      <tr><th>Date:</th>
-         <td>[% IF object.date.defined %]
-               [% object.date | html %]
-             [% ELSE %]
-               Unknown date
-             [% END %]</td></tr>
+         <td>[% object.date | html %]</td></tr>
+     <tr><th>Date uncertainty (days):</th>
+         <td>[% object.days_uncertainty | html %]</td></tr>
      <tr><th>Time Before Entry:</th>
          <td>[%- IF object.nominal_timepoint_id.defined -%]
                [%- object.nominal_timepoint_id.value | html -%]

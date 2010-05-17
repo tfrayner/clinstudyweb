@@ -32,15 +32,15 @@ __PACKAGE__->add_columns(
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "date",
   { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
-  "date_error",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 6 },
   "nominal_timepoint_id",
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  "days_uncertainty",
+  { data_type => "INT", default_value => undef, is_nullable => 0, size => 6 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint(
   "unique_treatment",
-  ["patient_id", "type_id", "date", "date_error"],
+  ["patient_id", "type_id", "date", "days_uncertainty"],
 );
 __PACKAGE__->has_many(
   "drugs",
@@ -69,8 +69,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-05-17 14:05:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VVZsuhfExLKG6AKhqqmHTA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-05-17 14:43:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sXYEAQweNsIqQatYmF1Xpw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

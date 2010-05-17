@@ -47,6 +47,19 @@ sub new {
     return $self;
 }
 
+sub _set_custom_form_defaults {
+
+    my ( $self, $c, $form ) = @_;
+
+    # Add a default zero value for days_uncertainty.
+    my $field = $form->get_field('days_uncertainty');
+    if ( ! defined( $field->value ) ) {
+        $field->value(0);
+    }
+
+    return;
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>
