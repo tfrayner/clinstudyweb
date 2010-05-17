@@ -331,6 +331,11 @@ The tab-delimited file to convert into XML.
 
 The XML Schema document against which to validate.
 
+=item -x
+
+An optional argument specifying a pre-existing XML document which
+should be updated with the new data.
+
 =item -r
 
 Flag indicating that the script should run in relaxed mode, i.e. the
