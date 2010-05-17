@@ -249,7 +249,7 @@
     <xs:attribute name="duration" type="decimalType"/>
     <xs:attribute name="duration_unit" type="varcharType"/>
     <xs:attribute name="date" type="dateType" use="required"/>
-    <xs:attribute name="date_error" type="intType" use="required"/>
+    <xs:attribute name="days_uncertainty" type="intType" use="required"/>
     <xs:attribute name="nominal_timepoint" type="varcharType"/>
   </xs:complexType>
 

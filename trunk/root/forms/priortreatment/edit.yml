@@ -36,6 +36,7 @@ elements:
     name: date
     label: Treatment Date
     constraints:
+      - type: Required
       - type: DateTime
         parser: &PARSER
           strptime: '%Y-%m-%d'
@@ -43,12 +44,12 @@ elements:
         max:  10
         min:  1
       - type:    DBIC::Unique
-        model:   DB::ControlledVocab
+        model:   DB::PriorTreatment
         myself:  object
         message: >-
           A treatment of this type for this patient on this date (with this date error) already exists.
         others:
-          - date_error
+          - days_uncertainty
           - type_id
           - patient_id
     label_attributes:
@@ -56,18 +57,17 @@ elements:
         The date of the treatment; click on the entry box for a pop-up calendar.
 
   - type: Text
-    name: date_error
-    label: Date error
+    name: days_uncertainty
+    label: Date uncertainty (days)
     constraints:
-      - type: DateTime
-        parser: &PARSER
-          strptime: '%Y-%m-%d'
+      - type: Required
+      - type: Integer
       - type: Length
-        max:  10
+        max:  6
         min:  1
     label_attributes:
       tooltipText: >-
-        The number of days uncertainty in the date given (e.g., if only
+        The uncertainty in the date given, in days (e.g., if only
         the year is known then enter 365).
 
   - type: Select

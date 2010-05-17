@@ -217,6 +217,9 @@ sub edit : Local {
         $self->set_my_updating_message( $c, $object, $object_id );
 
         $form->model->default_values( $object );
+
+        # Optional callback to allow us to set custom defaults on an ad-hoc basis.
+        $self->_set_custom_form_defaults( $c, $form );
     }
 
     $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $object);
@@ -630,6 +633,8 @@ sub _process_nested_query {
 
     return ( \%search, \%attrs );
 }
+
+sub _set_custom_form_defaults {}
 
 =head1 AUTHOR
 
