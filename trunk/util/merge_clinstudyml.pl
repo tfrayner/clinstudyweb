@@ -22,12 +22,53 @@
 use strict;
 use warnings;
 
+package MyBuilder;
+
+use Moose;
+use ClinStudy::XML::Builder;
+
+extends 'ClinStudy::XML::Builder';
+
+sub merge {
+
+    my ( $self, $doc ) = @_;
+
+    my $root = $doc->getDocumentElement();
+
+    foreach my $group ( $root->getChildrenByTagName('*') ) {
+        $self->_merge_group( $group, $self->root() );
+    }
+
+    return;
+}
+
+sub _merge_group {
+
+    my ( $self, $group, $parent ) = @_;
+
+    foreach my $elem ( $group->getChildrenByTagName('*') ) {
+        $self->_merge_element( $elem, $parent );
+    }
+}
+
+sub _merge_element {
+
+    my ( $self, $elem, $parent ) = @_;
+
+    # FIXME extract the $attrs from $elem.
+    my %attr = map { $_->nodeName => $_->getValue } $elem->attributes();
+
+    my $new = $self->update_or_create_element( $elem->nodeName, \%attr, $parent );
+
+    foreach my $group ( $elem->getChildrenByTagName('*') ) {
+        $self->_merge_group( $group, $new );
+    }
+}
+
+package main;
+
 use Getopt::Long;
 use Pod::Usage;
-
-use ClinStudy::ORM;
-use ClinStudy::XML::Loader;
-use ClinStudy::XML::Dumper;
 
 sub parse_args {
 
@@ -61,44 +102,18 @@ sub parse_args {
 
 my ( $files, $xsd, $relaxed ) = parse_args();
 
-use DBICx::Deploy;
-use File::Temp qw(tempfile);
-
-# The trick here is to use a temporary SQLite database with our
-# standard XML Loader and Dumper classes.
-my ( undef, $tmpfile ) = tempfile( OPEN => 0 );
-my $dsn = "dbi:SQLite:$tmpfile";
-
-# FIXME now that CV accession is required this doesn't really work -
-# either we need a way to import the semantic framework alongside the
-# merged data, or we need to be able to deactivate the CV accession
-# requirement.
-DBICx::Deploy->deploy('ClinStudy::ORM' => $dsn);
-my $schema = ClinStudy::ORM->connect( $dsn );
-
-my $loader = ClinStudy::XML::Loader->new(
-    database    => $schema,
+my $builder = MyBuilder->new(
     schema_file => $xsd,
-    is_strict   => !$relaxed,
-    is_constrained => 0,
 );
 
 foreach my $file ( @$files ) {
     my $parser = XML::LibXML->new();
     my $doc    = $parser->parse_file($file);
-    $loader->load( $doc );
+    $builder->merge( $doc );
 }
 
-my $dumper = ClinStudy::XML::Dumper->new(
-    database    => $schema,
-    schema_file => $xsd,
-    is_strict   => !$relaxed,
-);
+print $builder->dump();
 
-my $xml = $dumper->xml_all();
-print $xml->toString(1);
-
-unlink($tmpfile);
 
 __END__
 
