@@ -38,6 +38,7 @@ elements:
               resultset: Test
               condition:
                 name: Snone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -215,6 +216,7 @@ elements:
               resultset: Test
               condition:
                 name: Cnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -370,6 +372,7 @@ elements:
               resultset: Test
               condition:
                 name: Mnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -659,6 +662,7 @@ elements:
               resultset: Test
               condition:
                 name: Enone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -948,6 +952,7 @@ elements:
               resultset: Test
               condition:
                 name: Chnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -1199,6 +1204,7 @@ elements:
               resultset: Test
               condition:
                 name: Cvnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -1418,6 +1424,7 @@ elements:
               resultset: Test
               condition:
                 name: Anone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None.
@@ -1577,6 +1584,7 @@ elements:
               resultset: Test
               condition:
                 name: Rnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None
@@ -1712,6 +1720,7 @@ elements:
               resultset: Test
               condition:
                 name: Nnone
+              default: Yes
             label_attributes:
               tooltipText: >-
                 None
