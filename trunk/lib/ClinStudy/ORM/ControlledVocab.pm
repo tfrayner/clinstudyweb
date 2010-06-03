@@ -146,19 +146,9 @@ __PACKAGE__->has_many(
   { "foreign.type_id" => "self.id" },
 );
 __PACKAGE__->has_many(
-  "prior_treatment_type_ids",
+  "prior_treatments",
   "ClinStudy::ORM::PriorTreatment",
   { "foreign.type_id" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "prior_treatment_nominal_timepoint_ids",
-  "ClinStudy::ORM::PriorTreatment",
-  { "foreign.nominal_timepoint_id" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "prior_treatment_duration_unit_ids",
-  "ClinStudy::ORM::PriorTreatment",
-  { "foreign.duration_unit_id" => "self.id" },
 );
 __PACKAGE__->has_many(
   "related_vocab_controlled_vocab_ids",
@@ -247,8 +237,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-04-16 14:48:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2wVLnkUPlZmIYd7jxsmakA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-03 15:45:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1pcfRI7rKW3R4frEvZUARw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -383,15 +373,9 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(
-  "prior_treatment_type_ids",
+  "prior_treatments",
   "ClinStudy::ORM::PriorTreatment",
   { "foreign.type_id" => "self.id" },
-  { "cascade_delete"     => 0 },
-);
-__PACKAGE__->has_many(
-  "prior_treatment_duration_unit_ids",
-  "ClinStudy::ORM::PriorTreatment",
-  { "foreign.duration_unit_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(
@@ -451,12 +435,6 @@ __PACKAGE__->has_many(
 __PACKAGE__->has_many(
   "visit_nominal_timepoint_ids",
   "ClinStudy::ORM::Visit",
-  { "foreign.nominal_timepoint_id" => "self.id" },
-  { "cascade_delete"     => 0 },
-);
-__PACKAGE__->has_many(
-  "prior_treatment_nominal_timepoint_ids",
-  "ClinStudy::ORM::PriorTreatment",
   { "foreign.nominal_timepoint_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );

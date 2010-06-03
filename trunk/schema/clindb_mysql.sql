@@ -594,20 +594,12 @@ CREATE TABLE `prior_treatment` (
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
   `value` varchar(255) default NULL,
-  `duration` decimal(12,5) default NULL,
-  `duration_unit_id` int(11) default NULL,
-  `date` date NOT NULL,
-  `days_uncertainty` int(6) NOT NULL,
-  `nominal_timepoint_id` int(11) default NULL,
+  `notes` text default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `unique_treatment` (`patient_id`, `type_id`, `date`, `days_uncertainty`),
+  UNIQUE KEY `unique_treatment` (`patient_id`, `type_id`),
   KEY `patient_id` (`patient_id`),
   KEY `type_id` (`type_id`),
-  KEY `nominal_timepoint_id` (`nominal_timepoint_id`),
-  KEY `duration_unit_id` (`duration_unit_id`),
   CONSTRAINT `prior_treatment_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`),
-  CONSTRAINT `prior_treatment_ibfk_2` FOREIGN KEY (`nominal_timepoint_id`) REFERENCES `controlled_vocab` (`id`),
-  CONSTRAINT `prior_treatment_ibfk_3` FOREIGN KEY (`duration_unit_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `prior_treatment_ibfk_4` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
