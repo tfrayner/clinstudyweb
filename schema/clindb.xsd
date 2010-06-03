@@ -246,11 +246,7 @@
     </xs:sequence>
     <xs:attribute name="type" type="varcharType" use="required"/>
     <xs:attribute name="value" type="varcharType"/>
-    <xs:attribute name="duration" type="decimalType"/>
-    <xs:attribute name="duration_unit" type="varcharType"/>
-    <xs:attribute name="date" type="dateType" use="required"/>
-    <xs:attribute name="days_uncertainty" type="intType" use="required"/>
-    <xs:attribute name="nominal_timepoint" type="varcharType"/>
+    <xs:attribute name="notes" type="varcharType"/>
   </xs:complexType>
 
   <xs:complexType name="patientType">
@@ -305,6 +301,10 @@
         <xs:key name="priorTreatmentDrugNameKey">
           <xs:selector xpath=".//Drug"/>
           <xs:field xpath="@name"/>
+        </xs:key>
+        <xs:key name="priorTreatmentTypeKey">
+          <xs:selector xpath=".//PriorTreatment"/>
+          <xs:field xpath="@type"/>
         </xs:key>
       </xs:element>
     </xs:sequence>

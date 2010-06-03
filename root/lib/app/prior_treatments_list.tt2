@@ -6,9 +6,7 @@
           <td>Treatment type</td>
           <td>Drugs</td>
           <td>Value</td>
-          <td>Nominal timepoint</td>
-          <td>Date</td>
-          <td>Duration</td>
+          <td>Notes</td>
           <td>&nbsp;</td>
         </tr>
       </thead>
@@ -27,24 +25,7 @@
             [% END %]
             [% d.sort.join('; ') | html %] &nbsp;</td>
         <td>[% treatment.value | html %] &nbsp;</td>
-        <td>[%- IF treatment.nominal_timepoint_id.defined -%]
-              [%- treatment.nominal_timepoint_id.value | html -%]
-            [%- ELSE -%]
-              N/A
-            [%- END -%]</td>
-        <td>[% IF treatment.date.defined %]
-              [% treatment.date | html %]
-            [% ELSE %]
-              N/A
-            [% END %]</td>
-        <td>[% IF treatment.duration.defined -%]
-              [%- treatment.duration | format('%.1f') | html -%]
-              [%- IF treatment.duration_unit_id.defined -%]
-                [% treatment.duration_unit_id.value | html %]
-              [% END %]
-            [% ELSE %]
-              N/A
-            [% END %]</td>
+        <td>[% treatment.notes | truncate(30) | html %] &nbsp;</td>
          <td><a href="[% c.uri_for("/priortreatment/view/$treatment.id") | html %]">View</a>
              <a href="[% c.uri_for("/priortreatment/edit/$treatment.id") | html %]">Edit</a> 
              <a href="[% c.uri_for("/priortreatment/delete/$treatment.id") | html %]"
