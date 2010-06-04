@@ -563,7 +563,7 @@ CREATE TABLE `prior_observation` (
   `id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
-  `value` varchar(255) NOT NULL,
+  `value` varchar(255) default NULL,
   `date` date default NULL,
   PRIMARY KEY  (`id`),
   KEY `type_id` (`type_id`),
