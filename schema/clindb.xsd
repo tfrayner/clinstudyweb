@@ -237,7 +237,7 @@
 
   <xs:complexType name="priorObservationType">
     <xs:attribute name="type" type="varcharType" use="required"/>
-    <xs:attribute name="value" type="varcharType" use="required"/>
+    <xs:attribute name="value" type="varcharType"/>
     <xs:attribute name="date" type="dateType"/>
   </xs:complexType>
 
