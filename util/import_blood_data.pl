@@ -297,6 +297,19 @@ my $builder = MyBuilder->new(
     is_strict   => ! $relaxed,
 );
 
+sub time_to_seconds {
+
+    my ( $time ) = @_;
+
+    my ( $h, $m, $s ) = ( $time =~ /\A (\d{2}) : (\d{2}) : (\d{2}) \z/ixms);
+
+    if ( ! ( defined $h && defined $m && defined $s ) ) {
+        die(qq{Problem: Unparsable time string "$time".\n});
+    }
+
+    return( ( ( ( $h * 60 ) + $m) * 60 ) + $s );
+}
+
 # Loop over each source table.
 foreach my $table ( keys %import_table ) {
 
@@ -305,9 +318,11 @@ foreach my $table ( keys %import_table ) {
     # globally unique in any case).
     my $record_rs = $blood_schema->resultset( $table );
 
-    # FIXME occasionally the data contains multiple results for a
-    # given test for the same date (at differing times). Presumably we
-    # should detect this and use the later result.
+    # Occasionally the data contains multiple results for a given test
+    # for the same date (at differing times). We detect such cases
+    # here and use the later result.
+    my %record_by_date;
+
     RECORD:
     while ( my $record = $record_rs->next() ) {
 
@@ -316,8 +331,24 @@ foreach my $table ( keys %import_table ) {
 
         # Figure out the date and time, convert into a standard form.
         my ( $usdate ) = ( $record->resdate() =~ m! (\d+ / \d+ / \d+) !xms );
-        my   $trial_id =   $record->hospno();
         my ( $time )   = ( $record->restime() =~ m! (\d+ : \d+ : \d+) !xms );
+
+        # Skip the record if it's an earlier test set run on the same day.
+        if ( my $older = $record_by_date{ $usdate } ) {
+            my $oldtime = $older->{'time'};
+            next RECORD if ( time_to_seconds( $time ) < time_to_seconds( $oldtime) );
+        }
+
+        # Either a new $usdate, or the $time is later.
+        $record_by_date{ $usdate } = { 'record' => $record,
+                                       'time'   => $time };
+    }
+
+    # Now iterate over the cleaned-up records.
+    while ( my ( $usdate, $timed_record ) = each %record_by_date ) {
+
+        my $record   = $timed_record->{'record'};
+        my $trial_id = $record->hospno();
 
         TEST:
         foreach my $column ( keys %{ $import_table{ $table } } ) {
