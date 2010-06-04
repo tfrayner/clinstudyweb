@@ -893,6 +893,7 @@ CREATE TABLE `test_result` (
   `value` varchar(255) default NULL,
   `controlled_value_id` int(11) default NULL,
   `date` date NOT NULL,
+  `needs_reparenting` char(1) default NULL, 
   PRIMARY KEY  (`id`),
   KEY `test_id` (`test_id`),
   KEY `visit_id` (`visit_id`),
