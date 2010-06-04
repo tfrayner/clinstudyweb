@@ -69,13 +69,17 @@ sub _split_visits {
     my %visit_date = map { $_->date() => $_ } $patient->visits();
 
     VISIT:
-    foreach my $visit ( $patient->visits() ) {
+    foreach my $visit ( $patient->search_related('visits',
+                                                 { 'test_results.visit_id'          => 'visit.id',
+                                                   'test_results.needs_reparenting' => {'!=', undef} },
+                                                 { join     => { test_results => 'visit_id' },
+                                                   prefetch => { test_results => 'visit_id' } } ) ) {
         my $vdate   = $visit->date();
         my $vdays   = $self->_date_to_days( $vdate );
 
-        next VISIT unless $visit->search_related('test_results',
-                                                 { needs_reparenting =>
-                                                       { '!=' => undef } })->count();
+#        next VISIT unless $visit->search_related('test_results',
+#                                                 { needs_reparenting =>
+#                                                       { '!=' => undef } })->count();
 
         my %batch;
         foreach my $result ( $visit->test_results() ) {
