@@ -266,12 +266,9 @@
       <xs:element name="SystemInvolvements" type="systemInvolvementGroup" minOccurs="0"/>
       <xs:element name="Visits" type="visitGroup" minOccurs="0"/>
     </xs:sequence>
-    <xs:attribute name="surname" type="varcharType"/>
-    <xs:attribute name="firstname" type="varcharType"/>
     <xs:attribute name="year_of_birth" type="yearType"/>
     <xs:attribute name="sex" type="genderType"/>
     <xs:attribute name="trial_id" type="varcharType" use="required"/>
-    <xs:attribute name="hospital_id" type="intType"/>
     <xs:attribute name="ethnicity" type="varcharType"/>
     <xs:attribute name="home_centre" type="varcharType"/>
     <xs:attribute name="entry_date" type="dateType" use="required"/>

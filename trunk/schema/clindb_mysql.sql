@@ -469,12 +469,9 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `patient` (
   `id` int(11) NOT NULL auto_increment,
-  `surname` varchar(255) default NULL,
-  `firstname` varchar(255) default NULL,
   `year_of_birth` year(4) default NULL,
   `sex` char(1) default NULL,
   `trial_id` varchar(15) NOT NULL,
-  `hospital_id` int(11) default NULL,
   `ethnicity_id` int(11) default NULL,
   `home_centre_id` int(11) default NULL,
   `entry_date` date NOT NULL,
