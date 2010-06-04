@@ -27,6 +27,8 @@ __PACKAGE__->add_columns(
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "date",
   { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  "needs_reparenting",
+  { data_type => "CHAR", default_value => undef, is_nullable => 1, size => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("test_result_visit_id", ["test_id", "date", "visit_id"]);
@@ -58,8 +60,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-11-09 16:38:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3ZFSPUHS6204FU/AKXRNGQ
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-04 14:15:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yt5gAxl3RDcL3fXj3B/hlw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
