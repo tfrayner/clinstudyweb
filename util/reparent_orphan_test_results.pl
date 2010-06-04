@@ -48,7 +48,30 @@ sub reparent {
         $self->_process_patient( $patient );
     }
 
+    my $tr = $self->database->resultset('TestResult')
+                  ->search({ needs_reparenting => { '!=' => undef } });
+    while ( my $result = $tr->next() ) {
+        $result->set_column('needs_reparenting', undef);
+        $result->update();
+    }
+
     return;
+}
+
+sub _get_filtered_patient_visits {
+
+    my ( $self, $patient ) = @_;
+
+    # Just return those visits which have a test result needing inspection.
+
+    # FIXME there must be a better way; this does however have the
+    # advantage of yielding a visit object which will list all its
+    # test_results, not just the ones needing reparenting.
+    my @visits = $patient->search_related('visits')
+                         ->search_related('test_results', { 'needs_reparenting' => { '!=' => undef } } )
+                         ->search_related('visit_id', {}, { distinct => 1 });
+    
+    return \@visits;
 }
 
 sub _date_to_days {
@@ -68,18 +91,12 @@ sub _split_visits {
 
     my %visit_date = map { $_->date() => $_ } $patient->visits();
 
+    my $visits = $self->_get_filtered_patient_visits( $patient );
+
     VISIT:
-    foreach my $visit ( $patient->search_related('visits',
-                                                 { 'test_results.visit_id'          => 'visit.id',
-                                                   'test_results.needs_reparenting' => {'!=', undef} },
-                                                 { join     => { test_results => 'visit_id' },
-                                                   prefetch => { test_results => 'visit_id' } } ) ) {
+    foreach my $visit ( @$visits ) {
         my $vdate   = $visit->date();
         my $vdays   = $self->_date_to_days( $vdate );
-
-#        next VISIT unless $visit->search_related('test_results',
-#                                                 { needs_reparenting =>
-#                                                       { '!=' => undef } })->count();
 
         my %batch;
         foreach my $result ( $visit->test_results() ) {
@@ -157,6 +174,12 @@ sub _reduce_visits {
         my $v1 = $visits[$n];
         my $v2 = $visits[$n+1];
 
+        # Not interested in rehoming v2 tests if we're already sure of
+        # them.
+        next PAIR unless $v2->search_related('test_results',
+                                             { needs_reparenting =>
+                                                   { '!=' => undef } })->count();
+
         # Check whether the sets of tests overlap at all.
         my @tests1 = map { $_->test_id()->name() } $v1->test_results();
         my @tests2 = map { $_->test_id()->name() } $v2->test_results();
@@ -224,8 +247,13 @@ sub _recheck_visits {
     # different visit. Here we just look for exact date matches with a
     # visit that doesn't already have a test result for each given
     # test type.
-    foreach my $visit ( $patient->visits() ) {
+    foreach my $visit ( @{ $self->_get_filtered_patient_visits( $patient )} ) {
+
+        RESULT:
         foreach my $res ( $visit->test_results() ) {
+
+            next RESULT if ( ! defined $res->needs_reparenting() );
+
             my $rdate = $res->date();
             if ( my $cand = $visit_date{ $rdate } ) {
                 my $rtest = $res->test_id()->name();
@@ -270,6 +298,7 @@ sub _rehome_result {
         return;
     }
 
+    warn("Rehoming test result: " . $result->date . " to " . $visit->date . "\n");
     $result->set_column('visit_id', $visit->id());
     $result->update();
 
