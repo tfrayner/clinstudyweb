@@ -18,7 +18,7 @@ __PACKAGE__->add_columns(
   {
     data_type => "VARCHAR",
     default_value => undef,
-    is_nullable => 0,
+    is_nullable => 1,
     size => 255,
   },
   "date",
@@ -37,8 +37,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-10-23 13:53:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JFUgm6UYM9LLaEb97+OWjw
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-04 14:15:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:al2feaq8uJZriTi81f2Vpg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
