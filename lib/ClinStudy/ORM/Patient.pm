@@ -10,20 +10,6 @@ __PACKAGE__->table("patient");
 __PACKAGE__->add_columns(
   "id",
   { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
-  "surname",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
-  "firstname",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
   "year_of_birth",
   { data_type => "YEAR", default_value => undef, is_nullable => 1, size => 4 },
   "sex",
@@ -35,8 +21,6 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     size => 15,
   },
-  "hospital_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "ethnicity_id",
   { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
   "home_centre_id",
@@ -52,7 +36,6 @@ __PACKAGE__->add_columns(
   },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("hospital_id", ["hospital_id"]);
 __PACKAGE__->add_unique_constraint("trial_id", ["trial_id"]);
 __PACKAGE__->has_many(
   "adverse_events",
@@ -131,8 +114,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-04-20 11:22:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ik7eWOR02yWpdFUfRMGZzg
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-04 20:12:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rbQxEExzRW+m0VbeOQe4uw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
