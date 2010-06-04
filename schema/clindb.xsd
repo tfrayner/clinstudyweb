@@ -106,6 +106,7 @@
     <xs:attribute name="test" type="varcharType" use="required"/>
     <xs:attribute name="value" type="varcharType"/>
     <xs:attribute name="date" type="dateType" use="required"/>
+    <xs:attribute name="needs_reparenting" type="tinyintType"/>
   </xs:complexType>
 
   <xs:complexType name="riskFactorType">

@@ -344,12 +344,15 @@ foreach my $table ( keys %import_table ) {
                     { date => $visitdate },
                     $patient );
 
-                # Add a $testname TestResult to Visit.
+                # Add a $testname TestResult to Visit. Note that
+                # needs_reparenting only works here because we're
+                # skipping old test results.
                 $builder->update_or_create_element(
                     'TestResult',
                     { date  => $testdate,
                       test  => $testname,
-                      value => $result },
+                      value => $result,
+                      needs_reparenting => 1 },
                     $visit );
             }
         }

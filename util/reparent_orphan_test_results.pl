@@ -73,7 +73,9 @@ sub _split_visits {
         my $vdate   = $visit->date();
         my $vdays   = $self->_date_to_days( $vdate );
 
-        next VISIT unless $visit->test_results()->count();
+        next VISIT unless $visit->search_related('test_results',
+                                                 { needs_reparenting =>
+                                                       { '!=' => undef } })->count();
 
         my %batch;
         foreach my $result ( $visit->test_results() ) {
@@ -255,6 +257,14 @@ sub _process_patient {
 sub _rehome_result {
 
     my ( $self, $result, $visit ) = @_;
+
+    # We don't really want to rehome test results where
+    # needs_reparenting is set to null.
+    if ( ! defined $result->needs_reparenting() ) {
+        warn("Warning: Not reparenting a previously fixed test result.\n"
+           . "  Visit with ID ".$visit->id()." may be missing results from a batch.\n");
+        return;
+    }
 
     $result->set_column('visit_id', $visit->id());
     $result->update();
