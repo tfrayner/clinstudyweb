@@ -134,6 +134,10 @@ import_mapping:
     Urea:
         table:  exp_ct_biochem_concat
         attr:   Urea
+
+    UrineACR:
+        table:  exp_ct_biochem_concat
+        attr:   ACR
         
     WBC:
         table:  exp_ct_haematol_concat
