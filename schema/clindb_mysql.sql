@@ -480,7 +480,6 @@ CREATE TABLE `patient` (
   KEY `ethnicity_id` (`ethnicity_id`),
   KEY `home_centre_id` (`home_centre_id`),
   UNIQUE KEY `trial_id` (`trial_id`),
-  UNIQUE KEY `hospital_id` (`hospital_id`),
   CONSTRAINT `patient_ibfk_1` FOREIGN KEY (`ethnicity_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `patient_ibfk_2` FOREIGN KEY (`home_centre_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
