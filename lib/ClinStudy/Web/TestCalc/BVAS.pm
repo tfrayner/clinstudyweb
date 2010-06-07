@@ -22,9 +22,12 @@ package ClinStudy::Web::TestCalc::BVAS;
 use strict;
 use warnings;
 
-use base qw( Class::Accessor::Fast );
+use Moose;
+
+extends 'ClinStudy::Web::TestCalc';
 
 use Scalar::Util qw( blessed );
+use List::Util qw( first );
 
 # We want to keep this as generic as possible (although it's fine to
 # use DBIx::Class), because we'll want to call it from other scripts
@@ -175,6 +178,20 @@ sub calculate {
           ],
     );
 
+    # Pre-check that we have all the results, or none of the results.
+    while ( my ( $system, $sysdata ) = each %bvas_test ) {
+        my ( $max_bvasP, $max_bvasNW, $subtest ) = @{ $sysdata };
+
+        # Note that CreatValue is allowed to be missing.
+        my @exists = map { $self->check_result_existence( $schema, $container, $_ ) }
+            grep { $_ ne 'CreatValue' }
+            keys %{ $subtest };
+        if ( ( defined ( first { defined $_ && $_ == 1 } @exists ))
+          && ( defined ( first { defined $_ && $_ != 1 } @exists )) ) {
+            die("Error: Some but not all results present for BVAS.\n");
+        }
+    }
+
     # Calculate the BVAS score here.
     my ( $bvas_scoreP, $bvas_scoreNW );
     my @allresults;
@@ -184,15 +201,20 @@ sub calculate {
         my $sysscoreP = my $sysscoreNW = 0;
         TEST:
         foreach my $testname ( keys %{ $subtest } ) {
-            my $test   = $schema->resultset('Test')->find({ name => $testname })
-                or die(qq{Test "$testname" not found in database\n});
+
             my @results = $container->search_related(
-                'test_results', {test_id => $test->id()} );
+                'test_results',
+                { 'test_id.name' => $testname },
+                { join => 'test_id', prefetch => 'test_id' } );
             my $count = scalar @results;
         
             unless ( $count == 1 ) {
                 next TEST if ( $count == 0 && $testname eq 'CreatValue' );  # Special case.
-                die(qq{Zero or many results for "$testname" found\n});
+
+                # Raising an exception here is overkill (some visits
+                # just have no BVAS score); instead we just return
+                # undef.
+                return;
             }
 
             my $testdata = $subtest->{ $testname };
@@ -295,5 +317,9 @@ sub calculate {
 
     return $is_valid;
 }
+
+__PACKAGE__->meta->make_immutable();
+
+no Moose;
 
 1;
