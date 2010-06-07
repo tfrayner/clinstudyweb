@@ -69,15 +69,21 @@ foreach my $cont_class ( qw( Visit Hospitalisation ) ) {
                     confess("Error: $calcclass not found in TestCalc module directory.");
                 }
                 my $calc = $calcclass->new();
-                printf ("\n%s %s:\n", $cont_class, $container->id);
-                eval { $calc->calculate( $container, $schema ) };
+                printf ("%s %s: %s ", $cont_class, $container->id, $calcname);
+                my $rc;
+                eval { $rc = $calc->calculate( $container, $schema ) };
                 if ( $@ ) {
-                    warn(
-                        sprintf("Error reported by test calculator for %s date %s patient_id %s: %s",
-                                $cont_class,
-                                $container->date(),
-                                $container->patient_id()->id(),
-                                $@,));
+                    printf("Error reported by test calculator for %s date %s patient no. %s: %s\n",
+                           $cont_class,
+                           $container->date(),
+                           $container->patient_id()->trial_id(),
+                           $@,);
+                }
+                elsif ( $rc ) {
+                    print("okay\n");
+                }
+                else {
+                    print("not calculated\n");
                 }
             }
         }

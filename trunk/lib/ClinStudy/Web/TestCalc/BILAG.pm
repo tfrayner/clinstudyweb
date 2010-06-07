@@ -22,9 +22,12 @@ package ClinStudy::Web::TestCalc::BILAG;
 use strict;
 use warnings;
 
-use base qw( Class::Accessor::Fast );
+use Moose;
+
+extends 'ClinStudy::Web::TestCalc';
 
 use Scalar::Util qw( blessed );
+use List::Util qw( first );
 
 # We want to keep this as generic as possible (although it's fine to
 # use DBIx::Class), because we'll want to call it from other scripts
@@ -56,18 +59,29 @@ sub calculate {
         'E' => 0,
     );
 
+    # Pre-check that we have all the results, or none of the results.
+    my @exists = map { $self->check_result_existence( $schema, $container, $_ ) } @bilag_tests;
+    if ( ( defined ( first { defined $_ && $_ == 1 } @exists ))
+      && ( defined ( first { defined $_ && $_ != 1 } @exists )) ) {
+        die("Error: Some but not all results present for BILAG.\n");
+    }
+
     # Calculate the BILAG score here.
     my $score = 0;
     my @allresults;
     foreach my $testname ( @bilag_tests ) {
-        my $test   = $schema->resultset('Test')->find({ name => $testname })
-            or die(qq{Test "$testname" not found in database\n});
+
         my @results = $container->search_related(
-            'test_results', {test_id => $test->id()} );
+            'test_results',
+            { 'test_id.name' => $testname },
+            { join => 'test_id', prefetch => 'test_id' } );
         my $count = scalar @results;
         
         unless ( $count == 1 ) {
-            die(qq{Zero or many results for "$testname" found\n});
+
+            # Raising an exception here is overkill (some visits just
+            # have no BILAG score); instead we just return undef.
+            return;
         }
 
         push @allresults, $results[0];
@@ -117,5 +131,9 @@ sub calculate {
 
     return $is_valid;
 }
+
+__PACKAGE__->meta->make_immutable();
+
+no Moose;
 
 1;
