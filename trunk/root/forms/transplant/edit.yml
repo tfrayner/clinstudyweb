@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Transplant' }
 auto_constraint_class: %t
-render_method: tt
 
 ##############
 # Transplant #
@@ -182,9 +181,8 @@ elements:
 # Submit #
 ##########
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
 constraints:
   - SingleValue

@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Assay' }
 auto_constraint_class: %t
-render_method: tt
 
 #########
 # Assay #
@@ -65,7 +64,6 @@ elements:
 # Submit #
 ##########
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 

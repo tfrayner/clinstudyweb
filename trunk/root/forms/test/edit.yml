@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Clinical Test' }
 auto_constraint_class: %t
-render_method: tt
 
 elements:
 
@@ -40,7 +39,6 @@ elements:
     label_attributes:
       tooltipText: The possible values for this test (leave blank for free text).
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 

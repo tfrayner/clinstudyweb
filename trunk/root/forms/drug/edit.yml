@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Drug Treatment' }
 auto_constraint_class: %t
-render_method: tt
 
 ########
 # Drug #
@@ -148,9 +147,8 @@ elements:
 # Submit #
 ##########
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
 constraints:
   - SingleValue

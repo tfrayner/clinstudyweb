@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Study-Specific Patient Data' }
 auto_constraint_class: %t
-render_method: tt
 
 elements:
 
@@ -31,7 +30,6 @@ elements:
 # Submit #
 ##########
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
