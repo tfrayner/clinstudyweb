@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Prior Treatment' }
 auto_constraint_class: %t
-render_method: tt
 
 ##################
 # PriorTreatment #
@@ -66,9 +65,8 @@ elements:
 # Submit #
 ##########
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
 constraints:
   - SingleValue

@@ -117,21 +117,17 @@ hr.subsection {
     color: [% site.col.required %];
 }
 
-div.label, div.submit {
+div.label, div.submit_buttons {
     display: table-row;
     padding-top: 7px;
     width: 50em;
 }
 
-div.submit {
-    padding-left: 17em;
-}
-
-div.submit input[type="submit"]{
+span.submit_buttons {
     display: table-cell;
     float: right;
     margin-bottom: 10px;
-    width: 17em;
+    width: 11em;
 }
 
 div.label label, div.label input, div.label select, div.label textarea, fieldset.checkboxgroup span {

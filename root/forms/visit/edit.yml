@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'Visit' }
 auto_constraint_class: %t
-render_method: tt
 
 elements:
 
@@ -170,7 +169,6 @@ elements:
     label_attributes:
       tooltipText: Any other notes on this visit.
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 

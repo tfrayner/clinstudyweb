@@ -2,7 +2,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'New User' }
 auto_constraint_class: %t
-render_method: tt
 
 elements:
   - type: Text
@@ -50,9 +49,8 @@ elements:
 #    name: recaptcha
 # Public/private key pair is handled in config and the controller.
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
 constraints:
   - SingleValue

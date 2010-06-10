@@ -5,7 +5,6 @@
 indicator:     submit
 auto_fieldset: { legend: 'User' }
 auto_constraint_class: %t
-render_method: tt
 
 elements:
 
@@ -69,9 +68,8 @@ elements:
     label_attributes:
       tooltipText: Your email address
 
-  - type: Submit
-    name: submit
-    value: Submit Form
+  - type: Src
+    load_config_filestem: lib/submit
 
 constraints:
   - SingleValue
