@@ -30,6 +30,10 @@ elements:
       tooltipText: Your password.
 
   - type: Submit
+    container_attributes:
+      class: submit_buttons
+    attributes:
+      class: submit_buttons
     name: login
     value: Log in
 
