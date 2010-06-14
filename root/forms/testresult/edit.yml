@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Test Result' }
-auto_constraint_class: %t
 
 ########
 # Drug #
@@ -12,6 +10,12 @@ elements:
   - type: Hidden
     name: id
 
+  - type: Hidden
+    name: visit_id
+
+  - type: Hidden
+    name: hospitalisation_id
+
   - type: Select
     name: test_id
     label: Test Name
@@ -20,6 +24,13 @@ elements:
     constraints:
       - Required
       - AutoSet
+      - type:    DBIC::Unique
+        model:   DB::TestResult
+        myself:  object
+        message: A result for this test has already been given for this visit or hospitalisation.
+        others:
+          - visit_id
+          - hospitalisation_id
     model_config:
       resultset: Test
       label_column: name
@@ -51,6 +62,7 @@ elements:
 ##########
 
   - type: Src
+    name: submit_buttons
     load_config_filestem: lib/submit
 
 constraints:

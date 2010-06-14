@@ -68,4 +68,5 @@ Model::DB:
 Controller::HTML::FormFu:
   constructor:
     render_method: tt
+    auto_constraint_class: '%t'
 

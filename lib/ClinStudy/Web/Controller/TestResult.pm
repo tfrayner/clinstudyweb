@@ -318,7 +318,7 @@ sub edit : Local {
 
         # First time through, or invalid form.
         $self->set_my_updating_message( $c, $result, $result_id );
-    
+        
         $form->model->default_values( $result );
 
         # Add a default date for new results, as a convenience.
@@ -415,7 +415,7 @@ sub _add_value_fields {
 
     # insert_before doesn't do a recursive search, so we use
     # parent() to find where we need to add the new element.
-    my $submit = $form->get_all_element({ name => 'submit' })
+    my $submit = $form->get_all_element({ name => 'submit_buttons', type=>'Src' })
         or die("Error: Submit element not found in form construction.");
     $submit->parent->insert_before( $_, $submit ) for @elements;
 

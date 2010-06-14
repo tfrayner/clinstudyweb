@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Prior Observation' }
-auto_constraint_class: %t
 
 #####################
 # Prior Observation #

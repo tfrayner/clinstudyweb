@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Sample' }
-auto_constraint_class: %t
 
 ##############
 # Sample #

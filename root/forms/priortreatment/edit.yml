@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Prior Treatment' }
-auto_constraint_class: %t
 
 ##################
 # PriorTreatment #

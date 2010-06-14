@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Simple Query' }
-auto_constraint_class: %t
 
 #########
 # Assay #
@@ -63,6 +61,8 @@ elements:
       - type: Textarea
         name: filename
         label: List of file names
+        attributes:
+          rows: 4
 
 ##########
 # Submit #

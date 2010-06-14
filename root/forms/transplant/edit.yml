@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Transplant' }
-auto_constraint_class: %t
 
 ##############
 # Transplant #
