@@ -1,7 +1,6 @@
 ---
 indicator:     login
 auto_fieldset: { legend: 'Log in' }
-auto_constraint_class: %t
 
 elements:
 

@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Simple query' }
-auto_constraint_class: %t
 
 elements:
 
@@ -125,6 +123,8 @@ elements:
       - type: Textarea
         name: trial_id
         label: List of Study IDs
+        attributes:
+          rows: 4
 
 ##########
 # Submit #

@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Disease Event' }
-auto_constraint_class: %t
 
 #################
 # Disease Event #

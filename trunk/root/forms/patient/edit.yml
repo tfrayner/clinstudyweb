@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Patient' }
-auto_constraint_class: %t
 
 elements:
 

@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'BILAG Scoring' }
-auto_constraint_class: %t
 
 elements:
 

@@ -23,3 +23,8 @@
 [% END %]
 [% INCLUDE app/related_vocabs_list.tt2 %]
 </fieldset>
+
+
+<ul class="linklist">
+<li><a href="[% c.uri_for('/controlledvocab/add') %]">Add a new CV term</a></li>
+</ul>

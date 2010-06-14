@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Comorbidity' }
-auto_constraint_class: %t
 
 #############
 # Comorbidity #

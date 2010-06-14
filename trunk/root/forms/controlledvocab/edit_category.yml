@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Controlled Vocabulary Term' }
-auto_constraint_class: %t
 
 elements:
 

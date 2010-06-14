@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Sample' }
-auto_constraint_class: %t
 
 ##############
 # Sample #
@@ -69,6 +67,8 @@ elements:
       - type: Textarea
         name: name
         label: List of Sample names
+        attributes:
+          rows: 4
       
 ##########
 # Submit #

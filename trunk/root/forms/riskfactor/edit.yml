@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Risk Factor' }
-auto_constraint_class: %t
 
 ###############
 # Risk Factor #

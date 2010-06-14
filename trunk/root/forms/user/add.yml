@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'New User' }
-auto_constraint_class: %t
 
 elements:
   - type: Text

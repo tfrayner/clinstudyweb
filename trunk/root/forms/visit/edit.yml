@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Visit' }
-auto_constraint_class: %t
 
 elements:
 

@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Drug Treatment' }
-auto_constraint_class: %t
 
 ########
 # Drug #

@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Study-Specific Patient Data' }
-auto_constraint_class: %t
 
 elements:
 

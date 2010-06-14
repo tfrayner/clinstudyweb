@@ -5,9 +5,7 @@
 # the TT template will link to the standard password reset for the
 # user.
 
-indicator:     submit
 auto_fieldset: { legend: 'User' }
-auto_constraint_class: %t
 
 elements:
 

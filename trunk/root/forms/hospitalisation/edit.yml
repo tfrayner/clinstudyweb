@@ -1,7 +1,5 @@
 ---
-indicator:     submit
 auto_fieldset: { legend: 'Hospitalisation' }
-auto_constraint_class: %t
 
 elements:
 
