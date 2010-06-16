@@ -55,6 +55,11 @@ requires 'XML::Simple'                                    => '2.18';
 
 test_requires 'Test::DBIx::Class' => '0.09';
 
+# These are only required for MAGE-TAB export, a non-essential function.
+recommends 'Bio::MAGETAB' => '1.1';
+recommends 'LWP::UserAgent';
+recommends 'Term::ReadKey';
+
 # Classes not included by PAR due to obfuscated linking.
 catalyst_par_classes('DBD::mysql');
 catalyst_par_classes('Digest::SHA');
