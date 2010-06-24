@@ -32,6 +32,8 @@ use Bio::MAGETAB::Util::Writer;
 use URI;
 use LWP::UserAgent;
 use XML::LibXML;
+use List::Util qw(first);
+use Storable qw(dclone);
 
 use Carp;
 use Data::Dumper;
@@ -118,7 +120,7 @@ sub _query_rest {
 
 sub _create_datafile {
 
-    my ( $self, $filename ) = @_;
+    my ( $self, $filename, $xml_data_node ) = @_;
 
     # FIXME this should be a config setting.
     my %extmap = (
@@ -158,78 +160,235 @@ sub _create_datafile {
         format     => $dformat,
     });
 
+    # Hybridization
+    my $hyb = $self->_create_hyb( $xml_data_node, $file );
+
     return $file;
 }
 
-sub add_file {
+sub _create_hyb {
 
-    my ( $self, $filename ) = @_;
-
-    my $xmldata = $self->_query_rest( 'assay_file', $filename );
+    my ( $self, $xml_data_node, $file ) = @_;
 
     my $builder = $self->builder();
 
-    # Data file
-    my $file = $self->_create_datafile( $filename );
-
-    # Hybridization
     my $ttype = $builder->find_or_create_controlled_term({
         category => 'TechnologyType',
         value    => 'hybridization',
     });
 
-    my $hybid = $xmldata->getAttribute('identifier');
-    my $hyb = $builder->find_or_create_assay({
-        name           => $hybid,
-        technologyType => $ttype,
-    });
-    $builder->find_or_create_edge({
-        inputNode  => $hyb,
-        outputNode => $file,
+    my $hybid = $xml_data_node->getAttribute('identifier');
+    my $hyb = $self->_create_node_and_edge(
+        'assay',
+        {
+            name           => $hybid,
+            technologyType => $ttype,
+        },
+        $file,
+    );
+
+    # FIXME config setting here also?
+    my $hyb_prot = $builder->find_or_create_protocol({ name => 'FIXME testing hyb prot'});
+    my $hyb_pa_attrs = {
+        protocol   => $hyb_prot,
+        date       => $xml_data_node->getAttribute('batch_date'),
+    };
+    if ( my $op = $xml_data_node->getAttribute('operator') ) {
+        $hyb_pa_attrs->{'performers'} = [ $builder->find_or_create_contact({
+            lastName => $op,
+        }) ];
+    }
+
+    foreach my $channel ( $xml_data_node->findnodes('./channels') ) {
+        $self->_process_channel( $channel, $hyb, $hyb_pa_attrs );
+    }
+
+    return $hyb;
+}
+
+sub _process_channel {
+
+    my ( $self, $channel, $hyb, $hyb_pa_attrs ) = @_;
+
+    my $builder = $self->builder();
+
+    my $label_str = $channel->getAttribute('label');
+    my $label     = $builder->find_or_create_controlled_term({
+        category => 'LabelCompound',
+        value    => $label_str,
     });
 
-    foreach my $channel ( $xmldata->findnodes('./channels') ) {
-        my $label_str = $channel->getAttribute('label');
-        my $label     = $builder->find_or_create_controlled_term({
-            category => 'LabelCompound',
-            value    => $label_str,
-        });
+    foreach my $sample ( $channel->findnodes('./sample' ) ) {
 
-        foreach my $sample ( $channel->findnodes('./sample' ) ) {
-            my $sample_name = $sample->getAttribute('sample_name');
-            my $le = $builder->find_or_create_labeled_extract({
+        my $sample_name = $sample->getAttribute('sample_name');
+    
+        my $le = $self->_create_node_and_edge(
+            'labeled_extract',
+            {
                 name  => "$sample_name ($label_str)",
                 label => $label,
-            });
-            my $ex = $builder->find_or_create_extract({
-                name  => $sample_name,
-            });
-            my $sa = $builder->find_or_create_sample({
-                name  => $sample_name,
-            });
-            my $so = $builder->find_or_create_source({
-                name  => $sample->getAttribute('patient_number'),
-            });
+            },
+            $hyb,
+            $hyb_pa_attrs,
+        );
+        $self->_process_sample( $sample, $le );
+    }
 
-            # Create the edges also.
-            $builder->find_or_create_edge({
-                inputNode  => $so,
-                outputNode => $sa,
+    return;
+}
+
+sub _process_sample {
+
+    my ( $self, $sample, $le ) = @_;
+
+    my $sample_name = $sample->getAttribute('sample_name');
+
+    my $ex = $self->_create_node_and_edge(
+        'extract',
+        {
+            name  => $sample_name,
+        },
+        $le,
+    );
+    my $sa = $self->_create_node_and_edge(
+        'sample',
+        {
+            name  => $sample_name,
+        },
+        $ex,
+    );
+    my $so = $self->_create_node_and_edge(
+        'source',
+        {
+            name  => $sample->getAttribute('patient_number'),
+        },
+        $sa,
+    );
+
+    my ( @sample_chars, @source_chars );
+
+    # FIXME config options
+    my @sample_attr_names = qw(cell_type time_point visit_date);
+    my @hidden_attr_names = qw();
+
+    my $builder = $self->builder();
+
+    ATTR:
+    foreach my $attr ( $sample->attributes() ) {
+        my $attrname = $attr->name();
+
+        # First, a couple of special cases.
+        if ( $attrname eq 'material_type' ) {
+            my $mt = $builder->find_or_create_controlled_term({
+                category => 'MaterialType',
+                value    => $attr->value(),
             });
-            $builder->find_or_create_edge({
-                inputNode  => $sa,
-                outputNode => $ex,
-            });
-            $builder->find_or_create_edge({
-                inputNode  => $ex,
-                outputNode => $le,
-            });
-            $builder->find_or_create_edge({
-                inputNode  => $le,
-                outputNode => $hyb,
-            });
+            $sa->set_materialType($mt);
+            next ATTR;
+        }
+        if ( $attrname eq 'entry_date' ) {
+            if ( my $yob = $sample->getAttribute('year_of_birth') ) {
+                my ( $entry_year ) = ( $attr->value =~ m/\A (\d{4}) /xms );
+                my $age_str = $entry_year - $yob;
+                my $age = $builder->find_or_create_controlled_term({
+                    category => 'age_at_entry',
+                    value    => $age_str,
+                });
+                push @source_chars, $age;
+            }
+            next ATTR;
+        }
+
+        # Skip anything flagged as hidden.
+        next ATTR if ( first { $_ eq $attrname } @hidden_attr_names, 'year_of_birth' );
+
+        # Skip empty attributes.
+        next ATTR if ( $attr->value() eq q{} );
+
+        # For everything else, create controlled terms.
+        my $char = $builder->find_or_create_controlled_term({
+            category => $attr->name(),
+            value    => $attr->value(),
+        });
+
+        # A handful of things relate to the sample; most attributes
+        # pertain to the source (i.e. the patient).
+        if ( first { $_ eq $attrname } @sample_attr_names ) {
+            push @sample_chars, $char;
+        }
+        else {
+            push @source_chars, $char;
         }
     }
+
+    foreach my $eg_group ( $sample->findnodes('./emergent_group') ) {
+        foreach my $attr ( $eg_group->attributes() ) {
+            my $char = $builder->find_or_create_controlled_term({
+                category => 'emergent_group.' . $attr->name(),
+                value    => $attr->value(),
+            });
+            push @sample_chars, $char;
+        }
+    }
+    foreach my $pg_group ( $sample->findnodes('./prior_group') ) {
+        foreach my $attr ( $pg_group->attributes() ) {
+            my $char = $builder->find_or_create_controlled_term({
+                category => 'prior_group.' . $attr->name(),
+                value    => $attr->value(),
+            });
+            push @source_chars, $char;
+        }
+    }
+    foreach my $test_group ( $sample->findnodes('./test_result') ) {
+        foreach my $attr ( $test_group->attributes() ) {
+            my $char = $builder->find_or_create_controlled_term({
+                category => 'test_result.' . $attr->name(),
+                value    => $attr->value(),
+            });
+            push @source_chars, $char;
+        }
+    }
+
+    $sa->set_characteristics( [ sort { $a->get_category cmp $b->get_category } @sample_chars ] );
+    $so->set_characteristics( [ sort { $a->get_category cmp $b->get_category } @source_chars ] );
+}
+
+sub _create_node_and_edge {
+
+    my ( $self, $nodetype, $node_attr, $target, $pa_attr ) = @_;
+
+    my $builder = $self->builder();
+
+    # Create the node.
+    my $maker = 'find_or_create_' . $nodetype;
+    my $node  = $builder->$maker( dclone($node_attr) );
+
+    # Create the edges also.
+    my $edge = $builder->find_or_create_edge({
+        inputNode  => $node,
+        outputNode => $target,
+    });
+
+    # Any protocol information here (only one protocol per edge for
+    # now).
+    if ( $pa_attr ) {
+        my $pa = $builder->find_or_create_protocol_application( dclone($pa_attr) );
+        $edge->set_protocolApplications( [ $pa ] );
+    }
+
+    return $node;
+}
+    
+sub add_file {
+
+    my ( $self, $filename ) = @_;
+
+    my $xml_data_node = $self->_query_rest( 'assay_file', $filename );
+
+    my $builder = $self->builder();
+
+    # Data file
+    my $file = $self->_create_datafile( $filename, $xml_data_node );
 
     return;
 }
