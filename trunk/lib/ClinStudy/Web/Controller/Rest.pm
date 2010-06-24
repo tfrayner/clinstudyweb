@@ -153,6 +153,7 @@ sub dump_sample_entity {
         sample_name    => $sample->name(),
         patient_number => $patient->trial_id(),
         year_of_birth  => $patient->year_of_birth(),
+        entry_date     => $patient->entry_date(),
         visit_date     => $visit->date(),
         material_type  => $sample->material_type_id()->value(),
         cell_type      => $sample->cell_type_id()->value(),
