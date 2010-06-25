@@ -84,7 +84,7 @@ sub find_closest_date_index {
 
 sub find_nearest_visit_date {
 
-    my ( $dateparts, $visithash ) = @_;
+    my ( $dateparts, $visithash, $trial_id ) = @_;
 
     # Use Date::Calc to figure out the best visit date to attach
     # the result to. Note that the database schema currently
@@ -133,7 +133,7 @@ sub find_nearest_visit_date {
     else {
 
         # No dates found. Probably no visits available for this patient.
-        die("Error: unable to find a visit window for result date $date.\n");
+        die("Error: unable to find a visit window for result date $date (Patient $trial_id).\n");
     }
 
     my $bestdate = $visit_dates[ $best_index ];
@@ -206,7 +206,7 @@ sub get_visit_for_test {
         # Key our visit dates by number of days for comparison to the test date.
         my %visit = map { $_->date() => $_ } $db_patient->visits();
 
-        $db_visit = find_nearest_visit_date( \@dateparts, \%visit );
+        $db_visit = find_nearest_visit_date( \@dateparts, \%visit, $trial_id );
 
         unless ( $db_visit ) {
             die(qq{Error: Unable to find suitable visit date for $usdate.});
