@@ -164,6 +164,8 @@ elements:
     label: Notes
     constraints:
       - ASCII
+    attributes:
+      rows: 5
     label_attributes:
       tooltipText: Any other notes on this visit.
 
