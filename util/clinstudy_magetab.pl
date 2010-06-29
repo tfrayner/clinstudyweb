@@ -32,10 +32,11 @@ use ClinStudy::MAGETAB::Dumper;
 
 sub parse_args {
 
-    my ( $uri, $want_help );
+    my ( $uri, $conffile, $want_help );
 
     GetOptions(
-        "u|config=s"        => \$uri,
+        "u|uri=s"           => \$uri,
+        "c|config=s"        => \$conffile,
         "h|help"            => \$want_help,
     );
 
@@ -47,7 +48,7 @@ sub parse_args {
         );
     }
 
-    unless ( $uri && scalar @ARGV ) {
+    unless ( $uri && $conffile && scalar @ARGV ) {
         pod2usage(
             -message => qq{Please see "$0 -h" for further help notes.},
             -exitval => 255,
@@ -58,10 +59,10 @@ sub parse_args {
 
     $uri = URI->new($uri);
 
-    return( $uri, \@ARGV );
+    return( $uri, $conffile, \@ARGV );
 }
 
-my ( $uri, $filenames ) = parse_args();
+my ( $uri, $conffile, $filenames ) = parse_args();
 
 # Needs Term::ReadKey to get the user's password securely.
 print STDERR ("Username: ");
@@ -77,6 +78,7 @@ my $dumper = ClinStudy::MAGETAB::Dumper->new(
     uri      => $uri,
     username => $username,
     password => $password,
+    config_file => $conffile,
 );
 
 foreach my $file ( @$filenames ) {
@@ -93,7 +95,7 @@ clinstudy_magetab.pl
 
 =head1 SYNOPSIS
 
- clinstudy_magetab.pl -u <ClinStudy web URI> <list of filenames>
+ clinstudy_magetab.pl -u <ClinStudy web URI> -c <YAML config file> <list of filenames>
 
 =head1 DESCRIPTION
 
@@ -109,6 +111,12 @@ into a MAGE-TAB document.
 The main URI of the ClinStudy web application (for example, when
 running under the Catalyst test server this would be
 http://localhost:3000 by default).
+
+=item -c
+
+A configuration file in YAML format containing a MAGETAB section. See
+the example clinstudy_web.yml file for details of how this section
+should be laid out.
 
 =back
 

@@ -70,3 +70,31 @@ Controller::HTML::FormFu:
     render_method: tt
     auto_constraint_class: '%t'
 
+# Optional configuration for MAGE-TAB export system.
+MAGETAB:
+  
+  investigation:
+  
+    title: >-
+      Short title here.
+
+    abstract: >-
+      E.g. a manuscript abstract.
+
+    release_date: >-
+      Public release date in YYYY-MM-DD format.
+  
+  protocols:
+    
+    hybridization: >-
+      Some text here
+      
+    labeling: >-
+      Some text here
+      
+    cell_separation: >-
+      Some text here
+
+    recruitment: >-
+      Some text here
+
