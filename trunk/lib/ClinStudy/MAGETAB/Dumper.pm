@@ -29,11 +29,14 @@ use Moose;
 use Bio::MAGETAB;
 use Bio::MAGETAB::Util::Builder;
 use Bio::MAGETAB::Util::Writer;
+use ClinStudy::Web;
 use URI;
 use LWP::UserAgent;
 use XML::LibXML;
 use List::Util qw(first);
 use Storable qw(dclone);
+use Config::YAML;
+use Readonly;
 
 use Carp;
 use Data::Dumper;
@@ -57,18 +60,75 @@ has 'builder'  => ( is       => 'ro',
                     required => 1,
                     default  => sub { Bio::MAGETAB::Util::Builder->new() }, );
 
+has 'config_file' => ( is       => 'ro',
+                       isa      => 'Str',
+                       required => 1, );
+
+has '_config'  => ( is       => 'rw',
+                    isa      => 'HashRef',
+                    required => 0 );
+
+Readonly my $hyb_protocol_name => 'Hybridization';
+
+sub BUILD {
+
+    my ( $self, $params ) = @_;
+
+    if ( my $conffile = $params->{'config_file'} ) {
+        my $c = Config::YAML->new( config => $conffile );
+        my $h = $c->get_MAGETAB();
+        unless ( $h && ref $h eq 'HASH' ) {
+            croak("Error: Config file does not contain a MAGETAB section.");
+        }
+        $self->_config($h);
+    }
+
+    return;
+}
+
 sub dump {
 
     my ( $self ) = @_;
 
-    # FIXME whence $sdrf_file?
-    my $sdrf_file = 'testing.sdrf';
+    my $sdrf_file = $self->_config()->{'investigation'}{'title'}
+        or croak("Error: Config file must contain an investigation title value");
 
+    $sdrf_file =~ s/[^A-Za-z0-9_-]+/_/g;
+    $sdrf_file .= '.sdrf';
+
+    # Create top-level investigation.
+
+    # FIXME we'd be better off overriding the default output for
+    # Writer::IDF, but that needs a fix in Bio::MAGETAB.
+    my $idf  = $self->builder->find_or_create_investigation({
+        title             => $self->_config()->{'investigation'}{'title'},
+        description       => $self->_config()->{'investigation'}{'abstract'},
+        publicReleaseDate => $self->_config()->{'investigation'}{'release_date'},
+    });
+
+    # We add a brief comment to indicate the dumping code versions.
+    my $comment = $self->builder->find_or_create_comment({
+        name   => 'MAGE-TAB Document Creator',
+        value  => 'ClinStudy::Web v' . $ClinStudy::Web::VERSION
+                . ' using Bio::MAGETAB v' . $Bio::MAGETAB::VERSION,
+    });
+    $idf->set_comments([$comment]);
+
+    # FIXME add the rest of the protocols and CV terms, and contact details.
+    my @protocols;
+    push @protocols, $self->builder->find_or_create_protocol({
+        name => $hyb_protocol_name,
+        text => $self->_config()->{'protocols'}{'hybridization'},
+    });
+    $idf->set_protocols(\@protocols);
+    
     # Sort objects into SDRFRows.
     my $sdrf = $self->builder->find_or_create_sdrf({
         uri => $sdrf_file,
     });
     $sdrf->add_nodes( [ $self->builder->get_magetab()->get_nodes() ] );
+
+    $idf->set_sdrfs([$sdrf]);
 
     # Write out all objects.
     my $writer = Bio::MAGETAB::Util::Writer->new(
@@ -187,8 +247,7 @@ sub _create_hyb {
         $file,
     );
 
-    # FIXME config setting here also?
-    my $hyb_prot = $builder->find_or_create_protocol({ name => 'FIXME testing hyb prot'});
+    my $hyb_prot = $builder->find_or_create_protocol({ name => $hyb_protocol_name });
     my $hyb_pa_attrs = {
         protocol   => $hyb_prot,
         date       => $xml_data_node->getAttribute('batch_date'),
