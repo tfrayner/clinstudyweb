@@ -77,7 +77,7 @@ sub list_by_patient : Local {
         }
         foreach my $prior_treatment ( $patient->prior_treatments() ) {
             my @drugs = $prior_treatment->drugs();
-            push @{ $drugs_by_date{ $prior_treatment->date() } }, @drugs if scalar @drugs;
+            push @{ $drugs_by_date{ $prior_treatment->type_id()->value() } }, @drugs if scalar @drugs;
         }
 
         $c->stash->{container} = $patient;
@@ -201,7 +201,7 @@ sub edit : Local {
 
         $c->flash->{message}
             = sprintf("%s %s %s drug treatment",
-                      ( $drug_id > 0 ? 'Updated ' : 'Added new '),
+                      ( $drug_id && $drug_id > 0 ? 'Updated ' : 'Added new '),
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
                       ( $drug->name_id   ? $drug->name_id->value   : 'drug' ) );
 

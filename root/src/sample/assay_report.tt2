@@ -1,7 +1,7 @@
 [% META title = 'Sample assay report' %]
 
 <div>
-  <h5>List patients by study type:</h5>
+  <h5>List patient samples hybridised by study type:</h5>
   <table class="linklist">
     [% FOREACH type = study_types.sort('value') %]
     <tr>

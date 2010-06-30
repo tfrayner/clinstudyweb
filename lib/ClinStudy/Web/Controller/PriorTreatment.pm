@@ -42,7 +42,7 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
 
     $self->my_model_class( 'DB::PriorTreatment' );
-    $self->my_sort_field( 'date' );
+    $self->my_sort_field( 'type_id' );
 
     return $self;
 }
