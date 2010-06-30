@@ -406,7 +406,7 @@ sub set_my_breadcrumbs : Private {
         },
     );
 
-    if ( $user ) {
+    if ( $user && $user->id() ) {
         push @crumbs, {
             path  => '/user/edit/' . $user->id(),
             label => 'This user',
