@@ -113,35 +113,61 @@ sub list_by_patient : Local {
 
     $c->stash->{container} = $patient;
 
-    # These are sorted in the view.
-    my @test_results;
-    {
-        # This may not scale particularly well...
-        my @all_results;
-        foreach my $visit ( $patient->visits() ) {
-            push @all_results, $visit->test_results();
-        }
-        foreach my $hosp ( $patient->hospitalisations() ) {
-            push @all_results, $hosp->test_results();
-        }
-
-        # Filter out any child test results.
-        @test_results = grep { $_->parent_test_results()->count() == 0 }
-                            @all_results;
-    }
+    # This is used to filter out results which have parent aggregate test results.
+    my $aggregate_rs = $c->model('DB::TestAggregation');
 
     if ( $test_id ) {
-        my @filtered = grep { $_->test_id()->id() == $test_id } @test_results;
-        $c->stash->{objects} = \@filtered;
+
+        # These are sorted in the view.
+
+        # This has been optimised as much as possible to run complex
+        # queries in the database engine, rather than reorganising the
+        # results in perl after the query.
+        my @test_results = 
+            $patient->visits()->search_related(
+                'test_results',
+                {
+                    'test_results.id' => {
+                        'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() },
+                    'test_id.id' => $test_id,
+                },
+                {
+                    join     => 'test_id',
+                    prefetch => 'test_id',
+                    order_by => 'date',
+                })->all(),
+            $patient->hospitalisations()->search_related(
+                'test_results',
+                {
+                    'test_results.id' => {
+                        'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() },
+                    'test_id.id' => $test_id,
+                },
+                {
+                    join     => 'test_id',
+                    prefetch => 'test_id',
+                    order_by => 'date',
+                })->all();
+        
+        $c->stash->{objects} = \@test_results;
     }
     else {
-        my %unique_test = map { $_->test_id()->name() => $_->test_id() }
-                             @test_results;
-        my @tests;
-        foreach my $key ( sort keys %unique_test ) {
-            push @tests, $unique_test{$key};
-        }
-        $c->stash->{tests}     = \@tests;
+
+        # Again, only show tests which have results lacking aggregates.
+        my @tests =
+             $patient->visits()
+                     ->search_related('test_results',{
+                         'test_results.id' => {
+                             'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() }
+                     })
+                     ->search_related('test_id',{},{distinct => 1})->all(),
+             $patient->hospitalisations()
+                     ->search_related('test_results',{
+                         'test_results.id' => {
+                             'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() }
+                     })
+                     ->search_related('test_id',{},{distinct => 1})->all();
+        $c->stash->{tests} = \@tests;
     }
 
     $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, undef, $patient_id);
