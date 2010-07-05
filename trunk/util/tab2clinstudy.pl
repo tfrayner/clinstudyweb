@@ -56,7 +56,7 @@ sub process_columns {
         my %attrhash;
         while ( my ( $key, $value ) = each %$colhash ) {
 	    my ( $col_class, $attrname ) = split /\|/, $key;
-            if ( $col_class eq $class ) {
+            if ( $col_class && $col_class eq $class ) {
 
                 # Record that we've at least considered this column.
                 $self->_used()->{ $key }++;

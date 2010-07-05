@@ -21,7 +21,9 @@ password, .opts )
 
   \item{password}{The corresponding password.}
 
-  \item{.opts}{A list of CURLOptions passed to \code{getURLContent}.}
+  \item{.opts}{A list of CURLOptions passed to
+    \code{getURLContent}. This can be used, for example, to deactivate SSL
+    certificate checking using \code{list(ssl.verifypeer=FALSE)}. }
 
 }
 \details{
