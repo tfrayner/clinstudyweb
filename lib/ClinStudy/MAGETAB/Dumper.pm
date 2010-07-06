@@ -68,7 +68,14 @@ has '_config'  => ( is       => 'rw',
                     isa      => 'HashRef',
                     required => 0 );
 
-Readonly my $hyb_protocol_name => 'Hybridization';
+has '_investigation' => ( is       => 'rw',
+                          isa      => 'Bio::MAGETAB::Investigation',
+                          required => 0 );
+
+Readonly my $hyb_protocol_name         => 'Hybridization';
+Readonly my $labeling_protocol_name    => 'Labeling';
+Readonly my $separation_protocol_name  => 'Cell Separation';
+Readonly my $recruitment_protocol_name => 'Recruitment';
 
 sub BUILD {
 
@@ -83,20 +90,7 @@ sub BUILD {
         $self->_config($h);
     }
 
-    return;
-}
-
-sub dump {
-
-    my ( $self ) = @_;
-
-    my $sdrf_file = $self->_config()->{'investigation'}{'title'}
-        or croak("Error: Config file must contain an investigation title value");
-
-    $sdrf_file =~ s/[^A-Za-z0-9_-]+/_/g;
-    $sdrf_file .= '.sdrf';
-
-    # Create top-level investigation.
+    # Create top-level investigation to contain some object definitions.
 
     # FIXME we'd be better off overriding the default output for
     # Writer::IDF, but that needs a fix in Bio::MAGETAB.
@@ -120,15 +114,42 @@ sub dump {
         name => $hyb_protocol_name,
         text => $self->_config()->{'protocols'}{'hybridization'},
     });
+    push @protocols, $self->builder->find_or_create_protocol({
+        name => $labeling_protocol_name,
+        text => $self->_config()->{'protocols'}{'labeling'},
+    });
+    push @protocols, $self->builder->find_or_create_protocol({
+        name => $separation_protocol_name,
+        text => $self->_config()->{'protocols'}{'cell_separation'},
+    });
+    push @protocols, $self->builder->find_or_create_protocol({
+        name => $recruitment_protocol_name,
+        text => $self->_config()->{'protocols'}{'recruitment'},
+    });
     $idf->set_protocols(\@protocols);
+
+    $self->_investigation( $idf );
     
+    return;
+}
+
+sub dump {
+
+    my ( $self ) = @_;
+
+    my $sdrf_file = $self->_config()->{'investigation'}{'title'}
+        or croak("Error: Config file must contain an investigation title value");
+
+    $sdrf_file =~ s/[^A-Za-z0-9_-]+/_/g;
+    $sdrf_file .= '.sdrf';
+
     # Sort objects into SDRFRows.
     my $sdrf = $self->builder->find_or_create_sdrf({
         uri => $sdrf_file,
     });
     $sdrf->add_nodes( [ $self->builder->get_magetab()->get_nodes() ] );
 
-    $idf->set_sdrfs([$sdrf]);
+    $self->_investigation()->set_sdrfs([$sdrf]);
 
     # Write out all objects.
     my $writer = Bio::MAGETAB::Util::Writer->new(
@@ -247,7 +268,8 @@ sub _create_hyb {
         $file,
     );
 
-    my $hyb_prot = $builder->find_or_create_protocol({ name => $hyb_protocol_name });
+    my $hyb_prot = $builder->get_protocol({ name => $hyb_protocol_name })
+        or croak(qq{Error retrieving protocol named "$hyb_protocol_name".});
     my $hyb_pa_attrs = {
         protocol   => $hyb_prot,
         date       => $xml_data_node->getAttribute('batch_date'),
@@ -302,26 +324,45 @@ sub _process_sample {
 
     my $sample_name = $sample->getAttribute('sample_name');
 
+    my $builder = $self->builder();
+
+    # N.B. MaterialType is set later on.
     my $ex = $self->_create_node_and_edge(
         'extract',
         {
             name  => $sample_name,
         },
         $le,
+        {
+            protocol   => ($builder->get_protocol({ name => $labeling_protocol_name })
+                or croak(qq{Error retrieving protocol named "$labeling_protocol_name".})),
+        },
     );
+
+    # FIXME OrganismPart is blood.
     my $sa = $self->_create_node_and_edge(
         'sample',
         {
             name  => $sample_name,
         },
         $ex,
+        {
+            protocol   => ($builder->get_protocol({ name => $separation_protocol_name })
+                or croak(qq{Error retrieving protocol named "$separation_protocol_name".})),
+        },
     );
+
+    # The patient, unrecruited.
     my $so = $self->_create_node_and_edge(
         'source',
         {
             name  => $sample->getAttribute('patient_number'),
         },
         $sa,
+        {
+            protocol   => ($builder->get_protocol({ name => $recruitment_protocol_name })
+                or croak(qq{Error retrieving protocol named "$recruitment_protocol_name".})),
+        },
     );
 
     my ( @sample_chars, @source_chars );
@@ -329,8 +370,6 @@ sub _process_sample {
     # FIXME config options
     my @sample_attr_names = qw(cell_type time_point visit_date);
     my @hidden_attr_names = qw();
-
-    my $builder = $self->builder();
 
     ATTR:
     foreach my $attr ( $sample->attributes() ) {
@@ -342,7 +381,7 @@ sub _process_sample {
                 category => 'MaterialType',
                 value    => $attr->value(),
             });
-            $sa->set_materialType($mt);
+            $ex->set_materialType($mt);
             next ATTR;
         }
         if ( $attrname eq 'entry_date' ) {
