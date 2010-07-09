@@ -182,7 +182,7 @@ sub switch_channels : Local {
     my ( $self, $c, $object_id ) = @_;
 
     # Confirm we have privileges to be here.
-    if ( ! $c->check_any_user_role('editor') ) {
+    if ( ! $c->check_any_user_role('admin') ) {
         $c->stash->{error} = 'Sorry, you are not authorised to edit this record.';
         $c->detach('/access_denied');
     }
