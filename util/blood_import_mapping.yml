@@ -127,6 +127,10 @@ import_mapping:
         table:  exp_ct_haematol_concat
         attr:   Lymphocytes
         
+    Plts:
+        table:  exp_ct_haematol_concat
+        attr:   Plts
+        
     Tacrolimus:
         table:  exp_ct_biochem_concat
         attr:   Tacrolimus
