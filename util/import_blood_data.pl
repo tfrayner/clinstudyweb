@@ -22,6 +22,40 @@
 use strict;
 use warnings;
 
+package TimedRecord;
+
+use Moose;
+
+has 'value'        => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1 );
+
+has 'time'         => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1 );
+
+has 'test'         => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1 );
+
+
+package PatientDateRecord;
+
+use Moose;
+
+has 'trial_id'     => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1 );
+
+has 'date'         => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1 );
+
+has 'result_hash'  => ( is       => 'ro',
+                        isa      => 'HashRef[TimedRecord]',
+                        required => 1,
+                        default  => sub { {} } );
+
 package MyBuilder;
 
 use ClinStudy::XML::Builder;
@@ -321,7 +355,7 @@ foreach my $table ( keys %import_table ) {
     # Occasionally the data contains multiple results for a given test
     # for the same date (at differing times). We detect such cases
     # here and use the later result.
-    my %record_by_date;
+    my %hospno_record;
 
     RECORD:
     while ( my $record = $record_rs->next() ) {
@@ -333,22 +367,16 @@ foreach my $table ( keys %import_table ) {
         my ( $usdate ) = ( $record->resdate() =~ m! (\d+ / \d+ / \d+) !xms );
         my ( $time )   = ( $record->restime() =~ m! (\d+ : \d+ : \d+) !xms );
 
-        # Skip the record if it's an earlier test set run on the same day.
-        if ( my $older = $record_by_date{ $usdate } ) {
-            my $oldtime = $older->{'time'};
-            next RECORD if ( time_to_seconds( $time ) < time_to_seconds( $oldtime) );
+        my $hospno = $record->hospno();
+
+        my $pdr;
+        unless ( $pdr = $hospno_record{ $hospno }{ $usdate } ) {
+            $pdr = PatientDateRecord->new(
+                trial_id => $hospno,
+                date     => $usdate,
+            );
+            $hospno_record{ $hospno }{ $usdate } = $pdr;
         }
-
-        # Either a new $usdate, or the $time is later.
-        $record_by_date{ $usdate } = { 'record' => $record,
-                                       'time'   => $time };
-    }
-
-    # Now iterate over the cleaned-up records.
-    while ( my ( $usdate, $timed_record ) = each %record_by_date ) {
-
-        my $record   = $timed_record->{'record'};
-        my $trial_id = $record->hospno();
 
         TEST:
         foreach my $column ( keys %{ $import_table{ $table } } ) {
@@ -356,35 +384,62 @@ foreach my $table ( keys %import_table ) {
             my $testname = $import_table{ $table }{ $column };
 
             my $result = $record->$column;
-        
-            if ( defined $result ) {
 
-                my ( $db_visit, $testdate ) = $builder->get_visit_for_test(
-                    $usdate, $trial_id, $testname, $result, $main_schema,
-                );
-                next TEST unless $db_visit;
-                my $visitdate     = $db_visit->date();
+            next TEST unless defined $result;
 
-                my $patient = $builder->update_or_create_element(
-                    'Patient',
-                    { trial_id   => $db_visit->patient_id->trial_id(),
-                      entry_date => $db_visit->patient_id->entry_date() } );
+            # Skip the test record if it's an earlier test run on the same day.
+            if ( my $timedrecord = $pdr->result_hash()->{ $testname } ) {
+                my $oldtime = $timedrecord->time();
+                next TEST if ( time_to_seconds( $time ) < time_to_seconds( $oldtime) );
+            }
+
+            # Either a new $usdate, or the $time is later.
+            $pdr->result_hash()->{ $testname } = TimedRecord->new(
+                test  => $testname,
+                value => $result,
+                time  => $time,
+            );
+        }
+    }
+
+    # Now iterate over the cleaned-up records.
+    while ( my ( $trial_id, $datehash ) = each %hospno_record ) {
+        while ( my ( $usdate, $pdr ) = each %$datehash ) {
+
+            TEST:
+            while ( my ( $testname, $timedrecord ) = each %{ $pdr->result_hash() } ) {
+
+                my $result = $timedrecord->value();
                 
-                my $visit = $builder->update_or_create_element(
-                    'Visit',
-                    { date => $visitdate },
-                    $patient );
+                if ( defined $result ) {
 
-                # Add a $testname TestResult to Visit. Note that
-                # needs_reparenting only works here because we're
-                # skipping old test results.
-                $builder->update_or_create_element(
-                    'TestResult',
-                    { date  => $testdate,
-                      test  => $testname,
-                      value => $result,
-                      needs_reparenting => 1 },
-                    $visit );
+                    my ( $db_visit, $testdate ) = $builder->get_visit_for_test(
+                        $usdate, $trial_id, $testname, $result, $main_schema,
+                    );
+                    next TEST unless $db_visit;
+                    my $visitdate     = $db_visit->date();
+
+                    my $patient = $builder->update_or_create_element(
+                        'Patient',
+                        { trial_id   => $db_visit->patient_id->trial_id(),
+                          entry_date => $db_visit->patient_id->entry_date() } );
+                
+                    my $visit = $builder->update_or_create_element(
+                        'Visit',
+                        { date => $visitdate },
+                        $patient );
+
+                    # Add a $testname TestResult to Visit. Note that
+                    # needs_reparenting only works here because we're
+                    # skipping old test results.
+                    $builder->update_or_create_element(
+                        'TestResult',
+                        { date  => $testdate,
+                          test  => $testname,
+                          value => $result,
+                          needs_reparenting => 1 },
+                        $visit );
+                }
             }
         }
     }
