@@ -106,6 +106,10 @@ import_mapping:
     ESR:
         table:  exp_ct_haematol_concat
         attr:   ESR
+
+    eGFR:
+        table:  exp_ct_biochem_concat
+        attr:   GFR
         
     Hb:
         table:  exp_ct_haematol_concat
