@@ -48,6 +48,13 @@ sub reparent {
         $self->_process_patient( $patient );
     }
 
+    my $tr = $self->database->resultset('TestResult')
+                  ->search({ needs_reparenting => { '!=' => undef } });
+    while ( my $result = $tr->next() ) {
+        $result->set_column('needs_reparenting', undef);
+        $result->update();
+    }
+
     return;
 }
 
@@ -293,7 +300,6 @@ sub _rehome_result {
 
     warn("Rehoming test result: " . $result->date . " to " . $visit->date . "\n");
     $result->set_column('visit_id', $visit->id());
-    $result->set_column('needs_reparenting', undef);
     $result->update();
 
     return;
