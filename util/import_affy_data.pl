@@ -94,7 +94,7 @@ sub new_assay_batch {
         'AssayBatch',
         { date     => $date,
           name     => $name,
-          platform => 'Affymetrix',
+          platform => 'Affy GeneST',
           operator => $operator } ) );
 }
 
