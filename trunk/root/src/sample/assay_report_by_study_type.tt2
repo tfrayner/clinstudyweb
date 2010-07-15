@@ -20,7 +20,7 @@
   <th>TRIAD ID</th>
   <th>Visit Date</th>
   [% FOREACH ct = celltypes -%]
-    <th>[% ct.value %]</th>
+    <th>[% ct %]</th>
   [%- END %]
   </tr>
 [% FOREACH row = visitdata %]
@@ -28,7 +28,7 @@
   <td><a href="[% c.uri_for("/patient/view", row.visit.patient_id.id) %]">[% row.visit.patient_id.trial_id | html %]</a></td>
   <td><a href="[% c.uri_for("/visit/view", row.visit.id) %]">[% row.visit.date | html %]</a></td>
   [% FOREACH ct = celltypes -%]
-    [%- SET type = ct.value -%]
+    [%- SET type = ct -%]
         [%- IF row.sample.$type.defined -%]
           [%- IF row.sample.$type >= 1 -%]
             <td bgcolor="[% site.rgb.green %]">&nbsp;</td>
