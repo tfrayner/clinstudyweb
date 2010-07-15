@@ -80,6 +80,9 @@ sub assay_report : Local {
 
 sub assay_report_by_study_type : Local {
 
+    # This method does some heavy lifting which doesn't scale
+    # spectacularly well.
+    
     my ( $self, $c, $study_type_id, $platform_id ) = @_;
 
     if ( ! defined $study_type_id ) {
@@ -96,58 +99,103 @@ sub assay_report_by_study_type : Local {
         $c->stash->{platform} = $pt->value;
     }
 
-    # Note that visits only show up on the report page if they've been
-    # assigned a nominal timepoint. Such timepoints are how we know
-    # that a sample should have been taken.
-    my @visits = $cv->search_related('studies')
-                    ->search_related('patient_id')
-                    ->search_related('visits', {nominal_timepoint_id => {'!=' => undef}},
-                                     {order_by => 'trial_id', distinct => 1});
-    
-    my @celltypes = sort { $a->value cmp $b->value }
-                    $c->model('DB::ControlledVocab')
-                      ->search({ category => 'CellType',
-                                 value    => {'not_in' => [ 'unknown', 'none' ] } } );
-
     my $mt = $c->model('DB::ControlledVocab')->find({ category => 'MaterialType',
                                                       value    => 'RNA', });
 
     unless ( $mt ) {
-        $c->flash->{error} = "Error: RNA MaterialType not found in database.";
+        $c->flash->{error} = qq{Error: MaterialType "RNA" not found in database.};
         $c->res->redirect( $c->uri_for('/default') );
         $c->detach();        
     }
 
+    # Note that visits only show up on the report page if they've been
+    # assigned a nominal timepoint. Such timepoints are how we know
+    # that a sample should have been taken.
+
+    # Prefetch here is absolutely *required* for scalability when
+    # handling hundreds of patient visits.
+    my %visit_attrs = ( order_by => 'trial_id',
+                        distinct => 1,
+                        prefetch => { samples => 'cell_type_id' }, );
+
+    # No join on material type here!
+    my %visit_query = ( nominal_timepoint_id => { '!=' => undef } );
+
+    # Perversely, this prefetch actually *adds* time to the query. I'm
+    # not sure why, since we're running a query very much like this in
+    # the loop. Presumably the prefetch here isn't helping there,
+    # possibly because there we have to join instead of prefetching?
+ 
+#     if ( defined $platform_id ) {
+
+#         # N.B. in an ideal world we'd also prefetch samples =>
+#         # cell_type_id but that's getting a bit too complicated for
+#         # DBIx::Class::ResultSet.
+
+#          $visit_attrs{ prefetch } = {
+#              samples => {
+#                  channels => {
+#                      assay_id => {
+#                          assay_batch_id => 'platform_id' } } } };
+
+#         # N.B. you *don't* want a join here on platform_id, otherwise
+#         # only those visits with at least one hyb on the platform will
+#         # be represented.
+#     }
+
+    # Retrieve the visits with as much extra prefetched info as we can.
+    my @visits = $cv->search_related('studies')
+                    ->search_related('patient_id')
+                    ->search_related('visits', \%visit_query, \%visit_attrs,);
+
+    # Simple id => value map, used to avoid a looped database query.
+    my %celltype_map =  map { $_->id() => $_->value() }
+                       $c->model('DB::ControlledVocab')
+                         ->search({ category => 'CellType',
+                                    value    => {'not_in' => [ 'unknown', 'none' ] } } );
+
+    # Scores to determine what constitutes a "complete" set of assays.
     my %channelval = (
         'biotin' => 1,
         'Cy3'    => 0.5,
         'Cy5'    => 0.5,
     );
+
+    # This loop is what actually takes the time, I think.
     my @data;
     foreach my $visit ( @visits ) {
 
+        my %sample;
+
+        # MaterialType filter only once we've registered the visit.
         my @rnas = $visit->samples({ material_type_id => $mt->id() });
 
         # Assumes only one RNA sample per cell type per visit.
-        my %sample;
+        RNA:
         foreach my $rna ( @rnas ) {
-            my $celltype = $rna->cell_type_id()->value();
+
+            # Hash lookup to save running a database query in this
+            # loop (saves about .5s per query).
+            my $celltype = $celltype_map{ $rna->get_column('cell_type_id') } or next RNA;
             my $count    = 0;
 
-            # If platform has been specified, use a join to filter our channels.
+            # If platform has been specified, use a join to filter our
+            # channels. The prefetch system above doesn't seem to help
+            # with the speed of this, but I'd regard it as a potential
+            # target for optimisation in future.
             my @channels;
             if ( defined $platform_id ) {
                 @channels = $rna->channels(
                     { 'platform_id.id' => $platform_id },
                     { join => {
                         assay_id => {
-                            assay_batch_id => 'platform_id'} } },
+                            assay_batch_id => 'platform_id' } } },
                 );
             }
             else {
                 @channels = $rna->channels();
             }
-
+            
             # Record the number of whole assays for a given sample cell type.
             foreach my $channel ( @channels ) {
                 if ( my $val = $channelval{ $channel->label_id()->value() } ) {
@@ -157,6 +205,7 @@ sub assay_report_by_study_type : Local {
             $sample{$celltype} = $count;
         }
 
+        # %sample can be empty.
         push @data, {
             visit   => $visit,
             sample  => \%sample,
@@ -173,7 +222,7 @@ sub assay_report_by_study_type : Local {
         label => 'Assay list',
     };
 
-    $c->stash->{celltypes} = \@celltypes;
+    $c->stash->{celltypes} = [ sort values %celltype_map ];
     $c->stash->{visitdata} = \@data;
 }
 
