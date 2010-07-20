@@ -148,6 +148,7 @@ sub search : Local {
 =cut
 
 sub edit : Local {
+
     my ( $self, $c, $object_id, $container_id ) = @_;
 
     # Figure out who we are.
@@ -376,6 +377,7 @@ sub camel_case {
 
 # Don't override unless you know what you're doing.
 sub my_container_class {
+    
     my ( $self ) = @_;
 
     my $namespace = $self->my_container_namespace();
@@ -482,6 +484,11 @@ sub set_my_breadcrumbs {
     my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
     my $namespace = $self->action_namespace($c);
 
+    # This is a sticking plaster on a wider problem - deriving labels
+    # from namespaces FIXME. E.g. we'd quite like to have CamelCase as
+    # input and space-delim as output.
+    my %irregular = ( assaybatch => 'assaybatches' );
+
     # If this object should have a container, put elements in
     # describing it.
     if ( $container_namespace ) {
@@ -492,9 +499,10 @@ sub set_my_breadcrumbs {
             };
         }
         else {
+            my $label = $irregular{ $container_namespace } || $container_namespace;
             push @breadcrumbs, {
                 path  => "/$container_namespace/list",
-                label => "List of ${container_namespace}s",
+                label => "List of ${label}s",
             };
         }
         if ( $container_field ) {
@@ -520,9 +528,10 @@ sub set_my_breadcrumbs {
             };
         }
         else {
+            my $label = $irregular{ $namespace } || "${namespace}s";
             push @breadcrumbs, {
                 path  => "/$namespace/list",
-                label => "List of ${namespace}s",
+                label => "List of ${label}",
             }
         }
     }

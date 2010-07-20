@@ -1,0 +1,86 @@
+---
+auto_fieldset: { legend: 'Assay Batch' }
+
+#########
+# Assay #
+#########
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Text
+    name: name
+    label: Batch Name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+      - type: DBIC::Unique
+        model: DB::AssayBatch
+        myself: object
+        message: Must be a unique ID
+    label_attributes:
+      tooltipText: >-
+        Assay Batch name. Must be unique.
+
+  - type: Text
+    name: date
+    label: Batch Date
+    constraints:
+      - Required
+      - type: DateTime
+        parser: &PARSER
+          strptime: '%Y-%m-%d'
+      - type: Length
+        max:  10
+        min:  1
+    inflators:
+      - type: DateTime
+        parser: *PARSER
+        strptime: '%Y-%m-%d'
+    label_attributes:
+      tooltipText: >-
+        The date on which the assay batch was performed; click on the entry box for a pop-up calendar.
+
+  - type: Select
+    name: platform_id
+    label: Platform
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+      - Required
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: PlatformType
+      label_column: value
+    label_attributes:
+      tooltipText: >-
+        The platform upon which the assay was performed; typically
+        the name of the gene expression array type (e.g. "Affymetrix HG-U133A").
+
+  - type: Text
+    name: operator
+    label: Operator
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: >-
+        The name of the assay operator, recorded for QC purposes.
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+

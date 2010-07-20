@@ -73,6 +73,7 @@ sub add : Local {
 =cut
 
 sub add_category : Local { 
+
     my ($self, $c) = @_; 
 
     if ( ! $c->check_any_user_role('admin') ) {
@@ -89,6 +90,7 @@ sub add_category : Local {
 =cut
 
 sub edit : Local { 
+
     my ($self, $c, $id) = @_; 
 
     if ( ! $c->check_any_user_role('admin') ) {
@@ -100,7 +102,8 @@ sub edit : Local {
     $c->forward('common_edit', [$id]); 
 }
 
-sub common_edit : Local {
+sub common_edit : Private {
+
     my ( $self, $c, $id, $template ) = @_;
 
     if ( ! $c->check_any_user_role('editor') ) {
