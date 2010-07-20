@@ -19,9 +19,10 @@
 
 package ClinStudy::Web::Controller::Root;
 
-use strict;
-use warnings;
-use parent 'Catalyst::Controller::HTML::FormFu';
+use Moose;
+use namespace::autoclean;
+
+BEGIN {extends 'Catalyst::Controller::HTML::FormFu'; }
 
 #
 # Sets the actions in this controller to be registered with no prefix
@@ -240,5 +241,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

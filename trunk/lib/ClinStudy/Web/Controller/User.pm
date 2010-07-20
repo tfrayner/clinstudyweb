@@ -19,10 +19,10 @@
 
 package ClinStudy::Web::Controller::User;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'Catalyst::Controller::HTML::FormFu';
+BEGIN {extends 'Catalyst::Controller::HTML::FormFu'; }
 
 use Digest;
 
@@ -428,5 +428,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

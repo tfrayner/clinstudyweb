@@ -35,16 +35,14 @@ Catalyst Controller.
 
 =cut
 
-sub new {
+sub BUILD {
 
-    my $class = shift;
-    my $self  = $class->SUPER::new( @_ );
+    my ( $self, $params ) = @_;
 
     $self->my_model_class( 'DB::AssayBatch' );
     $self->my_sort_field( 'date' );
-    $self->my_container_namespace( undef );
 
-    return $self;
+    return;
 }
 
 =head1 AUTHOR
@@ -60,6 +58,6 @@ License (GPL).
 
 =cut
 
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
+__PACKAGE__->meta->make_immutable();
 
 1;
