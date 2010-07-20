@@ -19,10 +19,10 @@
 
 package ClinStudy::Web::Controller::Rest;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'Catalyst::Controller::REST';
+BEGIN {extends 'Catalyst::Controller::REST'; }
 
 =head1 NAME
 
@@ -273,5 +273,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

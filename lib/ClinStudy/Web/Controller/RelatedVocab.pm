@@ -1,9 +1,28 @@
+# Copyright 2010 Tim Rayner, University of Cambridge
+# 
+# This file is part of ClinStudy::Web.
+# 
+# ClinStudy::Web is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# ClinStudy::Web is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
+#
+# $Id$
+
 package ClinStudy::Web::Controller::RelatedVocab;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'ClinStudy::Web::Controller::FormFuBase';
+BEGIN {extends 'ClinStudy::Web::Controller::FormFuBase'; }
 
 =head1 NAME
 
@@ -17,16 +36,15 @@ Catalyst Controller.
 
 =cut
 
-sub new {
+sub BUILD {
 
-    my $class = shift;
-    my $self  = $class->SUPER::new( @_ );
+    my ( $self, $params ) = @_;
 
     $self->my_model_class( 'DB::RelatedVocab' );
     $self->my_sort_field( 'relationship_id' );
     $self->my_container_namespace( 'controlledvocab' );
 
-    return $self;
+    return;
 }
 
 # FIXME ideally this would be deleted in favour of a more sane
@@ -75,13 +93,17 @@ sub add_to_controlled_vocab : Local {
 
 =head1 AUTHOR
 
-tfr23
+Tim F. Rayner <tfrayner@gmail.com>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

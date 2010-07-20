@@ -19,10 +19,10 @@
 
 package ClinStudy::Web::Controller::ControlledVocab;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'ClinStudy::Web::Controller::FormFuBase';
+BEGIN {extends 'ClinStudy::Web::Controller::FormFuBase'; }
 
 =head1 NAME
 
@@ -36,16 +36,14 @@ Catalyst Controller.
 
 =cut
 
-sub new {
+sub BUILD {
 
-    my $class = shift;
-    my $self  = $class->SUPER::new( @_ );
+    my ( $self, $params ) = @_;
 
     $self->my_model_class( 'DB::ControlledVocab' );
     $self->my_sort_field( 'category' );
-    $self->my_container_namespace( undef );
 
-    return $self;
+    return;
 }
 
 sub set_my_deleted_message {
@@ -176,5 +174,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

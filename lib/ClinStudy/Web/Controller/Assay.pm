@@ -19,10 +19,10 @@
 
 package ClinStudy::Web::Controller::Assay;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'ClinStudy::Web::Controller::FormFuBase';
+BEGIN {extends 'ClinStudy::Web::Controller::FormFuBase'; }
 
 =head1 NAME
 
@@ -36,23 +36,23 @@ Catalyst Controller.
 
 =cut
 
-sub new {
+sub BUILD {
 
-    my $class = shift;
-    my $self  = $class->SUPER::new( @_ );
+    my ( $self, $params ) = @_;
 
     $self->my_model_class( 'DB::Assay' );
     $self->my_sort_field( 'identifier' );
-    $self->my_container_namespace( undef );
 
-    return $self;
+    return;
 }
 
 =head2 add_to_sample
 
 =cut
 
-sub add_to_sample : Private {  # Currently not in use because assays are treated as read-only in the web UI.
+sub add_to_sample : Private {  # Currently not in use because assays
+                               # are treated as read-only in the web
+                               # UI.
 
     # We belabour this because of the many-to-many relationship via
     # channel. Note that editing works fine; it's just instantiating a
@@ -116,7 +116,8 @@ sub add_to_sample : Private {  # Currently not in use because assays are treated
 
 =cut
 
-sub delete : Private {  # Currently not in use because assays are treated as read-only in the web UI.
+sub delete : Private {  # Currently not in use because assays are
+                        # treated as read-only in the web UI.
 
     my ( $self, $c, $object_id, $sample_id ) = @_;
 
@@ -242,5 +243,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

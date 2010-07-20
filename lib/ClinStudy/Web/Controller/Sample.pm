@@ -19,10 +19,10 @@
 
 package ClinStudy::Web::Controller::Sample;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
-use parent 'ClinStudy::Web::Controller::VisitLinkedObject';
+BEGIN {extends 'ClinStudy::Web::Controller::VisitLinkedObject'; }
 
 =head1 NAME
 
@@ -36,15 +36,14 @@ Catalyst Controller.
 
 =cut
 
-sub new {
+sub BUILD {
 
-    my $class = shift;
-    my $self  = $class->SUPER::new( @_ );
+    my ( $self, $params ) = @_;
 
     $self->my_model_class( 'DB::Sample' );
     $self->my_sort_field( 'name' );
 
-    return $self;
+    return;
 }
 
 sub view : Local {
@@ -276,5 +275,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;

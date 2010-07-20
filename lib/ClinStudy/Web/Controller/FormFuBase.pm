@@ -19,12 +19,25 @@
 
 package ClinStudy::Web::Controller::FormFuBase;
 
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
+
+BEGIN {extends 'Catalyst::Controller::HTML::FormFu'; }
 
 use Carp;
 
-use parent 'Catalyst::Controller::HTML::FormFu';
+has 'my_model_class'         => ( is       => 'rw',
+                                  isa      => 'Str',
+                                  required => 0 );
+
+has 'my_sort_field'          => ( is       => 'rw',
+                                  isa      => 'Str',
+                                  required => 0 );
+
+has 'my_container_namespace' => ( is       => 'rw',
+                                  isa      => 'Str',
+                                  required => 0 );
+
 
 =head1 NAME
 
@@ -38,10 +51,6 @@ model-specific controller classes.
 =head1 METHODS
 
 =cut
-
-__PACKAGE__->mk_accessors( qw( my_model_class
-                               my_sort_field
-                               my_container_namespace ) );
 
 ##################
 # PUBLIC METHODS #
@@ -657,5 +666,7 @@ This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut
+
+__PACKAGE__->meta->make_immutable();
 
 1;
