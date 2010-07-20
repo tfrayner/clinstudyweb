@@ -17,7 +17,7 @@
     [% IF c.user && c.check_any_user_role("admin") %]
       <li><a href="[% c.uri_for('/patient/list') %]">All patients (beware: this listing is <font color="red">long</font>)</a></li>
     [% END %]
-      <li><a href="[% c.uri_for('/assay/list') %]">Assay batches</a></li> 
+      <li><a href="[% c.uri_for('/assaybatch/list') %]">Assay batches</a></li> 
       <li><a href="[% c.uri_for('/testresult') %]">Test results</a></li> 
       <li><a href="[% c.uri_for('/adverseevent') %]">Adverse events</a></li> 
       <li><a href="[% c.uri_for('/sample/assay_report') %]">Sample assay reports</a></li> 

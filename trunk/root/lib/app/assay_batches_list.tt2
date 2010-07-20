@@ -18,7 +18,7 @@
         <td> [% batch.name | html %] &nbsp;</td>
         <td> [% batch.operator | html %] &nbsp; </td>
         <td> [% batch.platform_id.value | html %]</td>
-        <td><a href="[% c.uri_for("/assay/list_by_batch/$batch.id") | html %]">List assays</a></td>
+        <td><a href="[% c.uri_for("/assaybatch/view/$batch.id") | html %]">List assays</a></td>
         </tr> 
     [% END %]
     </tbody>
@@ -33,7 +33,7 @@
         tableWidgetObj.setTableHeight('[% tableHeight %]');
         tableWidgetObj.setColumnSort(Array('S','S','S','S',false));
         tableWidgetObj.init();
-        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the Study ID
+        tableWidgetObj.sortTableByColumn(0, 'descending'); // Initially sort the table by date descending
   </script>
 
 [% ELSE %] 

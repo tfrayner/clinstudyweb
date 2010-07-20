@@ -8,7 +8,7 @@
 <tr><th>Identifier:</th>
     <td>[% object.identifier | html %]</td></tr>
 <tr><th>Batch date:</th>
-    <td><a href="[% c.uri_for("/assay/list_by_batch", object.assay_batch_id.id) %]">
+    <td><a href="[% c.uri_for("/assaybatch/view", object.assay_batch_id.id) %]">
           [% object.assay_batch_id.date | html %]</a></td></tr>
 <tr><th>Batch name:</th>
     <td>[% object.assay_batch_id.name | html %]</td></tr>

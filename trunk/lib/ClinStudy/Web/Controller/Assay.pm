@@ -48,79 +48,11 @@ sub new {
     return $self;
 }
 
-=head2 index 
-
-=cut
-
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->response->body('Matched ClinStudy::Web::Controller::Assay in Assay.');
-}
-
-=head2 list
-
-=cut
-
-sub list : Local {
-
-    my ( $self, $c ) = @_;
-
-    my $class = $self->my_model_class()
-        or confess("Error: CIMR database class not set in AssayQcValue controller " . ref $self);
-
-    my $sort_field = $self->my_sort_field();
-    my $attrs   = $sort_field ? { order_by => $sort_field } : {};
-
-    # If there's a search term, list assays.
-    if ( my $search  = $c->stash()->{'search_terms'} ) {
-        my @objects = $c->model($class)->search( $search, $attrs );
-        $c->stash->{objects} = \@objects;
-    }
-    else {
-
-        # If no search term, instead list batches.
-        $attrs = { order_by => 'date' };
-        my @objects = $c->model('DB::AssayBatch')->search( $search, $attrs );
-        $c->stash->{batches} = \@objects;
-    }
-
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
-}
-
-=head2 list_by_batch
-
-=cut
-
-sub list_by_batch : Local {
-
-    my ( $self, $c, $batch_id ) = @_;
-
-    my $class = $self->my_model_class()
-        or confess("Error: CIMR database class not set in AssayQcValue controller " . ref $self);
-
-    my @objects;
-    if ( $batch_id ) {
-        my $sort_field = $self->my_sort_field();
-        my $attrs = $sort_field ? { order_by => $sort_field } : {};
-        @objects = $c->model($class)->search({ assay_batch_id => $batch_id }, $attrs);
-    }
-    else {
-        $c->flash->{error} = 'No assay batch ID (this is a page navigation error).';
-        $c->res->redirect( $c->uri_for('/assay/list') );
-        $c->detach();
-    }
-
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, undef, undef, $batch_id);
-    $c->stash->{objects}  = \@objects;
-    $c->stash->{template} = 'assay/list.tt2';
-}
-
 =head2 add_to_sample
 
 =cut
 
-sub add_to_sample : Local {
+sub add_to_sample : Private {  # Currently not in use because assays are treated as read-only in the web UI.
 
     # We belabour this because of the many-to-many relationship via
     # channel. Note that editing works fine; it's just instantiating a
@@ -184,7 +116,7 @@ sub add_to_sample : Local {
 
 =cut
 
-sub delete : Local {
+sub delete : Private {  # Currently not in use because assays are treated as read-only in the web UI.
 
     my ( $self, $c, $object_id, $sample_id ) = @_;
 
@@ -275,7 +207,7 @@ sub set_my_breadcrumbs {
         # Typically within the AssayBatch-Assay tree.
         splice( @fixed, 1, 0,
                 {
-                    path  => '/assay/list',
+                    path  => '/assaybatch/list',
                     label => 'List of assay batches',
                 },
             );
@@ -287,7 +219,7 @@ sub set_my_breadcrumbs {
         
                 splice( @fixed, 2, 0,
                         {
-                            path  => "/assay/list_by_batch/" . $batch->id(),
+                            path  => "/assaybatch/view/" . $batch->id(),
                             label => "This assay batch",
                         },
                     );
