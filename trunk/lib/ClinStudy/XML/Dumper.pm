@@ -180,7 +180,7 @@ sub row_to_element {
 
         # Create the new element.
         $element = XML::LibXML::Element->new($class);
-        $self->cols_to_attrs( $row, $element );
+        $self->cols_to_attrs( $row, $element, ['needs_reparenting'] );
 
         # test_id is a required column.
         $element->setAttribute('test', $row->test_id()->name());

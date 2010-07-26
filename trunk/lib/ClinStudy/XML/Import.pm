@@ -54,6 +54,10 @@ has 'external_value_map' => ( is       => 'rw',
                               required => 1,
                               default  => sub { {} }, );
 
+has 'onload_callback'   => ( is        => 'rw',
+                             isa       => 'CodeRef',
+                             required  => 0 );
+
 has 'is_strict'         => ( is       => 'rw',
                              isa      => 'Bool',
                              required => 1,
@@ -195,8 +199,12 @@ sub load_element {
         $self->process_attr( $attr, $row_ref );
     }
 
-    my $obj = $self->load_object( $row_ref, $rs );
+    if ( my $callback = $self->onload_callback() ) {
+        $row_ref = $callback->( $class, $row_ref );
+    }
         
+    my $obj = $self->load_object( $row_ref, $rs );
+
     return $obj;
 }
 
@@ -292,7 +300,11 @@ sub load_object {
     # behaviour, e.g. for ControlledVocab.
     my ( $self, $hashref, $rs ) = @_;
 
-    my $obj = $rs->update_or_create( $hashref );
+    
+    my $obj;
+    $self->database->txn_do(
+        sub { $obj = $rs->update_or_create( $hashref ); }
+    );
 
     return $obj;
 }
@@ -418,6 +430,15 @@ ref.
 
 Boolean flag indicating whether or not to validate the imported XML
 document against the XML Schema (default=True).
+
+=item onload_callback
+
+(Experts only) An optional coderef which is called just prior to
+loading the element into the database. The coderef is passed the class
+name for the database object to be created, and a hashref of
+attributes. This callback allows you to edit that hashref and return
+it back to the import module just before the object is inserted into
+the database.
 
 =back
 

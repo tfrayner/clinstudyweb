@@ -82,7 +82,7 @@ sub add_to_patient : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $visit );
+        $c->form_values_to_database( $visit, $form );
 
         # Strip the test_results out, do any calculations
         # needed, make sure they have a date (from $visit->date)
@@ -139,7 +139,7 @@ sub edit : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $visit );
+        $c->form_values_to_database( $visit, $form );
 
         # Strip the test_results out, do any calculations
         # needed, make sure they have a date (from $visit->date)
@@ -226,7 +226,7 @@ sub edit_for_type : Local {
         if ( $form->submitted_and_valid() ) {
 
             # Form was submitted and it validated.
-            $form->model->update( $visit );
+            $c->form_values_to_database( $visit, $form );
 
             # Strip the test_results out, do any calculations
             # needed, make sure they have a date (from $visit->date)
@@ -373,20 +373,25 @@ sub _generic_process_test_values {
     my @values = $c->req->param("$fieldname.$modelattr");
 
     my $count = 0;
-    while (defined( my $test_id = $c->req->param("${fieldname}_$count.test_id") ) ) {
-        my $value = $c->req->param("${fieldname}_$count.$modelattr");
-        $count++;
-        next unless ( defined $value && $value ne q{} );
-
-        my $result = $c->model('DB::TestResult')->find_or_create({
-            test_id             => $test_id,
-            visit_id            => $visit->id(),
-            date                => $visit->date(),
-        });
-
-        $result->set_column( $modelattr => $value );
-        $result->update();
-    }
+    $c->_set_journal_changeset_attrs();
+    $c->model->result_source->schema->txn_do(
+        sub {
+            while (defined( my $test_id = $c->req->param("${fieldname}_$count.test_id") ) ) {
+                my $value = $c->req->param("${fieldname}_$count.$modelattr");
+                $count++;
+                next unless ( defined $value && $value ne q{} );
+                
+                my $result = $c->model('DB::TestResult')->find_or_new({
+                    test_id             => $test_id,
+                    visit_id            => $visit->id(),
+                    date                => $visit->date(),
+                });
+                
+                $result->set_column( $modelattr => $value );
+                $result->insert();
+            }
+        }
+    );
 
     my $blocks = $form->get_all_elements({ nested_name => '$fieldname' });
 

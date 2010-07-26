@@ -11,6 +11,8 @@ __PACKAGE__->load_classes;
 # Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-10-23 13:53:03
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:toobU8jDutvT4CQ2GmdPgA
 
+__PACKAGE__->load_components("Schema::Journal");
+__PACKAGE__->journal_user( [ 'ClinStudy::ORM::User', {'foreign.id' => 'self.user_id'} ] );
 
 # You can replace this text with custom content, and it will be preserved on regeneration
 

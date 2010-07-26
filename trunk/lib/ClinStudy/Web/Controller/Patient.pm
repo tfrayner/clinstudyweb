@@ -121,7 +121,7 @@ sub add : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $patient );
+        $c->form_values_to_database( $patient, $form );
 
         # Set our message and pass on to the edit_for_type view.
         $c->flash->{message}
@@ -174,7 +174,7 @@ sub edit : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $patient );
+        $c->form_values_to_database( $patient, $form );
 
         # Set our message and pass back to list view.
         $c->flash->{message}
@@ -250,7 +250,7 @@ sub edit_for_type : Local {
         if ( $form->submitted_and_valid() ) {
 
             # Form was submitted and it validated.
-            $form->model->update( $patient );
+            $c->form_values_to_database( $patient, $form );
 
             # Set our message and pass back to list view. FIXME at
             # some point we'll want to point this to

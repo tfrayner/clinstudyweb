@@ -24,6 +24,8 @@ use namespace::autoclean;
 
 BEGIN {extends 'Catalyst::Controller::HTML::FormFu'; }
 
+use Carp;
+
 #
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in MyApp.pm
@@ -115,8 +117,7 @@ sub login : Global FormConfig {
                             password => $form->param_value('password'), }) ) {
 
         # Set the access date.
-        $c->user->set_column( date_accessed => $c->date_today() );
-        $c->user->update();
+        $self->update_database_timestamp( $c );
 
         $c->flash->{message} = 'Logged in successfully.';
         $c->res->redirect($c->uri_for('/'));
@@ -159,8 +160,7 @@ sub raven_login : Global FormConfig('login.yml') {
             # User is in our local database.
 
             # Set the access date.
-            $c->user->set_column( date_accessed => $c->date_today() );
-            $c->user->update();
+            $self->update_database_timestamp( $c );
 
             $c->flash->{message} = 'Successfully logged in via Raven.';
             $c->res->redirect($c->uri_for('/'));
@@ -219,6 +219,29 @@ sub set_my_breadcrumbs : Private {
     );
 
     return \@crumbs;
+}
+
+sub update_database_timestamp {
+
+    my ( $self, $c ) = @_;
+
+    my $schema = $c->model->result_source->schema();
+
+    if ( my $user = $c->user() ) {
+        $schema->changeset_user( $user->id() );
+        if ( my $session_id = $c->sessionid() ) {
+            $schema->changeset_session( $session_id );
+        }
+        $schema->txn_do(
+            sub { $user->set_column( date_accessed => $c->date_today() );
+                  $user->update(); }
+        );        
+    }
+    else {
+        confess("There's no point trying to update the database if the user failed to log in.");
+    }
+
+    return;
 }
 
 =head2 end

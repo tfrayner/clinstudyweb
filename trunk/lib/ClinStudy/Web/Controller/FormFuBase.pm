@@ -214,7 +214,7 @@ sub edit : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $object );
+        $c->form_values_to_database( $object, $form );
 
         $self->set_my_updated_message( $c, $object, $object_id );
 
@@ -277,7 +277,7 @@ sub delete : Local {
 
         $self->set_my_deleted_message( $c, $object );
 
-        $object->delete;
+        $c->delete_database_object( $object );
 
         if ( $container_namespace ) {
             $c->res->redirect( $c->uri_for("/$container_namespace/view",

@@ -308,15 +308,20 @@ sub edit : Local {
                  qw(value min_value max_value controlled_value_id) ) {
         
         # Form was submitted and it validated, and it has at least one value.
-        $form->model->update( $result );
+        $c->form_values_to_database( $result, $form );
 
         # If the holder is a parent test result, we need to link it up
         # *after* the database has been updated.
         if ( $holderclass =~ /::TestResult \z/xms ) {
-            $c->model('DB::TestAggregation')->find_or_create({
-                aggregate_result_id => $resultholder,
-                test_result_id      => $result,
-            });
+            $c->_set_journal_changeset_attrs();
+            $c->model->result_source->schema->txn_do(
+                sub {
+                    $c->model('DB::TestAggregation')->find_or_create({
+                        aggregate_result_id => $resultholder,
+                        test_result_id      => $result,
+                    });
+                }
+            );
         }
 
         # Call any configured calculators with the updated
@@ -388,7 +393,7 @@ sub delete : Local {
             
         $self->set_my_deleted_message( $c, $result );
 
-        $result->delete;
+        $c->delete_database_object( $result );
 
         $c->res->redirect( $redirect );
         $c->detach();

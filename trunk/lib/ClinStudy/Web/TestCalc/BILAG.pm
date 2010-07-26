@@ -35,7 +35,7 @@ use List::Util qw( first );
 # the schema, though.
 sub calculate {
 
-    my ( $self, $container, $schema ) = @_;
+    my ( $self, $container, $schema, $c ) = @_;
 
     # This will only go wrong if not all the tests have been filled in.
     my $is_valid = 1;
@@ -112,22 +112,30 @@ sub calculate {
     else {
         die("Cannot link test result to $contclass\n");
     }
-    my $bilagtest = $schema->resultset('Test')->find_or_create({ name => 'BILAGPt' });
-    my $bilag     = $schema->resultset('TestResult')->find_or_create({
-        test_id => $bilagtest->id(),
-        date    => $container->date(),
-        %opts,
-    });
-    $bilag->set_column( 'value' => $score );
-    $bilag->update();
 
-    # Ensure the child test results are all linked to the BILAG.
-    foreach my $child ( @allresults ) {
-        $schema->resultset('TestAggregation')->find_or_create({
-            test_result_id      => $child->id(),
-            aggregate_result_id => $bilag->id(),
-        });
-    }
+    $c->_set_journal_changeset_attrs();
+    $schema->txn_do (
+        sub {
+            my $bilagtest = $schema->resultset('Test')->find_or_create({ name => 'BILAGPt' });
+            my $bilag     = $schema->resultset('TestResult')->find_or_new({
+                test_id => $bilagtest->id(),
+                date    => $container->date(),
+                %opts,
+            });
+            unless ( $bilag->value() eq $score ) {
+                $bilag->set_column( 'value' => $score );
+                $bilag->insert();
+            }
+
+            # Ensure the child test results are all linked to the BILAG.
+            foreach my $child ( @allresults ) {
+                $schema->resultset('TestAggregation')->find_or_create({
+                    test_result_id      => $child->id(),
+                    aggregate_result_id => $bilag->id(),
+                });
+            }
+        }
+    );
 
     return $is_valid;
 }

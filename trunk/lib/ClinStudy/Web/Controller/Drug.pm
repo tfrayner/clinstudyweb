@@ -192,7 +192,7 @@ sub edit : Local {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $drug );
+        $c->form_values_to_database( $drug, $form );
 
         $c->flash->{message}
             = sprintf("%s %s %s drug treatment",
@@ -256,7 +256,7 @@ sub delete : Local {
                       ( $drug->locale_id ? $drug->locale_id->value : q{} ),
                       ( $drug->name_id   ? $drug->name_id->value   : q{} ) );
 
-        $drug->delete;
+        $c->delete_database_object( $drug );
 
         $c->res->redirect( $redirect );
         $c->detach();

@@ -205,4 +205,6 @@ __PACKAGE__->many_to_many(
     "prior_groups" => "patient_prior_groups", "prior_group_id"
 );
 
+__PACKAGE__->load_components("Schema::Journal");
+
 1;
