@@ -48,12 +48,18 @@ sub reparent {
         $self->_process_patient( $patient );
     }
 
+    # Final run-through to set all tests such that they're no longer
+    # wanting reparenting.
     my $tr = $self->database->resultset('TestResult')
                   ->search({ needs_reparenting => { '!=' => undef } });
-    while ( my $result = $tr->next() ) {
-        $result->set_column('needs_reparenting', undef);
-        $result->update();
-    }
+    $self->database->txn_do(
+        sub{
+            while ( my $result = $tr->next() ) {
+                $result->set_column('needs_reparenting', undef);
+                $result->update();
+            }
+        }
+    );
 
     return;
 }
@@ -137,16 +143,24 @@ sub _split_visits {
 
             # Rehome the rest of the batches.
             while ( my ( $date, $results ) = each %$datebatch ) {
-                my $visit = $self->database->resultset('Visit')->find_or_create({
-                    date       => $date,
-                    patient_id => $patient->id(),
-                });
 
-                # Only add a note to visits which don't already have one.
-                unless ( $visit->notes() ) {
-                    $visit->set_column('notes', $self->vnotes());
-                    $visit->update();
-                }
+                my $visit;
+                $self->database->txn_do(
+                    sub {
+                        $visit = $self->database->resultset('Visit')->find_or_new({
+                            date       => $date,
+                            patient_id => $patient->id(),
+                        });
+
+                        # Only add a note to visits which don't already have one.
+                        unless ( $visit->notes() ) {
+                            $visit->set_column('notes', $self->vnotes());
+                        }
+
+                        $visit->insert();
+                    }
+                );
+
                 foreach my $r ( @$results ) {
                     $self->_rehome_result( $r, $visit );
                 }
@@ -227,7 +241,9 @@ sub _reduce_visits {
 
         # Also increment $n if $v2 is unbound.
         unless ( $has_content ) {
-            eval { $v2->delete() };
+            eval {
+                $self->database()->txn_do( sub { $v2->delete() } );
+            };
             $n++ unless ( $@ );
         }
         
@@ -299,8 +315,12 @@ sub _rehome_result {
     }
 
     warn("Rehoming test result: " . $result->date . " to " . $visit->date . "\n");
-    $result->set_column('visit_id', $visit->id());
-    $result->update();
+    $self->database->txn_do(
+        sub {
+            $result->set_column('visit_id', $visit->id());
+            $result->update();
+        }
+    );
 
     return;
 }
@@ -312,12 +332,28 @@ use Pod::Usage;
 use ClinStudy::ORM;
 use Config::YAML;
 
+sub fix_reparenting_flag {
+
+    my ( $class, $row_ref ) = @_;
+
+    # Callback used by the import code to fix the needs_reparenting
+    # flag on loading.
+
+    if ( $class eq 'TestResult' ) {
+        $row_ref->{'needs_reparenting'} = 1;
+    }
+
+    return $row_ref;
+}
+
 sub parse_args {
 
-    my ( $conffile, $want_help );
+    my ( $conffile, $xml, $xsd, $relaxed, $want_help );
 
     GetOptions(
         "c|config=s" => \$conffile,
+        "x|xml=s"    => \$xml,
+        "d|schema=s" => \$xsd,
         "h|help"     => \$want_help,
     );
 
@@ -329,7 +365,7 @@ sub parse_args {
         );
     }
 
-    unless ( $conffile ) {
+    unless ( $conffile && $xsd && $xml ) {
         pod2usage(
             -message => qq{Please see "$0 -h" for further help notes.},
             -exitval => 255,
@@ -340,18 +376,35 @@ sub parse_args {
 
     my $config = Config::YAML->new(config => $conffile);
 
-    return( $config->{'Model::DB'}->{connect_info} );
+    my $parser = XML::LibXML->new();
+    my $doc    = $parser->parse_file($xml);
+
+    return( $config->{'Model::DB'}->{connect_info}, $xsd, $doc, $relaxed, $xml );
 }
 
-my ( $conn_params ) = parse_args();
+my ( $conn_params, $xsd, $xml, $relaxed, $xmlfile ) = parse_args();
 
 my $schema = ClinStudy::ORM->connect( @$conn_params );
 
-my $case_worker = SocialServices->new(
-    database => $schema,
-);
+$schema->changeset_session( $xmlfile );
+$schema->txn_do(
+    sub {
 
-$case_worker->reparent();
+        my $loader = ClinStudy::XML::Loader->new(
+            database    => $schema,
+            schema_file => $xsd,
+            onload_callback => \&fix_reparenting_flag,
+        );
+
+        $loader->load( $xml );
+
+        my $case_worker = SocialServices->new(
+            database => $schema,
+        );
+
+        $case_worker->reparent();
+    }
+);
 
 __END__
 

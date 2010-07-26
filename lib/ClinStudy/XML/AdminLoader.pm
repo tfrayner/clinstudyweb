@@ -44,6 +44,10 @@ sub BUILD {
     return;
 }
 
+{
+
+my @RV_CACHE;
+
 sub load_element {
 
     my ( $self, $element, $parent_ref ) = @_;
@@ -56,13 +60,37 @@ sub load_element {
             value    => $element->getAttribute('value'),
         }) or die("Error: TestPossibleValue attempting to load its own CVs - naughty!");
         $row_ref->{possible_value_id} = $cv->id;
-        $obj = $self->database->resultset('TestPossibleValue')->find_or_create($row_ref);
+        $self->database->txn_do(
+            sub { $obj = $self->database->resultset('TestPossibleValue')->find_or_create($row_ref); }
+        );
+    }
+    elsif ( $element->nodeName eq 'RelatedVocab' ) {
+
+        # Store for later; otherwise we run into problems where a CV
+        # may reference a currently unloaded RV.
+        push @RV_CACHE, [ $element, $parent_ref ];
     }
     else {
         $obj = $self->SUPER::load_element( $element, $parent_ref );
     }
 
     return $obj;
+}
+
+sub load {
+
+    my ( $self, @args ) = @_;
+
+    my $rc = $self->SUPER::load( @args );
+
+    # Take care of the cached RelatedVocab objects.
+    foreach my $item ( @RV_CACHE ) {
+        $self->SUPER::load_element( @$item );
+    }
+
+    return $rc;
+}
+
 }
 
 1;

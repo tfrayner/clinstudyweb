@@ -48,6 +48,7 @@ requires 'Digest::SHA1'                                   => '2.11';
 requires 'Regexp::Common'                                 => '2.122';
 requires 'DBD::mysql'                                     => '4.005';
 requires 'DBIx::Class'                                    => '0.08010';
+requires 'DBIx::Class::Journal'                           => '0.900200';
 requires 'XML::LibXML'                                    => '1.7.0';
 
 # REST currently serialises via XML::Simple

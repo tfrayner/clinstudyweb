@@ -31,6 +31,50 @@ use Config::YAML;
 use List::Util qw( first );
 use Carp;
 
+sub recalculate {
+
+    my ( $schema, $conf ) = @_;
+
+    # Load all the test calculator classes.
+    my @testcalcs = usesub ClinStudy::Web::TestCalc;
+
+    foreach my $cont_class ( qw( Visit Hospitalisation ) ) {
+        my $rs = $schema->resultset($cont_class)->search();
+
+        while ( my $container = $rs->next() ) {
+            my @studies = $container->patient_id()->studies();
+            foreach my $study_type ( map { $_->type_id() } @studies ) {
+                if ( my $calcname
+                         = $conf->{test_calculators}->{ $study_type->value() } ) {
+                    my $calcclass = "ClinStudy::Web::TestCalc::$calcname";
+                    unless ( first { $_ eq $calcclass } @testcalcs ) {
+                        confess("Error: $calcclass not found in TestCalc module directory.");
+                    }
+                    my $calc = $calcclass->new();
+                    printf ("%s %s: %s ", $cont_class, $container->id, $calcname);
+                    my $rc;
+                    eval { $rc = $calc->calculate( $container, $schema ) };
+                    if ( $@ ) {
+                        printf("Error reported by test calculator for %s date %s patient no. %s: %s\n",
+                               $cont_class,
+                               $container->date(),
+                               $container->patient_id()->trial_id(),
+                               $@,);
+                    }
+                    elsif ( $rc ) {
+                        print("okay\n");
+                    }
+                    else {
+                        print("not calculated\n");
+                    }
+                }
+            }
+        }
+    }
+
+    return;
+}
+
 my ( $conffile );
 
 GetOptions(
@@ -53,40 +97,6 @@ my $conf = Config::YAML->new( config => $conffile );
 my $connect_info = $conf->{'Model::DB'}->{connect_info};
 my $schema = ClinStudy::ORM->connect( @$connect_info );
 
-# Load all the test calculator classes.
-my @testcalcs = usesub ClinStudy::Web::TestCalc;
-
-foreach my $cont_class ( qw( Visit Hospitalisation ) ) {
-    my $rs = $schema->resultset($cont_class)->search();
-
-    while ( my $container = $rs->next() ) {
-        my @studies = $container->patient_id()->studies();
-        foreach my $study_type ( map { $_->type_id() } @studies ) {
-            if ( my $calcname
-                     = $conf->{test_calculators}->{ $study_type->value() } ) {
-                my $calcclass = "ClinStudy::Web::TestCalc::$calcname";
-                unless ( first { $_ eq $calcclass } @testcalcs ) {
-                    confess("Error: $calcclass not found in TestCalc module directory.");
-                }
-                my $calc = $calcclass->new();
-                printf ("%s %s: %s ", $cont_class, $container->id, $calcname);
-                my $rc;
-                eval { $rc = $calc->calculate( $container, $schema ) };
-                if ( $@ ) {
-                    printf("Error reported by test calculator for %s date %s patient no. %s: %s\n",
-                           $cont_class,
-                           $container->date(),
-                           $container->patient_id()->trial_id(),
-                           $@,);
-                }
-                elsif ( $rc ) {
-                    print("okay\n");
-                }
-                else {
-                    print("not calculated\n");
-                }
-            }
-        }
-    }
-}
+$schema->changeset_session('automated aggregate test recalculation');
+$schema->txn_do( sub{ recalculate( $schema, $conf ); } );
 

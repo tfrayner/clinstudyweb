@@ -62,10 +62,10 @@ sub parse_args {
     my $parser = XML::LibXML->new();
     my $doc    = $parser->parse_file($xml);
 
-    return( $config->{'Model::DB'}->{connect_info}, $xsd, $doc, $relaxed );
+    return( $config->{'Model::DB'}->{connect_info}, $xsd, $doc, $relaxed, $xml );
 }
 
-my ( $conn_params, $xsd, $xml, $relaxed ) = parse_args();
+my ( $conn_params, $xsd, $xml, $relaxed, $xmlfile ) = parse_args();
 
 my $schema = ClinStudy::ORM->connect( @$conn_params );
 
@@ -79,7 +79,9 @@ my $loader = $loader_class->new(
     schema_file => $xsd,
     is_strict   => ! $relaxed,
 );
-$loader->load( $xml );
+
+$schema->changeset_session( $xmlfile );
+$schema->txn_do( sub { $loader->load( $xml ); } );
 
 __END__
 

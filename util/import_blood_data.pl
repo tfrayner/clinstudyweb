@@ -272,14 +272,13 @@ sub camel_case {
 
 sub parse_args {
 
-    my ( $conffile, $blood_db, $mapfile, $xsd, $relaxed, $want_help );
+    my ( $conffile, $blood_db, $mapfile, $xsd, $want_help );
 
     GetOptions(
         "c|config=s"   => \$conffile,
         "m|mapping=s"  => \$mapfile,
         "b|blood-db=s" => \$blood_db,
         "d|schema=s"   => \$xsd,
-        "r|relaxed"    => \$relaxed,
         "h|help"       => \$want_help,
     );
 
@@ -300,10 +299,10 @@ sub parse_args {
         );
     }
 
-    return( $conffile, $blood_db, $mapfile, $xsd, $relaxed );
+    return( $conffile, $blood_db, $mapfile, $xsd );
 }
 
-my ( $conffile, $blood_db, $mapfile, $xsd, $relaxed ) = parse_args();
+my ( $conffile, $blood_db, $mapfile, $xsd ) = parse_args();
 
 
 # Connect to the two databases.
@@ -328,7 +327,6 @@ while ( my ( $testname, $source ) = each %{ $mapping->get_import_mapping() } ) {
 
 my $builder = MyBuilder->new(
     schema_file => $xsd,
-    is_strict   => ! $relaxed,
 );
 
 sub time_to_seconds {
@@ -430,14 +428,13 @@ foreach my $table ( keys %import_table ) {
                         $patient );
 
                     # Add a $testname TestResult to Visit. Note that
-                    # needs_reparenting only works here because we're
-                    # skipping old test results.
+                    # needs_reparenting is set on load, and does not
+                    # appear in the XML.
                     $builder->update_or_create_element(
                         'TestResult',
                         { date  => $testdate,
                           test  => $testname,
-                          value => $result,
-                          needs_reparenting => 1 },
+                          value => $result },
                         $visit );
                 }
             }

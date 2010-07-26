@@ -79,14 +79,20 @@ sub add_to_sample : Private {  # Currently not in use because assays
         # Make sure the AssayBatch object has been created and
         # inserted first. No idea why HTML::FormFu tries to insert the
         # main object before its dependencies, but there we are.
-        my $batch = $c->model('DB::AssayBatch')->find_or_create({
-            %{$form->params()->{'assay_batch_id'}},
-            id => undef,    # Overwrites the H::FF id => '' which buggers things up.
-        });
+        my $batch;
+        $c->_set_journal_changeset_attrs();
+        $c->model->result_source->schema->txn_do(
+            sub {
+                $batch = $c->model('DB::AssayBatch')->find_or_create({
+                    %{$form->params()->{'assay_batch_id'}},
+                    id => undef,    # Overwrites the H::FF id => '' which buggers things up.
+                });
+            }
+        );
         $object->set_column( assay_batch_id => $batch->id() );
 
         # Form was submitted and it validated.
-        $form->model->update( $object );
+        $c->form_values_to_database( $object, $form );
 
         $self->set_my_updated_message( $c, $object );
 
@@ -140,7 +146,7 @@ sub delete : Private {  # Currently not in use because assays are
 
         $self->set_my_deleted_message( $c, $object );
 
-        $object->delete;
+        $c->delete_database_object( $object );
 
         $c->res->redirect( $c->uri_for("/sample/view", $sample_id) );
         $c->detach();

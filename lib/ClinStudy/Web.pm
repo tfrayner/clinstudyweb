@@ -327,7 +327,7 @@ sub recalculate_aggregates {
             confess("Error loading $calcclass: $@");
         }
         my $calc = $calcclass->new();
-        eval { $calc->calculate( $container, $c->model('DB')->schema() ) };
+        eval { $calc->calculate( $container, $c->model('DB')->schema(), $c ) };
         if ( $@ ) {
 
             # Not a crisis, but we need to record such things, ideally
@@ -342,6 +342,71 @@ sub recalculate_aggregates {
     }
 }
 
+sub _set_journal_changeset_attrs {
+
+    my ( $c ) = @_;
+
+    if ( my $user = $c->user() ) {
+        $c->model->result_source->schema->changeset_user( $user->id() );
+    }
+    if ( my $session_id = $c->sessionid() ) {
+        $c->model->result_source->schema->changeset_session( $session_id );
+    }
+
+    return;
+}
+
+sub form_values_to_database {
+
+    my ( $c, $object, $form ) = @_;
+
+    $c->_set_journal_changeset_attrs();
+
+    $c->model->result_source->schema->txn_do(
+        sub {
+            $form->model->update( $object );
+        }
+    );
+
+    return;
+}
+
+sub update_database_object {
+
+    my ( $c, $object, $attrs ) = @_;
+
+    $c->_set_journal_changeset_attrs();
+
+    $c->model->result_source->schema->txn_do(
+        sub {
+            if ( $attrs && ref $attrs eq 'HASH' ) {
+                while ( my ( $key, $value ) = each %$attrs ) {
+                    $object->set_column( $key, $value );
+                }
+            }
+
+            # Call update anyway; $attrs is optional.
+            $object->update();
+        }
+    );
+    
+    return;
+}
+
+sub delete_database_object {
+
+    my ( $c, $object ) = @_;
+
+    $c->_set_journal_changeset_attrs();
+
+    $c->model->result_source->schema->txn_do(
+        sub {
+            $object->delete();
+        }
+    );
+    
+    return;
+}
 
 =head1 NAME
 

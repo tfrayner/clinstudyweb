@@ -152,7 +152,9 @@ sub xml {
 
 sub cols_to_attrs {
 
-    my ( $self, $row, $element ) = @_;
+    my ( $self, $row, $element, $filter ) = @_;
+
+    $filter ||= [];
 
     my $source  = $row->result_source();
     my @pkeys   = $source->primary_columns();
@@ -163,6 +165,9 @@ sub cols_to_attrs {
         # Skip primary key columns - they are assumed to be outside
         # the scope of the XML schema.
         next COLUMN if ( first { $col eq $_ } @pkeys );
+
+        # Skip columns which we've been asked to filter out.
+        next COLUMN if ( first { $col eq $_ } @$filter );
 
         my $value = $row->get_column($col);
 

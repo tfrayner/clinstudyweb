@@ -86,7 +86,7 @@ while ( my $p = $patient_rs->next() ) {
     $p->set_column('hospital_id', $hospno );
     $p->set_column('trial_id',    $triadno );
 
-    $p->update();
+    $schema->txn_do( sub { $p->update(); } );
 }
 
 # With thanks to the Blackfeet Genealogy project, http://www.blackfeetgenealogy.com

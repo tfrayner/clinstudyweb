@@ -256,7 +256,16 @@ sub switch_channels : Local {
     my $label1 = $channels[0]->label_id();
     $channels[0]->set_column( 'label_id' => $channels[1]->label_id()->id() );
     $channels[1]->set_column( 'label_id' => $label1->id() );
-    foreach my $ch ( @channels ) { $ch->update() }
+
+    # We want these to be audited as part of a single changeset.
+    $c->_set_journal_changeset_attrs();
+    $c->model->result_source->schema->txn_do(
+        sub {
+            foreach my $ch ( @channels ) {
+                $ch->update();
+            }
+        }
+    );
 
     # Redirect back to the sample view.
     $c->res->redirect( $c->uri_for('/sample/view', $object_id) );

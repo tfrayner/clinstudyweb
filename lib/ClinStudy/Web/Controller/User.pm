@@ -93,7 +93,7 @@ sub add : Local {
         $user->set_column( date_modified => $date );
 
         # Insert the user into the database.
-        $form->model->update( $user );
+        $c->form_values_to_database( $user, $form );
 
         # Log the user in. Don't try to log in if
         # we're already logged in, e.g. as admin.
@@ -160,14 +160,11 @@ sub edit : Local {
 
     if ( $form->submitted_and_valid() ) {
 
-        # Form was submitted and it validated.
-        $form->model->update( $user );
-
-        # Set the modification date.
+        # Form was submitted and it validated. Set the modification date.
         $user->set_column( date_modified => $c->date_today() );
-        $user->update();
+        $c->form_values_to_database( $user, $form );
 
-        # N.B. Password not set in edit runmode so we don't rehash it.
+        # N.B. Password is never set in edit runmode so we don't rehash it.
 
         # Set our message and pass back to list view.
         $c->flash->{message} = 'Updated ' . $user->username;
@@ -223,12 +220,9 @@ sub modify : Local {
         $ctx->add( $form->param_value('password') );
         $form->add_valid( 'password', $ctx->hexdigest() );
 
-        # Update the record.
-        $form->model->update( $user );
-
-        # Set the modification date.
+        # Update the record. Set the modification date.
         $user->set_column( date_modified => $c->date_today() );
-        $user->update();
+        $c->form_values_to_database( $user, $form );
 
         # Set our message and pass back to list view.
         $c->flash->{message} = 'Updated ' . $user->username;
@@ -270,8 +264,7 @@ sub reset : Local {
     my $password = $self->reset_user_password( $user );
 
     # Set the modification date.
-    $user->set_column( date_modified => $c->date_today() );
-    $user->update();
+    $c->update_database_object( $user, { date_modified => $c->date_today() } );
 
     $c->flash->{message}
         = sprintf("Reset password for %s to %s.", $user->username, $password);
@@ -314,7 +307,7 @@ sub delete : Local {
             = sprintf("Deleted user %s", $user->username);
 
         # Actually delete the user.
-        $user->delete;
+        $c->delete_database_object( $user );
 
         $c->res->redirect( $c->uri_for('/user/list/') );
         $c->detach();

@@ -131,7 +131,7 @@ sub common_edit : Private {
     if ( $form->submitted_and_valid() ) {
 
         # Form was submitted and it validated.
-        $form->model->update( $cv );
+        $c->form_values_to_database( $cv, $form );
 
         # Set our message and pass back to list view.
         $c->flash->{message}
