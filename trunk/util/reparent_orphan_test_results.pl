@@ -40,11 +40,18 @@ has 'vnotes'   => ( is       => 'ro',
 sub reparent {
 
     # This is the main entry point.
-    my ( $self ) = @_;
+    my ( $self, $trial_ids ) = @_;
 
-    my $rs = $self->database->resultset('Patient');
+    my $rs;
+    if ( $trial_ids && ref $trial_ids eq 'ARRAY' && scalar @$trial_ids ) {
+        $rs = $self->database->resultset('Patient')->search( { trial_id => { in => $trial_ids}  } );
+    }
+    else {
+        $rs = $self->database->resultset('Patient');
+    }
+
     while ( my $patient = $rs->next() ) {
-        warn(sprintf("Processing patient %s...\n", $patient->trial_id() ));
+        warn(sprintf("Checking test results for patient %s...\n", $patient->trial_id() ));
         $self->_process_patient( $patient );
     }
 
@@ -331,6 +338,9 @@ use Getopt::Long;
 use Pod::Usage;
 use ClinStudy::ORM;
 use Config::YAML;
+use XML::LibXML;
+
+use ClinStudy::XML::Loader;
 
 sub fix_reparenting_flag {
 
@@ -338,8 +348,7 @@ sub fix_reparenting_flag {
 
     # Callback used by the import code to fix the needs_reparenting
     # flag on loading.
-
-    if ( $class eq 'TestResult' ) {
+    if ( $class =~ /::TestResult \z/xms ) {
         $row_ref->{'needs_reparenting'} = 1;
     }
 
@@ -398,11 +407,13 @@ $schema->txn_do(
 
         $loader->load( $xml );
 
+        my @trial_ids = map { $_->getAttribute('trial_id') } $xml->findnodes('.//Patient');
+
         my $case_worker = SocialServices->new(
             database => $schema,
         );
 
-        $case_worker->reparent();
+        $case_worker->reparent( \@trial_ids );
     }
 );
 
@@ -415,6 +426,7 @@ reparent_orphan_test_results.pl
 =head1 SYNOPSIS
 
  reparent_orphan_test_results.pl -c <ClinStudyWeb config file>
+                                 -x <XML file> -d <XML schema doc>
 
 =head1 DESCRIPTION
 

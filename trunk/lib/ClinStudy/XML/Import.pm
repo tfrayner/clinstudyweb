@@ -199,10 +199,6 @@ sub load_element {
         $self->process_attr( $attr, $row_ref );
     }
 
-    if ( my $callback = $self->onload_callback() ) {
-        $row_ref = $callback->( $class, $row_ref );
-    }
-        
     my $obj = $self->load_object( $row_ref, $rs );
 
     return $obj;
@@ -300,6 +296,9 @@ sub load_object {
     # behaviour, e.g. for ControlledVocab.
     my ( $self, $hashref, $rs ) = @_;
 
+    if ( my $callback = $self->onload_callback() ) {
+        $hashref = $callback->( $rs->result_class, $hashref );
+    }
     
     my $obj;
     $self->database->txn_do(
