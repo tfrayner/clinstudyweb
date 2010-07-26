@@ -346,6 +346,15 @@ sub _set_journal_changeset_attrs {
 
     my ( $c ) = @_;
 
+    # Since all our database updates are (or should be) preceded by
+    # this call, we check here whether the database has been set to
+    # read-only or not.
+    if ( $c->config->{WebIsReadOnly} ) {
+        $c->stash->{error} = 'Sorry, the database is currently in read-only mode. '
+                           . 'Please contact your database administrator for details.';
+        $c->detach( '/access_denied' );
+    }
+
     if ( my $user = $c->user() ) {
         $c->model->result_source->schema->changeset_user( $user->id() );
     }

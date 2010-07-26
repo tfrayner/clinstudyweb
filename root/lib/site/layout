@@ -13,6 +13,10 @@
       [% END %]
     </div>
 
+    [% IF c.config.WebIsReadOnly %]
+      <h3><font color="red">Warning: The database is currently READ-ONLY.</font> You will not be able to make changes.</h3>
+    [% END %]
+
     [% INCLUDE 'app/breadcrumbs.tt2' %]
 
     [% IF error %] 
