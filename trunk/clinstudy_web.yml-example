@@ -98,3 +98,7 @@ MAGETAB:
     recruitment: >-
       Some text here
 
+# To disallow database modifications via the web interface (e.g. for
+# maintenance), uncomment the following and set it to a true value
+# (e.g., 1):
+#WebIsReadOnly: 0
