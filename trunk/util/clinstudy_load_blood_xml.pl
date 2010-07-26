@@ -421,11 +421,11 @@ __END__
 
 =head1 NAME
 
-reparent_orphan_test_results.pl
+clinstudy_load_blood_xml.pl
 
 =head1 SYNOPSIS
 
- reparent_orphan_test_results.pl -c <ClinStudyWeb config file>
+ clinstudy_load_blood_xml.pl -c <ClinStudyWeb config file>
                                  -x <XML file> -d <XML schema doc>
 
 =head1 DESCRIPTION
