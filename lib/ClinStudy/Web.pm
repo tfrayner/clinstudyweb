@@ -151,6 +151,9 @@ __PACKAGE__->deny_access( '/transplant' );
 __PACKAGE__->allow_access_if( '/assay', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/assay' );
 
+__PACKAGE__->allow_access_if( '/assaybatch', [ qw( user ) ] );
+__PACKAGE__->deny_access( '/assaybatch' );
+
 __PACKAGE__->allow_access_if( '/assayqcvalue', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/assayqcvalue' );
 
