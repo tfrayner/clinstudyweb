@@ -5,10 +5,10 @@
     <thead>
       <tr>
         <td>Date</td>
-        <td>Identifier</td>
         <td>Filename</td>
-        <td>Batch name</td>
-        <td>Platform</td>
+        <td>Patient No.</td>
+        <td>Visit date</td>
+        <td>Cell type</td>
         <td>&nbsp;</td>
       </tr>
     </thead>
@@ -16,10 +16,21 @@
     [% FOREACH assay = objects %] 
         <tr> 
         <td> [% assay.assay_batch_id.date | html %]</td>
-        <td> [% assay.identifier | html %]</td>
         <td> [% assay.filename | html %] &nbsp; </td>
-        <td> [% assay.assay_batch_id.name | html %]</td>
-        <td> [% assay.assay_batch_id.platform_id.value | html %]</td>
+        [% IF assay.channels.blessed %]
+          [% SET channels = [ assay.channels ] %]
+        [% ELSE %]
+          [% SET channels = assay.channels.list %]
+        [% END %]
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.visit_id.patient_id.trial_id) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.visit_id.date) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.cell_type_id.value) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
         <td><a href="[% c.uri_for("/assay/view/$assay.id") | html %]">View</a></td>
         </tr> 
     [% END %]

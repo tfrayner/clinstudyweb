@@ -69,6 +69,7 @@ Controller::HTML::FormFu:
   constructor:
     render_method: tt
     auto_constraint_class: '%t'
+    default_model: DBICLogger
 
 # Optional configuration for MAGE-TAB export system.
 MAGETAB:
@@ -86,17 +87,21 @@ MAGETAB:
   
   protocols:
     
-    hybridization: >-
+    recruitment: >-
       Some text here
-      
-    labeling: >-
-      Some text here
-      
+
     cell_separation: >-
       Some text here
 
-    recruitment: >-
+    nucleic_acid_extraction: >-
       Some text here
+
+    labeling: >-
+      Some text here
+      
+    hybridization: >-
+      Some text here
+      
 
 # To disallow database modifications via the web interface (e.g. for
 # maintenance), uncomment the following and set it to a true value
