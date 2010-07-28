@@ -72,10 +72,11 @@ has '_investigation' => ( is       => 'rw',
                           isa      => 'Bio::MAGETAB::Investigation',
                           required => 0 );
 
-Readonly my $hyb_protocol_name         => 'Hybridization';
-Readonly my $labeling_protocol_name    => 'Labeling';
-Readonly my $separation_protocol_name  => 'Cell Separation';
-Readonly my $recruitment_protocol_name => 'Recruitment';
+Readonly my $HYB_PROTOCOL_NAME         => 'Hybridization';
+Readonly my $LABELING_PROTOCOL_NAME    => 'Labeling';
+Readonly my $EXTRACTION_PROTOCOL_NAME  => 'Nucleic Acid Extraction';
+Readonly my $SEPARATION_PROTOCOL_NAME  => 'Cell Separation';
+Readonly my $RECRUITMENT_PROTOCOL_NAME => 'Recruitment';
 
 sub BUILD {
 
@@ -108,29 +109,35 @@ sub BUILD {
     });
     $idf->set_comments([$comment]);
 
-    # FIXME add the rest of the protocols and CV terms, and contact details.
+    # FIXME add contact details.
     my @protocols;
-    push @protocols, $self->builder->find_or_create_protocol({
-        name => $hyb_protocol_name,
-        text => $self->_config()->{'protocols'}{'hybridization'},
-    });
-    push @protocols, $self->builder->find_or_create_protocol({
-        name => $labeling_protocol_name,
-        text => $self->_config()->{'protocols'}{'labeling'},
-    });
-    push @protocols, $self->builder->find_or_create_protocol({
-        name => $separation_protocol_name,
-        text => $self->_config()->{'protocols'}{'cell_separation'},
-    });
-    push @protocols, $self->builder->find_or_create_protocol({
-        name => $recruitment_protocol_name,
-        text => $self->_config()->{'protocols'}{'recruitment'},
-    });
+    push @protocols, $self->_create_protocol( $HYB_PROTOCOL_NAME, 'hybridization' );
+    push @protocols, $self->_create_protocol( $LABELING_PROTOCOL_NAME, 'labeling' );
+    push @protocols, $self->_create_protocol( $EXTRACTION_PROTOCOL_NAME, 'nucleic_acid_extraction' );
+    push @protocols, $self->_create_protocol( $SEPARATION_PROTOCOL_NAME, 'cell_separation' );
+    push @protocols, $self->_create_protocol( $RECRUITMENT_PROTOCOL_NAME, 'recruitment' );
     $idf->set_protocols(\@protocols);
 
     $self->_investigation( $idf );
     
     return;
+}
+
+sub _create_protocol {
+
+    my ( $self, $pname, $ptype ) = @_;
+
+    my $type = $self->builder->find_or_create_controlled_term({
+        category => 'ProtocolType',
+        value    => $ptype,
+    });
+    my $proto = $self->builder->find_or_create_protocol({
+        name => $pname,
+        text => $self->_config()->{'protocols'}{$ptype},
+        protocolType => $type,
+    });
+
+    return $proto;
 }
 
 sub dump {
@@ -268,8 +275,8 @@ sub _create_hyb {
         $file,
     );
 
-    my $hyb_prot = $builder->get_protocol({ name => $hyb_protocol_name })
-        or croak(qq{Error retrieving protocol named "$hyb_protocol_name".});
+    my $hyb_prot = $builder->get_protocol({ name => $HYB_PROTOCOL_NAME })
+        or croak(qq{Error retrieving protocol named "$HYB_PROTOCOL_NAME".});
     my $hyb_pa_attrs = {
         protocol   => $hyb_prot,
         date       => $xml_data_node->getAttribute('batch_date'),
@@ -334,8 +341,8 @@ sub _process_sample {
         },
         $le,
         {
-            protocol   => ($builder->get_protocol({ name => $labeling_protocol_name })
-                or croak(qq{Error retrieving protocol named "$labeling_protocol_name".})),
+            protocol   => ($builder->get_protocol({ name => $LABELING_PROTOCOL_NAME })
+                or croak(qq{Error retrieving protocol named "$LABELING_PROTOCOL_NAME".})),
         },
     );
 
@@ -347,8 +354,8 @@ sub _process_sample {
         },
         $ex,
         {
-            protocol   => ($builder->get_protocol({ name => $separation_protocol_name })
-                or croak(qq{Error retrieving protocol named "$separation_protocol_name".})),
+            protocol   => ($builder->get_protocol({ name => $EXTRACTION_PROTOCOL_NAME })
+                or croak(qq{Error retrieving protocol named "$EXTRACTION_PROTOCOL_NAME".})),
         },
     );
 
@@ -360,12 +367,23 @@ sub _process_sample {
         },
         $sa,
         {
-            protocol   => ($builder->get_protocol({ name => $recruitment_protocol_name })
-                or croak(qq{Error retrieving protocol named "$recruitment_protocol_name".})),
+            protocol   => ($builder->get_protocol({ name => $RECRUITMENT_PROTOCOL_NAME })
+                or croak(qq{Error retrieving protocol named "$RECRUITMENT_PROTOCOL_NAME".})),
+        },
+        {
+            protocol   => ($builder->get_protocol({ name => $SEPARATION_PROTOCOL_NAME })
+                or croak(qq{Error retrieving protocol named "$SEPARATION_PROTOCOL_NAME".})),
         },
     );
 
     my ( @sample_chars, @source_chars );
+
+    # We assume here that all samples are human.
+    my $char = $builder->find_or_create_controlled_term({
+        category => 'Organism',
+        value    => 'Homo sapiens',
+    });
+    push @source_chars, $char;
 
     # FIXME config options
     my @sample_attr_names = qw(cell_type time_point visit_date);
@@ -398,7 +416,7 @@ sub _process_sample {
         }
 
         # Skip anything flagged as hidden.
-        next ATTR if ( first { $_ eq $attrname } @hidden_attr_names, 'year_of_birth' );
+        next ATTR if ( first { $_ eq $attrname } @hidden_attr_names, 'year_of_birth', 'sample_name' );
 
         # Skip empty attributes.
         next ATTR if ( $attr->value() eq q{} );
@@ -453,7 +471,7 @@ sub _process_sample {
 
 sub _create_node_and_edge {
 
-    my ( $self, $nodetype, $node_attr, $target, $pa_attr ) = @_;
+    my ( $self, $nodetype, $node_attr, $target, @pa_attrs ) = @_;
 
     my $builder = $self->builder();
 
@@ -469,10 +487,11 @@ sub _create_node_and_edge {
 
     # Any protocol information here (only one protocol per edge for
     # now).
-    if ( $pa_attr ) {
-        my $pa = $builder->find_or_create_protocol_application( dclone($pa_attr) );
-        $edge->set_protocolApplications( [ $pa ] );
+    my @protoapps;
+    foreach my $pa_attr ( @pa_attrs ) {
+        push @protoapps, $builder->find_or_create_protocol_application( dclone($pa_attr) );
     }
+    $edge->set_protocolApplications( \@protoapps ) if scalar @protoapps;
 
     return $node;
 }
