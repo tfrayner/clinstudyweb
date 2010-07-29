@@ -68,6 +68,8 @@ my %external_value_map = (
                 condition_name_id    => 'DiagnosisCondition',
                 confidence_id        => 'DiagnosisConfidence',
                 previous_course_id   => 'PreviousDiseaseCourse',
+                disease_staging_id   => 'DiseaseStaging',
+                disease_extent_id    => 'DiseaseExtent',
             },
             DiseaseEvent => {
                 type_id              => 'DiseaseEventType',

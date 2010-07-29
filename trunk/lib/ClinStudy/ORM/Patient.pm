@@ -1,121 +1,320 @@
 package ClinStudy::ORM::Patient;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::Patient
+
+=cut
+
 __PACKAGE__->table("patient");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 year_of_birth
+
+  data_type: 'year'
+  is_nullable: 1
+
+=head2 sex
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
+=head2 trial_id
+
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 15
+
+=head2 ethnicity_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 home_centre_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 entry_date
+
+  data_type: 'date'
+  is_nullable: 0
+
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "year_of_birth",
-  { data_type => "YEAR", default_value => undef, is_nullable => 1, size => 4 },
+  { data_type => "year", is_nullable => 1 },
   "sex",
-  { data_type => "CHAR", default_value => undef, is_nullable => 1, size => 1 },
+  { data_type => "char", is_nullable => 1, size => 1 },
   "trial_id",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 0,
-    size => 15,
-  },
+  { data_type => "varchar", is_nullable => 0, size => 15 },
   "ethnicity_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "home_centre_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "entry_date",
-  { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  { data_type => "date", is_nullable => 0 },
   "notes",
-  {
-    data_type => "TEXT",
-    default_value => undef,
-    is_nullable => 1,
-    size => 65535,
-  },
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("trial_id", ["trial_id"]);
+
+=head1 RELATIONS
+
+=head2 adverse_events
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::AdverseEvent>
+
+=cut
+
 __PACKAGE__->has_many(
   "adverse_events",
   "ClinStudy::ORM::AdverseEvent",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 clinical_features
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::ClinicalFeature>
+
+=cut
+
 __PACKAGE__->has_many(
   "clinical_features",
   "ClinStudy::ORM::ClinicalFeature",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 comorbidities
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Comorbidity>
+
+=cut
+
 __PACKAGE__->has_many(
   "comorbidities",
   "ClinStudy::ORM::Comorbidity",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 diagnoses
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Diagnosis>
+
+=cut
+
 __PACKAGE__->has_many(
   "diagnoses",
   "ClinStudy::ORM::Diagnosis",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 disease_events
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::DiseaseEvent>
+
+=cut
+
 __PACKAGE__->has_many(
   "disease_events",
   "ClinStudy::ORM::DiseaseEvent",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 hospitalisations
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Hospitalisation>
+
+=cut
+
 __PACKAGE__->has_many(
   "hospitalisations",
   "ClinStudy::ORM::Hospitalisation",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 ethnicity_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "ethnicity_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "ethnicity_id" },
 );
+
+=head2 home_centre_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "home_centre_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "home_centre_id" },
 );
+
+=head2 patient_prior_groups
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::PatientPriorGroup>
+
+=cut
+
 __PACKAGE__->has_many(
   "patient_prior_groups",
   "ClinStudy::ORM::PatientPriorGroup",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 prior_observations
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::PriorObservation>
+
+=cut
+
 __PACKAGE__->has_many(
   "prior_observations",
   "ClinStudy::ORM::PriorObservation",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 prior_treatments
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::PriorTreatment>
+
+=cut
+
 __PACKAGE__->has_many(
   "prior_treatments",
   "ClinStudy::ORM::PriorTreatment",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 risk_factors
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::RiskFactor>
+
+=cut
+
 __PACKAGE__->has_many(
   "risk_factors",
   "ClinStudy::ORM::RiskFactor",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 studies
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Study>
+
+=cut
+
 __PACKAGE__->has_many(
   "studies",
   "ClinStudy::ORM::Study",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 system_involvements
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::SystemInvolvement>
+
+=cut
+
 __PACKAGE__->has_many(
   "system_involvements",
   "ClinStudy::ORM::SystemInvolvement",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
+
+=head2 visits
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Visit>
+
+=cut
+
 __PACKAGE__->has_many(
   "visits",
   "ClinStudy::ORM::Visit",
   { "foreign.patient_id" => "self.id" },
+  {},
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-04 20:12:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rbQxEExzRW+m0VbeOQe4uw
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MiUPBgKEpZpmeS+6IWcbcw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -204,7 +403,5 @@ __PACKAGE__->many_to_many(
 __PACKAGE__->many_to_many(
     "prior_groups" => "patient_prior_groups", "prior_group_id"
 );
-
-__PACKAGE__->load_components("Schema::Journal");
 
 1;

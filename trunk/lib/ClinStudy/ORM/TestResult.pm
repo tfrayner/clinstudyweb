@@ -1,34 +1,89 @@
 package ClinStudy::ORM::TestResult;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::TestResult
+
+=cut
+
 __PACKAGE__->table("test_result");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 test_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 visit_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 hospitalisation_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 value
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 controlled_value_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 date
+
+  data_type: 'date'
+  is_nullable: 0
+
+=head2 needs_reparenting
+
+  data_type: 'tinyint'
+  is_nullable: 1
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "test_id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "visit_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "hospitalisation_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "value",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "controlled_value_id",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "date",
-  { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  { data_type => "date", is_nullable => 0 },
   "needs_reparenting",
-  { data_type => "CHAR", default_value => undef, is_nullable => 1, size => 1 },
+  { data_type => "tinyint", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("test_result_visit_id", ["test_id", "date", "visit_id"]);
@@ -36,23 +91,81 @@ __PACKAGE__->add_unique_constraint(
   "test_result_hospitalisation_id",
   ["test_id", "date", "hospitalisation_id"],
 );
+
+=head1 RELATIONS
+
+=head2 test_aggregation_aggregate_result_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::TestAggregation>
+
+=cut
+
 __PACKAGE__->has_many(
   "test_aggregation_aggregate_result_ids",
   "ClinStudy::ORM::TestAggregation",
   { "foreign.aggregate_result_id" => "self.id" },
+  {},
 );
+
+=head2 test_aggregation_test_result_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::TestAggregation>
+
+=cut
+
 __PACKAGE__->has_many(
   "test_aggregation_test_result_ids",
   "ClinStudy::ORM::TestAggregation",
   { "foreign.test_result_id" => "self.id" },
+  {},
 );
+
+=head2 test_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Test>
+
+=cut
+
 __PACKAGE__->belongs_to("test_id", "ClinStudy::ORM::Test", { id => "test_id" });
+
+=head2 visit_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Visit>
+
+=cut
+
 __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
+
+=head2 hospitalisation_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Hospitalisation>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "hospitalisation_id",
   "ClinStudy::ORM::Hospitalisation",
   { id => "hospitalisation_id" },
 );
+
+=head2 controlled_value_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "controlled_value_id",
   "ClinStudy::ORM::ControlledVocab",
@@ -60,8 +173,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-06-04 14:15:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yt5gAxl3RDcL3fXj3B/hlw
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LHlb4mW7mHHytnm0Po3UeA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

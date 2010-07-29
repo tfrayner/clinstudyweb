@@ -1,41 +1,95 @@
 package ClinStudy::ORM::AssayBatch;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::AssayBatch
+
+=cut
+
 __PACKAGE__->table("assay_batch");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 date
+
+  data_type: 'date'
+  is_nullable: 0
+
+=head2 name
+
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 31
+
+=head2 operator
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 platform_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "date",
-  { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  { data_type => "date", is_nullable => 0 },
   "name",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 0,
-    size => 31,
-  },
+  { data_type => "varchar", is_nullable => 0, size => 31 },
   "operator",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "platform_id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("name", ["name"]);
+
+=head1 RELATIONS
+
+=head2 assays
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Assay>
+
+=cut
+
 __PACKAGE__->has_many(
   "assays",
   "ClinStudy::ORM::Assay",
   { "foreign.assay_batch_id" => "self.id" },
+  {},
 );
+
+=head2 platform_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "platform_id",
   "ClinStudy::ORM::ControlledVocab",
@@ -43,8 +97,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-02-13 17:23:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BJP4w64uIDuYTrqfv9eLWg
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L8c9mYYFiUGR1iOon5kZtg
 
 
 # Custom has_many so that we track the cascade_delete behaviour of the

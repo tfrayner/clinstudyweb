@@ -1,76 +1,112 @@
 package ClinStudy::ORM::User;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::User
+
+=cut
+
 __PACKAGE__->table("user");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 username
+
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 255
+
+=head2 name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 email
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 password
+
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 40
+
+=head2 date_created
+
+  data_type: 'datetime'
+  is_nullable: 0
+
+=head2 date_modified
+
+  data_type: 'datetime'
+  is_nullable: 1
+
+=head2 date_accessed
+
+  data_type: 'datetime'
+  is_nullable: 1
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "username",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 0,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "name",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "email",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "password",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 0,
-    size => 40,
-  },
+  { data_type => "varchar", is_nullable => 0, size => 40 },
   "date_created",
-  {
-    data_type => "DATETIME",
-    default_value => undef,
-    is_nullable => 0,
-    size => 19,
-  },
+  { data_type => "datetime", is_nullable => 0 },
   "date_modified",
-  {
-    data_type => "DATETIME",
-    default_value => undef,
-    is_nullable => 1,
-    size => 19,
-  },
+  { data_type => "datetime", is_nullable => 1 },
   "date_accessed",
-  {
-    data_type => "DATETIME",
-    default_value => undef,
-    is_nullable => 1,
-    size => 19,
-  },
+  { data_type => "datetime", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("username", ["username"]);
+
+=head1 RELATIONS
+
+=head2 user_roles
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::UserRole>
+
+=cut
+
 __PACKAGE__->has_many(
   "user_roles",
   "ClinStudy::ORM::UserRole",
   { "foreign.user_id" => "self.id" },
+  {},
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-10-23 13:53:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8jUrpVRMs0FGYlT/zie+xA
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nAH/SxpbgTehqJOvydyI9A
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

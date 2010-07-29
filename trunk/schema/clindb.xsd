@@ -79,6 +79,8 @@
     <xs:attribute name="previous_episodes" type="tinyintType"/>
     <xs:attribute name="previous_course" type="varcharType"/>
     <xs:attribute name="previous_duration_months" type="decimalType"/>
+    <xs:attribute name="disease_staging" type="varcharType"/>
+    <xs:attribute name="disease_extent" type="varcharType"/>
   </xs:complexType>
 
   <xs:complexType name="diseaseEventType">
@@ -194,6 +196,7 @@
     <xs:attribute name="notes" type="textType"/>
     <xs:attribute name="disease_activity" type="varcharType"/>
     <xs:attribute name="nominal_timepoint" type="varcharType"/>
+    <xs:attribute name="treatment_escalation" type="tinyintType"/>
   </xs:complexType>
 
   <xs:complexType name="graftFailureType">
@@ -210,6 +213,7 @@
     <xs:attribute name="number" type="intType"/>
     <xs:attribute name="sensitisation_status" type="varcharType"/>
     <xs:attribute name="recip_cmv" type="tinyintType"/>
+    <xs:attribute name="delayed_graft_function" type="tinyintType"/>
     <xs:attribute name="days_delayed_function" type="intType"/>
     <xs:attribute name="organ_type" type="varcharType" use="required"/>
     <xs:attribute name="mins_cold_ischaemic" type="intType"/>
