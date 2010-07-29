@@ -1,64 +1,147 @@
 package ClinStudy::ORM::Hospitalisation;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::Hospitalisation
+
+=cut
+
 __PACKAGE__->table("hospitalisation");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 patient_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 date
+
+  data_type: 'date'
+  is_nullable: 0
+
+=head2 days_duration
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 postop_days_duration
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 reason_for_admission
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "patient_id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "date",
-  { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  { data_type => "date", is_nullable => 0 },
   "days_duration",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 6 },
+  { data_type => "integer", is_nullable => 1 },
   "postop_days_duration",
-  { data_type => "INT", default_value => undef, is_nullable => 1, size => 6 },
+  { data_type => "integer", is_nullable => 1 },
   "reason_for_admission",
-  {
-    data_type => "VARCHAR",
-    default_value => undef,
-    is_nullable => 1,
-    size => 255,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "notes",
-  {
-    data_type => "TEXT",
-    default_value => undef,
-    is_nullable => 1,
-    size => 65535,
-  },
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("patient_id_2", ["patient_id", "date"]);
+
+=head1 RELATIONS
+
+=head2 drugs
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Drug>
+
+=cut
+
 __PACKAGE__->has_many(
   "drugs",
   "ClinStudy::ORM::Drug",
   { "foreign.hospitalisation_id" => "self.id" },
+  {},
 );
+
+=head2 patient_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Patient>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "patient_id",
   "ClinStudy::ORM::Patient",
   { id => "patient_id" },
 );
+
+=head2 test_results
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::TestResult>
+
+=cut
+
 __PACKAGE__->has_many(
   "test_results",
   "ClinStudy::ORM::TestResult",
   { "foreign.hospitalisation_id" => "self.id" },
+  {},
 );
+
+=head2 transplants
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Transplant>
+
+=cut
+
 __PACKAGE__->has_many(
   "transplants",
   "ClinStudy::ORM::Transplant",
   { "foreign.hospitalisation_id" => "self.id" },
+  {},
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-10-23 13:53:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:76A76bEx89GN1EhHwIlixw
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZTpgWlJwv61mibPfGw/atw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

@@ -1,35 +1,92 @@
 package ClinStudy::ORM::DiseaseEvent;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+ClinStudy::ORM::DiseaseEvent
+
+=cut
+
 __PACKAGE__->table("disease_event");
+
+=head1 ACCESSORS
+
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
+=head2 type_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 patient_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 start_date
+
+  data_type: 'date'
+  is_nullable: 0
+
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
+=cut
+
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "type_id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "patient_id",
-  { data_type => "INT", default_value => undef, is_nullable => 0, size => 11 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "start_date",
-  { data_type => "DATE", default_value => undef, is_nullable => 0, size => 10 },
+  { data_type => "date", is_nullable => 0 },
   "notes",
-  {
-    data_type => "TEXT",
-    default_value => undef,
-    is_nullable => 1,
-    size => 65535,
-  },
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
+
+=head1 RELATIONS
+
+=head2 patient_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Patient>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "patient_id",
   "ClinStudy::ORM::Patient",
   { id => "patient_id" },
 );
+
+=head2 type_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
 __PACKAGE__->belongs_to(
   "type_id",
   "ClinStudy::ORM::ControlledVocab",
@@ -37,8 +94,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-10-23 13:53:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t+VhQaJSmVPg8XnhQXendA
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oVD5Gvy8MKj+HzkUA0+9Yg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

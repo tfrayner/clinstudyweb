@@ -158,14 +158,20 @@ CREATE TABLE `diagnosis` (
   `previous_episodes` tinyint(1) default NULL,
   `previous_course_id` int(11) default NULL,
   `previous_duration_months` decimal(12,5) default NULL,
+  `disease_staging_id` int(11) default NULL,
+  `disease_extent_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `patient_id` (`patient_id`),
   KEY `condition_name_id` (`condition_name_id`),
   KEY `confidence_id` (`confidence_id`),
+  KEY `disease_staging_id` (`disease_staging_id`),
+  KEY `disease_extent_id` (`disease_extent_id`),
   CONSTRAINT `diagnosis_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `diagnosis_ibfk_2` FOREIGN KEY (`condition_name_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `diagnosis_ibfk_3` FOREIGN KEY (`confidence_id`) REFERENCES `controlled_vocab` (`id`),
-  CONSTRAINT `diagnosis_ibfk_4` FOREIGN KEY (`previous_course_id`) REFERENCES `controlled_vocab` (`id`)
+  CONSTRAINT `diagnosis_ibfk_4` FOREIGN KEY (`previous_course_id`) REFERENCES `controlled_vocab` (`id`),
+  CONSTRAINT `diagnosis_ibfk_5` FOREIGN KEY (`disease_staging_id`) REFERENCES `controlled_vocab` (`id`),
+  CONSTRAINT `diagnosis_ibfk_6` FOREIGN KEY (`disease_extent_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -889,7 +895,7 @@ CREATE TABLE `test_result` (
   `value` varchar(255) default NULL,
   `controlled_value_id` int(11) default NULL,
   `date` date NOT NULL,
-  `needs_reparenting` char(1) default NULL, 
+  `needs_reparenting` tinyint(1) default NULL, 
   PRIMARY KEY  (`id`),
   KEY `test_id` (`test_id`),
   KEY `visit_id` (`visit_id`),
@@ -927,6 +933,7 @@ CREATE TABLE `transplant` (
   `number` int(6) default NULL,
   `sensitisation_status_id` int(11) default NULL,
   `recip_cmv` tinyint(1) default NULL,
+  `delayed_graft_function` tinyint(1) default NULL,
   `days_delayed_function` int(6) default NULL,
   `organ_type_id` int(11) NOT NULL,
   `mins_cold_ischaemic` int(6) default NULL,
@@ -1030,6 +1037,7 @@ CREATE TABLE `visit` (
   `disease_activity_id` int(11) default NULL,
   `patient_id` int(11) NOT NULL,
   `nominal_timepoint_id` int(11) default NULL,
+  `treatment_escalation` tinyint(1) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `patient_id_2` (`patient_id`,`date`),
   KEY `patient_id` (`patient_id`),
