@@ -19,6 +19,12 @@ __PACKAGE__->table("visit_emergent_group");
 
 =head1 ACCESSORS
 
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
 =head2 visit_id
 
   data_type: 'integer'
@@ -34,12 +40,15 @@ __PACKAGE__->table("visit_emergent_group");
 =cut
 
 __PACKAGE__->add_columns(
+  "id",
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "visit_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "emergent_group_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
-__PACKAGE__->set_primary_key("visit_id", "emergent_group_id");
+__PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint("visit_emergent_group", ["visit_id", "emergent_group_id"]);
 
 =head1 RELATIONS
 
@@ -68,8 +77,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0khYeFWx0KUR1yI6GsI01Q
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 21:47:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OJNv397TWwEJq45yr0u5ow
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

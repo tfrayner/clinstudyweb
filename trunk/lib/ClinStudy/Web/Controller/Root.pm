@@ -225,7 +225,7 @@ sub update_database_timestamp {
 
     my ( $self, $c ) = @_;
 
-    my $schema = $c->model->result_source->schema();
+    my $schema = $c->model('DB:User')->result_source->schema();
 
     if ( my $user = $c->user() ) {
         $schema->changeset_user( $user->id() );

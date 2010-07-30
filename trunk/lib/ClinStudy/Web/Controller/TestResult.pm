@@ -314,7 +314,7 @@ sub edit : Local {
         # *after* the database has been updated.
         if ( $holderclass =~ /::TestResult \z/xms ) {
             $c->_set_journal_changeset_attrs();
-            $c->model->result_source->schema->txn_do(
+            $c->model('DB:TestResult')->result_source->schema->txn_do(
                 sub {
                     $c->model('DB::TestAggregation')->find_or_create({
                         aggregate_result_id => $resultholder,
