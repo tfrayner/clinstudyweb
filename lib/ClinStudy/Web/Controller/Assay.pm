@@ -81,7 +81,7 @@ sub add_to_sample : Private {  # Currently not in use because assays
         # main object before its dependencies, but there we are.
         my $batch;
         $c->_set_journal_changeset_attrs();
-        $c->model('DB:Assay')->result_source->schema->txn_do(
+        $c->model('DB::Assay')->result_source->schema->txn_do(
             sub {
                 $batch = $c->model('DB::AssayBatch')->find_or_create({
                     %{$form->params()->{'assay_batch_id'}},

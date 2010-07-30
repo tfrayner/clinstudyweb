@@ -361,7 +361,7 @@ sub _set_journal_changeset_attrs {
     # While we only use a single schema we can use any of the result
     # sets to reach our schema object. We use the central Patient rs
     # since it's unlikely to be removed.
-    my $schema = $c->model('DB:Patient')->result_source->schema();
+    my $schema = $c->model('DB::Patient')->result_source->schema();
 
     if ( my $user = $c->user() ) {
         $schema->changeset_user( $user->id() );
@@ -379,7 +379,7 @@ sub form_values_to_database {
 
     $c->_set_journal_changeset_attrs();
 
-    $c->model('DB:Patient')->result_source->schema->txn_do(
+    $c->model('DB::Patient')->result_source->schema->txn_do(
         sub {
             $form->model->update( $object );
         }
@@ -394,7 +394,7 @@ sub update_database_object {
 
     $c->_set_journal_changeset_attrs();
 
-    $c->model('DB:Patient')->result_source->schema->txn_do(
+    $c->model('DB::Patient')->result_source->schema->txn_do(
         sub {
             if ( $attrs && ref $attrs eq 'HASH' ) {
                 while ( my ( $key, $value ) = each %$attrs ) {
@@ -416,7 +416,7 @@ sub delete_database_object {
 
     $c->_set_journal_changeset_attrs();
 
-    $c->model('DB:Patient')->result_source->schema->txn_do(
+    $c->model('DB::Patient')->result_source->schema->txn_do(
         sub {
             $object->delete();
         }
