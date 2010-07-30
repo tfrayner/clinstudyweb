@@ -19,39 +19,39 @@ __PACKAGE__->table("test_aggregation");
 
 =head1 ACCESSORS
 
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
 =head2 aggregate_result_id
 
   data_type: 'integer'
-  default_value: 0
   is_foreign_key: 1
   is_nullable: 0
 
 =head2 test_result_id
 
   data_type: 'integer'
-  default_value: 0
   is_foreign_key: 1
   is_nullable: 0
 
 =cut
 
 __PACKAGE__->add_columns(
+  "id",
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "aggregate_result_id",
-  {
-    data_type      => "integer",
-    default_value  => 0,
-    is_foreign_key => 1,
-    is_nullable    => 0,
-  },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "test_result_id",
-  {
-    data_type      => "integer",
-    default_value  => 0,
-    is_foreign_key => 1,
-    is_nullable    => 0,
-  },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
-__PACKAGE__->set_primary_key("aggregate_result_id", "test_result_id");
+__PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint(
+  "aggregate_test_result",
+  ["aggregate_result_id", "test_result_id"],
+);
 
 =head1 RELATIONS
 
@@ -84,8 +84,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zSlXRhukif1g8yt150qhCg
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-30 08:45:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DQXLXYNDdcyqy4UtZD09fg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

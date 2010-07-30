@@ -59,6 +59,30 @@ sub index : Path : Args(0) {
     $c->stash->{study_types} = \@study_types;
 }
 
+=head2 list
+
+=cut
+
+sub list : Local {
+
+    # A full listing of all patients is impractical.
+    my ( $self, $c, @args ) = @_;
+
+    # FIXME this is really rather brittle - it depends on the internal
+    # behaviour of the superclass.
+    if ( $c->stash->{'search_terms'} ) {
+
+        # Search terms have been provided, so hand off to the superclass.
+        $self->SUPER::list( $c, @args );
+    }
+    else {
+
+        # No search terms, we just redirect to the index action.
+        $c->res->redirect( $c->uri_for( '' ) );
+        $c->detach();
+    }
+}
+
 =head2 list_by_study_type
 
 =cut

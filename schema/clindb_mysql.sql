@@ -390,9 +390,11 @@ DROP TABLE IF EXISTS `system_involvement`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `system_involvement` (
+  `id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
-  PRIMARY KEY  (`patient_id`, `type_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `patient_type` (`patient_id`, `type_id`),
   KEY `patient_id` (`patient_id`),
   KEY `type_id` (`type_id`),
   CONSTRAINT `system_involvement_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
@@ -417,9 +419,11 @@ DROP TABLE IF EXISTS `clinical_feature`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `clinical_feature` (
+  `id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
-  PRIMARY KEY  (`patient_id`, `type_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY patient_type  (`patient_id`, `type_id`),
   KEY `patient_id` (`patient_id`),
   KEY `type_id` (`type_id`),
   CONSTRAINT `clinical_feature_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
@@ -508,9 +512,11 @@ DROP TABLE IF EXISTS `patient_prior_group`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `patient_prior_group` (
+  `id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) NOT NULL,
   `prior_group_id` int(11) NOT NULL,
-  PRIMARY KEY  (`patient_id`,`prior_group_id`),
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `patient_prior_group` (`patient_id`,`prior_group_id`),
   KEY `patient_id` (`patient_id`),
   KEY `prior_group_id` (`prior_group_id`),
   CONSTRAINT `patient_prior_group_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
@@ -535,9 +541,11 @@ DROP TABLE IF EXISTS `visit_emergent_group`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `visit_emergent_group` (
+  `id` int(11) NOT NULL auto_increment,
   `visit_id` int(11) NOT NULL,
   `emergent_group_id` int(11) NOT NULL,
-  PRIMARY KEY  (`visit_id`,`emergent_group_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `visit_emergent_group` (`visit_id`,`emergent_group_id`),
   KEY `visit_id` (`visit_id`),
   KEY `emergent_group_id` (`emergent_group_id`),
   CONSTRAINT `visit_emergent_group_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`) ON DELETE CASCADE,
@@ -834,9 +842,11 @@ DROP TABLE IF EXISTS `test_aggregation`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `test_aggregation` (
-  `aggregate_result_id` int(11) default NULL,
-  `test_result_id` int(11) default NULL,
-  PRIMARY KEY  (`aggregate_result_id`,`test_result_id`),
+  `id` int(11) NOT NULL auto_increment,
+  `aggregate_result_id` int(11) NOT NULL,
+  `test_result_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `aggregate_test_result`  (`aggregate_result_id`,`test_result_id`),
   KEY `aggregate_result_id` (`aggregate_result_id`),
   KEY `test_result_id` (`test_result_id`),
   CONSTRAINT `test_aggregation_ibfk_1` FOREIGN KEY (`aggregate_result_id`) REFERENCES `test_result` (`id`) ON DELETE RESTRICT,
@@ -861,9 +871,11 @@ DROP TABLE IF EXISTS `test_possible_value`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `test_possible_value` (
+  `id` int(11) NOT NULL auto_increment,
   `test_id` int(11) NOT NULL,
   `possible_value_id` int(11) NOT NULL,
-  PRIMARY KEY  (`test_id`,`possible_value_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `test_possible_value`  (`test_id`,`possible_value_id`),
   KEY `test_id` (`test_id`),
   KEY `possible_value_id` (`possible_value_id`),
   CONSTRAINT `test_possible_value_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `test` (`id`) ON DELETE CASCADE,
@@ -1004,9 +1016,11 @@ DROP TABLE IF EXISTS `user_role`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `user_role` (
+  `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
-  PRIMARY KEY  (`user_id`,`role_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_role` (`user_id`,`role_id`),
   KEY `user_id` (`user_id`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,

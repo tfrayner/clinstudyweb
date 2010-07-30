@@ -374,7 +374,7 @@ sub _generic_process_test_values {
 
     my $count = 0;
     $c->_set_journal_changeset_attrs();
-    $c->model->result_source->schema->txn_do(
+    $c->model('DB::Visit')->result_source->schema->txn_do(
         sub {
             while (defined( my $test_id = $c->req->param("${fieldname}_$count.test_id") ) ) {
                 my $value = $c->req->param("${fieldname}_$count.$modelattr");
@@ -388,7 +388,7 @@ sub _generic_process_test_values {
                 });
                 
                 $result->set_column( $modelattr => $value );
-                $result->insert();
+                $result->update_or_insert();
             }
         }
     );

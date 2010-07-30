@@ -259,7 +259,7 @@ sub switch_channels : Local {
 
     # We want these to be audited as part of a single changeset.
     $c->_set_journal_changeset_attrs();
-    $c->model->result_source->schema->txn_do(
+    $c->model('DB:Sample')->result_source->schema->txn_do(
         sub {
             foreach my $ch ( @channels ) {
                 $ch->update();

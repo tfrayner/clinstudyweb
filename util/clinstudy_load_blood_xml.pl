@@ -164,7 +164,7 @@ sub _split_visits {
                             $visit->set_column('notes', $self->vnotes());
                         }
 
-                        $visit->insert();
+                        $visit->update_or_insert();
                     }
                 );
 

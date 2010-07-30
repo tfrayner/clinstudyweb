@@ -303,24 +303,26 @@ sub calculate {
                     %opts,
                 });
                 push @bvas, $bvas;
-
-                # Ensure the child test results are all linked to the BVAS.
-                foreach my $child ( @allresults ) {
-                    $schema->resultset('TestAggregation')->find_or_create({
-                        test_result_id      => $child->id(),
-                        aggregate_result_id => $bvas->id(),
-                    });
-                }
             }
 
             # Actually set the scores.
             unless ( $bvas[0]->value() eq $bvas_scoreNW ) {
                 $bvas[0]->set_column( 'value' => $bvas_scoreNW );  # BVAS1
-                $bvas[0]->insert();
+                $bvas[0]->update_or_insert();
             }
             unless ( $bvas[1]->value() eq $bvas_scoreP ) {
                 $bvas[1]->set_column( 'value' => $bvas_scoreP );   # BVAS2
-                $bvas[1]->insert();
+                $bvas[1]->update_or_insert();
+            }
+
+            # Ensure the child test results are all linked to the BVAS.
+            foreach my $n ( 0..$#bvas ) {
+                foreach my $child ( @allresults ) {
+                    $schema->resultset('TestAggregation')->find_or_create({
+                        test_result_id      => $child->id(),
+                        aggregate_result_id => $bvas[$n]->id(),
+                    });
+                }
             }
         }
     );

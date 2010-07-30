@@ -19,6 +19,12 @@ __PACKAGE__->table("patient_prior_group");
 
 =head1 ACCESSORS
 
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+
 =head2 patient_id
 
   data_type: 'integer'
@@ -34,12 +40,15 @@ __PACKAGE__->table("patient_prior_group");
 =cut
 
 __PACKAGE__->add_columns(
+  "id",
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "patient_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "prior_group_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
-__PACKAGE__->set_primary_key("patient_id", "prior_group_id");
+__PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint("patient_prior_group", ["patient_id", "prior_group_id"]);
 
 =head1 RELATIONS
 
@@ -72,8 +81,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4I+SD1+cWXGdhbw+prX6gA
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 21:47:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JSpaLd+dFajR03bfmWrnOw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

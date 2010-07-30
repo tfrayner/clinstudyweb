@@ -124,7 +124,7 @@ sub calculate {
             });
             unless ( $bilag->value() eq $score ) {
                 $bilag->set_column( 'value' => $score );
-                $bilag->insert();
+                $bilag->update_or_insert();
             }
 
             # Ensure the child test results are all linked to the BILAG.
