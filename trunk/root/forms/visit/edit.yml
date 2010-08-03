@@ -66,6 +66,14 @@ elements:
         For Remission/Relapse BVAS scored as ANY criterion (BVAS 1 or 2); When persistent activity
         present for 3 months of FU then disregarded unless returns to BVAS 1 level (i.e., becomes new or worse).
 
+  - type: Checkbox
+    name: treatment_escalation
+    label: Treatment escalation
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Has the patient's treatment been escalated?
+
   - type: Block
     nested_name: test_cont_results_0
     elements:

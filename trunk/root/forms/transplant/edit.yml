@@ -80,14 +80,24 @@ elements:
         category: ReperfusionQuality
       label_column: value
 
+  - type: Checkbox
+    name: delayed_graft_function
+    label: Delayed Graft Function
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Was graft function delayed following transplant?
+
   - type: Text
     name: days_delayed_function
-    label: Delayed Function (days)
+    label: Delayed Function Duration (days)
     constraints:
       - Integer
       - type: Length
         max:  6
         min:  1
+      - type: DependOn
+        others: delayed_graft_function
     label_attributes:
       tooltipText: The number of days of delayed organ function following transplant in days.
 
@@ -108,7 +118,7 @@ elements:
     constraints:
       - ASCII
       - type: Length
-        max:  3
+        max:  5
         min:  1
     label_attributes:
       tooltipText: HLA mismatch information.

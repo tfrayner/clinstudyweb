@@ -38,6 +38,18 @@
              [%- ELSE -%]
                N/A
              [%- END -%]</td></tr>
+     <tr><th>Disease Extent:</th>
+         <td>[%- IF object.disease_extent_id.defined -%]
+               [%- object.disease_extent_id.value | html -%]
+             [%- ELSE -%]
+               N/A
+             [%- END -%]</td></tr>
+     <tr><th>Disease Staging:</th>
+         <td>[%- IF object.disease_staging_id.defined -%]
+               [%- object.disease_staging_id.value | html -%]
+             [%- ELSE -%]
+               N/A
+             [%- END -%]</td></tr>
   </tbody>
 </table>
 </fieldset>

@@ -5,6 +5,7 @@
 <fieldset class="data_view">
 <legend>Visit <span><a href="[% c.uri_for("/visit/edit", object.id) | html %]">Edit</a>; <a href="[% c.uri_for("/visit/edit_for_type", object.id) | html %]">Study-Specific data</a></span></legend>
 <table class="horizontal">
+
 <tr><th>Nominal timepoint:</th>
     <td>[% IF object.nominal_timepoint_id.defined -%]
           [%- object.nominal_timepoint_id.value | html -%]
@@ -14,6 +15,12 @@
     <td>[% IF object.disease_activity_id.defined -%]
           [%- object.disease_activity_id.value | html -%]
         [%- ELSE %] N/A [% END %]</td></tr>
+
+<tr><th>Treatment escalation:</th>
+    <td>[% IF object.treatment_escalation == 1 -%] Yes
+        [%- ELSE %] No
+        [%- END %]</td></tr>
+
 <tr><th>Notes:</th>
 <td>[% object.notes | html | html_line_break %]</td></tr></table>
 </fieldset>

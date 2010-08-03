@@ -98,6 +98,38 @@ elements:
         max:  15
         min:  0
 
+  - type: Select
+    name: disease_extent_id
+    label: Disease Extent
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: >-
+        The extent or severity of the disease condition in this patient.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: DiseaseExtent
+      label_column: value
+
+  - type: Select
+    name: disease_staging_id
+    label: Disease Staging
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: >-
+        The stage to which the disease has progressed in this patient.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: DiseaseStaging
+      label_column: value
+      
 ##########
 # Submit #
 ##########
