@@ -26,17 +26,19 @@ use Getopt::Long;
 use Pod::Usage;
 use Config::YAML;
 use ClinStudy::ORM;
+use List::Util qw(first);
 
 sub parse_args {
 
-    my ( $conffile, $class, $id, $field, $value, $want_help );
+    my ( $conffile, $class, $action, $field, $value, $where, $want_help );
 
     GetOptions(
         "c|config=s"       => \$conffile,
         "k|class=s"        => \$class,
-        "i|id=s"           => \$id,
         "f|field=s"        => \$field,
-        "v|value=s"        => \$value,        
+        "v|value=s"        => \$value,
+        "a|action=s"       => \$action,
+        "w|where=s"        => \$where,
         "h|help"           => \$want_help,
     );
 
@@ -48,7 +50,8 @@ sub parse_args {
         );
     }
 
-    unless ( $conffile && $class && defined $id && $field && defined $value ) {
+    unless ( $conffile && $class && $where && $action
+                 && ( $action ne 'update' || ( $field && defined $value ) ) ) {
         pod2usage(
             -message => qq{Please see "$0 -h" for further help notes.},
             -exitval => 255,
@@ -57,43 +60,66 @@ sub parse_args {
         );
     }
 
+    unless ( first { lc $action eq $_ } qw(delete update) ) {
+        die(qq{Action must be either "update" or "delete".\n});
+    }
+
     my $config = Config::YAML->new(config => $conffile);
 
     # FIXME it might be better to do this by introspection, but assuming
     # the primary ID column is "id" will do for now.
-    if ( $id =~ /\A id \z/ixms ) {
+    if ( $field && $field =~ /\A id \z/ixms ) {
         die("Error: Cannot update a primary ID column.");
     }
 
-    return(  $config->{'Model::DB'}->{connect_info}, $class, $id, $field, $value );
+    return(  $config->{'Model::DB'}->{connect_info}, $class, lc $action, $where, $field, $value );
 }
 
-my ( $conn_params, $class, $id, $field, $value ) = parse_args();
+my ( $conn_params, $class, $action, $where, $field, $value ) = parse_args();
 
 my $schema = ClinStudy::ORM->connect( @$conn_params );
 
-my $obj = $schema->resultset($class)->find($id)
-    or die("Error: Unable to find $class with ID $id.\n");
+my $obj_rs = $schema->resultset( $class )->search_literal( $where );
+
+if ( $obj_rs->count() == 0 ) {
+    die(qq{Error: No $class found with WHERE clause "$where".\n});
+}
 
 $schema->txn_do(
     sub {
-        $obj->set_column( $field, $value );
-        $obj->update();
+
+        # DBIx::Class::Journal doesn't yet support RS-level updates
+        # and deletes, so we have to iterate over rows.
+        if ( $action eq 'update' ) {
+            while ( my $obj = $obj_rs->next() ) {
+                $obj->set_column( $field, $value );
+                $obj->update();
+            }
+        }
+        else {
+            while ( my $obj = $obj_rs->next() ) {
+                $obj->delete();
+            }
+        }
     }
 );
 
-print("$class ($id) $field successfully set to $value.\n");
+print("$class objects WHERE $where successfully ${action}d.\n");
 
 __END__
 
 =head1 NAME
 
-clinstudy_update_row.pl
+clinstudy_edit_data.pl
 
 =head1 SYNOPSIS
 
- clinstudy_update_row.pl -c <config file> -k <ORM class>
-             -i <primary ID> -f <update field> -v <update value>
+ clinstudy_edit_data.pl -c <config file> -a <action> -k <ORM class>
+             -w <WHERE clause> -f <update field> -v <update value>
+ 
+ # Example:
+ clinstudy_edit_data.pl -c clinstudy_web.yml
+            -a update -k Patient -f trial_id -v T2000 -w 'id = 23'
 
 =head1 DESCRIPTION
 
@@ -102,6 +128,40 @@ entered into the database via the ORM layer. This is provided as a
 very basic substitute for updating the database directly, and its sole
 advantage is that it will maintain the integrity of the database audit
 history.
+
+Note that it is possible to do considerable damage to the database
+using this script if you don't know what you're doing. However, the
+audit history should always be available if you make a mistake.
+
+=head2 OPTIONS
+
+=over 2
+
+=item -c
+
+The YAML configuration file giving ClinStudy database connection parameters.
+
+=item -a
+
+The SQL action to invoke. Currently only "update" and "delete" are supported.
+
+=item -k
+
+The database ORM class being edited.
+
+=item -w
+
+An SQL WHERE clause to use to filter database table rows.
+
+=item -f
+
+The field to update (not required when deleting).
+
+=item -v
+
+The value to set the update field to (not required when deleting).
+
+=back
 
 =head1 AUTHOR
 
