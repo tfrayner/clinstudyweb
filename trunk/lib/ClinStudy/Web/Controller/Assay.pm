@@ -127,7 +127,7 @@ sub delete : Private {  # Currently not in use because assays are
 
     my ( $self, $c, $object_id, $sample_id ) = @_;
 
-    if ( ! $c->check_any_user_role('admin') ) {
+    if ( ! $c->check_any_user_role('editor') ) {
         $c->stash->{error} = 'Sorry, you are not authorised to delete this record.';
         $c->detach('/access_denied');
     }
