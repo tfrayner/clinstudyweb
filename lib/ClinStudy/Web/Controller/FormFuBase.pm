@@ -245,7 +245,7 @@ sub delete : Local {
 
     my ( $self, $c, $object_id ) = @_;
 
-    if ( ! $c->check_any_user_role('admin') ) {
+    if ( ! $c->check_any_user_role('editor') ) {
         $c->stash->{error} = 'Sorry, you are not authorised to delete this record.';
         $c->detach('/access_denied');
     }
