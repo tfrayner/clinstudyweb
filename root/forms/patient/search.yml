@@ -103,6 +103,15 @@ elements:
               attributes:
                 order_by: value
                 
+      - type: Text
+        name: year_of_birth
+        label: Year of Birth
+        constraints:
+          - Integer
+          - type: Length
+            max:  4
+            min:  4
+    
   - type: Fieldset
     legend: Batch Query
 
