@@ -112,6 +112,16 @@ elements:
             max:  4
             min:  4
     
+      - type: Select
+        name: sex
+        label: Gender
+        options:
+          - [ '', -select- ]
+          - [ M, Male ]
+          - [ F, Female ]
+        constraints:
+          - AutoSet
+      
   - type: Fieldset
     legend: Batch Query
 
