@@ -549,8 +549,9 @@ t/model_DB.t
 TODO
 util/clinstudy_dump.pl
 util/clinstudy_import.pl
+util/clinstudy_magetab.pl
 util/import_affy_data.pl
 util/merge_clinstudyml.pl
 util/recalculate_aggregate_tests.pl
-util/reparent_orphan_test_results.pl
 util/tab2clinstudy.pl
+util/clinstudy_edit_data.pl

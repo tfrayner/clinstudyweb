@@ -61,34 +61,42 @@ fixture_sets:
         - id
         - category
         - value
+        - accession
       -
         - 1
         - DiagnosisCondition
         - Systemic Lupus Erythematosus
+        - CV1
       -
         - 2
         - DiseaseEvent
         - Relapse
+        - CV2
       -
         - 3
         - DrugType
         - immunosuppressant
+        - CV3
       -
         - 4
         - DrugLocale
         - in clinic
+        - CV4
       -
         - 5
         - PatientGroupBasis
         - gene expression study
+        - CV5
       -
         - 6
         - PatientGroup
-        - CD8
+        - CD6
+        - CV1
       -
         - 7
         - PriorGroup
         - vaccination
+        - CV7
     - Diagnosis:
       -
         - patient_id
