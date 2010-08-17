@@ -1,0 +1,46 @@
+[% IF objects && objects.size > 0 %]
+      <div>
+      <table id='hospitalisationList'>
+      <thead>
+        <tr>
+          <td>Hospitalisation date</td>
+          <td>Reason for admission</td>
+          <td>IP days Peri-Tx</td>
+          <td>Total IP days</td>
+          <td>IP days 0-3/12 not inc TX</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH hospitalisation = objects.sort('date') %] 
+        <tr> 
+          <td>[% hospitalisation.date | html  %]</td> 
+          <td>[% hospitalisation.reason_for_admission | html %] &nbsp; </td>
+          <td>[%- IF hospitalisation.days_duration.defined -%]
+                [%- hospitalisation.days_duration - hospitalisation.postop_days_duration | html -%]
+              [%- END -%] &nbsp; </td>
+          <td>[% hospitalisation.days_duration | html %] &nbsp; </td>
+          <td>[% hospitalisation.postop_days_duration | html %] &nbsp; </td>
+          <td><a href="[% c.uri_for("/hospitalisation/view/$hospitalisation.id") | html %]">View</a>
+              <a href="[% c.uri_for("/hospitalisation/edit/$hospitalisation.id") | html %]">Edit</a> 
+              <a href="[% c.uri_for("/hospitalisation/delete/$hospitalisation.id") | html %]"
+                 onclick="return confirm('Really delete hospitalisation event on [% hospitalisation.date | html %] ?');">Delete</a></td>
+        </tr> 
+      [% END %] 
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('hospitalisationList');
+        tableWidgetObj.setTableHeight('100');
+        tableWidgetObj.setColumnSort(Array('S','S','N','N','N',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %] 
+    <p>None</p> 
+[% END %] 

@@ -1,0 +1,236 @@
+---
+auto_fieldset: { legend: 'BILAG Scoring' }
+
+elements:
+
+  - type: Hidden
+    name: id
+
+#####################
+# SLE-specific info #
+#####################
+
+
+  - type: Block
+    nested_name: test_cont_results_0
+    elements:
+      
+      - type: Hidden
+        name: test_id
+        
+      - type: Select
+        name: controlled_value_id
+        label: General
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: GeneralCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_1
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Mucocutaneous
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: MucocutCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_2
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Neurological
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: NeuroCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_3
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Musculoskeletal
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: MuscuCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_4
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Cardiovascular & respiratory
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: CardioCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_5
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Vasculitis
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: VascuCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_6
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Renal
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: RenalCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+  - type: Block
+    nested_name: test_cont_results_7
+    elements:
+      
+      - type: Hidden
+        name: test_id
+
+      - type: Select
+        name: controlled_value_id
+        label: Haematology
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - Required
+        model_config:
+          resultset: Test
+          condition:
+            name: HaemaCat
+        label_attributes:
+          tooltipText: >-
+            See notes at the foot of the page for an explanation of the BILAG scoring system.
+
+#########
+# Notes #
+#########
+
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content: >-
+      Category A: Denotes disease thought to be sufficiently active
+      to require disease-modifying treatment (prednisolone more than
+      20 mg daily or immunosuppressants).
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content: >-
+      Category B: Denotes disease which is less active than in "A";
+      mild reversible problems requiring only symptomatic therapy
+      such as antimalarials, non-steroidal anti-inflammatory drugs
+      or prednisolone less than 20 mg/day.
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content: >-
+      Category C: Indicates stable mild disease.
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content: >-
+      Category D: System previously affected but currently inactive.
+  - type: Block
+    tag: h5
+    attributes:
+      class: text
+    content: >-
+      Category E: Indicates system never involved.
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+

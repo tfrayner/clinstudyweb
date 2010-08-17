@@ -1,0 +1,38 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='riskFactorsList'>
+    <thead>
+      <tr>
+        <td>Risk Factor</td>
+        <td>Notes</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      [% FOREACH riskfactor = objects.sort('type_id') %]
+      <tr>
+        <td>[% riskfactor.type_id.value | html %]</td>
+        <td>[% riskfactor.notes | truncate(70) | html %] &nbsp;</td>
+        <td><a href="[% c.uri_for("/riskfactor/view/$riskfactor.id") | html %]">View</a>
+            <a href="[% c.uri_for("/riskfactor/edit/$riskfactor.id") | html %]">Edit</a> 
+            <a href="[% c.uri_for("/riskfactor/delete/$riskfactor.id") | html %]"
+               onclick="return confirm('Really delete risk factor [% riskfactor.type_id.value | html %] ?');">Delete</a></td>        
+        </tr>
+      [% END %]
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('riskFactorsList');
+        tableWidgetObj.setTableHeight(100);
+        tableWidgetObj.setColumnSort(Array('S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the type column
+    </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

@@ -1,0 +1,31 @@
+[% META title = 'Assay Batch Details' %] 
+
+<a href="[% c.uri_for("/assay/search") | html %]">Search assay information</a>
+
+<fieldset class="data_view">
+<legend>Assay Batch <span><a href="[% c.uri_for("/assaybatch/edit", object.id) %]">Edit</a></span></legend>
+<table class="horizontal">
+<tr><th>Name:</th>
+    <td>[% object.name | html %]</td></tr>
+<tr><th>Date:</th>
+    <td>[% object.date | html %]</td></tr>
+<tr><th>Platform:</th>
+    <td>[% object.platform_id.value | html %]</td></tr>
+<tr><th>Operator:</th>
+    <td>[% object.operator | html %]</td></tr>
+</table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Assays</legend>
+[% IF object.assays.blessed %]
+  [% SET objects = [ object.assays ] %]
+[% ELSE %]
+  [% SET objects = object.assays.list %]
+[% END %]
+
+[% SET tableHeight = 25 * objects.size + 50 %]
+[% IF tableHeight > 800 %][% SET tableHeight = 800 %][% END %]
+
+[% INCLUDE app/assays_list.tt2 %]
+</fieldset>

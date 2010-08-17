@@ -1,0 +1,82 @@
+---
+auto_fieldset: { legend: 'Sample' }
+
+##############
+# Sample #
+##############
+
+elements:
+
+  - type: Block
+    name: simple
+    nested_name: simple
+    elements:
+
+      - type: Text
+        name: name
+        label: T no.
+        constraints:
+          - ASCII
+          - type: Length
+            max:  31
+            min:  1
+    
+      - type: Select
+        name: cell_type_id
+        label: Cell Type
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: CellType
+          label_column: value
+    
+      - type: Select
+        name: material_type_id
+        label: Material Type
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: MaterialType
+          label_column: value
+    
+  - type: Fieldset
+    legend: Batch Query
+
+  - type: Block
+    name: batch
+    nested_name: batch
+    elements:
+
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Query the database with a list of Sample names. Note that
+          any text entered in the batch query area will override the
+          simple query settings above.
+
+      - type: Textarea
+        name: name
+        label: List of Sample names
+        attributes:
+          rows: 4
+      
+##########
+# Submit #
+##########
+
+  - type: Fieldset
+
+  - type: Submit
+    name: submit
+    label: ' '
+    value: Submit Form

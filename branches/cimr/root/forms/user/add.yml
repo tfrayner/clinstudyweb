@@ -1,0 +1,55 @@
+---
+auto_fieldset: { legend: 'New User' }
+
+elements:
+  - type: Text
+    name: username
+    label: Username
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+      - type: DBIC::Unique
+        model: DB::User
+        myself: object
+        message: Username is already taken
+    label_attributes:
+      tooltipText: Your username.
+
+  - type: Text
+    name: name
+    label: Name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your real-life name.
+
+  - type: Text
+    name: email
+    label: Email
+    constraints:
+      - Required
+      - Email
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your email address.
+
+# This works, but CSS needs fixing and the keys will change upon deployment. Also add Captcha::reCAPTCHA to Makefile.PL
+#  - type: reCAPTCHA
+#    name: recaptcha
+# Public/private key pair is handled in config and the controller.
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

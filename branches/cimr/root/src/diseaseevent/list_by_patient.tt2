@@ -1,0 +1,10 @@
+[% META title = 'Disease Event List' %]
+
+[% IF container %]
+    <p> Listing disease events for [% container.trial_id | html %] </p>
+[% END %]
+
+<fieldset class="data_view">
+<legend>Disease Events <span><a href="[% c.uri_for("/diseaseevent/add_to_patient", container.id) | html %]">Add</a></span></legend>
+[% INCLUDE app/disease_events_list.tt2 %]
+</fieldset>

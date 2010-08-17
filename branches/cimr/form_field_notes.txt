@@ -1,0 +1,282 @@
+##########
+# COMMON #
+##########
+
+# NB where select menu choices are given, an unset "-Select-" option
+#  is assumed to be a valid choice unless stated otherwise.
+
++---------+
+| PATIENT |
++---------+
+# Patient name
+# Date of consensus meeting|??? is this used? maybe entry_date?
+# TRIAD No.
+# Hospital No.
+
+# Diagnosis:
+#   Consensus Opinion|Diagnosis
+#     - Wegener's Granulomatosis
+#     - Microscopic Polyangiitis
+#     - Churg Strauss Syndrome
+#     - Behcet's Syndrome
+#     - SLE
+#     - Giant Cell Arteritis
+#     - Takayasu's Arteritis
+#     - Henoch-Schonlein Purpura
+
+#   Date|Diagnosis date
+#   Confidence Score|Diagnosis confidence
+#     - Possible
+#     - Probable
+#     - Definite
+
+# Comorbidity: Text field on Visit, History
+#   Current comorbidity|date needed here also. Repeating Table element.
+#   Previous comorbidity                       Repeating Table element.
+#   Previous comorbidity date
+
+# Renal Involvement:
+  Kidney Biopsy| Yes/No
+#   Class|??? PlainText, not sure what this is.
+#   Date|Visit date? or PriorObs date? NB plain text suggests not used.
+
+#   Kidney Transplant|select menu, Yes/No; model this as simple Hospitalisation and keep Transplant for the actual Tx patients?
+#   Date|Transplant date (Hospitalisation date)
+
+# Presentation:   (This is all subsumed into Diagnosis now)
+#   Presenting Episode|Diagnosis.previous_episodes, simple boolean in the DB, maybe just switch this to a checkbox?
+#     - First Episode
+#     - Previous Episodes
+#     <div>Presentation defined as &lt;= 3/12 previous treatment </div>
+#     <div>OR WGET definition = </div>   # Apparently this is right. WGET is Wegener's... Still seems incomplete.
+#   Previous Course|*** This needs a new field in the database, probably on Diagnosis (previous_course?) to go with previous_episodes.
+#     - 1st Presentation
+#     - Relapsing
+#     - Refractory
+  Disease duration(months)|not given for VASC, but seems to be a general point. PlainText, can probably constrain to Number. Isn't this basically derivable from diagnosis date? Ignored for now.
+
+Drugs: Maybe generalise previous drugs by start/end dates, allow a number of entries here.
+       SLE has only one field but may allow one to add more fields - check XML.
+  Previous 1 month|Drug name; DrugSet type? plus duration of exposure.
+  Previous 3 months|Drug name; DrugSet type?  plus duration of exposure.
+  Ever|Drug name; DrugSet type? plus duration of exposure.
+
+  ( General form: Drug
+                  Duration of treatment|
+                  Start-End date| really only need start date plus duration, methinks (which fits nicely into PriorTreatment) )
+
++-------+
+| VISIT |
++-------+
+#   Haematuria| Yes/No
+#   Proteinuria
+#     - 0
+#     - &lt;1
+#     - 1-3
+#     - &gt;3
+
+#   eGFR| PlainText
+#     <div>eGFR derived from x3 component (age,sex,Cr) MDRD including adjustment for local (Addenbrooke's) creatinine</div>
+#   CKD stage|
+#     - 1
+#     - 2
+#     - 3
+#     - 4
+#     - 5
+#   Date|Visit date
+
+Serology:   *** OMIT SECTION: IMPORTED SEPARATELY ***
+  Date|Visit date/Test date; plain text suggests not used.
+  ANCA| NB this is VASC only; all others are SLE. Most of this section may not be needed, import from bloods db.
+    - PR3 +
+    - MPO +
+    - ANCA negative
+    - Unknown (for repeat)
+    <div>ANCA ELISA up to (arbitrary) 7 days prior to time = 0</div>
+    <div>Flag to repeat on stored serum if doubt</div>
+  ANA|             Yes/No
+  dsDNA|           Yes/No
+  ENA|             Yes/No
+  ENA subtype|     PlainText, dependent on ENA
+  Low Complement|  Yes/No
+
+Antiphospholipids Serology:  NB. these may be auto-entered via the bloods db import
+  Date|Visit date/Test date; plain text suggests not used.
+  IgG| Yes/No
+  IgM| Yes/No
+  LAC
+    - unknown
+    - positive
+    - negative
+
+Drugs: Maybe generalise previous drugs by start/end dates, allow a number of entries here.
+       SLE has only one field but may allow one to add more fields - check XML.
+  Drug|Drug name
+
+Drugs at 3 month follow-up:  ** new Visit **
+  Drug name, dose, frequency (free text!); replace with the general Drug/DrugSet combination; NB. may need a schema change so that duration of drug set is recorded?
+
+Drugs at 1 year follow-up:  ** new Visit **
+  Drug name, dose, frequency (free text!); replace with the general Drug/DrugSet combination; NB. may need a schema change so that duration of drug set is recorded?
+    <div>Drugs included as listed for presentation; Subsequent new drugs added with date started</div>  # FIXME not convinced about this.
+
+Drug dose: (misnamed, this relates to prior immunosuppression); NB SLE is specifically Prednisolone. Special-case this? PRED needed at 3 and 12 months as well. I guess this is a matter for multiple Visits. 
+  Treatment prior to initial bleed?| Yes/No
+  Previous immunosuppression|Yes/No, linked if Yes to DrugSet immunosuppression
+  
++-----+
+| TBA |
++-----+
+Remission:
+  Remission Date|DiseaseEvent date
+  Time to Partial remission|DiseaseEvent.months_to_partial and months_to_completion; N.B VASC uses BVAS here, and per-view instructions will be needed.
+    # From SLE:
+      <div>Time to no A, B (months):</div>
+    # From VASC:
+      <div>Time to BVAS=0</div>
+  Time to Complete remission|DiseaseEvent.months_to_completion
+    # From SLE:
+      <div>Time to no A, B, C (months):</div>
+    # From VASC:
+      <div>Remission = 1. prednisolone dose &lt; 7.5mg/day</div>
+      <div>          AND 2. BVAS = 0    </div>
+      <div>          for &gt;= 2 consecutive months</div>
+
+# Activity at follow-up: ComboBox plus date. SLE vs. VASC have different instructions.
+#   Activity Grade|disease_activity_id
+#     - Active disease/Flare
+#     - Low-grade activity
+#     - No activity
+#   Date|Visit date
+#     # For VASC (moved from Relapse):
+#     <div>Flare defined as presence of 1 major or &gt;= 3 minor items</div>
+#     <div>Low grade activity defined as 1-2 minor items</div>
+#     <div>Remission defined as Pred dose &lt;7.5 mg/day <strong>AND</strong> BVAS = 0 for &gt;=2 consecutive months</div>
+#     <div>Inactive disease at follow-up = 0 BVAS criteria met (differs from remission as don't need 2/12 duration or low pred dose)</div>
+#     <div>For Remission/Relapse BVAS scored as ANY criterion (BVAS 1 or 2); When persistent activity present for 3 months of FU then disregarded unless returns to BVAS 1 level (ie becomes new or worse)</div>
+
+Serious Adverse Events: ComboBox, plus date field. Need to be able to add multiples for a given visit?
+  Infection requiring IV antibiotic/hospitalisation| Yes/No plus date
+  Major Cardiovascular event| Yes/No plus date
+  Replacement Treatments| ComboBox, see XML; this is SLE-specific
+  Death| Yes/No plus date
+  Dialysis| (FIXME does AdverseEvents support this extra HD/CAPD term? maybe just throw it in notes, or Action CV?)
+    - HD
+    - CAPD
+  Other|***
+  Date| (see above)
+  
+#########
+# VASC: #
+#########
+
++---------+
+| PATIENT |
++---------+
+# Organ involvement:  (all Yes/No select menus; this could just as easily be a CheckBoxGroup)
+#   Renal
+#   Pulmonary/ENT
+#   Joint
+#   Systemic
+#   Neurological
+#     <div>Organ involvement at presentation; for new systems involved note date</div>
+
++-------+
+| VISIT |
++-------+
+# BVAS:
+#   BVAS1 score| PlainText field
+#   Date|Visit date
+
+#######
+# SLE #
+#######
+
++---------+
+| PATIENT | ??? CONFIRM THIS
++---------+
+# ACR Criteria: symptoms, SLE-specific list.
+#   Malar rash
+#   Discoid rash
+#   Photosensitivity
+#   Oral Ulcers
+#   Arthritis
+#   Serositis
+#   Renal disorder
+#   Haematologic disorder
+#   Neurologic disorders
+#   Immunologic disorder
+#   Antinuclear antibodies
+
++-------+
+| VISIT |
++-------+
+# BILAG: select menus throughout
+#   Date| Visit date
+#   General
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Cardivascular and respiratory
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Mucocutaneous
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Vasculitis
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Neurological
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Renal
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Musculoskeletal
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#   Haematology
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+
+#########
+# NOTES #
+#########
+
+Diagnosis-specific things:
+SLE:
+  ACR criteria
+  BILAG
+
+VASC:
+  System involvement
+  BVAS
+
+I think everything else can be made sufficiently generic to combine
+into common history or visit. This may mean we end up needing quite a
+long dual set of instructions, e.g. for scoring disease activity, but
+I think that should be okay. It may even be possible to tailor these
+instructions according to Patient.study_type, in future.

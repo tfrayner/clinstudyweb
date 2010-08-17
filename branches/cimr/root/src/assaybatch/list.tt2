@@ -1,0 +1,10 @@
+[% META title = 'Assay Batch List' %] 
+
+<a href="[% c.uri_for("/assay/search") | html %]">Search assay information</a>
+
+<fieldset class="data_view">
+  <legend>Assay Batches</legend>
+    [% SET tableHeight = 25 * objects.size + 50 %]
+    [% IF tableHeight > 800 %][% SET tableHeight = 800 %][% END %]
+    [% INCLUDE app/assay_batches_list.tt2 %]
+</fieldset>

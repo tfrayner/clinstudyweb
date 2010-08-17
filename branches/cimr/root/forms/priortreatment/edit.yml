@@ -1,0 +1,71 @@
+---
+auto_fieldset: { legend: 'Prior Treatment' }
+
+##################
+# PriorTreatment #
+##################
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Hidden
+    name: patient_id
+
+  - type: Select
+    name: type_id
+    label: Treatment Type
+    constraints:
+      - Required
+      - AutoSet
+      - type:    DBIC::Unique
+        model:   DB::PriorTreatment
+        myself:  object
+        message: >-
+          A treatment of this type for this patient already exists.
+        others:
+          - patient_id
+    empty_first: 1
+    empty_first_label: -select-
+    label_attributes:
+      tooltipText: >-
+        The type of treatment administered.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: TreatmentType
+      label_column: value
+
+  - type: Text
+    name: value
+    label: Treatment value
+    label_attributes:
+      tooltipText: >-
+        An optional free-text value describing the treatment (e.g. HD, PD).
+    constraints:
+      - type: ASCII
+      - type: Length
+        max:  255
+        min:  1
+
+  - type: Textarea
+    name: notes
+    label: Other Notes
+    label_attributes:
+      tooltipText: >-
+        Enter any other information here. If the patient was not
+        on treatment at enrollment, please record that here.
+    attributes:
+      rows: 10
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

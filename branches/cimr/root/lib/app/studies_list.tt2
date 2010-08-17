@@ -1,0 +1,38 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='studiesList'>
+    <thead>
+      <tr>
+        <td>Study Type</td>
+        <td>External Study ID</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      [% FOREACH study = objects.sort('type_id') %]
+      <tr>
+        <td>[% study.type_id.value | html %]</td>
+        <td>[% study.external_id | html %] &nbsp;</td>
+        <td><a href="[% c.uri_for("/study/view/$study.id") | html %]">View</a>
+            <a href="[% c.uri_for("/study/edit/$study.id") | html %]">Edit</a> 
+            <a href="[% c.uri_for("/study/delete/$study.id") | html %]"
+               onclick="return confirm('Really delete association with study type [% study.type_id.value | html %] ?');">Delete</a></td>        
+        </tr>
+      [% END %]
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('studiesList');
+        tableWidgetObj.setTableHeight(100);
+        tableWidgetObj.setColumnSort(Array('S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the type column
+    </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

@@ -1,0 +1,54 @@
+[% DEFAULT tableHeight = 400 %]
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='assayList'>
+    <thead>
+      <tr>
+        <td>Date</td>
+        <td>Filename</td>
+        <td>Patient No.</td>
+        <td>Visit date</td>
+        <td>Cell type</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH assay = objects %] 
+        <tr> 
+        <td> [% assay.assay_batch_id.date | html %]</td>
+        <td> [% assay.filename | html %] &nbsp; </td>
+        [% IF assay.channels.blessed %]
+          [% SET channels = [ assay.channels ] %]
+        [% ELSE %]
+          [% SET channels = assay.channels.list %]
+        [% END %]
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.visit_id.patient_id.trial_id) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.visit_id.date) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
+        <td> [% SET p = [] %]
+             [% FOR ch = channels %] [% p.push(ch.sample_id.cell_type_id.value) %] [% END %]
+             [% p.sort.join('; ') | html %] &nbsp;</td>
+        <td><a href="[% c.uri_for("/assay/view/$assay.id") | html %]">View</a></td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('assayList');
+        tableWidgetObj.setTableHeight('[% tableHeight %]');
+        tableWidgetObj.setColumnSort(Array('S','S','S','S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the Study ID
+  </script>
+
+[% ELSE %] 
+    <p>No assays found</p> 
+[% END %] 

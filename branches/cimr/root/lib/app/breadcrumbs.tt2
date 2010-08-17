@@ -1,0 +1,10 @@
+<div class="navbar">
+  Navigation:
+  [% FOREACH item IN breadcrumbs %]
+    [% IF loop.last %]
+      <span>[% item.label %]</span>
+    [% ELSE %]
+      <span><a href="[% c.uri_for(item.path) | html %]">[% item.label | html %]</a></span> &gt;
+    [% END %]
+  [% END %]
+</div>

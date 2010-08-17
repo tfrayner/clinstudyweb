@@ -1,0 +1,31 @@
+[% META title = 'Prior Treatment Details' %]
+
+<h3>Prior [% object.type_id.value %] treatment for patient [% object.patient_id.trial_id | html %]</h3>
+
+<fieldset class="data_view">
+<legend>Prior Treatment <span><a href="[% c.uri_for("/priortreatment/edit", object.id) %]">Edit</a></span></legend>
+<table id="treatmentInfo" class="horizontal">
+  <tbody>
+     <tr><th>Type:</th>
+         <td>[%- IF object.type_id.defined -%]
+               [%- object.type_id.value | ucfirst | replace('_+', ' ') | html -%]
+             [%- ELSE -%]
+               N/A
+             [%- END -%]</td></tr>
+     <tr><th>Value:</th>
+         <td>[% object.value | html -%]</td></tr>
+     <tr><th>Notes:</th>
+         <td>[% object.notes | html -%]</td></tr>
+  </tbody>
+</table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Drugs Prescribed or Administered <span><a href="[% c.uri_for("/drug/add_to_priortreatment", object.id) | html %]">Add</a></span></legend>
+[% IF object.drugs.blessed %]
+  [% SET objects = [ object.drugs ] %]
+[% ELSE %]
+  [% SET objects = object.drugs.list %]
+[% END %]
+[% INCLUDE app/drug_list.tt2 %]
+</fieldset>

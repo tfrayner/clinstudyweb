@@ -1,0 +1,1921 @@
+---
+auto_fieldset: { legend: 'BVAS Scoring' }
+
+elements:
+
+  - type: Hidden
+    name: id
+
+############################
+# Vasculitis-specific info #
+############################
+
+  - type: Block
+    elements:
+
+    - type: Fieldset
+      legend: General
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_0
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Snone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_1
+        elements:
+      
+          - type: Hidden
+            name: test_id
+        
+          - type: Select
+            name: controlled_value_id
+            label: Malaise
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Smalaise
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                A general feeling of tiredness, illness and discomfort.
+
+      - type: Block
+        nested_name: test_cont_results_2
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Myalgia
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Smyalgia
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Pain in the muscles.
+
+      - type: Block
+        nested_name: test_cont_results_3
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Arthralgia or arthritis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Sarthralgia
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Pain in the joints or joint inflammation.
+
+      - type: Block
+        nested_name: test_cont_results_4
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Headache
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Sheadache
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                New, unaccustomed and persistent.
+
+      - type: Block
+        nested_name: test_cont_results_5
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Fever < 38.5
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Sfeverlow
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Documented oral/axillary temperature elevation.
+                Rectal temperatures are 0.5 C higher.
+
+      - type: Block
+        nested_name: test_cont_results_6
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Fever >= 38.5
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Sfeverhigh
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Documented oral/axillary temperature elevation.
+                Rectal temperatures are 0.5 C higher.
+
+      - type: Block
+        nested_name: test_cont_results_7
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Weight Loss
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Swtloss
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                At least 2kg loss of body weight (not fluid) having
+                occurred since last assessment or in the 4 weeks
+                not as a consequence of dieting.
+
+    - type: Fieldset
+      legend: Cutaneous
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_8
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_9
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Infarct
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cinfarct
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Area of tissue necrosis or splinter haemorrhages.
+
+      - type: Block
+        nested_name: test_cont_results_10
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Purpura
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cpurpura
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Petechiae (small red spots), palpable purpura, or
+                ecchymoses (large plaques) in skin or oozing (in
+                the absence of trauma) in the mucous membranes.
+
+      - type: Block
+        nested_name: test_cont_results_11
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Other skin vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cother
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                E.g. livedo reticularis, nodules etc.
+
+      - type: Block
+        nested_name: test_cont_results_12
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Ulcer
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Culcer
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Open sore in a skin surface.
+
+      - type: Block
+        nested_name: test_cont_results_13
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Gangrene
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cgangrene
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Extensive tissue necrosis (e.g. digit).
+
+      - type: Block
+        nested_name: test_cont_results_14
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Multiple digit gangrene
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cmultiple
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Extensive tissue necrosis occurring in more than
+                one digit or limb.
+
+    - type: Fieldset
+      legend: Mucous membranes/eyes
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_15
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_16
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Mouth ulcers
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mmulcer
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Ulcers localised in the mouth. Exclude other causes,
+                such as drugs, Crohn's disease, pemphigus etc.
+
+      - type: Block
+        nested_name: test_cont_results_17
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Genital ulcers
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mgulcer
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Ulcers localised in the genitalia or perineum.
+
+      - type: Block
+        nested_name: test_cont_results_18
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Significant proptosis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mproptosis
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Protrusion of the eyeball due to significant amounts
+                of inflammatory in the orbit. This may be associated
+                with diplopia due to infiltration of extra-ocular muscles.
+
+      - type: Block
+        nested_name: test_cont_results_19
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Red eye conjunctivitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mconjunc
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Inflammation of the conjunctivae (exclude infectious
+                causes); (specialist opinion not usually required).
+
+      - type: Block
+        nested_name: test_cont_results_20
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Red eye (Epi)scleritis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mepi
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Inflammation of the sclerae (specialist opinion
+                not usually required).
+
+      - type: Block
+        nested_name: test_cont_results_21
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Blurred vision
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mblur
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Significant impairment of vision.
+
+      - type: Block
+        nested_name: test_cont_results_22
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Sudden visual loss
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mvloss
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Sudden loss of vision requiring ophthalmological
+                assessment.
+
+      - type: Block
+        nested_name: test_cont_results_23
+        elements:
+          
+          - type: Hidden
+            name: test_id
+    
+          - type: Select
+            name: controlled_value_id
+            label: Ophthalmic opinion
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mophthopinion
+              default: No
+            label_attributes:
+              tooltipText: >-
+                To diagnose and score retinal exudates, haemorrhages,
+                uveitis and reason for sudden visual loss. These data
+                must be entered subsequently.
+
+      - type: Block
+        nested_name: test_cont_results_24
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: No active vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mophthinactive
+              default: No
+            label_attributes:
+              tooltipText: >-
+                No active vasculitis.
+
+      - type: Block
+        nested_name: test_cont_results_25
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Uveitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mophthuveitis
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Inflammation of the uvea (iris, ciliary body, choroid)
+                confirmed by ophthalmologist.
+
+      - type: Block
+        nested_name: test_cont_results_26
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Retinal exudates
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mophthexudates
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Any area of soft retinal exudates (exclude hard exudates)
+                seen on ophthalmoscopic examination.
+
+      - type: Block
+        nested_name: test_cont_results_27
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Retinal haemorrhages
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Mophthhaem
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Any area of retinal haemorrhage seen on ophthalmoscopic
+                examination.
+
+    - type: Fieldset
+      legend: ENT
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_28
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Enone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_29
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Nasal obstruction
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Eobs
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                A history of nasal blockage.
+
+      - type: Block
+        nested_name: test_cont_results_30
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Bloody nasal discharge
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Eblood
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Blood stained secretions from the nose, irrespective of
+                severity, or frequency and severity of previously
+                occurring bleeding since last visit.
+
+      - type: Block
+        nested_name: test_cont_results_31
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Nasal crusting
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Ecrust
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Discharge of large serous or serosanguinous crusts
+                from either nostril.
+
+      - type: Block
+        nested_name: test_cont_results_32
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Sinus involvement
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Esinus
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Tenderness or pain over paranasal sinuses or X-ray
+                evidence of sinusitis. If nasal bridge collapse is
+                observed, this may be recorded separately (under Other, below).
+
+      - type: Block
+        nested_name: test_cont_results_33
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Hearing loss
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Edeaf
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Significant new hearing loss requiring specialist opinion.
+
+      - type: Block
+        nested_name: test_cont_results_34
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Hoarseness/stridor
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Estridor
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Increasing hoarseness and inspiratory stridor.
+
+      - type: Block
+        nested_name: test_cont_results_35
+        elements:
+          
+          - type: Hidden
+            name: test_id
+    
+          - type: Select
+            name: controlled_value_id
+            label: ENT opinion
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Eopinion
+              default: No
+            label_attributes:
+              tooltipText: >-
+                To ascribe otitis media, deafness, or diagnose
+                subglottic involvement due to vasculitis. These
+                data can be entered subsequently.
+
+      - type: Block
+        nested_name: test_cont_results_36
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: No active vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Einactive
+              default: No
+            label_attributes:
+              tooltipText: >-
+                No active vasculitis.
+
+      - type: Block
+        nested_name: test_cont_results_37
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Granulomatous sinusitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Egransinus
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Characteristic appearance on nasal examination.
+
+      - type: Block
+        nested_name: test_cont_results_38
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Conductive hearing loss
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Econddeaf
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Any hearing loss due to middle ear involvement
+                preferably confirmed by audiometry.
+
+      - type: Block
+        nested_name: test_cont_results_39
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Sensorineural hearing loss
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Esensdeaf
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Deafness attributable to auditory nerve or cochlear damage.
+
+      - type: Block
+        nested_name: test_cont_results_40
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Signif. subglottic inflamm.
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Esubglottic
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Significant subglottic inflammation.
+                Inspiratory stridor with significant narrowing of subglottic
+                space confirmed by further examination (usually by
+                an ENT specialist) or by radiological assessment.
+
+    - type: Fieldset
+      legend: Chest
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_41
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_42
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Persistent cough
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chcough
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Cough for more than 2 weeks (other couses for the
+                cough having been excluded e.g. infection).
+
+      - type: Block
+        nested_name: test_cont_results_43
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Dyspnoea or wheeze
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chdysp
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Shortness of breath or audible wheeze on exercise,
+                by history and/or clinical examination.
+
+      - type: Block
+        nested_name: test_cont_results_44
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Haemoptysis/haemorrhage
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chhaemop
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Production of blood stained sputum. Other causes
+                (e.g. infection, cancer) should be excluded.
+
+      - type: Block
+        nested_name: test_cont_results_45
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Chest radiology performed
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: ChCXR
+              default: No
+            label_attributes:
+              tooltipText: >-
+                A chest radiograph should be performed if there
+                are significant signs or symptoms to suggest
+                chest disease or in the presence of a generalised
+                flare - to determine the following three indicators.
+
+      - type: Block
+        nested_name: test_cont_results_46
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: No active vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chinactive
+              default: No
+            label_attributes:
+              tooltipText: >-
+                No active vasculitis.
+
+      - type: Block
+        nested_name: test_cont_results_47
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Nodules or cavities
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chnodules
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                New lesions, detected by CXR.
+
+      - type: Block
+        nested_name: test_cont_results_48
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Pleural effusion/pleurisy
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chpleural
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Pleural pain and/or friction rub on clinical assessment
+                or new onset of radiologically confirmed pleural
+                effusion. Other causes (e.g. infection, cancer)
+                should be excluded.
+
+      - type: Block
+        nested_name: test_cont_results_49
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Infiltrate
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chinfiltrate
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                By CXR, CT scan.
+
+      - type: Block
+        nested_name: test_cont_results_50
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Massive haemop./Alv. haem.
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chbighaemop
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Massive haemoptysis or alveolar haemorrhage.
+                Major pulmonary bleeding, with shifting pulmonary
+                infiltrates and usually associated with signs of
+                shock; other causes of bleeding should be excluded.
+
+      - type: Block
+        nested_name: test_cont_results_51
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Respiratory failure
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Chrespfail
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Dyspnoea which is sufficiently severe as to require
+                artificial ventilation; arterial blood gases should
+                be performed to confirm the presence of hypoxaemia
+                and or hypercapnia.
+
+    - type: Fieldset
+      legend: Cardiovascular
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_52
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_53
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Aortic incompetence
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: CvAR
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Significant aortic valve regurgitation, detected
+                clinically or echocardiographically.
+
+      - type: Block
+        nested_name: test_cont_results_54
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Pericardial pain/rub
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvpericardial
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Pericardial pain and/or friction rub on clinical assessment.
+
+      - type: Block
+        nested_name: test_cont_results_55
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Ischaemic cardiac pain
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvischaemic
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Typical clinical history of cardiac pain. Consider the
+                possibility of more common causes (e.g. athersclerosis).
+
+      - type: Block
+        nested_name: test_cont_results_56
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Congestive cardiac failure
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvcongestive
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                By history or clinical examination.
+
+      - type: Block
+        nested_name: test_cont_results_57
+        elements:
+          
+          - type: Hidden
+            name: test_id
+    
+          - type: Select
+            name: controlled_value_id
+            label: Cardiology opinion or tests
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvopinion
+              default: No
+            label_attributes:
+              tooltipText: >-
+                Specialist opinion/tests are usually required to
+                determine the following features.
+
+      - type: Block
+        nested_name: test_cont_results_58
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: No active vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvinactive
+              default: No
+            label_attributes:
+              tooltipText: >-
+                No active vasculitis
+
+      - type: Block
+        nested_name: test_cont_results_59
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Pericarditis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvpericarditis
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Pericardial pain and/or friction rub on
+                clinical assessment.
+
+      - type: Block
+        nested_name: test_cont_results_60
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Myocardial infarction/angina
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: CvMI
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Typical history of cardiac pain.
+
+      - type: Block
+        nested_name: test_cont_results_61
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Cardiomyopathy
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Cvcardiomyop
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Heart failure by history or clinical examination.
+
+    - type: Fieldset
+      legend: Abdominal
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_62
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Anone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None.
+
+      - type: Block
+        nested_name: test_cont_results_63
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Severe abdominal pain
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Apain
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Of recent onset and attributed to vasculitis.
+
+      - type: Block
+        nested_name: test_cont_results_64
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Bloody diarrhoea
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Adiarrhoea
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Of recent onset, not due to known inflammatory bowel
+                disease, etc.
+
+      - type: Block
+        nested_name: test_cont_results_65
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Surgical opinion/tests
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Asurgical
+              default: No
+            label_attributes:
+              tooltipText: >-
+                Specialist opinion/tests required to determine the cause
+                of abdominal pain or diarrhoea if they are of recent
+                onset or worse since last visit.
+
+      - type: Block
+        nested_name: test_cont_results_66
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: No active vasculitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Ainactive
+              default: No
+            label_attributes:
+              tooltipText: >-
+                No active vasculitis.
+
+      - type: Block
+        nested_name: test_cont_results_67
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Gut perforation/infarction
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Agutperf
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Typical pain and peritonism includes gall bladder
+                or appendix. Confirmed by X-ray or at surgery.
+
+      - type: Block
+        nested_name: test_cont_results_68
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Acute pancreatitis
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Apancreatitis
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Typical history and clinical examination findings
+                of acute abdominal pain and tenderness with
+                guarding. Confirmed by elevated serum amylase
+                and a surgical opinion.
+
+    - type: Fieldset
+      legend: Renal
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_69
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Rnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None
+
+      - type: Block
+        nested_name: test_cont_results_70
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Hypertension
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: RBP
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Diastolic BP > 95, accelerated or not, with
+                or without retinal changes.
+
+      - type: Block
+        nested_name: test_cont_results_71
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Proteinuria
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Rproteinuria
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Scoring >1+ on urinalysis; >0.2g/24 hours. Infection
+                should be excluded.
+
+      - type: Block
+        nested_name: test_cont_results_72
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Haematuria
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Rhaematuria
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Scoring >1+ on urinalysis; >10 rbc/ml, or red cell casts
+                seen on urine microscopy. Infection should be excluded.
+
+      - type: Block
+        nested_name: test_value_results_0
+        elements:
+          
+          - type: Hidden
+            name: test_id
+    
+          - type: Text
+            name: value
+            label: Serum creatinine (umol/l)
+            constraints:
+              - Number
+            model_config:
+              resultset: Test
+              condition:
+                name: CreatValue
+            label_attributes:
+              tooltipText: >-
+                Serum creatinine level.
+
+      - type: Block
+        nested_name: test_cont_results_73
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Rise in creatinine
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Rcreatrise
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Rise in creatinine > 30% or creatinine clearance fall > 25%.
+                Significant deterioration in renal function attributable
+                to active vasculitis.
+
+    - type: Fieldset
+      legend: Nervous system
+      elements:
+
+      - type: Block
+        nested_name: test_cont_results_74
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: None
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nnone
+              default: Yes
+            label_attributes:
+              tooltipText: >-
+                None
+
+      - type: Block
+        nested_name: test_cont_results_75
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Organic confusion/Dementia
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nconfusion
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Impaired orientation, memory or other intellectual
+                function in the absence of metabolic, psychiatric,
+                pharmacological or toxic causes.
+
+      - type: Block
+        nested_name: test_cont_results_76
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Seizures (not hypertensive)
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nseizure
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Paroxysmal electrical discharges in the brain and
+                producing characteristic physical changes including
+                tonic and clonic movements and certain behavioural changes.
+
+      - type: Block
+        nested_name: test_cont_results_77
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Stroke
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nstroke
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Cerebrovascular accident resulting in focal neurological
+                signs such as paresis, weakness, etc. A stroke due to
+                other causes (e.g. atherosclerosis) should be considered
+                and appropriate neurological advice is recommended.
+
+      - type: Block
+        nested_name: test_cont_results_78
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Cord lesion
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Ncord
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Transverse myelitis with lower extremity weakness
+                or sensory loss (usually with a detectable sensory
+                level) with loss of sphincter control (rectal and
+                urinary bladder).
+
+      - type: Block
+        nested_name: test_cont_results_79
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Sensory Peripheral neuropathy
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nneurop
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Sensory neuropathy resulting in glove and/or stoking
+                distribution of sensory loss. Other couses should be
+                excluded (e.g. idiopathic, metabolic, vitamin deficiencies,
+                infectious, toxic, hereditary).
+
+      - type: Block
+        nested_name: test_cont_results_80
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Cranial nerve palsy
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Ncranial
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Isolated acute cranial nerve palsy, excluding
+                sensorineural hearing loss, or optic nerve
+                lesion secondary to retro-orbital mass.
+
+      - type: Block
+        nested_name: test_cont_results_81
+        elements:
+          
+          - type: Hidden
+            name: test_id
+            
+          - type: Select
+            name: controlled_value_id
+            label: Motor mononeuritis multiplex
+            constraints:
+              - Required
+            model_config:
+              resultset: Test
+              condition:
+                name: Nmononeuritis
+              default: Not Present
+            label_attributes:
+              tooltipText: >-
+                Simultanious neuritis of many peripheral nerves, only
+                scored if motor involvement. Other causes should
+                be excluded (diabetes, sarcoidosis, carcinoma, amyloidosis).
+
+    - type: Fieldset
+      legend: Other
+      elements:
+
+      - type: Block
+        nested_name: test_value_results_1
+        elements:
+          
+          - type: Hidden
+            name: test_id
+    
+          - type: Textarea
+            name: value
+            label: Other
+            model_config:
+              resultset: Test
+              condition:
+                name: OtherT
+            attributes:
+              rows: 5
+            label_attributes:
+              tooltipText: >-
+                Significant features attributable to active
+                vasculitis not listed above.
+
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+
