@@ -19,7 +19,3 @@
     </tr>
   </table>
 </div>
-
-[% IF c.config.authentication.realms.raven.defined %]
-Alternatively, log in using the <a href="[% c.uri_for('/raven_login') %]">University Raven system</a>.
-[% END %]

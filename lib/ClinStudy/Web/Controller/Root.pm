@@ -128,57 +128,6 @@ sub login : Global FormConfig {
     }
 }
 
-=head2 raven_login
-
-A completely separate login action that (in theory) uses the
-University of Cambridge Raven authentication system. Note that roles
-are still managed locally by the underlying ClinStudy instance, so a user
-logging in using Raven still needs an account in ClinStudy.
-
-=cut
-
-sub raven_login : Global FormConfig('login.yml') {
-
-    my ( $self, $c ) = @_;
-
-    $c->stash->{template} = 'login.tt2';
-
-    if ( $c->user ) {
-        $c->flash->{error} = 'Already logged in as another user.';
-        $c->res->redirect($c->uri_for('/'));
-        $c->detach();
-    }
-        
-    my $result = $c->authenticate( {}, 'raven' );
-
-    if ( $c->user ) {
-
-        # Track the fact that this is a Raven login for later logout purposes. 
-        $c->session->{'is_raven'} = 1;
-        if ( $c->user->in_storage ) {
-
-            # User is in our local database.
-
-            # Set the access date.
-            $self->update_database_timestamp( $c );
-
-            $c->flash->{message} = 'Successfully logged in via Raven.';
-            $c->res->redirect($c->uri_for('/'));
-            $c->detach();
-        }
-        else {
-
-            # Raven user is fine, but not entered in our local DB.
-            $c->logout;
-            $c->flash->{error} = 'Local access has not been granted for this Raven user.';
-            $c->res->redirect($c->uri_for('/'));
-            $c->detach();
-        }
-    }
-
-    return;
-}
-
 =head2 logout
 
 Standard logout action.
@@ -189,19 +138,8 @@ sub logout : Global {
 
     my ( $self, $c ) = @_;
 
-    my $is_raven = $c->session->{'is_raven'};
-
     # Whatever happens we want to log out.
     $c->logout;
-
-    # If the user logged in via Raven, log them out the same way.
-    if ( $is_raven ) {
-
-        # The session persists, but this is no longer Raven-based.
-        $c->session->{'is_raven'} = 0;
-        $c->res->redirect('https://raven.cam.ac.uk/auth/logout.html');
-        $c->detach();
-    }
     
     $c->flash->{message} = 'Logged out.';
     $c->res->redirect( $c->uri_for('/') );
