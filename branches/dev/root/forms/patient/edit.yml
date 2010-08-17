@@ -1,0 +1,34 @@
+---
+auto_fieldset: { legend: 'Patient' }
+
+elements:
+
+  - type: Hidden
+    name: id
+
+#####################
+# Core patient data #
+#####################
+
+  - type: Src
+    load_config_filestem: lib/patient_edit
+
+###############
+# Other notes #
+###############
+
+  - type: Textarea
+    name: notes
+    label: Other Notes
+    label_attributes:
+      tooltipText: Enter any other information here.
+    attributes:
+      rows: 10
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+

@@ -1,0 +1,74 @@
+---
+
+# This is a user-level form for end users to edit their own account details.
+
+auto_fieldset: { legend: 'User' }
+
+elements:
+
+  - type: Text
+    name: username
+    label: Username
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your username (this cannot be changed)
+    attributes:
+      readonly: readonly
+
+  - type: Text
+    name: name
+    label: Name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your real-life name
+
+  - type: Text
+    name: email
+    label: Email
+    constraints:
+      - Required
+      - Email
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your email address
+
+  - type: Password
+    name: password
+    label: New password
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  25
+        min:  6
+    label_attributes:
+      tooltipText: Your desired password (between 6 and 25 characters)
+
+  - type: Password
+    name: repeat_password
+    label: New password (repeated)
+    constraints:
+      - Required
+      - type: Equal
+        others: password
+    label_attributes:
+      tooltipText: Your email address
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

@@ -1,0 +1,67 @@
+[% META title = 'Adverse Events Listing' %]
+
+[% IF objects.size > 0 %]
+
+  [% IF list_type.defined %]
+    <h4>Listing by [% list_type | html %]; All "[% objects.0.severity_id.value | html %]" Adverse Events</h4>
+  [% END %]
+  
+<fieldset class="data_view">
+<legend>Adverse Events</legend>
+  <div>
+    <table id="adverseList">
+      <thead>
+        <tr>
+          <td>Study ID</td>
+          <td>Start Date</td>
+          <td>End Date</td>
+          <td>Type</td>
+          <td>Severity</td>
+          <td>Action</td>
+          <td>Outcome</td>
+          <td>Trial related</td>
+          <td>Notes</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH adverse = objects.sort('start_date') %]
+        <tr> 
+          <td> [% adverse.patient_id.trial_id | html %] </td>
+          <td> [% adverse.start_date | html %] </td>
+          <td> [% adverse.end_date | html %] &nbsp; </td>
+          <td> [% adverse.type | html %] </td>
+          [% FOREACH rel = [ 'severity_id', 'action_id', 'outcome_id', 'trial_related_id' ] %]
+            <td>
+            [% IF adverse.$rel.defined %]
+              [% adverse.$rel.value | html %]
+            [% ELSE %]
+              N/A
+            [% END %]
+            </td>
+          [% END %]
+          <td> [% adverse.notes | truncate(30) | html %] &nbsp; </td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('adverseList');
+      tableWidgetObj.setTableHeight('200');
+      tableWidgetObj.setColumnSort(Array('N','S','S','S','S','S','S','S',false));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+  </script>
+[% ELSE %]
+  [% IF list_type.defined %]
+    <p>No adverse events for this [% list_type | lower | html %].</p>
+  [% ELSE %]
+    <p>No adverse events.</p>
+  [% END %]
+[% END %]
+
+</fieldset>
