@@ -1,7 +1,0 @@
-<div class="linklist">
-  <ul>
-[% FOREACH parent = object.parent_test_results %]
-    <li><a href="[% c.uri_for("/testresult/view", parent.id) | html %]">Main test result ([% parent.test_id.name %])</a></li> 
-[% END %]
-  </ul>
-</div>

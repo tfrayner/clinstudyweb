@@ -1,5 +1,0 @@
-[% META title = "Edit a Clinical Test" %]
-
-[% form %]
-
-(Required fields have been <font color="[% site.col.required %]">highlighted</font>.)

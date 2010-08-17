@@ -1,8 +1,0 @@
-<input[% IF self.nested_name.defined -%]
- name="[% self.nested_name %]"[% END -%]
- type="[% self.field_type -%]"
-[%- IF self.value.defined %] value="[% self.value %]"[% END %][% process_attrs(self.attributes) -%]
-[%# Here we look to see if this is a Date input field, and add the
-    javascript popup calendar if so. FIXME better to check constraints,
-    rather than a regexp against the name %]
-[%- IF self.name.match('(?:\b|_)date(?:\b|_)') %] onclick="pickDate(this,document.forms[0].elements['[% self.nested_name | html %]'])" readonly="readonly"[% END %]/>
