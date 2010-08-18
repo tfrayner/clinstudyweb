@@ -81,7 +81,6 @@ lib/ClinStudy/Web/Schema.pm
 lib/ClinStudy/Web/TestCalc/BILAG.pm
 lib/ClinStudy/Web/TestCalc/BVAS.pm
 lib/ClinStudy/Web/View/HTML.pm
-lib/ClinStudy/WebQuery.pm
 lib/ClinStudy/XML/AdminDumper.pm
 lib/ClinStudy/XML/AdminLoader.pm
 lib/ClinStudy/XML/Builder.pm
