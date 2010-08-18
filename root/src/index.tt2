@@ -15,7 +15,6 @@
     <ul class="linklist">
       <li><a href="[% c.uri_for('/patient') %]">Patients by study type</a></li> 
       <li><a href="[% c.uri_for('/assaybatch/list') %]">Assay batches</a></li> 
-      <li><a href="[% c.uri_for('/testresult') %]">Test results</a></li> 
       <li><a href="[% c.uri_for('/adverseevent') %]">Adverse events</a></li> 
       <li><a href="[% c.uri_for('/sample/assay_report') %]">Sample assay reports</a></li> 
     </ul>
