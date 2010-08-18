@@ -1,0 +1,31 @@
+[% META title = 'All Test Results' %]
+
+<h3>[% container.trial_id | html %]</h3>
+
+[% IF objects.defined %]
+<fieldset class="data_view">
+<legend>Test Results</legend>
+  [% SET tableHeight = 25 * objects.size + 50 %]
+  [% IF tableHeight > 800 %][% SET tableHeight = 800 %][% END %]
+  [% INCLUDE app/test_result_list.tt2 %]
+</fieldset>
+
+<div class="linklist">
+  <ul>
+    <li><a href="[% c.uri_for("/testresult/list_by_patient", container.id) | html %]">Patient test list</a></li>
+  </ul>
+</div>
+
+[% ELSE %]
+  [% IF tests.defined && tests.size > 0 %]
+    <p class="text">Select a test from the list below:</p>
+      <ul>
+        [% FOREACH test = tests %]
+          <li><a href="[% c.uri_for("/testresult/list_by_patient", container.id, test.id) | html %]">
+          [% test.name | html %]</a></li>
+        [% END %]
+      </ul>
+  [% ELSE %]
+    <p class="text">No test results.</p>
+  [% END %]
+[% END %]

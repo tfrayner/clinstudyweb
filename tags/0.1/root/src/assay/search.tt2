@@ -1,0 +1,10 @@
+[% META title = "Search for assays" %]
+
+    <script type="text/javascript">
+        DHTMLSuite.include("calendar"); 
+    </script>
+    <script type="text/javascript" src="[% c.uri_for('/static/js/calendar-popup.js')%]"></script>
+
+<h3>Searching assay information</h3>
+
+[% form %]

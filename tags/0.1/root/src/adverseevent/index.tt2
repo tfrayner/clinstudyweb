@@ -1,0 +1,14 @@
+[% META title = 'Adverse events' %] 
+
+<div>
+<ul>
+   <li><a href="[% c.uri_for("/adverseevent/list") %]">Global list of all adverse events</a></li>
+   <ul><li>List by severity:</li>
+      <ul class="linklist">
+        [% FOREACH severity = severities.sort('id') %]
+          <li><a href="[% c.uri_for("/adverseevent/list_by_severity", severity.id) %]">List [% severity.value %] events.</a></li>
+        [% END %]
+      </ul>
+   </ul>
+</ul>
+</div>

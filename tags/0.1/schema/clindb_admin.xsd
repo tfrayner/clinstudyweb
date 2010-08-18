@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Basic data types -->
+
+  <xs:simpleType name="varcharType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="255"/>
+      <xs:minLength value="1"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="shortvarcharType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="31"/>
+      <xs:minLength value="1"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="passHashType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="40"/>
+      <xs:minLength value="1"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- This is not ideal as it doesn't detect invalid dates;
+  xs:dateTime requires a slightly different format though -->
+  <xs:simpleType name="dateType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Types corresponding to database tables -->
+
+  <xs:complexType name="controlledVocabType">
+    <xs:sequence>
+      <xs:element name="RelatedVocabs" type="relatedVocabGroup" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="accession" type="shortvarcharType" use="required"/>
+    <xs:attribute name="category" type="varcharType" use="required"/>
+    <xs:attribute name="value" type="varcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="relatedVocabType">
+    <xs:attribute name="target_ref" type="shortvarcharType" use="required"/>
+    <xs:attribute name="relationship_ref" type="shortvarcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="testType">
+    <xs:sequence>
+      <xs:element name="TestPossibleValues" type="testPossibleValueGroup" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="varcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="testPossibleValueType">
+    <xs:attribute name="category" type="varcharType" use="required"/>
+    <xs:attribute name="value" type="varcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="roleType">
+    <xs:attribute name="role" type="varcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="userType">
+    <xs:sequence>
+      <xs:element name="UserRoles" type="roleGroup" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="username" type="varcharType" use="required"/>
+    <xs:attribute name="name" type="varcharType"/>
+    <xs:attribute name="email" type="varcharType"/>
+    <xs:attribute name="password" type="passHashType" use="required"/>
+    <xs:attribute name="date_created" type="dateType"/>
+    <xs:attribute name="date_modified" type="dateType"/>
+    <xs:attribute name="date_accessed" type="dateType"/>
+  </xs:complexType>
+
+  <!-- Node group types -->
+
+  <xs:complexType name="controlledVocabGroup">
+    <xs:sequence>
+      <xs:element name="ControlledVocab" type="controlledVocabType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="relatedVocabGroup">
+    <xs:sequence>
+      <xs:element name="RelatedVocab" type="relatedVocabType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="testGroup">
+    <xs:sequence>
+      <xs:element name="Test" type="testType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="testPossibleValueGroup">
+    <xs:sequence>
+      <xs:element name="TestPossibleValue" type="testPossibleValueType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="userGroup">
+    <xs:sequence>
+      <xs:element name="User" type="userType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="roleGroup">
+    <xs:sequence>
+      <xs:element name="UserRole" type="roleType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Document root element and global unique key fields -->
+
+  <xs:element name="ClinStudyAdminML">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ControlledVocabs" type="controlledVocabGroup" minOccurs="0"/>
+        <xs:element name="Tests" type="testGroup" minOccurs="0"/>
+        <xs:element name="Users" type="userGroup" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="userName">
+      <xs:selector xpath=".//User"/>
+      <xs:field xpath="@username"/>
+    </xs:unique>
+    <xs:key name="controlledVocabAccession">
+      <xs:selector xpath=".//ControlledVocab"/>
+      <xs:field xpath="@accession"/>
+    </xs:key>
+    <xs:key name="controlledVocabKey">
+      <xs:selector xpath=".//ControlledVocab"/>
+      <xs:field xpath="@category"/>
+      <xs:field xpath="@value"/>
+    </xs:key>
+    <xs:keyref name="controlledVocabKeyRef" refer="controlledVocabKey">
+      <xs:selector xpath=".//TestPossibleValue"/>
+      <xs:field xpath="@category"/>
+      <xs:field xpath="@value"/>
+    </xs:keyref>
+    <xs:keyref name="relatedVocabTargetKeyRef" refer="controlledVocabAccession">
+      <xs:selector xpath=".//RelatedVocab"/>
+      <xs:field xpath="@target_ref"/>
+    </xs:keyref>
+    <xs:keyref name="relatedVocabRelationshipKeyRef" refer="controlledVocabAccession">
+      <xs:selector xpath=".//RelatedVocab"/>
+      <xs:field xpath="@relationship_ref"/>
+    </xs:keyref>
+  </xs:element>
+
+</xs:schema>

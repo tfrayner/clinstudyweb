@@ -1,0 +1,52 @@
+[% IF objects && objects.size > 0 %]
+    <div>
+      <table id='sampleList'>
+      <thead>
+        <tr>
+          <td>Channel</td>
+          <td>Sample T no.</td>
+          <td>Patient no.</td>
+          <td>Diagnosis</td>
+          <td>Bleed date</td>
+          <td>Cell type</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH channel = objects %]
+        [% SET sample = channel.sample_id %]
+        <tr>
+          <td>[% channel.label_id.value | html %]</td>
+          <td>[% sample.name | html %]</td>
+          <td>[% sample.visit_id.patient_id.trial_id | html  %]</td>
+[% IF sample.visit_id.patient_id.diagnoses.blessed %]
+  [% SET diagnoses = [ sample.visit_id.patient_id.diagnoses ] %]
+[% ELSE %]
+  [% SET diagnoses = sample.visit_id.patient_id.diagnoses.list %]
+[% END %]
+          <td> [% FOREACH diagnosis = diagnoses.sort('date').reverse.0  %]
+                 [% diagnosis.condition_name_id.value | html %]
+               [% END %] &nbsp;</td>
+          <td>[% sample.visit_id.date | html  %] &nbsp;</td>
+          <td>[% sample.cell_type_id.value | html %] &nbsp; </td>
+          <td><a href="[% c.uri_for("/sample/view/$sample.id") | html %]">View</a>
+              <a href="[% c.uri_for("/sample/edit/$sample.id") | html %]">Edit</a></td>
+        </tr>
+      [% END %] 
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('sampleList');
+        tableWidgetObj.setTableHeight('150');
+        tableWidgetObj.setColumnSort(Array('S','S','S','S','S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %] 
+    <p>None</p> 
+[% END %] 

@@ -1,0 +1,23 @@
+[% META title = 'CV Relationship Details' %]
+
+<fieldset class="data_view">
+<legend>CV Relationship <span><a href="[% c.uri_for("/relatedvocab/edit", object.id) | html %]">Edit</a></span></legend>
+<table id="rvInfo">
+  <tbody>
+     <tr><th>&nbsp;</th><th>Accession</th><th>Category</th><th>Value</th></tr>
+     <tr><th>Source CV:</th>
+         <td>[% object.controlled_vocab_id.accession | html %]</td>
+         <td>[% object.controlled_vocab_id.category | html %]</td>
+         <td>[% object.controlled_vocab_id.value | html %]</td></tr>
+     <tr><th>Target CV:</th>
+         <td>[% object.target_id.accession | html %]</td>
+         <td>[% object.target_id.category | html %]</td>
+         <td>[% object.target_id.value | html %]</td></tr>
+     <tr><th>Relationship:</th>
+         <td>[% object.relationship_id.accession | html %]</td>
+         <td>[% object.relationship_id.category | html %]</td>
+         <td>[% object.relationship_id.value | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>
+

@@ -1,0 +1,30 @@
+[% META title = 'Controlled Vocabulary Term Details' %]
+
+<fieldset class="data_view">
+<legend>Controlled Vocabulary Term <span><a href="[% c.uri_for("/controlledvocab/edit", object.id) | html %]">Edit</a></span></legend>
+<table id="cvInfo" class="horizontal">
+  <tbody>
+     <tr><th>Accession:</th>
+         <td>[% object.accession | html %]</td></tr>
+     <tr><th>Category:</th>
+         <td>[% object.category | html %]</td></tr>
+     <tr><th>Value:</th>
+         <td>[% object.value | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>
+
+<fieldset class="data_view">
+<legend>Relationships <span><a href="[% c.uri_for("/relatedvocab/add_to_controlled_vocab", object.id) %]"> Add </a></span></legend>
+[% IF object.related_vocab_controlled_vocab_ids.blessed %]
+  [% SET objects = [ object.related_vocab_controlled_vocab_ids ] %]
+[% ELSE %]
+  [% SET objects = object.related_vocab_controlled_vocab_ids %]
+[% END %]
+[% INCLUDE app/related_vocabs_list.tt2 %]
+</fieldset>
+
+
+<ul class="linklist">
+<li><a href="[% c.uri_for('/controlledvocab/add') %]">Add a new CV term</a></li>
+</ul>

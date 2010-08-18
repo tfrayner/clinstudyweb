@@ -1,0 +1,41 @@
+---
+indicator:     login
+auto_fieldset: { legend: 'Log in' }
+
+elements:
+
+  - type: Text
+    name: username
+    label: User name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your user name.
+
+  - type: Password
+    name: password
+    label: Password
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: Your password.
+
+  - type: Submit
+    container_attributes:
+      class: submit_buttons
+    attributes:
+      class: submit_buttons
+    name: login
+    value: Log in
+
+constraints:
+  - SingleValue
+

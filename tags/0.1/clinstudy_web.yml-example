@@ -1,0 +1,108 @@
+# Copyright 2010 Tim Rayner, University of Cambridge
+# 
+# This file is part of ClinStudy::Web.
+# 
+# ClinStudy::Web is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# ClinStudy::Web is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
+#
+# $Id: clinstudy_web.yml 2179 2010-02-27 16:18:09Z tfrayner $
+#
+# Main site-wide configuration file.
+#
+# This file can be renamed to use other config schemes (e.g. .xml, .ini, .conf).
+
+name: ClinStudy::Web
+
+# Main database configuration.
+Model::DB:
+
+  # Database connection parameters.
+  connect_info:
+    - # DSN; for example: DBI:mysql:clindb:localhost:3306
+    - # your username
+    - # your password
+    - RaiseError: 1
+      AutoCommit: 1
+      on_connect_call: set_strict_mode
+
+# Controls whether serving of static pages is logged. 
+#static:
+#    logging: 1
+
+# Study-specific forms.  This config entry maps the possible values of
+# the StudyType CV to form configs specific to those study
+# types. There should ideally be one entry per StudyType term in the
+# database, although if an entry is missing these forms will simply
+# redirect back to the object view. Every entry here *must* point to a
+# set of actual HTML::FormFu config files.
+#study_specific_forms:
+#  SLE:        edit_sle
+#  Vasculitis: edit_vasc
+
+# Test calculators. For each StudyType one can have a test calculator
+# to automatically aggregate tests into a derived score. The modules
+# are located in the lib/CIMR/ClinWeb/TestCalc directory, and must
+# implement suitable new() and calculate() methods. The calculate
+# method is passed either a Visit or Hospitalisation object and is
+# expected to calculate scores and enter them into the database
+# (linking parent and child test results) itself. This gives the
+# implementer of these modules full control over the outcome.
+
+# At some point we may modify this so that each study type can
+# have many test calculators. It's not needed yet, however.
+#test_calculators:
+#  SLE:        BILAG
+#  Vasculitis: BVAS
+
+# HTML::FormFu configuration.
+Controller::HTML::FormFu:
+  constructor:
+    render_method: tt
+    auto_constraint_class: '%t'
+
+# Optional configuration for MAGE-TAB export system.
+MAGETAB:
+  
+  investigation:
+  
+    title: >-
+      Short title here.
+
+    abstract: >-
+      E.g. a manuscript abstract.
+
+    release_date: >-
+      Public release date in YYYY-MM-DD format.
+  
+  protocols:
+    
+    recruitment: >-
+      Some text here
+
+    cell_separation: >-
+      Some text here
+
+    nucleic_acid_extraction: >-
+      Some text here
+
+    labeling: >-
+      Some text here
+      
+    hybridization: >-
+      Some text here
+      
+
+# To disallow database modifications via the web interface (e.g. for
+# maintenance), uncomment the following and set it to a true value
+# (e.g., 1):
+#WebIsReadOnly: 0

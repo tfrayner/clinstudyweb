@@ -1,0 +1,11 @@
+[% META title = "Edit a disease event" %]
+
+    <script type="text/javascript">
+        DHTMLSuite.include("calendar"); 
+    </script>
+    <script type="text/javascript" src="[% c.uri_for('/static/js/calendar-popup.js')%]"></script>
+
+[% form %]
+
+(Required fields have been <font color="[% site.col.required %]">highlighted</font>.)
+
