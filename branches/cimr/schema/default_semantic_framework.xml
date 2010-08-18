@@ -1,263 +1,620 @@
 <?xml version="1.0"?>
 <ClinStudyAdminML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="clindb_admin.xsd">
   <ControlledVocabs>
-    <ControlledVocab category="AdverseAction" value="Dosage changed"/>
-    <ControlledVocab category="AdverseAction" value="Drug changed or stopped"/>
-    <ControlledVocab category="AdverseAction" value="Drug started"/>
-    <ControlledVocab category="AdverseAction" value="Hospitalisation"/>
-    <ControlledVocab category="AdverseAction" value="Non-drug therapy"/>
-    <ControlledVocab category="AdverseAction" value="None"/>
-    <ControlledVocab category="AdverseAction" value="Permanent stoppage"/>
-    <ControlledVocab category="AdverseAction" value="Temporary stoppage"/>
-    <ControlledVocab category="AdverseOutcome" value="Condition improving"/>
-    <ControlledVocab category="AdverseOutcome" value="Condition unchanged"/>
-    <ControlledVocab category="AdverseOutcome" value="Condition worsening"/>
-    <ControlledVocab category="AdverseOutcome" value="Death due to this AE"/>
-    <ControlledVocab category="AdverseOutcome" value="Full recovery"/>
-    <ControlledVocab category="AdverseOutcome" value="Recovery with sequelae"/>
-    <ControlledVocab category="AdverseSeverity" value="Life threatening"/>
-    <ControlledVocab category="AdverseSeverity" value="Mild"/>
-    <ControlledVocab category="AdverseSeverity" value="Moderate"/>
-    <ControlledVocab category="AdverseSeverity" value="Severe"/>
-    <ControlledVocab category="AdverseTrialRelated" value="Highly probable"/>
-    <ControlledVocab category="AdverseTrialRelated" value="Possible"/>
-    <ControlledVocab category="AdverseTrialRelated" value="Probable"/>
-    <ControlledVocab category="AdverseTrialRelated" value="Unlikely"/>
-    <ControlledVocab category="AdverseTrialRelated" value="Unrelated"/>
-    <ControlledVocab category="CellType" value="CD14"/>
-    <ControlledVocab category="CellType" value="CD16"/>
-    <ControlledVocab category="CellType" value="CD19"/>
-    <ControlledVocab category="CellType" value="CD4"/>
-    <ControlledVocab category="CellType" value="CD8"/>
-    <ControlledVocab category="CellType" value="naive CD8"/>
-    <ControlledVocab category="CellType" value="none"/>
-    <ControlledVocab category="CellType" value="PBMC"/>
-    <ControlledVocab category="CellType" value="unknown"/>
-    <ControlledVocab category="ClinicalFeature" value="Anaemia"/>
-    <ControlledVocab category="ClinicalFeature" value="Antinuclear antibodies"/>
-    <ControlledVocab category="ClinicalFeature" value="Arthritis"/>
-    <ControlledVocab category="ClinicalFeature" value="Depression"/>
-    <ControlledVocab category="ClinicalFeature" value="Discoid rash"/>
-    <ControlledVocab category="ClinicalFeature" value="Fatigue"/>
-    <ControlledVocab category="ClinicalFeature" value="Haematologic disorder"/>
-    <ControlledVocab category="ClinicalFeature" value="Immunologic disorder"/>
-    <ControlledVocab category="ClinicalFeature" value="Insomnia"/>
-    <ControlledVocab category="ClinicalFeature" value="Malar rash"/>
-    <ControlledVocab category="ClinicalFeature" value="Neurologic disorders"/>
-    <ControlledVocab category="ClinicalFeature" value="Oral Ulcers"/>
-    <ControlledVocab category="ClinicalFeature" value="Photosensitivity"/>
-    <ControlledVocab category="ClinicalFeature" value="Renal disorder"/>
-    <ControlledVocab category="ClinicalFeature" value="Serositis"/>
-    <ControlledVocab category="DiagnosisCondition" value="ADPKD"/>
-    <ControlledVocab category="DiagnosisCondition" value="Behcet's Syndrome"/>
-    <ControlledVocab category="DiagnosisCondition" value="Bilateral small kidneys"/>
-    <ControlledVocab category="DiagnosisCondition" value="Cerebral vasculitis/Lymphoma"/>
-    <ControlledVocab category="DiagnosisCondition" value="Chronic PN"/>
-    <ControlledVocab category="DiagnosisCondition" value="Churg Strauss Syndrome"/>
-    <ControlledVocab category="DiagnosisCondition" value="Congenital renal dysplasia"/>
-    <ControlledVocab category="DiagnosisCondition" value="Crohn's disease"/>
-    <ControlledVocab category="DiagnosisCondition" value="Cryoglobulinaemia"/>
-    <ControlledVocab category="DiagnosisCondition" value="Diabetes"/>
-    <ControlledVocab category="DiagnosisCondition" value="Easonophine vasculitis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Giant Cell Arteritis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Goodpasture's Syndrome"/>
-    <ControlledVocab category="DiagnosisCondition" value="Henoch-Schonlein Purpura"/>
-    <ControlledVocab category="DiagnosisCondition" value="Hypertension"/>
-    <ControlledVocab category="DiagnosisCondition" value="IgA Nephropathy"/>
-    <ControlledVocab category="DiagnosisCondition" value="Lithium nephrotoxicity"/>
-    <ControlledVocab category="DiagnosisCondition" value="MCGN Type 1"/>
-    <ControlledVocab category="DiagnosisCondition" value="MCGN Type 2"/>
-    <ControlledVocab category="DiagnosisCondition" value="Membranous nephropathy"/>
-    <ControlledVocab category="DiagnosisCondition" value="Microscopic Polyangiitis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Multiple sclerosis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Obstructive uropathy"/>
-    <ControlledVocab category="DiagnosisCondition" value="Polyarteritis Nodosa"/>
-    <ControlledVocab category="DiagnosisCondition" value="Posterior urethral valves/Obstruction"/>
-    <ControlledVocab category="DiagnosisCondition" value="Reflux Nephropathy"/>
-    <ControlledVocab category="DiagnosisCondition" value="Rheumatoid arthritis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Schnitzler syndrome"/>
-    <ControlledVocab category="DiagnosisCondition" value="Sjogren's syndrome"/>
-    <ControlledVocab category="DiagnosisCondition" value="Systemic Lupus Erythematosus"/>
-    <ControlledVocab category="DiagnosisCondition" value="Takayasu's Arteritis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Transplant"/>
-    <ControlledVocab category="DiagnosisCondition" value="Ulcerative colitis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Urinary stone disease"/>
-    <ControlledVocab category="DiagnosisCondition" value="Vasculitic Rash"/>
-    <ControlledVocab category="DiagnosisCondition" value="Vasculitis"/>
-    <ControlledVocab category="DiagnosisCondition" value="Wegener's Granulomatosis"/>
-    <ControlledVocab category="DiagnosisConfidence" value="Definite"/>
-    <ControlledVocab category="DiagnosisConfidence" value="Possible"/>
-    <ControlledVocab category="DiagnosisConfidence" value="Probable"/>
-    <ControlledVocab category="DiseaseActivity" value="Active disease/Flare"/>
-    <ControlledVocab category="DiseaseActivity" value="Low-grade activity"/>
-    <ControlledVocab category="DiseaseActivity" value="No activity"/>
-    <ControlledVocab category="DiseaseActivity" value="Remission"/>
-    <ControlledVocab category="DiseaseEventType" value="relapse"/>
-    <ControlledVocab category="DiseaseEventType" value="remission"/>
-    <ControlledVocab category="DonorType" value="Cadaveric Asystolic"/>
-    <ControlledVocab category="DonorType" value="Cadaveric Heart Beating"/>
-    <ControlledVocab category="DonorType" value="Live Related"/>
-    <ControlledVocab category="DonorType" value="Live Unrelated"/>
-    <ControlledVocab category="DoseFrequency" value="1x / month"/>
-    <ControlledVocab category="DoseFrequency" value="1x / wk"/>
-    <ControlledVocab category="DoseFrequency" value="2x / month"/>
-    <ControlledVocab category="DoseFrequency" value="2x / wk"/>
-    <ControlledVocab category="DoseFrequency" value="3x / month"/>
-    <ControlledVocab category="DoseFrequency" value="3x / wk"/>
-    <ControlledVocab category="DoseFrequency" value="5x / day"/>
-    <ControlledVocab category="DoseFrequency" value="6x / day"/>
-    <ControlledVocab category="DoseFrequency" value="6x / wk"/>
-    <ControlledVocab category="DoseFrequency" value="am"/>
-    <ControlledVocab category="DoseFrequency" value="bd"/>
-    <ControlledVocab category="DoseFrequency" value="od"/>
-    <ControlledVocab category="DoseFrequency" value="prn"/>
-    <ControlledVocab category="DoseFrequency" value="once"/>
-    <ControlledVocab category="DoseFrequency" value="pm"/>
-    <ControlledVocab category="DoseFrequency" value="qds"/>
-    <ControlledVocab category="DoseFrequency" value="tds"/>
-    <ControlledVocab category="DoseUnit" value="gm"/>
-    <ControlledVocab category="DoseUnit" value="mcg"/>
-    <ControlledVocab category="DoseUnit" value="mg"/>
-    <ControlledVocab category="DoseUnit" value="ng"/>
-    <ControlledVocab category="DoseUnit" value="tabs"/>
-    <ControlledVocab category="DrugLocale" value="in clinic"/>
-    <ControlledVocab category="DrugLocale" value="prescription"/>
-    <ControlledVocab category="DrugType" value="immunosuppression"/>
-    <ControlledVocab category="DrugType" value="other"/>
-    <ControlledVocab category="Ethnicity" value="Asian"/>
-    <ControlledVocab category="Ethnicity" value="Black"/>
-    <ControlledVocab category="Ethnicity" value="Caucasian"/>
-    <ControlledVocab category="Ethnicity" value="Hispanic"/>
-    <ControlledVocab category="HomeCentre" value="Cambridge"/>
-    <ControlledVocab category="HomeCentre" value="Oxford"/>
-    <ControlledVocab category="HomeCentre" value="Singapore"/>
-    <ControlledVocab category="HomeCentre" value="Singapore SGH"/>
-    <ControlledVocab category="LabelCompound" value="biotin"/>
-    <ControlledVocab category="LabelCompound" value="Cy3"/>
-    <ControlledVocab category="LabelCompound" value="Cy5"/>
-    <ControlledVocab category="MaterialType" value="cDNA"/>
-    <ControlledVocab category="MaterialType" value="genomic DNA"/>
-    <ControlledVocab category="MaterialType" value="plasma"/>
-    <ControlledVocab category="MaterialType" value="RNA"/>
-    <ControlledVocab category="MaterialType" value="serum"/>
-    <ControlledVocab category="NominalTimepoint" value="0 months"/>
-    <ControlledVocab category="NominalTimepoint" value="1 month"/>
-    <ControlledVocab category="NominalTimepoint" value="12 months"/>
-    <ControlledVocab category="NominalTimepoint" value="13 months"/>
-    <ControlledVocab category="NominalTimepoint" value="18 months"/>
-    <ControlledVocab category="NominalTimepoint" value="3 months"/>
-    <ControlledVocab category="NominalTimepoint" value="6 months"/>
-    <ControlledVocab category="NominalTimepoint" value="7 months"/>
-    <ControlledVocab category="ObservationType" value="ANCA status"/>
-    <ControlledVocab category="ObservationType" value="aorta biopsy"/>
-    <ControlledVocab category="ObservationType" value="bronchial biopsy"/>
-    <ControlledVocab category="ObservationType" value="kidney biopsy"/>
-    <ControlledVocab category="ObservationType" value="lung biopsy"/>
-    <ControlledVocab category="ObservationType" value="nasal biopsy"/>
-    <ControlledVocab category="ObservationType" value="other histology"/>
-    <ControlledVocab category="ObservationType" value="skin biopsy"/>
-    <ControlledVocab category="OrganType" value="kidney"/>
-    <ControlledVocab category="PatientGroup" value="CD4"/>
-    <ControlledVocab category="PatientGroup" value="CD8"/>
-    <ControlledVocab category="PatientGroupBasis" value="gene expression study"/>
-    <ControlledVocab category="PlatformType" value="Affymetrix"/>
-    <ControlledVocab category="PlatformType" value="Illumina"/>
-    <ControlledVocab category="PlatformType" value="Agilent"/>
-    <ControlledVocab category="PreviousDiseaseCourse" value="Aggressive"/>
-    <ControlledVocab category="PreviousDiseaseCourse" value="Benign"/>
-    <ControlledVocab category="PreviousDiseaseCourse" value="Refractory"/>
-    <ControlledVocab category="PreviousDiseaseCourse" value="Relapsing"/>
-    <ControlledVocab category="PriorTimepoint" value="0 months"/>
-    <ControlledVocab category="PriorTimepoint" value="1 month prior"/>
-    <ControlledVocab category="PriorTimepoint" value="3 months prior"/>
-    <ControlledVocab category="QualityScore" value="bad"/>
-    <ControlledVocab category="QualityScore" value="good"/>
-    <ControlledVocab category="QualityScore" value="unsure"/>
-    <ControlledVocab category="RiskFactor" value="family history"/>
-    <ControlledVocab category="RiskFactor" value="smoking"/>
-    <ControlledVocab category="SensitisationStatus" value="No"/>
-    <ControlledVocab category="SensitisationStatus" value="Yes"/>
-    <ControlledVocab category="StudyType" value="Control"/>
-    <ControlledVocab category="StudyType" value="IBD"/>
-    <ControlledVocab category="StudyType" value="Multiple sclerosis"/>
-    <ControlledVocab category="StudyType" value="Rheumatoid arthritis"/>
-    <ControlledVocab category="StudyType" value="SLE"/>
-    <ControlledVocab category="StudyType" value="Transplant"/>
-    <ControlledVocab category="StudyType" value="Undiagnosed"/>
-    <ControlledVocab category="StudyType" value="Vaccination"/>
-    <ControlledVocab category="StudyType" value="Vasculitis"/>
-    <ControlledVocab category="StudyType" value="GWAS"/>
-    <ControlledVocab category="SystemInvolvement" value="Abdominal"/>
-    <ControlledVocab category="SystemInvolvement" value="Cardiovascular"/>
-    <ControlledVocab category="SystemInvolvement" value="Joint"/>
-    <ControlledVocab category="SystemInvolvement" value="Mucocutaneous"/>
-    <ControlledVocab category="SystemInvolvement" value="Neurological"/>
-    <ControlledVocab category="SystemInvolvement" value="Ocular"/>
-    <ControlledVocab category="SystemInvolvement" value="Pituitary"/>
-    <ControlledVocab category="SystemInvolvement" value="Pulmonary/ENT"/>
-    <ControlledVocab category="SystemInvolvement" value="Renal"/>
-    <ControlledVocab category="SystemInvolvement" value="Skin"/>
-    <ControlledVocab category="SystemInvolvement" value="Systemic"/>
-    <ControlledVocab category="TestResult" value="+ / 0.3"/>
-    <ControlledVocab category="TestResult" value="+ / 10"/>
-    <ControlledVocab category="TestResult" value="++ / 1"/>
-    <ControlledVocab category="TestResult" value="++ / 25"/>
-    <ControlledVocab category="TestResult" value="+++ / 3"/>
-    <ControlledVocab category="TestResult" value="+++ / 80"/>
-    <ControlledVocab category="TestResult" value="++++ / 200"/>
-    <ControlledVocab category="TestResult" value="++++ / &gt;3"/>
-    <ControlledVocab category="TestResult" value="1"/>
-    <ControlledVocab category="TestResult" value="1-3"/>
-    <ControlledVocab category="TestResult" value="2"/>
-    <ControlledVocab category="TestResult" value="3"/>
-    <ControlledVocab category="TestResult" value="4"/>
-    <ControlledVocab category="TestResult" value="5"/>
-    <ControlledVocab category="TestResult" value="&lt;1"/>
-    <ControlledVocab category="TestResult" value="A"/>
-    <ControlledVocab category="TestResult" value="ATYPICAL ANCA"/>
-    <ControlledVocab category="TestResult" value="ATYPICAL C-ANCA"/>
-    <ControlledVocab category="TestResult" value="B"/>
-    <ControlledVocab category="TestResult" value="C"/>
-    <ControlledVocab category="TestResult" value="D"/>
-    <ControlledVocab category="TestResult" value="E"/>
-    <ControlledVocab category="TestResult" value="INTERFERING ANA"/>
-    <ControlledVocab category="TestResult" value="negative"/>
-    <ControlledVocab category="TestResult" value="New / worse"/>
-    <ControlledVocab category="TestResult" value="nil"/>
-    <ControlledVocab category="TestResult" value="No"/>
-    <ControlledVocab category="TestResult" value="non-haem trace"/>
-    <ControlledVocab category="TestResult" value="Not present"/>
-    <ControlledVocab category="TestResult" value="NP"/>
-    <ControlledVocab category="TestResult" value="Other"/>
-    <ControlledVocab category="TestResult" value="P"/>
-    <ControlledVocab category="TestResult" value="POSITIVE C-ANCA"/>
-    <ControlledVocab category="TestResult" value="POSITIVE P-ANCA"/>
-    <ControlledVocab category="TestResult" value="Present"/>
-    <ControlledVocab category="TestResult" value="trace"/>
-    <ControlledVocab category="TestResult" value="trace lysed"/>
-    <ControlledVocab category="TestResult" value="WEAK ATYPICAL ANCA"/>
-    <ControlledVocab category="TestResult" value="WEAK POSITIVE C-ANCA"/>
-    <ControlledVocab category="TestResult" value="WEAK POSITIVE P-ANCA"/>
-    <ControlledVocab category="TestResult" value="Yes"/>
-    <ControlledVocab category="TimeUnit" value="days"/>
-    <ControlledVocab category="TimeUnit" value="months"/>
-    <ControlledVocab category="TimeUnit" value="weeks"/>
-    <ControlledVocab category="TimeUnit" value="years"/>
-    <ControlledVocab category="TreatmentType" value="drug therapy"/>
-    <ControlledVocab category="TreatmentType" value="renal replacement therapy"/>
+    <ControlledVocab accession="CSW:0000000001" category="CVRelationshipType" value="instance_of"/>
+    <ControlledVocab accession="CSW:0000000002" category="CVRelationshipType" value="synonym_of"/>
+    <ControlledVocab accession="CSW:0000000003" category="AdverseAction" value="Dosage changed"/>
+    <ControlledVocab accession="CSW:0000000004" category="AdverseAction" value="Drug changed or stopped"/>
+    <ControlledVocab accession="CSW:0000000005" category="AdverseAction" value="Drug started"/>
+    <ControlledVocab accession="CSW:0000000006" category="AdverseAction" value="Hospitalisation"/>
+    <ControlledVocab accession="CSW:0000000007" category="AdverseAction" value="Non-drug therapy"/>
+    <ControlledVocab accession="CSW:0000000008" category="AdverseAction" value="None"/>
+    <ControlledVocab accession="CSW:0000000009" category="AdverseAction" value="Permanent stoppage"/>
+    <ControlledVocab accession="CSW:0000000010" category="AdverseAction" value="Temporary stoppage"/>
+    <ControlledVocab accession="CSW:0000000011" category="AdverseOutcome" value="Condition improving"/>
+    <ControlledVocab accession="CSW:0000000012" category="AdverseOutcome" value="Condition unchanged"/>
+    <ControlledVocab accession="CSW:0000000013" category="AdverseOutcome" value="Condition worsening"/>
+    <ControlledVocab accession="CSW:0000000014" category="AdverseOutcome" value="Death due to this AE"/>
+    <ControlledVocab accession="CSW:0000000015" category="AdverseOutcome" value="Full recovery"/>
+    <ControlledVocab accession="CSW:0000000016" category="AdverseOutcome" value="Recovery with sequelae"/>
+    <ControlledVocab accession="CSW:0000000017" category="AdverseSeverity" value="Life threatening"/>
+    <ControlledVocab accession="CSW:0000000018" category="AdverseSeverity" value="Mild"/>
+    <ControlledVocab accession="CSW:0000000019" category="AdverseSeverity" value="Moderate"/>
+    <ControlledVocab accession="CSW:0000000020" category="AdverseSeverity" value="Severe"/>
+    <ControlledVocab accession="CSW:0000000021" category="AdverseTrialRelated" value="Highly probable"/>
+    <ControlledVocab accession="CSW:0000000022" category="AdverseTrialRelated" value="Possible"/>
+    <ControlledVocab accession="CSW:0000000023" category="AdverseTrialRelated" value="Probable"/>
+    <ControlledVocab accession="CSW:0000000024" category="AdverseTrialRelated" value="Unlikely"/>
+    <ControlledVocab accession="CSW:0000000025" category="AdverseTrialRelated" value="Unrelated"/>
+    <ControlledVocab accession="CSW:0000000026" category="CellType" value="CD14"/>
+    <ControlledVocab accession="CSW:0000000027" category="CellType" value="CD16"/>
+    <ControlledVocab accession="CSW:0000000028" category="CellType" value="CD19"/>
+    <ControlledVocab accession="CSW:0000000029" category="CellType" value="CD4"/>
+    <ControlledVocab accession="CSW:0000000030" category="CellType" value="CD8"/>
+    <ControlledVocab accession="CSW:0000000031" category="CellType" value="none"/>
+    <ControlledVocab accession="CSW:0000000032" category="CellType" value="PBMC"/>
+    <ControlledVocab accession="CSW:0000000033" category="CellType" value="Tcm"/>
+    <ControlledVocab accession="CSW:0000000034" category="CellType" value="Tem"/>
+    <ControlledVocab accession="CSW:0000000035" category="CellType" value="Temra"/>
+    <ControlledVocab accession="CSW:0000000036" category="CellType" value="Tn"/>
+    <ControlledVocab accession="CSW:0000000037" category="CellType" value="unknown"/>
+    <ControlledVocab accession="CSW:0000000038" category="ClinicalFeature" value="Anaemia"/>
+    <ControlledVocab accession="CSW:0000000039" category="ClinicalFeature" value="Antinuclear antibodies"/>
+    <ControlledVocab accession="CSW:0000000040" category="ClinicalFeature" value="Arthritis"/>
+    <ControlledVocab accession="CSW:0000000041" category="ClinicalFeature" value="Depression"/>
+    <ControlledVocab accession="CSW:0000000042" category="ClinicalFeature" value="Discoid rash"/>
+    <ControlledVocab accession="CSW:0000000043" category="ClinicalFeature" value="Fatigue"/>
+    <ControlledVocab accession="CSW:0000000044" category="ClinicalFeature" value="Haematologic disorder"/>
+    <ControlledVocab accession="CSW:0000000045" category="ClinicalFeature" value="Immunologic disorder"/>
+    <ControlledVocab accession="CSW:0000000046" category="ClinicalFeature" value="Insomnia"/>
+    <ControlledVocab accession="CSW:0000000047" category="ClinicalFeature" value="Malar rash"/>
+    <ControlledVocab accession="CSW:0000000048" category="ClinicalFeature" value="Neurologic disorders"/>
+    <ControlledVocab accession="CSW:0000000049" category="ClinicalFeature" value="Oral Ulcers"/>
+    <ControlledVocab accession="CSW:0000000050" category="ClinicalFeature" value="Photosensitivity"/>
+    <ControlledVocab accession="CSW:0000000051" category="ClinicalFeature" value="Renal disorder"/>
+    <ControlledVocab accession="CSW:0000000052" category="ClinicalFeature" value="Serositis"/>
+    <ControlledVocab accession="CSW:0000000053" category="DiagnosisCondition" value="ADPKD"/>
+    <ControlledVocab accession="CSW:0000000054" category="DiagnosisCondition" value="Behcet's Syndrome"/>
+    <ControlledVocab accession="CSW:0000000055" category="DiagnosisCondition" value="Bilateral small kidneys"/>
+    <ControlledVocab accession="CSW:0000000056" category="DiagnosisCondition" value="Cerebral vasculitis/Lymphoma"/>
+    <ControlledVocab accession="CSW:0000000057" category="DiagnosisCondition" value="Chronic PN"/>
+    <ControlledVocab accession="CSW:0000000058" category="DiagnosisCondition" value="Churg Strauss Syndrome"/>
+    <ControlledVocab accession="CSW:0000000059" category="DiagnosisCondition" value="Congenital renal dysplasia"/>
+    <ControlledVocab accession="CSW:0000000060" category="DiagnosisCondition" value="Crohn's disease"/>
+    <ControlledVocab accession="CSW:0000000061" category="DiagnosisCondition" value="Cryoglobulinaemia"/>
+    <ControlledVocab accession="CSW:0000000062" category="DiagnosisCondition" value="Diabetes"/>
+    <ControlledVocab accession="CSW:0000000063" category="DiagnosisCondition" value="Easonophine vasculitis"/>
+    <ControlledVocab accession="CSW:0000000064" category="DiagnosisCondition" value="Focal Segmental Glomerulosclerosis"/>
+    <ControlledVocab accession="CSW:0000000065" category="DiagnosisCondition" value="Giant Cell Arteritis"/>
+    <ControlledVocab accession="CSW:0000000066" category="DiagnosisCondition" value="Goodpasture's Syndrome"/>
+    <ControlledVocab accession="CSW:0000000067" category="DiagnosisCondition" value="Henoch-Schonlein Purpura"/>
+    <ControlledVocab accession="CSW:0000000068" category="DiagnosisCondition" value="Hypertension"/>
+    <ControlledVocab accession="CSW:0000000069" category="DiagnosisCondition" value="IgA Nephropathy"/>
+    <ControlledVocab accession="CSW:0000000070" category="DiagnosisCondition" value="Lithium nephrotoxicity"/>
+    <ControlledVocab accession="CSW:0000000071" category="DiagnosisCondition" value="MCGN Type 1"/>
+    <ControlledVocab accession="CSW:0000000072" category="DiagnosisCondition" value="MCGN Type 2"/>
+    <ControlledVocab accession="CSW:0000000073" category="DiagnosisCondition" value="Membranous nephropathy"/>
+    <ControlledVocab accession="CSW:0000000074" category="DiagnosisCondition" value="Microscopic Polyangiitis"/>
+    <ControlledVocab accession="CSW:0000000075" category="DiagnosisCondition" value="Multiple sclerosis"/>
+    <ControlledVocab accession="CSW:0000000076" category="DiagnosisCondition" value="Obstructive uropathy"/>
+    <ControlledVocab accession="CSW:0000000077" category="DiagnosisCondition" value="Polyarteritis Nodosa"/>
+    <ControlledVocab accession="CSW:0000000078" category="DiagnosisCondition" value="Polymyalgia Rheumatica"/>
+    <ControlledVocab accession="CSW:0000000079" category="DiagnosisCondition" value="Posterior urethral valves/Obstruction"/>
+    <ControlledVocab accession="CSW:0000000080" category="DiagnosisCondition" value="Reflux Nephropathy"/>
+    <ControlledVocab accession="CSW:0000000081" category="DiagnosisCondition" value="Rheumatoid arthritis"/>
+    <ControlledVocab accession="CSW:0000000082" category="DiagnosisCondition" value="Schnitzler syndrome"/>
+    <ControlledVocab accession="CSW:0000000083" category="DiagnosisCondition" value="Sjogren's syndrome"/>
+    <ControlledVocab accession="CSW:0000000084" category="DiagnosisCondition" value="Systemic Lupus Erythematosus"/>
+    <ControlledVocab accession="CSW:0000000085" category="DiagnosisCondition" value="Takayasu's Arteritis"/>
+    <ControlledVocab accession="CSW:0000000086" category="DiagnosisCondition" value="Transplant"/>
+    <ControlledVocab accession="CSW:0000000087" category="DiagnosisCondition" value="Trisomy 8"/>
+    <ControlledVocab accession="CSW:0000000088" category="DiagnosisCondition" value="Ulcerative colitis"/>
+    <ControlledVocab accession="CSW:0000000089" category="DiagnosisCondition" value="Urinary stone disease"/>
+    <ControlledVocab accession="CSW:0000000090" category="DiagnosisCondition" value="Vasculitic Rash"/>
+    <ControlledVocab accession="CSW:0000000092" category="DiagnosisCondition" value="Wegener's Granulomatosis"/>
+    <ControlledVocab accession="CSW:0000000093" category="DiagnosisConfidence" value="Definite"/>
+    <ControlledVocab accession="CSW:0000000094" category="DiagnosisConfidence" value="Possible"/>
+    <ControlledVocab accession="CSW:0000000095" category="DiagnosisConfidence" value="Probable"/>
+    <ControlledVocab accession="CSW:0000000096" category="DiseaseActivity" value="Active disease/Flare"/>
+    <ControlledVocab accession="CSW:0000000097" category="DiseaseActivity" value="Low-grade activity"/>
+    <ControlledVocab accession="CSW:0000000098" category="DiseaseActivity" value="No activity"/>
+    <ControlledVocab accession="CSW:0000000099" category="DiseaseActivity" value="Remission"/>
+    <ControlledVocab accession="CSW:0000000100" category="DiseaseEventType" value="relapse"/>
+    <ControlledVocab accession="CSW:0000000101" category="DiseaseEventType" value="remission"/>
+    <ControlledVocab accession="CSW:0000000102" category="DonorType" value="Cadaveric Asystolic"/>
+    <ControlledVocab accession="CSW:0000000103" category="DonorType" value="Cadaveric Heart Beating"/>
+    <ControlledVocab accession="CSW:0000000104" category="DonorType" value="Live Related"/>
+    <ControlledVocab accession="CSW:0000000105" category="DonorType" value="Live Unrelated"/>
+    <ControlledVocab accession="CSW:0000000106" category="DoseFrequency" value="1x / month"/>
+    <ControlledVocab accession="CSW:0000000107" category="DoseFrequency" value="1x / wk"/>
+    <ControlledVocab accession="CSW:0000000108" category="DoseFrequency" value="2x / month"/>
+    <ControlledVocab accession="CSW:0000000109" category="DoseFrequency" value="2x / wk"/>
+    <ControlledVocab accession="CSW:0000000110" category="DoseFrequency" value="3x / month"/>
+    <ControlledVocab accession="CSW:0000000111" category="DoseFrequency" value="3x / wk"/>
+    <ControlledVocab accession="CSW:0000000112" category="DoseFrequency" value="5x / day"/>
+    <ControlledVocab accession="CSW:0000000113" category="DoseFrequency" value="6x / day"/>
+    <ControlledVocab accession="CSW:0000000114" category="DoseFrequency" value="6x / wk"/>
+    <ControlledVocab accession="CSW:0000000115" category="DoseFrequency" value="am"/>
+    <ControlledVocab accession="CSW:0000000116" category="DoseFrequency" value="bd"/>
+    <ControlledVocab accession="CSW:0000000117" category="DoseFrequency" value="od"/>
+    <ControlledVocab accession="CSW:0000000118" category="DoseFrequency" value="prn"/>
+    <ControlledVocab accession="CSW:0000000119" category="DoseFrequency" value="once"/>
+    <ControlledVocab accession="CSW:0000000120" category="DoseFrequency" value="pm"/>
+    <ControlledVocab accession="CSW:0000000121" category="DoseFrequency" value="qds"/>
+    <ControlledVocab accession="CSW:0000000122" category="DoseFrequency" value="tds"/>
+    <ControlledVocab accession="CSW:0000000123" category="DoseUnit" value="gm"/>
+    <ControlledVocab accession="CSW:0000000124" category="DoseUnit" value="mcg"/>
+    <ControlledVocab accession="CSW:0000000125" category="DoseUnit" value="mg"/>
+    <ControlledVocab accession="CSW:0000000126" category="DoseUnit" value="ng"/>
+    <ControlledVocab accession="CSW:0000000127" category="DoseUnit" value="tabs"/>
+    <ControlledVocab accession="CSW:0000000128" category="DrugLocale" value="in clinic"/>
+    <ControlledVocab accession="CSW:0000000129" category="DrugLocale" value="prescription"/>
+    <ControlledVocab accession="CSW:0000000130" category="DrugType" value="immunosuppression"/>
+    <ControlledVocab accession="CSW:0000000131" category="DrugType" value="induction therapy"/>
+    <ControlledVocab accession="CSW:0000000132" category="DrugType" value="corticosteroid"/>
+    <ControlledVocab accession="CSW:0000000133" category="Ethnicity" value="Asian"/>
+    <ControlledVocab accession="CSW:0000000134" category="Ethnicity" value="Black"/>
+    <ControlledVocab accession="CSW:0000000135" category="Ethnicity" value="Caucasian"/>
+    <ControlledVocab accession="CSW:0000000136" category="Ethnicity" value="Hispanic"/>
+    <ControlledVocab accession="CSW:0000000137" category="HomeCentre" value="Birmingham"/>
+    <ControlledVocab accession="CSW:0000000138" category="HomeCentre" value="Cambridge"/>
+    <ControlledVocab accession="CSW:0000000139" category="HomeCentre" value="ITN"/>
+    <ControlledVocab accession="CSW:0000000140" category="HomeCentre" value="Oxford"/>
+    <ControlledVocab accession="CSW:0000000141" category="HomeCentre" value="Singapore"/>
+    <ControlledVocab accession="CSW:0000000142" category="HomeCentre" value="Singapore NUH"/>
+    <ControlledVocab accession="CSW:0000000143" category="HomeCentre" value="Singapore SGH"/>
+    <ControlledVocab accession="CSW:0000000144" category="LabelCompound" value="biotin"/>
+    <ControlledVocab accession="CSW:0000000145" category="LabelCompound" value="Cy3"/>
+    <ControlledVocab accession="CSW:0000000146" category="LabelCompound" value="Cy5"/>
+    <ControlledVocab accession="CSW:0000000147" category="MaterialType" value="cDNA"/>
+    <ControlledVocab accession="CSW:0000000148" category="MaterialType" value="genomic DNA"/>
+    <ControlledVocab accession="CSW:0000000149" category="MaterialType" value="plasma"/>
+    <ControlledVocab accession="CSW:0000000150" category="MaterialType" value="RNA"/>
+    <ControlledVocab accession="CSW:0000000151" category="MaterialType" value="serum"/>
+    <ControlledVocab accession="CSW:0000000152" category="NominalTimepoint" value="0 months"/>
+    <ControlledVocab accession="CSW:0000000153" category="NominalTimepoint" value="1 month"/>
+    <ControlledVocab accession="CSW:0000000154" category="NominalTimepoint" value="12 months"/>
+    <ControlledVocab accession="CSW:0000000155" category="NominalTimepoint" value="13 months"/>
+    <ControlledVocab accession="CSW:0000000156" category="NominalTimepoint" value="18 months"/>
+    <ControlledVocab accession="CSW:0000000157" category="NominalTimepoint" value="3 months"/>
+    <ControlledVocab accession="CSW:0000000158" category="NominalTimepoint" value="6 months"/>
+    <ControlledVocab accession="CSW:0000000159" category="NominalTimepoint" value="7 months"/>
+    <ControlledVocab accession="CSW:0000000160" category="ObservationType" value="ANCA status"/>
+    <ControlledVocab accession="CSW:0000000161" category="ObservationType" value="aorta biopsy"/>
+    <ControlledVocab accession="CSW:0000000162" category="ObservationType" value="bronchial biopsy"/>
+    <ControlledVocab accession="CSW:0000000163" category="ObservationType" value="kidney biopsy"/>
+    <ControlledVocab accession="CSW:0000000164" category="ObservationType" value="lung biopsy"/>
+    <ControlledVocab accession="CSW:0000000165" category="ObservationType" value="nasal biopsy"/>
+    <ControlledVocab accession="CSW:0000000166" category="ObservationType" value="other histology"/>
+    <ControlledVocab accession="CSW:0000000167" category="ObservationType" value="skin biopsy"/>
+    <ControlledVocab accession="CSW:0000000168" category="OrganType" value="kidney"/>
+    <ControlledVocab accession="CSW:0000000169" category="PatientGroup" value="CD4"/>
+    <ControlledVocab accession="CSW:0000000170" category="PatientGroup" value="CD8"/>
+    <ControlledVocab accession="CSW:0000000171" category="PatientGroupBasis" value="gene expression study"/>
+    <ControlledVocab accession="CSW:0000000172" category="PlatformType" value="Affy GeneST"/>
+    <ControlledVocab accession="CSW:0000000173" category="PlatformType" value="MEDIANTE"/>
+    <ControlledVocab accession="CSW:0000000174" category="PreviousDiseaseCourse" value="Aggressive"/>
+    <ControlledVocab accession="CSW:0000000175" category="PreviousDiseaseCourse" value="Benign"/>
+    <ControlledVocab accession="CSW:0000000176" category="PreviousDiseaseCourse" value="Refractory"/>
+    <ControlledVocab accession="CSW:0000000177" category="PreviousDiseaseCourse" value="Relapsing"/>
+    <ControlledVocab accession="CSW:0000000178" category="PriorGroup" value="vaccination"/>
+    <ControlledVocab accession="CSW:0000000179" category="PriorTimepoint" value="0 months"/>
+    <ControlledVocab accession="CSW:0000000180" category="PriorTimepoint" value="1 month prior"/>
+    <ControlledVocab accession="CSW:0000000181" category="PriorTimepoint" value="3 months prior"/>
+    <ControlledVocab accession="CSW:0000000182" category="QualityScore" value="bad"/>
+    <ControlledVocab accession="CSW:0000000183" category="QualityScore" value="good"/>
+    <ControlledVocab accession="CSW:0000000184" category="QualityScore" value="unsure"/>
+    <ControlledVocab accession="CSW:0000000185" category="RiskFactor" value="family history"/>
+    <ControlledVocab accession="CSW:0000000186" category="RiskFactor" value="smoking"/>
+    <ControlledVocab accession="CSW:0000000187" category="SensitisationStatus" value="No"/>
+    <ControlledVocab accession="CSW:0000000188" category="SensitisationStatus" value="Yes"/>
+    <ControlledVocab accession="CSW:0000000189" category="StudyType" value="Control"/>
+    <ControlledVocab accession="CSW:0000000190" category="StudyType" value="GWAS"/>
+    <ControlledVocab accession="CSW:0000000191" category="StudyType" value="IBD"/>
+    <ControlledVocab accession="CSW:0000000192" category="StudyType" value="ITN"/>
+    <ControlledVocab accession="CSW:0000000193" category="StudyType" value="Multiple sclerosis"/>
+    <ControlledVocab accession="CSW:0000000194" category="StudyType" value="Rheumatoid arthritis"/>
+    <ControlledVocab accession="CSW:0000000195" category="StudyType" value="SLE"/>
+    <ControlledVocab accession="CSW:0000000196" category="StudyType" value="Transplant"/>
+    <ControlledVocab accession="CSW:0000000197" category="StudyType" value="Undiagnosed"/>
+    <ControlledVocab accession="CSW:0000000198" category="StudyType" value="Vaccination"/>
+    <ControlledVocab accession="CSW:0000000199" category="StudyType" value="Vasculitis"/>
+    <ControlledVocab accession="CSW:0000000200" category="SystemInvolvement" value="Abdominal"/>
+    <ControlledVocab accession="CSW:0000000201" category="SystemInvolvement" value="Cardiovascular"/>
+    <ControlledVocab accession="CSW:0000000202" category="SystemInvolvement" value="Joint"/>
+    <ControlledVocab accession="CSW:0000000203" category="SystemInvolvement" value="Mucocutaneous"/>
+    <ControlledVocab accession="CSW:0000000204" category="SystemInvolvement" value="Neurological"/>
+    <ControlledVocab accession="CSW:0000000205" category="SystemInvolvement" value="Ocular"/>
+    <ControlledVocab accession="CSW:0000000206" category="SystemInvolvement" value="Pituitary"/>
+    <ControlledVocab accession="CSW:0000000207" category="SystemInvolvement" value="Pulmonary/ENT"/>
+    <ControlledVocab accession="CSW:0000000208" category="SystemInvolvement" value="Renal"/>
+    <ControlledVocab accession="CSW:0000000209" category="SystemInvolvement" value="Skin"/>
+    <ControlledVocab accession="CSW:0000000210" category="SystemInvolvement" value="Systemic"/>
+    <ControlledVocab accession="CSW:0000000211" category="TestResult" value="+ / 0.3"/>
+    <ControlledVocab accession="CSW:0000000212" category="TestResult" value="+ / 10"/>
+    <ControlledVocab accession="CSW:0000000213" category="TestResult" value="++ / 1"/>
+    <ControlledVocab accession="CSW:0000000214" category="TestResult" value="++ / 25"/>
+    <ControlledVocab accession="CSW:0000000215" category="TestResult" value="+++ / 3"/>
+    <ControlledVocab accession="CSW:0000000216" category="TestResult" value="+++ / 80"/>
+    <ControlledVocab accession="CSW:0000000217" category="TestResult" value="++++ / 200"/>
+    <ControlledVocab accession="CSW:0000000218" category="TestResult" value="++++ / &gt;3"/>
+    <ControlledVocab accession="CSW:0000000219" category="TestResult" value="1"/>
+    <ControlledVocab accession="CSW:0000000220" category="TestResult" value="1-3"/>
+    <ControlledVocab accession="CSW:0000000221" category="TestResult" value="2"/>
+    <ControlledVocab accession="CSW:0000000222" category="TestResult" value="3"/>
+    <ControlledVocab accession="CSW:0000000223" category="TestResult" value="4"/>
+    <ControlledVocab accession="CSW:0000000224" category="TestResult" value="5"/>
+    <ControlledVocab accession="CSW:0000000225" category="TestResult" value="&lt;1"/>
+    <ControlledVocab accession="CSW:0000000226" category="TestResult" value="A"/>
+    <ControlledVocab accession="CSW:0000000227" category="TestResult" value="ATYPICAL ANCA"/>
+    <ControlledVocab accession="CSW:0000000228" category="TestResult" value="ATYPICAL C-ANCA"/>
+    <ControlledVocab accession="CSW:0000000229" category="TestResult" value="B"/>
+    <ControlledVocab accession="CSW:0000000230" category="TestResult" value="C"/>
+    <ControlledVocab accession="CSW:0000000231" category="TestResult" value="D"/>
+    <ControlledVocab accession="CSW:0000000232" category="TestResult" value="E"/>
+    <ControlledVocab accession="CSW:0000000233" category="TestResult" value="INTERFERING ANA"/>
+    <ControlledVocab accession="CSW:0000000234" category="TestResult" value="negative"/>
+    <ControlledVocab accession="CSW:0000000235" category="TestResult" value="New / worse"/>
+    <ControlledVocab accession="CSW:0000000236" category="TestResult" value="nil"/>
+    <ControlledVocab accession="CSW:0000000237" category="TestResult" value="No"/>
+    <ControlledVocab accession="CSW:0000000238" category="TestResult" value="non-haem trace"/>
+    <ControlledVocab accession="CSW:0000000239" category="TestResult" value="Not Done"/>
+    <ControlledVocab accession="CSW:0000000240" category="TestResult" value="Not present"/>
+    <ControlledVocab accession="CSW:0000000241" category="TestResult" value="NP"/>
+    <ControlledVocab accession="CSW:0000000242" category="TestResult" value="Other"/>
+    <ControlledVocab accession="CSW:0000000243" category="TestResult" value="P"/>
+    <ControlledVocab accession="CSW:0000000244" category="TestResult" value="POSITIVE C-ANCA"/>
+    <ControlledVocab accession="CSW:0000000245" category="TestResult" value="POSITIVE P-ANCA"/>
+    <ControlledVocab accession="CSW:0000000246" category="TestResult" value="Present"/>
+    <ControlledVocab accession="CSW:0000000247" category="TestResult" value="trace"/>
+    <ControlledVocab accession="CSW:0000000248" category="TestResult" value="trace lysed"/>
+    <ControlledVocab accession="CSW:0000000249" category="TestResult" value="WEAK ATYPICAL ANCA"/>
+    <ControlledVocab accession="CSW:0000000250" category="TestResult" value="WEAK POSITIVE C-ANCA"/>
+    <ControlledVocab accession="CSW:0000000251" category="TestResult" value="WEAK POSITIVE P-ANCA"/>
+    <ControlledVocab accession="CSW:0000000252" category="TestResult" value="Yes"/>
+    <ControlledVocab accession="CSW:0000000253" category="TimeUnit" value="days"/>
+    <ControlledVocab accession="CSW:0000000254" category="TimeUnit" value="months"/>
+    <ControlledVocab accession="CSW:0000000255" category="TimeUnit" value="weeks"/>
+    <ControlledVocab accession="CSW:0000000256" category="TimeUnit" value="years"/>
+    <ControlledVocab accession="CSW:0000000257" category="TreatmentType" value="historical drug therapy"/>
+    <ControlledVocab accession="CSW:0000000258" category="TreatmentType" value="renal replacement therapy"/>
+    <ControlledVocab accession="CSW:0000000259" category="DrugName" value="1 alpha Calcidol"/>
+    <ControlledVocab accession="CSW:0000000260" category="DrugName" value="23vP vaccine"/>
+    <ControlledVocab accession="CSW:0000000261" category="DrugName" value="Acyclovir"/>
+    <ControlledVocab accession="CSW:0000000262" category="DrugName" value="Adalimumab">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+        <RelatedVocab target_ref="CSW:0000000500" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000263" category="DrugName" value="Adcal"/>
+    <ControlledVocab accession="CSW:0000000264" category="DrugName" value="Adcal D3"/>
+    <ControlledVocab accession="CSW:0000000265" category="DrugName" value="Alendronate"/>
+    <ControlledVocab accession="CSW:0000000266" category="DrugName" value="Allopurinol"/>
+    <ControlledVocab accession="CSW:0000000267" category="DrugName" value="Amiloride"/>
+    <ControlledVocab accession="CSW:0000000268" category="DrugName" value="Amitriptyline"/>
+    <ControlledVocab accession="CSW:0000000269" category="DrugName" value="Amlodipine"/>
+    <ControlledVocab accession="CSW:0000000270" category="DrugName" value="Amoxycillin"/>
+    <ControlledVocab accession="CSW:0000000271" category="DrugName" value="Amphotericin"/>
+    <ControlledVocab accession="CSW:0000000272" category="DrugName" value="Anti-CD18"/>
+    <ControlledVocab accession="CSW:0000000273" category="DrugName" value="Aranesp"/>
+    <ControlledVocab accession="CSW:0000000274" category="DrugName" value="Arthrotec 1"/>
+    <ControlledVocab accession="CSW:0000000275" category="DrugName" value="Aspirin"/>
+    <ControlledVocab accession="CSW:0000000276" category="DrugName" value="Atenolol"/>
+    <ControlledVocab accession="CSW:0000000277" category="DrugName" value="Atorvastatin"/>
+    <ControlledVocab accession="CSW:0000000278" category="DrugName" value="Azathioprine">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+        <RelatedVocab target_ref="CSW:0000000501" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000279" category="DrugName" value="Bactroban"/>
+    <ControlledVocab accession="CSW:0000000280" category="DrugName" value="Basiliximab"/>
+    <ControlledVocab accession="CSW:0000000281" category="DrugName" value="Beclomethasone">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000282" category="DrugName" value="Becotide"/>
+    <ControlledVocab accession="CSW:0000000283" category="DrugName" value="Bendrofluazide"/>
+    <ControlledVocab accession="CSW:0000000284" category="DrugName" value="Betahistine"/>
+    <ControlledVocab accession="CSW:0000000285" category="DrugName" value="Betnesol"/>
+    <ControlledVocab accession="CSW:0000000286" category="DrugName" value="Bisoprolol"/>
+    <ControlledVocab accession="CSW:0000000287" category="DrugName" value="Buccastem"/>
+    <ControlledVocab accession="CSW:0000000288" category="DrugName" value="Budesonide">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000289" category="DrugName" value="Bumetanide"/>
+    <ControlledVocab accession="CSW:0000000290" category="DrugName" value="Buscopan"/>
+    <ControlledVocab accession="CSW:0000000291" category="DrugName" value="Cabergoline"/>
+    <ControlledVocab accession="CSW:0000000292" category="DrugName" value="Calcichew"/>
+    <ControlledVocab accession="CSW:0000000293" category="DrugName" value="Calcichew D3"/>
+    <ControlledVocab accession="CSW:0000000294" category="DrugName" value="Calcichew D3 forte"/>
+    <ControlledVocab accession="CSW:0000000295" category="DrugName" value="Calcium"/>
+    <ControlledVocab accession="CSW:0000000296" category="DrugName" value="Calcium carbonate"/>
+    <ControlledVocab accession="CSW:0000000297" category="DrugName" value="Calcium D3"/>
+    <ControlledVocab accession="CSW:0000000298" category="DrugName" value="Campath">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000299" category="DrugName" value="Cefalexin"/>
+    <ControlledVocab accession="CSW:0000000300" category="DrugName" value="Celluvisc"/>
+    <ControlledVocab accession="CSW:0000000301" category="DrugName" value="Chloramphenicol"/>
+    <ControlledVocab accession="CSW:0000000302" category="DrugName" value="Chlorpheniramine"/>
+    <ControlledVocab accession="CSW:0000000303" category="DrugName" value="Ciprofloxacin"/>
+    <ControlledVocab accession="CSW:0000000304" category="DrugName" value="Citalopram"/>
+    <ControlledVocab accession="CSW:0000000305" category="DrugName" value="Clarithromycin"/>
+    <ControlledVocab accession="CSW:0000000306" category="DrugName" value="Clonazepam"/>
+    <ControlledVocab accession="CSW:0000000307" category="DrugName" value="Clopidogrel"/>
+    <ControlledVocab accession="CSW:0000000308" category="DrugName" value="Co-amilofruse"/>
+    <ControlledVocab accession="CSW:0000000309" category="DrugName" value="Co-amoxiclav"/>
+    <ControlledVocab accession="CSW:0000000310" category="DrugName" value="Codein+ paracetamol"/>
+    <ControlledVocab accession="CSW:0000000311" category="DrugName" value="Codeine"/>
+    <ControlledVocab accession="CSW:0000000312" category="DrugName" value="Codydramol"/>
+    <ControlledVocab accession="CSW:0000000313" category="DrugName" value="Coproxamol"/>
+    <ControlledVocab accession="CSW:0000000314" category="DrugName" value="Cotrimoxazole"/>
+    <ControlledVocab accession="CSW:0000000315" category="DrugName" value="Cyclizin"/>
+    <ControlledVocab accession="CSW:0000000316" category="DrugName" value="Cyclophosphamide">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000317" category="DrugName" value="Cyclosporine A"/>
+    <ControlledVocab accession="CSW:0000000318" category="DrugName" value="Daclizumab"/>
+    <ControlledVocab accession="CSW:0000000319" category="DrugName" value="Dapsone"/>
+    <ControlledVocab accession="CSW:0000000320" category="DrugName" value="Desmopressin"/>
+    <ControlledVocab accession="CSW:0000000321" category="DrugName" value="Desmospray"/>
+    <ControlledVocab accession="CSW:0000000322" category="DrugName" value="Diclofenac"/>
+    <ControlledVocab accession="CSW:0000000323" category="DrugName" value="Didronel PMO"/>
+    <ControlledVocab accession="CSW:0000000324" category="DrugName" value="Digoxin"/>
+    <ControlledVocab accession="CSW:0000000325" category="DrugName" value="Dihydrocodeine"/>
+    <ControlledVocab accession="CSW:0000000326" category="DrugName" value="Diltiazem"/>
+    <ControlledVocab accession="CSW:0000000327" category="DrugName" value="Dnase"/>
+    <ControlledVocab accession="CSW:0000000328" category="DrugName" value="Domperidone"/>
+    <ControlledVocab accession="CSW:0000000329" category="DrugName" value="Doxazosin"/>
+    <ControlledVocab accession="CSW:0000000330" category="DrugName" value="Doxycycline"/>
+    <ControlledVocab accession="CSW:0000000331" category="DrugName" value="DSG">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000332" category="DrugName" value="Enalapril"/>
+    <ControlledVocab accession="CSW:0000000333" category="DrugName" value="Enoxaparin"/>
+    <ControlledVocab accession="CSW:0000000334" category="DrugName" value="Ephedrine"/>
+    <ControlledVocab accession="CSW:0000000335" category="DrugName" value="Erythomycin"/>
+    <ControlledVocab accession="CSW:0000000336" category="DrugName" value="Felodipine"/>
+    <ControlledVocab accession="CSW:0000000337" category="DrugName" value="Ferrous fumarate"/>
+    <ControlledVocab accession="CSW:0000000338" category="DrugName" value="Ferrous sulphate"/>
+    <ControlledVocab accession="CSW:0000000339" category="DrugName" value="Finasteride"/>
+    <ControlledVocab accession="CSW:0000000340" category="DrugName" value="Flubiprofen"/>
+    <ControlledVocab accession="CSW:0000000341" category="DrugName" value="Flucloxacillin"/>
+    <ControlledVocab accession="CSW:0000000342" category="DrugName" value="Fluconazole"/>
+    <ControlledVocab accession="CSW:0000000343" category="DrugName" value="Fluoxetine"/>
+    <ControlledVocab accession="CSW:0000000344" category="DrugName" value="Fluticasone">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000345" category="DrugName" value="Folic Acid"/>
+    <ControlledVocab accession="CSW:0000000346" category="DrugName" value="Frusemide"/>
+    <ControlledVocab accession="CSW:0000000347" category="DrugName" value="Gabapentin"/>
+    <ControlledVocab accession="CSW:0000000348" category="DrugName" value="Gentamicin"/>
+    <ControlledVocab accession="CSW:0000000349" category="DrugName" value="Gentisone"/>
+    <ControlledVocab accession="CSW:0000000350" category="DrugName" value="Gliclazide"/>
+    <ControlledVocab accession="CSW:0000000351" category="DrugName" value="HRT"/>
+    <ControlledVocab accession="CSW:0000000352" category="DrugName" value="Hydroxychloroquine"/>
+    <ControlledVocab accession="CSW:0000000353" category="DrugName" value="Hypromellose"/>
+    <ControlledVocab accession="CSW:0000000354" category="DrugName" value="Indapamide"/>
+    <ControlledVocab accession="CSW:0000000355" category="DrugName" value="Infliximab">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+        <RelatedVocab target_ref="CSW:0000000500" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000356" category="DrugName" value="Irbesartan"/>
+    <ControlledVocab accession="CSW:0000000357" category="DrugName" value="Isoniazid"/>
+    <ControlledVocab accession="CSW:0000000358" category="DrugName" value="Isosorbide Mononitrate SR"/>
+    <ControlledVocab accession="CSW:0000000359" category="DrugName" value="Itraconazole"/>
+    <ControlledVocab accession="CSW:0000000360" category="DrugName" value="IVIg">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000361" category="DrugName" value="Ketoprofen"/>
+    <ControlledVocab accession="CSW:0000000362" category="DrugName" value="Lansoprazole"/>
+    <ControlledVocab accession="CSW:0000000363" category="DrugName" value="Leflunomide">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000364" category="DrugName" value="Lisinopril"/>
+    <ControlledVocab accession="CSW:0000000365" category="DrugName" value="Losartan"/>
+    <ControlledVocab accession="CSW:0000000366" category="DrugName" value="Maxidex"/>
+    <ControlledVocab accession="CSW:0000000367" category="DrugName" value="Meloxicam"/>
+    <ControlledVocab accession="CSW:0000000368" category="DrugName" value="Meropenem"/>
+    <ControlledVocab accession="CSW:0000000369" category="DrugName" value="Metformin"/>
+    <ControlledVocab accession="CSW:0000000370" category="DrugName" value="Methotrexate">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000371" category="DrugName" value="Methyldopa"/>
+    <ControlledVocab accession="CSW:0000000372" category="DrugName" value="Methylprednisolone">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000373" category="DrugName" value="Metoclopramide"/>
+    <ControlledVocab accession="CSW:0000000374" category="DrugName" value="Microgynon"/>
+    <ControlledVocab accession="CSW:0000000375" category="DrugName" value="Mirtazepine"/>
+    <ControlledVocab accession="CSW:0000000376" category="DrugName" value="Montelukast"/>
+    <ControlledVocab accession="CSW:0000000377" category="DrugName" value="Mupirocin"/>
+    <ControlledVocab accession="CSW:0000000378" category="DrugName" value="Mycophenolate Mofetil">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000379" category="DrugName" value="Myfortic"/>
+    <ControlledVocab accession="CSW:0000000380" category="DrugName" value="Nabumetone"/>
+    <ControlledVocab accession="CSW:0000000381" category="DrugName" value="Naproxen"/>
+    <ControlledVocab accession="CSW:0000000382" category="DrugName" value="Naseptin"/>
+    <ControlledVocab accession="CSW:0000000383" category="DrugName" value="Navispare"/>
+    <ControlledVocab accession="CSW:0000000384" category="DrugName" value="Neorecormon"/>
+    <ControlledVocab accession="CSW:0000000385" category="DrugName" value="Nicorandil"/>
+    <ControlledVocab accession="CSW:0000000386" category="DrugName" value="Nifediipine"/>
+    <ControlledVocab accession="CSW:0000000387" category="DrugName" value="No treatment current on enrolment"/>
+    <ControlledVocab accession="CSW:0000000388" category="DrugName" value="Nystatin"/>
+    <ControlledVocab accession="CSW:0000000389" category="DrugName" value="Ocp"/>
+    <ControlledVocab accession="CSW:0000000390" category="DrugName" value="Omeprazole"/>
+    <ControlledVocab accession="CSW:0000000391" category="DrugName" value="Ondasentron"/>
+    <ControlledVocab accession="CSW:0000000392" category="DrugName" value="Orlistat"/>
+    <ControlledVocab accession="CSW:0000000393" category="DrugName" value="Otrivine"/>
+    <ControlledVocab accession="CSW:0000000394" category="DrugName" value="Paracetamol"/>
+    <ControlledVocab accession="CSW:0000000395" category="DrugName" value="PCV7 vaccine"/>
+    <ControlledVocab accession="CSW:0000000396" category="DrugName" value="Penicillin"/>
+    <ControlledVocab accession="CSW:0000000397" category="DrugName" value="Perindopril"/>
+    <ControlledVocab accession="CSW:0000000398" category="DrugName" value="Plasma Exchange">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000399" category="DrugName" value="Pravastatin"/>
+    <ControlledVocab accession="CSW:0000000400" category="DrugName" value="Prednisolone">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000401" category="DrugName" value="Pregaday"/>
+    <ControlledVocab accession="CSW:0000000402" category="DrugName" value="Prempac C"/>
+    <ControlledVocab accession="CSW:0000000403" category="DrugName" value="Prochlorperazine"/>
+    <ControlledVocab accession="CSW:0000000404" category="DrugName" value="Pyridoxine"/>
+    <ControlledVocab accession="CSW:0000000405" category="DrugName" value="Quinine"/>
+    <ControlledVocab accession="CSW:0000000406" category="DrugName" value="Rabeprazole"/>
+    <ControlledVocab accession="CSW:0000000407" category="DrugName" value="Ramipril"/>
+    <ControlledVocab accession="CSW:0000000408" category="DrugName" value="Ranitidine"/>
+    <ControlledVocab accession="CSW:0000000409" category="DrugName" value="Rifampicin"/>
+    <ControlledVocab accession="CSW:0000000410" category="DrugName" value="Risedronate"/>
+    <ControlledVocab accession="CSW:0000000411" category="DrugName" value="Rituximab">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000412" category="DrugName" value="Salbutamol"/>
+    <ControlledVocab accession="CSW:0000000413" category="DrugName" value="Salmeterol"/>
+    <ControlledVocab accession="CSW:0000000414" category="DrugName" value="Sando K"/>
+    <ControlledVocab accession="CSW:0000000415" category="DrugName" value="Sertraline"/>
+    <ControlledVocab accession="CSW:0000000416" category="DrugName" value="Sevelamer 800"/>
+    <ControlledVocab accession="CSW:0000000417" category="DrugName" value="Sharp trial medication"/>
+    <ControlledVocab accession="CSW:0000000418" category="DrugName" value="Simvastatin"/>
+    <ControlledVocab accession="CSW:0000000419" category="DrugName" value="Sirolimus"/>
+    <ControlledVocab accession="CSW:0000000420" category="DrugName" value="Sodium Valproate"/>
+    <ControlledVocab accession="CSW:0000000421" category="DrugName" value="Spironolactone"/>
+    <ControlledVocab accession="CSW:0000000422" category="DrugName" value="Steroids"/>
+    <ControlledVocab accession="CSW:0000000423" category="DrugName" value="Strontium"/>
+    <ControlledVocab accession="CSW:0000000424" category="DrugName" value="Symbicort"/>
+    <ControlledVocab accession="CSW:0000000425" category="DrugName" value="Tacrolimus">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000130" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000426" category="DrugName" value="Tamsulosin"/>
+    <ControlledVocab accession="CSW:0000000427" category="DrugName" value="Temazepam"/>
+    <ControlledVocab accession="CSW:0000000428" category="DrugName" value="Terfenadine"/>
+    <ControlledVocab accession="CSW:0000000429" category="DrugName" value="Thyroxine"/>
+    <ControlledVocab accession="CSW:0000000430" category="DrugName" value="Timolol"/>
+    <ControlledVocab accession="CSW:0000000431" category="DrugName" value="Tiotropium">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000462" relationship_ref="CSW:0000000463"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000432" category="DrugName" value="Tramadol"/>
+    <ControlledVocab accession="CSW:0000000433" category="DrugName" value="Trimethoprim"/>
+    <ControlledVocab accession="CSW:0000000434" category="DrugName" value="Vancomycin"/>
+    <ControlledVocab accession="CSW:0000000435" category="DrugName" value="Venlafaxine"/>
+    <ControlledVocab accession="CSW:0000000436" category="DrugName" value="Ventolin"/>
+    <ControlledVocab accession="CSW:0000000437" category="DrugName" value="Verapamil"/>
+    <ControlledVocab accession="CSW:0000000438" category="DrugName" value="Vitamin C"/>
+    <ControlledVocab accession="CSW:0000000439" category="DrugName" value="Vitamin D3"/>
+    <ControlledVocab accession="CSW:0000000440" category="DrugName" value="Warfarin"/>
+    <ControlledVocab accession="CSW:0000000441" category="DrugName" value="Zopiclone"/>
+    <ControlledVocab accession="CSW:0000000442" category="DrugName" value="Anakinra"/>
+    <ControlledVocab accession="CSW:0000000443" category="NominalTimepoint" value="None; untimed sample taken"/>
+    <ControlledVocab accession="CSW:0000000444" category="DrugName" value="Lactulose"/>
+    <ControlledVocab accession="CSW:0000000445" category="DrugName" value="Erythropoeitin"/>
+    <ControlledVocab accession="CSW:0000000446" category="DrugName" value="Topiramate"/>
+    <ControlledVocab accession="CSW:0000000447" category="DrugName" value="Rosuvastatin"/>
+    <ControlledVocab accession="CSW:0000000448" category="DrugName" value="Levocetirizine"/>
+    <ControlledVocab accession="CSW:0000000449" category="DrugName" value="Sodium Docusate"/>
+    <ControlledVocab accession="CSW:0000000450" category="DrugName" value="Escitalopram"/>
+    <ControlledVocab accession="CSW:0000000451" category="DrugName" value="Imipramine"/>
+    <ControlledVocab accession="CSW:0000000452" category="DrugName" value="Propranolol"/>
+    <ControlledVocab accession="CSW:0000000453" category="DrugName" value="Certirizine"/>
+    <ControlledVocab accession="CSW:0000000454" category="DrugName" value="Sodium Bicarbonate"/>
+    <ControlledVocab accession="CSW:0000000455" category="DrugName" value="Candesartan"/>
+    <ControlledVocab accession="CSW:0000000456" category="DrugName" value="Seretide">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000462" relationship_ref="CSW:0000000463"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000457" category="TreatmentType" value="drug therapy at entry"/>
+    <ControlledVocab accession="CSW:0000000458" category="DiagnosisCondition" value="Glomerulonephritis"/>
+    <ControlledVocab accession="CSW:0000000459" category="DrugName" value="Loperamide"/>
+    <ControlledVocab accession="CSW:0000000460" category="DrugName" value="Sotalol"/>
+    <ControlledVocab accession="CSW:0000000462" category="DrugName" value="Tiotropium and Seretide"/>
+    <ControlledVocab accession="CSW:0000000463" category="CVRelationshipType" value="part_of"/>
+    <ControlledVocab accession="CSW:0000000464" category="DiagnosisCondition" value="IgG4 Systemic Fibrosclerosing Disease"/>
+    <ControlledVocab accession="CSW:0000000465" category="DrugName" value="Dydrogesterone"/>
+    <ControlledVocab accession="CSW:0000000466" category="DrugName" value="Oestradiol"/>
+    <ControlledVocab accession="CSW:0000000467" category="DrugName" value="Ferrous Gluconate"/>
+    <ControlledVocab accession="CSW:0000000468" category="DrugName" value="Hydrocortisone">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000132" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000469" category="DrugName" value="Vitamin B12 injections"/>
+    <ControlledVocab accession="CSW:0000000470" category="DrugName" value="Amiodarone"/>
+    <ControlledVocab accession="CSW:0000000471" category="DrugName" value="Movicol"/>
+    <ControlledVocab accession="CSW:0000000472" category="DrugName" value="Lercanidipine"/>
+    <ControlledVocab accession="CSW:0000000473" category="DrugName" value="Mebeverine"/>
+    <ControlledVocab accession="CSW:0000000474" category="DrugName" value="Tranexamic acid"/>
+    <ControlledVocab accession="CSW:0000000475" category="DrugName" value="Actonel"/>
+    <ControlledVocab accession="CSW:0000000476" category="DrugName" value="Paroxetine"/>
+    <ControlledVocab accession="CSW:0000000477" category="NominalTimepoint" value="2 months"/>
+    <ControlledVocab accession="CSW:0000000478" category="DrugName" value="Solpadol"/>
+    <ControlledVocab accession="CSW:0000000479" category="DrugName" value="Pantoprazole"/>
+    <ControlledVocab accession="CSW:0000000480" category="DrugName" value="Sitagliptin"/>
+    <ControlledVocab accession="CSW:0000000481" category="DrugName" value="Dutasteride"/>
+    <ControlledVocab accession="CSW:0000000482" category="DrugName" value="Cipralex"/>
+    <ControlledVocab accession="CSW:0000000483" category="DrugName" value="Glimepramide"/>
+    <ControlledVocab accession="CSW:0000000484" category="DrugName" value="Olanzapine"/>
+    <ControlledVocab accession="CSW:0000000485" category="DrugName" value="Fenofibrate"/>
+    <ControlledVocab accession="CSW:0000000486" category="PlatformType" value="GeneTitan"/>
+    <ControlledVocab accession="CSW:0000000487" category="PlatformType" value="Affy U133plus2"/>
+    <ControlledVocab accession="CSW:0000000488" category="DrugName" value="Valsartan"/>
+    <ControlledVocab accession="CSW:0000000489" category="DrugName" value="Clexane"/>
+    <ControlledVocab accession="CSW:0000000490" category="DrugName" value="Morphine Sulphate-MST"/>
+    <ControlledVocab accession="CSW:0000000491" category="DrugName" value="Vitamin D"/>
+    <ControlledVocab accession="CSW:0000000492" category="DrugName" value="Ferrinject"/>
+    <ControlledVocab accession="CSW:0000000493" category="DrugName" value="Loratidine"/>
+    <ControlledVocab accession="CSW:0000000494" category="DrugName" value="Xalatan eye drops"/>
+    <ControlledVocab accession="CSW:0000000495" category="DrugName" value="Dosulepin"/>
+    <ControlledVocab accession="CSW:0000000496" category="DrugName" value="Insulin"/>
+    <ControlledVocab accession="CSW:0000000497" category="DrugName" value="Adizem-XL"/>
+    <ControlledVocab accession="CSW:0000000498" category="DrugName" value="Moxonidine"/>
+    <ControlledVocab accession="CSW:0000000499" category="DrugName" value="Spiriva inhaler"/>
+    <ControlledVocab accession="CSW:0000000500" category="DrugType" value="anti-TNF"/>
+    <ControlledVocab accession="CSW:0000000501" category="DrugType" value="Thiopurine"/>
+    <ControlledVocab accession="CSW:0000000502" category="DrugName" value="6-Mercaptopurine">
+      <RelatedVocabs>
+        <RelatedVocab target_ref="CSW:0000000501" relationship_ref="CSW:0000000001"/>
+      </RelatedVocabs>
+    </ControlledVocab>
+    <ControlledVocab accession="CSW:0000000503" category="DiseaseExtent" value="L1 - Ileal"/>
+    <ControlledVocab accession="CSW:0000000504" category="DiseaseExtent" value="L1 - Ileal, L4 - upper GI"/>
+    <ControlledVocab accession="CSW:0000000505" category="DiseaseExtent" value="L2 - Colonic"/>
+    <ControlledVocab accession="CSW:0000000506" category="DiseaseExtent" value="L3 - Ileocolonic"/>
+    <ControlledVocab accession="CSW:0000000507" category="DiseaseExtent" value="E1 - Proctitis"/>
+    <ControlledVocab accession="CSW:0000000508" category="DiseaseExtent" value="E2 - Left sided"/>
+    <ControlledVocab accession="CSW:0000000509" category="DiseaseExtent" value="E3 - Extensive"/>
+    <ControlledVocab accession="CSW:0000000510" category="ClinicalFeature" value="Perianal disease"/>
   </ControlledVocabs>
   <Tests>
     <Test name="Adiarrhoea">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Agutperf">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Ainactive">
@@ -266,19 +623,21 @@
         <TestPossibleValue category="TestResult" value="Yes"/>
       </TestPossibleValues>
     </Test>
+    <Test name="Albumin"/>
     <Test name="ANA"/>
     <Test name="ANCA_IF">
       <TestPossibleValues>
         <TestPossibleValue category="TestResult" value="ATYPICAL ANCA"/>
         <TestPossibleValue category="TestResult" value="ATYPICAL C-ANCA"/>
         <TestPossibleValue category="TestResult" value="INTERFERING ANA"/>
+        <TestPossibleValue category="TestResult" value="negative"/>
+        <TestPossibleValue category="TestResult" value="Not Done"/>
+        <TestPossibleValue category="TestResult" value="NP"/>
         <TestPossibleValue category="TestResult" value="POSITIVE C-ANCA"/>
         <TestPossibleValue category="TestResult" value="POSITIVE P-ANCA"/>
         <TestPossibleValue category="TestResult" value="WEAK ATYPICAL ANCA"/>
         <TestPossibleValue category="TestResult" value="WEAK POSITIVE C-ANCA"/>
         <TestPossibleValue category="TestResult" value="WEAK POSITIVE P-ANCA"/>
-        <TestPossibleValue category="TestResult" value="negative"/>
-        <TestPossibleValue category="TestResult" value="NP"/>
       </TestPossibleValues>
     </Test>
     <Test name="ANCA_MPO"/>
@@ -291,15 +650,15 @@
     </Test>
     <Test name="Apain">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Apancreatitis">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Asurgical">
@@ -334,22 +693,22 @@
     <Test name="CD8tot"/>
     <Test name="Cgangrene">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chbighaemop">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chcough">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -361,15 +720,15 @@
     </Test>
     <Test name="Chdysp">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chhaemop">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -381,14 +740,14 @@
     </Test>
     <Test name="Chinfiltrate">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chnodules">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chnone">
@@ -399,21 +758,21 @@
     </Test>
     <Test name="Chpleural">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Chrespfail">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cinfarct">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -424,12 +783,14 @@
         <TestPossibleValue category="TestResult" value="3"/>
         <TestPossibleValue category="TestResult" value="4"/>
         <TestPossibleValue category="TestResult" value="5"/>
+        <TestPossibleValue category="TestResult" value="Not Done"/>
       </TestPossibleValues>
     </Test>
+    <Test name="CKD stage"/>
     <Test name="Cmultiple">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -441,50 +802,52 @@
     </Test>
     <Test name="Cother">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cpurpura">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
+    <Test name="Creatinine"/>
     <Test name="CreatValue"/>
+    <Test name="CRP"/>
     <Test name="Culcer">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="CvAR">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvbruits">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvcardiomyop">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvcongestive">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -496,29 +859,29 @@
     </Test>
     <Test name="Cvischaemic">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvlosspulse">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvlosssevere">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="CvMI">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvnone">
@@ -535,49 +898,52 @@
     </Test>
     <Test name="Cvpericardial">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Cvpericarditis">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
+    <Test name="Cyclosporin"/>
+    <Test name="dsDNA"/>
     <Test name="Eblood">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Econddeaf">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Ecrust">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Edeaf">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="eGFR"/>
+    <Test name="eGFR (MDRD)"/>
     <Test name="Egransinus">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Einactive">
@@ -586,6 +952,8 @@
         <TestPossibleValue category="TestResult" value="Yes"/>
       </TestPossibleValues>
     </Test>
+    <Test name="ENA"/>
+    <Test name="ENA subtype"/>
     <Test name="Enone">
       <TestPossibleValues>
         <TestPossibleValue category="TestResult" value="No"/>
@@ -594,8 +962,8 @@
     </Test>
     <Test name="Eobs">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -607,29 +975,29 @@
     </Test>
     <Test name="Esensdeaf">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Esinus">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="ESR"/>
     <Test name="Estridor">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Esubglottic">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="GeneralCat">
@@ -657,9 +1025,10 @@
         <TestPossibleValue category="TestResult" value="+++ / 80"/>
         <TestPossibleValue category="TestResult" value="++++ / 200"/>
         <TestPossibleValue category="TestResult" value="nil"/>
-        <TestPossibleValue category="TestResult" value="non-haem trace"/>
-        <TestPossibleValue category="TestResult" value="trace lysed"/>
         <TestPossibleValue category="TestResult" value="No"/>
+        <TestPossibleValue category="TestResult" value="non-haem trace"/>
+        <TestPossibleValue category="TestResult" value="Not Done"/>
+        <TestPossibleValue category="TestResult" value="trace lysed"/>
         <TestPossibleValue category="TestResult" value="Yes"/>
       </TestPossibleValues>
     </Test>
@@ -667,39 +1036,41 @@
     <Test name="IgA"/>
     <Test name="IgG"/>
     <Test name="IgM"/>
+    <Test name="LAC"/>
+    <Test name="Low complement"/>
     <Test name="Lymphs"/>
     <Test name="Mblur">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mconjunc">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mepi">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mgulcer">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mmulcer">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -711,14 +1082,14 @@
     </Test>
     <Test name="Mophthexudates">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mophthhaem">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mophthinactive">
@@ -735,14 +1106,14 @@
     </Test>
     <Test name="Mophthuveitis">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Mproptosis">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -766,29 +1137,29 @@
     </Test>
     <Test name="Mvloss">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Nconfusion">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Ncord">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Ncranial">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -803,15 +1174,15 @@
     </Test>
     <Test name="Nmononeuritis">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Nneurop">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -823,15 +1194,15 @@
     </Test>
     <Test name="Nseizure">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Nstroke">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -842,29 +1213,31 @@
       </TestPossibleValues>
     </Test>
     <Test name="OtherT"/>
+    <Test name="Plts"/>
     <Test name="Proteinuria">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="&lt;1"/>
         <TestPossibleValue category="TestResult" value="+ / 0.3"/>
         <TestPossibleValue category="TestResult" value="++ / 1"/>
         <TestPossibleValue category="TestResult" value="+++ / 3"/>
         <TestPossibleValue category="TestResult" value="++++ / &gt;3"/>
-        <TestPossibleValue category="TestResult" value="nil"/>
-        <TestPossibleValue category="TestResult" value="trace"/>
         <TestPossibleValue category="TestResult" value="1-3"/>
+        <TestPossibleValue category="TestResult" value="&lt;1"/>
+        <TestPossibleValue category="TestResult" value="nil"/>
+        <TestPossibleValue category="TestResult" value="Not Done"/>
+        <TestPossibleValue category="TestResult" value="trace"/>
       </TestPossibleValues>
     </Test>
     <Test name="RBP">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Rcreatrise">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -879,8 +1252,8 @@
     </Test>
     <Test name="Rhaematuria">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -892,50 +1265,62 @@
     </Test>
     <Test name="Rproteinuria">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Sarthralgia">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
+    <Test name="serotype1"/>
+    <Test name="serotype14"/>
+    <Test name="serotype18C"/>
+    <Test name="serotype19A"/>
+    <Test name="serotype19F"/>
+    <Test name="serotype23F"/>
+    <Test name="serotype3"/>
+    <Test name="serotype4"/>
+    <Test name="serotype5"/>
+    <Test name="serotype6B"/>
+    <Test name="serotype7F"/>
+    <Test name="serotype9V"/>
     <Test name="Sfeverhigh">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Sfeverlow">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Sheadache">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Smalaise">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
     <Test name="Smyalgia">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
@@ -947,11 +1332,14 @@
     </Test>
     <Test name="Swtloss">
       <TestPossibleValues>
-        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="New / worse"/>
+        <TestPossibleValue category="TestResult" value="Not present"/>
         <TestPossibleValue category="TestResult" value="Present"/>
       </TestPossibleValues>
     </Test>
+    <Test name="Tacrolimus"/>
+    <Test name="Urea"/>
+    <Test name="UrineACR"/>
     <Test name="VascuCat">
       <TestPossibleValues>
         <TestPossibleValue category="TestResult" value="A"/>
