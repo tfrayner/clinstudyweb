@@ -1,32 +1,65 @@
-Prerequisite modules; install these in the following order, ideally using CPAN, CPANPLUS or similar:
+ClinStudyWeb
+============
 
-  Readonly (and Readonly::XS); required by Task::Catalyst but apparently they missed that fact :-(
-  DBD::SQLite (needed by blood imports script, others)
-  DBIx::Class::Schema::Loader (for development and migration only)
-  Task::Catalyst (installs many dependencies)
+Installation
+------------
 
-  Regexp::Copy (another dependency missed, this time for HTML::FormFu::Model::DBIC).
-  DateTime::Format::Natural (ditto).
-  Moose (ditto, this time Catalyst::Controller::HTML::FormFu is the culprit)
-  Catalyst::Controller::HTML::FormFu
-  HTML::FormFu::Model::DBIC
-  Catalyst::Plugin::Session::Store::FastMmap
-  Config::YAML
-  Regexp::Common
+The ClinStudyWeb software has many prerequisite Perl modules, which
+should be installed (ideally using CPAN, CPANPLUS or a similar
+dependencies management system) before doing anything else. To get a
+list of required packages, run
 
-  for Raven support:
+  perl Makefile.PL
 
-  Ucam::WebAuth::AA
-  Ucam::WebAuth::Ticket
+which will also set up a makefile for you to use during the build phase.
 
-  Note that at the time of writing, installing Task::Catalyst is a
-  royal PITA due to various dependencies not being fully documented,
-  bugs in DBD::SQLite and so forth. You may need to try running the
-  install several times, each time installing a handful more modules,
-  for a full installation to succeed.
+Copy the "clinstudy_web.yml-example" file to "clinstudy_web.yml" and
+edit it to point to your newly installed database, giving a username
+and password if necessary (this is recommended!).
 
-  Note also that version 0.09 of Catalyst::Plugin::Authorization::ACL
-  contains a bug which renders it unusable with this application; use
-  version 0.08 instead.
+Once you have edited the config file, install the server scripts:
 
-Run script/cimr_clinweb_server.pl to start the application.
+  make
+  make test
+  make install
+
+The next step is to install the database schema. Instructions given
+here are for MySQL; it should however be relatively simple to switch
+between database backends if desired; the only changes that are needed
+are to the SQL syntax in the initial database table creation
+statements. First, deploy the core tables and triggers. If your target
+database is named "clinstudy":
+
+  mysql clinstudy < schema/clindb_mysql.sql
+
+Since we are using triggers, note that you will most likely need the
+SUPER privilege on the target database.
+
+Next, deploy the audit history tables:
+
+  perl -Ilib -MClinStudy::ORM -e '$s=ClinStudy::ORM->connect("dbi:mysql:clinstudy"); $s->bootstrap_journal()'
+
+Finally, you will want to load in some initial database users and a
+semantic framework:
+
+  clinstudy_import.pl -d schema/clindb_admin.xsd -c clinstudy_web.yml -x schema/default_user_accounts.xml
+  clinstudy_import.pl -d schema/clindb_admin.xsd -c clinstudy_web.yml -x schema/default_semantic_framework.xml
+
+Note that the semantic framework document will almost certainly need
+tailoring to your own particular circumstances. It defines the
+controlled vocabularies and clinical test behaviours used in the
+database. The example distributed with this package is from the
+original installation which handled data from a series of studies on
+autoimmune diseases. Please see the ClinStudyWeb Trac wiki for more
+information on semantic frameworks:
+
+http://trac2.xp-dev.com/clinstudyweb/wiki
+
+You should now be ready to start up a test server (running by default
+at http://localhost:3000):
+
+  clinstudy_web_server.pl
+
+Check the web page is up and running; you should be able to log in to
+the default admin account (username: admin, password: admin). Don't
+forget to change the default user accounts!
