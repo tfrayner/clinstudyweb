@@ -72,5 +72,7 @@ catalyst_par_core();
 catalyst();
 
 install_script glob('script/*.pl');
+install_script glob('util/*clinstudy*.pl');
+
 auto_install;
 WriteAll;
