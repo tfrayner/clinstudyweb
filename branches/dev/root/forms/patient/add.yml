@@ -94,6 +94,9 @@ elements:
       - type: Length
         max:  4
         min:  4
+      - type: Range
+        min:  1901
+        max:  2155
     label_attributes:
       tooltipText: >-
         The patient's year of birth.
