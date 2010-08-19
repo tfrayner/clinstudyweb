@@ -20,8 +20,8 @@ elements:
         max:  31
         min:  1
       - type: DBIC::Unique
-        model: DB::Sample
-        myself: object
+        resultset: Sample
+        self_stash_key: object
         message: Must be a unique ID
     label_attributes:
       tooltipText: Sample T number.
@@ -89,8 +89,8 @@ elements:
         max:  31
         min:  1
       - type:    DBIC::Unique
-        model:   DB::Sample
-        myself:  object
+        resultset: Sample
+        self_stash_key:  object
         message: This location has already been used.
         others:  freezer_box
     label_attributes:

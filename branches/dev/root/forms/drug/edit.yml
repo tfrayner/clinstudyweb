@@ -28,8 +28,8 @@ elements:
       - Required
       - AutoSet
       - type: DBIC::Unique
-        model: DB::Drug
-        myself: object
+        resultset: Drug
+        self_stash_key: object
         others:
           - visit_id
           - hospitalisation_id

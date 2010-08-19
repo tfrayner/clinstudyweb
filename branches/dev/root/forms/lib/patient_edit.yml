@@ -19,8 +19,8 @@ elements:
         max:  15
         min:  1
       - type: DBIC::Unique
-        model: DB::Patient
-        myself: object
+        resultset: Patient
+        self_stash_key: object
         message: Must be a unique ID
     label_attributes:
       tooltipText: The ID used internally for the study.

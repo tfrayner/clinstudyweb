@@ -20,8 +20,8 @@ elements:
         max:  255
         min:  1
       - type: DBIC::Unique
-        model: DB::AssayBatch
-        myself: object
+        resultset: AssayBatch
+        self_stash_key: object
         message: Must be a unique ID
     label_attributes:
       tooltipText: >-
