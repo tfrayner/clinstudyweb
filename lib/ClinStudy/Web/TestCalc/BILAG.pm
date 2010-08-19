@@ -122,7 +122,7 @@ sub calculate {
                 date    => $container->date(),
                 %opts,
             });
-            unless ( $bilag->value() eq $score ) {
+            unless ( defined $bilag->value() && $bilag->value() eq $score ) {
                 $bilag->set_column( 'value' => $score );
                 $bilag->update_or_insert();
             }
