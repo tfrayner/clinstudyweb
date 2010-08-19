@@ -46,7 +46,7 @@ elements:
         max:  15
         min:  1
       - type: DBIC::Unique
-        model: DB::Patient
+        resultset: Patient
         message: Must be a unique ID
     label_attributes:
       tooltipText: >-

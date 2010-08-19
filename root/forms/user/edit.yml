@@ -20,8 +20,8 @@ elements:
         min:  1
       - SingleValue
       - type: DBIC::Unique
-        model: DB::User
-        myself: object
+        resultset: User
+        self_stash_key: object
         message: Username is already taken
     label_attributes:
       tooltipText: Your username.
