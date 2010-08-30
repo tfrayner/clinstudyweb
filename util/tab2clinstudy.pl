@@ -266,6 +266,13 @@ open (my $fh, '<', $tabfile)
     or die("Unable to open file $tabfile:$!\n");
 
 my $header = $csv->getline($fh);
+unless ( $header && ref $header eq 'ARRAY' ) {
+    die("Unable to read file header line.\n");
+}
+
+# Strip whitespace on either side of each column header.
+$header = [ map { s/ \A \s* (.*?) \s* \z /$1/ixms; $_ } @$header ];
+
 my %unused;
 LINE:
 while ( my $line = $csv->getline($fh) ) {
