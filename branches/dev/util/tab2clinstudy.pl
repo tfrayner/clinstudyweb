@@ -88,7 +88,7 @@ my %build_opts = (
 $build_opts{root} = $xml->getDocumentElement() if ( $xml );
 my $builder = ClinStudy::XML::TabReader->new(%build_opts);
 
-$builder->parse_tabfile();
+$builder->read();
 
 $builder->dump();
 
