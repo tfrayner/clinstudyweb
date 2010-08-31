@@ -45,7 +45,7 @@ has '_used'       => ( is       => 'rw',
                        required => 1,
                        default  => sub{ {} } );
 
-sub parse_tabfile {
+sub read {
 
     my ( $self ) = @_;
 
@@ -85,7 +85,7 @@ sub parse_tabfile {
         'Transplant'        => 'Hospitalisation',
         'Visit'             => 'Patient',
     );
-    my ( $parsetree, $rootname ) = $self->to_tree( \%parent_map );
+    my ( $parsetree, $rootname ) = $self->_to_tree( \%parent_map );
 
     unless ( $rootname eq 'ClinStudyML' ) {
         
@@ -120,10 +120,10 @@ sub parse_tabfile {
         my %col;
         @col{@$header} = @$line;
 
-        $self->process_columns( \%col, $parsetree );
+        $self->_process_columns( \%col, $parsetree );
 
         # A mechanism to warn on unused columns.
-        foreach my $un ( grep { ! $self->column_used($_) } @$header ) {
+        foreach my $un ( grep { ! $self->_column_used($_) } @$header ) {
             $unused{ $un }++;
         }
     }
@@ -148,14 +148,14 @@ sub parse_tabfile {
     return;
 }
 
-sub process_columns {
+sub _process_columns {
 
     my ( $self, $colhash, $tree, $parent, $level ) = @_;
 
     # Undefined or zero level indicates we're starting a new set of columns.
     # Deactivated because a file-level view is more useful than a row-level view.
 #    unless ( $level ) {
-#        $self->reset_used_columns();
+#        $self->_reset_used_columns();
 #    }
     $parent ||= $self->root;
     
@@ -187,14 +187,14 @@ sub process_columns {
             my $elem = $self->update_or_create_element( $class, \%attrhash, $parent );
         
             # Recursion time.
-            $self->process_columns( $colhash, $tree->{ $class }, $elem, $level );
+            $self->_process_columns( $colhash, $tree->{ $class }, $elem, $level );
         }
     }
 
     return;
 }
 
-sub reset_used_columns {
+sub _reset_used_columns {
 
     my ( $self ) = @_;
 
@@ -203,14 +203,14 @@ sub reset_used_columns {
     return;
 }
 
-sub column_used {
+sub _column_used {
 
     my ( $self, $column ) = @_;
 
     return exists $self->_used()->{ $column };
 }
 
-sub find_endpoint {
+sub _find_endpoint {
 
     # Find the first value in the passed hashref which doesn't also
     # correspond to a key.
@@ -231,10 +231,10 @@ sub find_endpoint {
     return $term unless exists $hashref->{$term};
 
     # Recurse into the hashref structure.
-    return $self->find_endpoint( $hashref, $hashref->{$term}, $level );
+    return $self->_find_endpoint( $hashref, $hashref->{$term}, $level );
 }
 
-sub to_tree {
+sub _to_tree {
 
     # Function converts a hashref of child=>parent elements into a
     # nested tree structure.
@@ -245,7 +245,7 @@ sub to_tree {
 	die("Error: deep recursion in hash tree conversion.");
     }
 
-    $parent ||= $self->find_endpoint( $hashref );
+    $parent ||= $self->_find_endpoint( $hashref );
 
     # We have to go around the houses a bit here because of the
     # asinine behaviour of perls each() function.
@@ -257,7 +257,7 @@ sub to_tree {
     }
     my %tree;
     foreach my $key ( @next ) {
-	$tree{ $key } = $self->to_tree( $hashref, $key, $level );
+	$tree{ $key } = $self->_to_tree( $hashref, $key, $level );
     }
 
     return wantarray ? ( \%tree, $parent ) : \%tree;
@@ -266,3 +266,76 @@ sub to_tree {
 1;
 
 __END__
+
+=head1 NAME
+
+ClinStudy::XML::TabReader - Utility module for creating ClinStudyML documents.
+
+=head1 SYNOPSIS
+
+ use ClinStudy::XML::TabReader;
+ my $builder = ClinStudy::XML::TabReader->new({
+     tabfile => 'filename.txt',
+ });
+ my $root    = $builder->root();
+
+ $builder->read();
+
+ # Output the finished document.
+ $builder->dump( \*STDOUT );
+
+=head1 DESCRIPTION
+
+A module initially intended to facilitate conversion of tab-delimited
+data to ClinStudyML. See the C<ClinStudy::XML::Builder> superclass for
+more information.
+
+=head2 ATTRIBUTES
+
+Note that XML Builder attributes are handled by the
+C<ClinStudy::XML::Builder> superclass.
+
+=over 2
+
+=item tabfile
+
+The tab-delimited file to read. Only one file can be read per TabReader
+object instantiation.
+
+=item drug_parent
+
+Optional. Drugs and TestResults can in principle be attached to either Visit or
+Hospitalisation, and Drugs can further be attached to
+PriorTreatment. Only one parent class can be supported per run of this
+script. By default we attempt to attach everything to Visit, but this
+attribute allows the user to redirect the attachment if necessary.
+
+=back
+
+=head2 METHODS
+
+=over 2
+
+=item read
+
+Read the tab-delimited file and create the appropriate XML nodes in memory.
+
+=back
+
+=head2 SEE ALSO
+
+L<ClinStudy::XML::Builder>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=head1 BUGS
+
+Probably.
+
+=cut
+
