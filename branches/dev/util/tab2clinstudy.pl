@@ -22,87 +22,11 @@
 use strict;
 use warnings;
 
-package MyBuilder;
-
-use ClinStudy::XML::Builder;
-use Moose;
-extends 'ClinStudy::XML::Builder';
-
-has '_used' => ( is => 'rw',
-                 isa => 'HashRef',
-                 required => 1,
-                 default  => sub{ {} } );
-
-sub process_columns {
-
-    my ( $self, $colhash, $tree, $parent, $level ) = @_;
-
-    # Undefined or zero level indicates we're starting a new set of columns.
-    # Deactivated because a file-level view is more useful than a row-level view.
-#    unless ( $level ) {
-#        $self->reset_used_columns();
-#    }
-    $parent ||= $self->root;
-    
-    # Try to do this safely.
-    unless ( $level++ < 100 ) {
-	die("Error: deep recursion in column processing.");
-    }
-
-    foreach my $class ( keys %$tree ) {
-
-        # Aggregate class attributes into a single hash, then find or
-        # create it.
-        my %attrhash;
-        while ( my ( $key, $value ) = each %$colhash ) {
-	    my ( $col_class, $attrname ) = split /\|/, $key;
-            if ( $col_class && $col_class eq $class ) {
-
-                # Record that we've at least considered this column.
-                $self->_used()->{ $key }++;
-
-                # Add the value to the element attribute hash.
-                if ( defined $value && $value ne q{} ) {
-                    $attrhash{ $attrname } = $value;
-                }
-            }
-	}
-
-        if ( scalar grep { defined $_ } values %attrhash ) {
-            my $elem = $self->update_or_create_element( $class, \%attrhash, $parent );
-        
-            # Recursion time.
-            $self->process_columns( $colhash, $tree->{ $class }, $elem, $level );
-        }
-    }
-
-    return;
-}
-
-sub reset_used_columns {
-
-    my ( $self ) = @_;
-
-    $self->_used({});
-
-    return;
-}
-
-sub column_used {
-
-    my ( $self, $column ) = @_;
-
-    return exists $self->_used()->{ $column };
-}
-
-#################################################################################
-package main;
-
 use Getopt::Long;
 use Pod::Usage;
-use Text::CSV_XS;
 use XML::LibXML;
-use List::Util qw(first);
+
+use ClinStudy::XML::TabReader;
 
 ########
 # SUBS #
@@ -149,164 +73,22 @@ sub parse_args {
     return( $tabfile, $xsd, $relaxed, $drug_parent, $xml );
 }
 
-sub find_endpoint {
-
-    # Find the first value in the passed hashref which doesn't also
-    # correspond to a key.
-    my ( $hashref, $term, $level ) = @_;
-
-    # Try to do this safely.
-    unless ( $level++ < 100 ) {
-	die("Error: deep recursion in hash endpoint detection.");
-    }
-
-    $term ||= (keys %$hashref)[0];
-
-    # Ideally we would somehow detect cases where there are multiple
-    # possible endpoints. We can't support more than one top-level
-    # element class because there's no way to know which element we'd
-    # end up with. Ultimately such cases would be reflected in some
-    # columns not being exported.
-    return $term unless exists $hashref->{$term};
-
-    # Recurse into the hashref structure.
-    return find_endpoint( $hashref, $hashref->{$term}, $level );
-}
-
-sub to_tree {
-
-    # Function converts a hashref of child=>parent elements into a
-    # nested tree structure.
-    my ( $hashref, $parent, $level ) = @_; 
-
-    # Try to do this safely.
-    unless ( $level++ < 100 ) {
-	die("Error: deep recursion in hash tree conversion.");
-    }
-
-    $parent ||= find_endpoint( $hashref );
-
-    # We have to go around the houses a bit here because of the
-    # asinine behaviour of perls each() function.
-    my @next;
-    while ( my ( $key, $value ) = each %$hashref ) {
-	if ( $value eq $parent ) {
-	    push @next, $key;
-	}
-    }
-    my %tree;
-    foreach my $key ( @next ) {
-	$tree{ $key } = to_tree( $hashref, $key, $level );
-    }
-
-    return wantarray ? ( \%tree, $parent ) : \%tree;
-}
-
 ########
 # MAIN #
 ########
 
 my ( $tabfile, $xsd, $relaxed, $drug_parent, $xml ) = parse_args();
 
-unless ( first { $drug_parent eq $_ } qw( Visit Hospitalisation PriorTreatment ) ) {
-    die("Error: Unsuitable Drug/TestResult parent class specified ($drug_parent).\n");
-}
-
-# The %parent_map hash controls the eventual structure of the output
-# XML. Here we convert it into a nested hashref of hashrefs. Note that
-# if the schema changes then this may also need to change. FIXME
-# ideally we'd derive this directly from the XML schema.
-my %parent_map = (
-    'AdverseEvent'      => 'Patient',
-    'Assay'             => 'AssayBatch',
-    'AssayBatch'        => 'ClinStudyML',
-    'AssayQcValue'      => 'Assay',
-    'Channel'           => 'Assay',
-    'ClinicalFeature'   => 'Patient',
-    'Comorbidity'       => 'Patient',
-    'Diagnosis'         => 'Patient',
-    'DiseaseEvent'      => 'Patient',
-    'Drug'              => $drug_parent,
-    'EmergentGroup'     => 'Visit',
-    'GraftFailure'      => 'Transplant',
-    'Hospitalisation'   => 'Patient',
-    'Patient'           => 'ClinStudyML',
-    'PriorGroup'        => 'Patient',
-    'PriorObservation'  => 'Patient',
-    'PriorTreatment'    => 'Patient',
-    'RiskFactor'        => 'Patient',
-    'Sample'            => 'Visit',
-    'Study'             => 'Patient',
-    'SystemInvolvement' => 'Patient',
-    'TestResult'        => $drug_parent,  # FIXME if this is PriorTreatment we may be screwed.
-    'Transplant'        => 'Hospitalisation',
-    'Visit'             => 'Patient',
-);
-my ( $parsetree, $rootname ) = to_tree( \%parent_map );
-
-unless ( $rootname eq 'ClinStudyML' ) {
-
-    # This is an internal script editor; somehow the %parent_map has become corrupted.
-    die("Error: Root element is not ClinStudyML; shurely shome mishtake?");
-}
-
 my %build_opts = (
     schema_file  => $xsd,
     is_strict    => ! $relaxed,
+    drug_parent  => $drug_parent,
+    tabfile      => $tabfile,
 );
 $build_opts{root} = $xml->getDocumentElement() if ( $xml );
-my $builder = MyBuilder->new(%build_opts);
+my $builder = ClinStudy::XML::TabReader->new(%build_opts);
 
-my $csv = Text::CSV_XS->new({
-    sep_char  => "\t",
-    eol       => "\n",
-}) or die("Unable to initialise CSV parser.");
-
-open (my $fh, '<', $tabfile)
-    or die("Unable to open file $tabfile:$!\n");
-
-my $header = $csv->getline($fh);
-unless ( $header && ref $header eq 'ARRAY' ) {
-    die("Unable to read file header line.\n");
-}
-
-# Strip whitespace on either side of each column header.
-$header = [ map { s/ \A \s* (.*?) \s* \z /$1/ixms; $_ } @$header ];
-
-my %unused;
-LINE:
-while ( my $line = $csv->getline($fh) ) {
-
-    my $str = join('', @$line);
-    next LINE if $str =~ /^\s*#/;
-
-    my %col;
-    @col{@$header} = @$line;
-
-    $builder->process_columns( \%col, $parsetree );
-
-    # A mechanism to warn on unused columns.
-    foreach my $un ( grep { ! $builder->column_used($_) } @$header ) {
-        $unused{ $un }++;
-    }
-}
-
-# Check that parsing completed successfully.
-my ( $error, $mess ) = $csv->error_diag();
-unless ( $error == 2012 ) {    # 2012 is the Text::CSV_XS EOF code.
-    die(
-        sprintf(
-            "Error in tab-delimited format: %s. Bad input was:\n\n%s\n",
-            $mess,
-            $csv->error_input(),
-        ),
-    );
-}
-
-# Warn on any unused columns.
-if ( scalar grep { defined $_ } values %unused ) {
-    warn("Warning: Unused columns: ", join(", ", keys %unused), "\n");
-}
+$builder->parse_tabfile();
 
 $builder->dump();
 
