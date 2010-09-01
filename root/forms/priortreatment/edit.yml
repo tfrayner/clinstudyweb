@@ -20,8 +20,8 @@ elements:
       - Required
       - AutoSet
       - type:    DBIC::Unique
-        model:   DB::PriorTreatment
-        myself:  object
+        resultset:   PriorTreatment
+        self_stash_key:  object
         message: >-
           A treatment of this type for this patient already exists.
         others:
