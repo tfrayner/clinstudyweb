@@ -306,11 +306,11 @@ sub calculate {
             }
 
             # Actually set the scores.
-            unless ( $bvas[0]->value() eq $bvas_scoreNW ) {
+            unless ( defined $bvas[0]->value() && $bvas[0]->value() eq $bvas_scoreNW ) {
                 $bvas[0]->set_column( 'value' => $bvas_scoreNW );  # BVAS1
                 $bvas[0]->update_or_insert();
             }
-            unless ( $bvas[1]->value() eq $bvas_scoreP ) {
+            unless ( defined $bvas[1]->value() && $bvas[1]->value() eq $bvas_scoreP ) {
                 $bvas[1]->set_column( 'value' => $bvas_scoreP );   # BVAS2
                 $bvas[1]->update_or_insert();
             }

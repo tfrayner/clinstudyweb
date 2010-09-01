@@ -25,8 +25,10 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
+use Config::YAML;
 
-use ClinStudy::XML::TabReader;
+use ClinStudy::ORM;
+use ClinStudy::XML::TabReannotator;
 
 ########
 # SUBS #
@@ -34,14 +36,12 @@ use ClinStudy::XML::TabReader;
 
 sub parse_args {
 
-    my ( $tabfile, $xsd, $drug_parent, $xmldoc, $relaxed, $want_help );
+    my ( $tabfile, $xsd, $conffile, $want_help );
 
     GetOptions(
         "f|file=s"   => \$tabfile,
-        "r|relaxed"  => \$relaxed,
+        "c|config=s" => \$conffile,
         "d|schema=s" => \$xsd,
-        "x|xml=s"    => \$xmldoc,
-        "p|drug-parent=s" => \$drug_parent,
         "h|help"     => \$want_help,
     );
 
@@ -53,7 +53,7 @@ sub parse_args {
         );
     }
 
-    unless ( $tabfile && $xsd ) {
+    unless ( $tabfile && $xsd && $conffile ) {
         pod2usage(
             -message => qq{Please see "$0 -h" for further help notes.},
             -exitval => 255,
@@ -62,51 +62,42 @@ sub parse_args {
         );
     }
 
-    $drug_parent ||= 'Visit';
+    my $config = Config::YAML->new(config => $conffile);
+    my $conn_params = $config->{'Model::DB'}->{connect_info};
+    my $schema = ClinStudy::ORM->connect( @$conn_params );
 
-    my $xml;
-    if ( $xmldoc ) {
-        my $parser = XML::LibXML->new();
-        $xml       = $parser->parse_file($xmldoc);
-    }
-
-    return( $tabfile, $xsd, $relaxed, $drug_parent, $xml );
+    return( $tabfile, $xsd, $schema );
 }
 
 ########
 # MAIN #
 ########
 
-my ( $tabfile, $xsd, $relaxed, $drug_parent, $xml ) = parse_args();
+my ( $tabfile, $xsd, $schema ) = parse_args();
 
-my %build_opts = (
+my $builder = ClinStudy::XML::TabReannotator->new(
     schema_file  => $xsd,
-    is_strict    => ! $relaxed,
-    drug_parent  => $drug_parent,
     tabfile      => $tabfile,
+    database     => $schema,
 );
-$build_opts{root} = $xml->getDocumentElement() if ( $xml );
-my $builder = ClinStudy::XML::TabReader->new(%build_opts);
 
 $builder->read();
-
-$builder->dump();
 
 __END__
 
 =head1 NAME
 
-tab2clinstudy.pl
+reannotate_tab.pl
 
 =head1 SYNOPSIS
 
- tab2clinstudy.pl -f <tab-delimited file> -d <XML Schema file>
+ reannotate_tab.pl -f <tab-delimited file> -d <XML Schema file> -c clinstudy_web.yml
 
 =head1 DESCRIPTION
 
-This script generates ClinStudyML from an input tab-delimited
-file. The file headings must be of the form "Element|attribute", for
-example "Patient|entry_date".
+This script reads a tab-delimited data file, queries a ClinStudy
+database to retrieve missing information, and prints out the results
+to STDOUT.
 
 =head2 OPTIONS
 
@@ -120,24 +111,10 @@ The tab-delimited file to convert into XML.
 
 The XML Schema document against which to validate.
 
-=item -x
+=item -c
 
-An optional argument specifying a pre-existing XML document which
-should be updated with the new data.
-
-=item -r
-
-Flag indicating that the script should run in relaxed mode, i.e. the
-generated XML does not need to be valid (although it must still be
-well-formed).
-
-=item -p
-
-Drugs and TestResults can in principle be attached to either Visit or
-Hospitalisation, and Drugs can further be attached to
-PriorTreatment. Only one parent class can be supported per run of this
-script. By default we attempt to attach everything to Visit, but this
-option allows the user to redirect the attachment if necessary.
+The main clinstudy_web.yml configuration file containing database
+connection details.
 
 =item -h
 

@@ -18,8 +18,8 @@ elements:
         max:  10
         min:  1
       - type:    DBIC::Unique
-        model:   DB::Visit
-        myself:  object
+        resultset:   Visit
+        self_stash_key:  object
         message: This visit already exists
         others:  patient_id
     inflators:
