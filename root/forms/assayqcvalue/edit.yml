@@ -23,8 +23,8 @@ elements:
         max:  255
         min:  1
       - type:    DBIC::Unique
-        model:   DB::AssayQcValue
-        myself:  object
+        resultset: AssayQcValue
+        self_stash_key:  object
         message: This QC type already exists for this assay
         others:  assay_id
     label_attributes:

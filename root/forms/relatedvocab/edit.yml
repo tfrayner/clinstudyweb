@@ -1,5 +1,5 @@
 ---
-auto_fieldset: { legend: 'Controlled Vocabulary Term' }
+auto_fieldset: { legend: 'Related Vocabulary Term' }
 
 elements:
 
@@ -18,8 +18,8 @@ elements:
       - Required
       - AutoSet
       - type: DBIC::Unique
-        model: DB::RelatedVocab
-        myself: object
+        resultset: RelatedVocab
+        self_stash_key: object
         others:
           - controlled_vocab_id
           - target_id
