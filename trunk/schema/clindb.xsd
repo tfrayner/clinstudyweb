@@ -250,7 +250,7 @@
     </xs:sequence>
     <xs:attribute name="type" type="varcharType" use="required"/>
     <xs:attribute name="value" type="varcharType"/>
-    <xs:attribute name="notes" type="varcharType"/>
+    <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
   <xs:complexType name="patientType">

@@ -21,14 +21,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: General
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: GeneralCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -43,14 +42,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Mucocutaneous
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: MucocutCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -65,14 +63,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Neurological
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: NeuroCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -87,14 +84,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Musculoskeletal
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: MuscuCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -109,14 +105,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Cardiovascular & respiratory
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: CardioCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -131,14 +126,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Vasculitis
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: VascuCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -153,14 +147,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Renal
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: RenalCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.
@@ -175,14 +168,13 @@ elements:
       - type: Select
         name: controlled_value_id
         label: Haematology
-        empty_first: 1
-        empty_first_label: -select-
         constraints:
           - Required
         model_config:
           resultset: Test
           condition:
             name: HaemaCat
+          default: E
         label_attributes:
           tooltipText: >-
             See notes at the foot of the page for an explanation of the BILAG scoring system.

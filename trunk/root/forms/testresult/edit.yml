@@ -25,8 +25,8 @@ elements:
       - Required
       - AutoSet
       - type:    DBIC::Unique
-        model:   DB::TestResult
-        myself:  object
+        resultset:   TestResult
+        self_stash_key:  object
         message: A result for this test has already been given for this visit or hospitalisation.
         others:
           - visit_id

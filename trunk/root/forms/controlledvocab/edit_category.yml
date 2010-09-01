@@ -16,8 +16,8 @@ elements:
         max:  31
         min:  1
       - type:    DBIC::Unique
-        model:   DB::ControlledVocab
-        myself:  object
+        resultset:   ControlledVocab
+        self_stash_key:  object
         message: This accession already exists
     label_attributes:
       tooltipText: The actual term value.
@@ -44,8 +44,8 @@ elements:
         max:  255
         min:  1
       - type:    DBIC::Unique
-        model:   DB::ControlledVocab
-        myself:  object
+        resultset:   ControlledVocab
+        self_stash_key:  object
         message: This value already exists
         others:  category
     label_attributes:
