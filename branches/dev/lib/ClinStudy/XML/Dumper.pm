@@ -52,7 +52,7 @@ sub BUILD {
     });
 
     # Note that this is identical to that in the Loader class. Shared config?
-    $self->external_value_map({
+    $self->external_id_map({
         ControlledVocab => 'value',
         Test            => 'name',
         Sample          => 'name',
