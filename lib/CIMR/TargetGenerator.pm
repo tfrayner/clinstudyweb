@@ -41,7 +41,7 @@ has 'queryobj' => (
 # FIXME consider removing the default - it may confuse things later...
 has 'file_regexp' => (
     is       => 'rw',
-    isa      => 'Regexp',
+    isa      => 'RegexpRef',
     required => 1,
     default  => sub { qr/\A (?:US)? \d+ _ (\d+) _ \w+ \.txt \z/xms },
 );
