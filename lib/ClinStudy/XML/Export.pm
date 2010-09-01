@@ -61,10 +61,10 @@ has 'boundaries' => ( is       => 'rw',
                       required => 1,
                       default  =>  sub{ {} }, );
 
-has 'external_value_map' => ( is       => 'rw',
-                              isa      => 'HashRef',
-                              required => 1,
-                              default  => sub { {} }, );
+has 'external_id_map' => ( is       => 'rw',
+                           isa      => 'HashRef',
+                           required => 1,
+                           default  => sub { {} }, );
 
 has 'irregular_plurals' => ( is       => 'rw',
                              isa      => 'HashRef',
@@ -260,7 +260,7 @@ sub rel_to_attr {
     else {
         $attrname =~ s/_id \z//xms;
     }
-    my $valcol = $self->external_value_map()->{ $nextclass }
+    my $valcol = $self->external_id_map()->{ $nextclass }
         or croak("Error: Unable to determine value column for $nextclass class.");
     $element->setAttribute( $attrname, $nextrow->get_column($valcol) );
 
@@ -386,7 +386,7 @@ data structure should be in the following form:
 The output XML heirarchy will not contain any records from the
 bottom-level boundary class.
 
-=item external_value_map
+=item external_id_map
 
 See ClinStudy::XML::Loader for discussion of this attribute.
 
