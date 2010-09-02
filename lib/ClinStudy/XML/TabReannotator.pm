@@ -44,6 +44,14 @@ has '_csv_writer' => ( is       => 'rw',
                        isa      => 'Text::CSV_XS',
                        required => 0 );
 
+# Dummy attribute since we're actually not using a schema here. FIXME
+# consider reorganising this class inheritance - at the moment we're a
+# child of XML::Schema but that now seems inappropriate.
+has 'schema' => ( is       => 'rw',
+                  isa      => 'Int',
+                  required => 1,
+                  default  => 1 );
+
 sub BUILD {
 
     my ( $self, $params ) = @_;
@@ -155,9 +163,20 @@ sub _process_columns {
                 $query_attrs{ $parent_attr } = $db_parent->id();
             }
 
-            my $db_object = $self->database->resultset( $class )->find( \%query_attrs );
+            my @results = $self->database->resultset( $class )->search( \%query_attrs );
 
-            next CLASS unless $db_object;
+            my $db_object;
+            if ( @results == 1 ) {
+                $db_object = $results[0];
+            }
+            elsif ( @results == 0 ) {
+                next CLASS;
+            }
+            else {
+                require Data::Dumper;
+                die("\nError: $class object too poorly constrained to be uniquely identified: \n\n" .
+                        Data::Dumper->Dump( [ \%query_attrs ], [ qw(query) ] ));
+            }
 
             # We need to fill in $colhash here where the values eq q{}.
             my %db_col = $db_object->get_columns;
@@ -211,9 +230,13 @@ sub _map_relname_to_obj {
     elsif ( @nextrows > 1 ) {
         warn("WARNING: Insufficient constraint to uniquely"
                  . " identify $class $relname object ($valcol => $value)\n");
+        $value = { 'in' => [ map { $_->id } @nextrows ] };
+    }
+    else {
+        $value = $nextrows[0]->id();
     }
 
-    return $nextrows[0]->id();
+    return $value;
 }
 
 sub _map_dbcol_to_value {
