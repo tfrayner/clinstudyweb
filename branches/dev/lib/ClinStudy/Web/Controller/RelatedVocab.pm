@@ -50,7 +50,7 @@ sub BUILD {
 # FIXME ideally this would be deleted in favour of a more sane
 # approach to container_namespace allowing for underscores in the
 # designated containers.
-sub my_container_class {
+sub _my_container_class {
 
     my ( $self ) = @_;
 
@@ -70,7 +70,7 @@ sub _set_my_editing_message {
                   'relationship',);
 }
 
-sub set_my_deleted_message {
+sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;
 

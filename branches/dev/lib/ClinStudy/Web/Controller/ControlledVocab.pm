@@ -46,7 +46,7 @@ sub BUILD {
     return;
 }
 
-sub set_my_deleted_message {
+sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;
 
@@ -159,7 +159,7 @@ sub common_edit : Private {
         }
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $cv);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $cv);    
 }
 
 =head1 AUTHOR

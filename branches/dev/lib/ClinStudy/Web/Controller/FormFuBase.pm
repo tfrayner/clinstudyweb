@@ -65,7 +65,7 @@ sub index :Path :Args(0) {
 
     $c->response->body('Matched ClinStudy::Web::Controller::FormFuBase index.');
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
 }
 
 =head2 list
@@ -88,7 +88,7 @@ sub list : Local {
     my $search  = $c->stash()->{'search_terms'};
     my @objects = $c->model($class)->search( $search, $attrs );
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     
     $c->stash->{objects} = \@objects;
 }
@@ -116,7 +116,7 @@ sub view : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $object);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $object);
 }
 
 =head2 search
@@ -131,7 +131,7 @@ sub search : Local {
     my $class = $self->my_model_class()
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $namespace = $self->action_namespace($c);
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     my $error_redirect = $self->my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
     
@@ -149,7 +149,7 @@ sub search : Local {
         $c->detach('list');
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
 }
 
 =head2 edit
@@ -164,7 +164,7 @@ sub edit : Local {
     my $class = $self->my_model_class()
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $namespace = $self->action_namespace($c);
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     my $error_redirect = $self->my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
 
@@ -216,7 +216,7 @@ sub edit : Local {
         # Form was submitted and it validated.
         $c->form_values_to_database( $object, $form );
 
-        $self->set_my_updated_message( $c, $object, $object_id );
+        $self->_set_my_updated_message( $c, $object, $object_id );
 
         $c->res->redirect( $c->uri_for('view', $object->id) );
         $c->detach();
@@ -224,7 +224,7 @@ sub edit : Local {
     else {
 
         # First time through, or invalid form.
-        $self->set_my_updating_message( $c, $object, $object_id );
+        $self->_set_my_updating_message( $c, $object, $object_id );
 
         $form->model->default_values( $object );
 
@@ -232,7 +232,7 @@ sub edit : Local {
         $self->_set_custom_form_defaults( $c, $form );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $object);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $object);
 
     $c->stash->{object} = $object;
 }
@@ -254,7 +254,7 @@ sub delete : Local {
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $error_redirect = $self->my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     my $namespace  = $self->action_namespace($c);
 
     my $object = $c->model($class)->find({ id => $object_id });
@@ -275,7 +275,7 @@ sub delete : Local {
             $c->detach();
         }
 
-        $self->set_my_deleted_message( $c, $object );
+        $self->_set_my_deleted_message( $c, $object );
 
         $c->delete_database_object( $object );
 
@@ -311,7 +311,7 @@ sub list_by_container {
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $sort_field = $self->my_sort_field()
         or warn("Warning: CIMR data sort field not set in FormFuBase controller " . ref $self . "\n");
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
 
     my @objects;
     if ( $container_id ) {
@@ -335,7 +335,7 @@ sub list_by_container {
         @objects = $c->model($class);
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, undef, $container_id);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, undef, $container_id);
 
     $c->stash->{objects} = \@objects;
 }
@@ -385,7 +385,7 @@ sub camel_case {
 }
 
 # Don't override unless you know what you're doing.
-sub my_container_class {
+sub _my_container_class {
     
     my ( $self ) = @_;
 
@@ -406,7 +406,7 @@ sub my_error_redirect {
 
     my ( $self, $c ) = @_;
 
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     if ( $container_namespace ) {
         return "/$container_namespace/list";
     }
@@ -446,7 +446,7 @@ sub _set_my_editing_message {
     }
 }    
 
-sub set_my_updated_message {
+sub _set_my_updated_message {
 
     my ( $self, $c, $object, $object_id ) = @_;
 
@@ -454,7 +454,7 @@ sub set_my_updated_message {
     $self->_set_my_editing_message( $c, $object, $action );
 }
 
-sub set_my_updating_message {
+sub _set_my_updating_message {
 
     my ( $self, $c, $object, $object_id ) = @_;
 
@@ -462,7 +462,7 @@ sub set_my_updating_message {
     $self->_set_my_editing_message( $c, $object, $action, 'stash' );
 }
 
-sub set_my_deleted_message {
+sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;
 
@@ -482,7 +482,7 @@ sub set_my_deleted_message {
     }
 }
 
-sub set_my_breadcrumbs {
+sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $container_id ) = @_;
 
@@ -490,7 +490,7 @@ sub set_my_breadcrumbs {
     my @breadcrumbs = ({ path  => '/',
                          label => 'Start page' });
 
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     my $namespace = $self->action_namespace($c);
 
     # This is a sticking plaster on a wider problem - deriving labels
