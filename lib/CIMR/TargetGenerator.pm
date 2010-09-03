@@ -291,3 +291,112 @@ sub _print_targets_file {
 }
 
 1;
+
+=head1 NAME
+
+CIMR::TargetGenerator - Create limma Targets files from CIMR::QueryObj instances.
+
+=head1 SYNOPSIS
+
+ use CIMR::TargetGenerator;
+ my $qobj = ClinStudy::WebQuery->new(
+     uri        => 'http://localhost:3000',
+     username   => 'my_username',
+     password   => 'my_password',
+     id_field   => 'assay_barcode',
+ );
+ my $tgen = CIMR::TargetGenerator->new(
+     queryobj      => $qobj,
+     file_regexp   => qr/ \w* (\d{8}) \w* \.txt \z/xms,
+     sample_field  => 'sample',
+     channel_field => 'channel',
+     date_field    => 'date',
+ );
+ my ( $targets_file, $targets_fh, $num_swaps ) = $tgen->create( \@filenames );
+
+=head1 DESCRIPTION
+
+Module used to simplify the creation of Targets files for dye-swap
+microarray data.
+
+Given a suitable CIMR::QueryObj instance, a list of data files, and a
+regular expression which captures the part of the data file name used
+as an identifier by the QueryObj, this class can generate a Targets
+file suitable for use with the Bioconductor limma package.
+
+Note that there are generally better ways to do this nowadays, most
+notably the csWebAffyBatch and csWebRGList functions available as part
+of the ClinStudyWeb R package. This subsystem is really only kept
+around to help drive the CIMR::DataPipeline class.
+
+=head1 ATTRIBUTES
+
+=head2 queryobj
+
+The CIMR::QueryObj to use as an input data store.
+
+=head2 file_regexp
+
+A regular expression used to convert filenames into identifiers
+suitable for use with the C<queryobj> object. The expression should
+contain one set of capture parentheses which extracts the identifier
+string from the filename. The default is:
+
+ qr/\A (?:US)? \d+ _ (\d+) _ \w+ \.txt \z/xms
+
+=head2 sample_field
+
+The field stored in the C<queryobj> object corresponding to a sample identifier.
+
+=head2 channel_field
+
+The field stored in the C<queryobj> object corresponding to a channel
+designation (e.g. Cy3, Cy5).
+
+=head2 date_field
+
+The field stored in the C<queryobj> object corresponding to the hybridisation date.
+
+=head2 output_file
+
+The name of the output Targets file. If this is not specified a
+File::Temp object will be created. The name of the targets file is
+returned, alongside its filehandle, by the C<create> method (see
+below).
+
+=head2 unused
+
+Returns a list of unused filenames. This can be used to track whether
+or not filenames are found in the C<queryobj> data store. Use
+C<clear_unused> to clear this list.
+
+=head1 METHODS
+
+=head2 create
+
+Given a list of filenames, apply the C<file_regexp> expression to
+extract identifier strings from these filenames, and then use those
+identifiers to query the C<queryobj> object, retrieving
+C<sample_field>, C<channel_field> and C<date_field>
+information. Constructs a Targets file (C<output_file>) and returns
+the name of that file, its filehandle, and the total number of dye
+swaps detected.
+
+=head1 SEE ALSO
+
+ClinStudyWeb R package,
+L<CIMR::DataPipeline>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+
