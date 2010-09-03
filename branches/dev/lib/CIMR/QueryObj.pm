@@ -18,10 +18,6 @@
 # along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
 # $Id$
-#
-# Module supporting some kind of generic query structure on
-# tab-delimited files. Note that this effectively reinvents the
-# DBD::CSV module (and badly) so it's probably of questionable use.
 
 use strict;
 use warnings;
@@ -69,3 +65,54 @@ sub query {
 }
 
 1;
+
+=head1 NAME
+
+CIMR::QueryObj - Generic query base class (DEPRECATED)
+
+=head1 SYNOPSIS
+
+ use CIMR::QueryObj;
+
+=head1 DESCRIPTION
+
+Abstract base class supporting some kind of generic query structure on
+tab-delimited files and other data sources. Note that this effectively
+reinvents the DBD::CSV module (and badly) so it's probably of
+questionable use. This is for local CIMR use only; ultimately we will
+want to phase this out entirely.
+
+=head1 ATTRIBUTES
+
+=head2 id_field
+
+The name of the ID field in the underlying data store to use in queries.
+
+=head2 queryterms
+
+A list of valid term names available to query.
+
+=head1 METHODS
+
+=head2 query
+
+Given an identifier and a desired set of terms, return the values for
+those terms from the underlying data store.
+
+=head1 SEE ALSO
+
+L<CIMR::DataPipeline>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+
