@@ -182,6 +182,14 @@ al. (2009; Numerical scoring for the Classic BILAG index. Rheumatology
 (Oxford) 48(12):1548-52 PubMed ID: 19779027). However, the
 original source reference has proven elusive.
 
+=head1 METHODS
+
+=head2 calculate
+
+The method used by the C<ClinStudy::Web::TestCalc> superclass to
+create a new aggregate test result in the database, or update the old
+result. See the superclass documentation for more details.
+
 =head1 SEE ALSO
 
 L<ClinStudy::Web::TestCalc>

@@ -357,6 +357,14 @@ to new or worse illness, while BVAS2 reflects persistent symptoms. A
 final overall score is easily calculated by adding these two indices
 together; at present this calculator does not do this.
 
+=head1 METHODS
+
+=head2 calculate
+
+The method used by the C<ClinStudy::Web::TestCalc> superclass to
+create a new aggregate test result in the database, or update the old
+result. See the superclass documentation for more details.
+
 =head1 SEE ALSO
 
 L<ClinStudy::Web::TestCalc>
