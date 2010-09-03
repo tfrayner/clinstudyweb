@@ -190,7 +190,7 @@ sub _query_rest {
 
     # Error-check the response, give feedback on failure.
     unless ( $res->is_success() ) {
-        warn(sprintf("Warning: ClinWebQuery returned error %s for %s %s\n",
+        warn(sprintf("Warning: ClinStudyWeb REST query returned error %s for %s %s\n",
                      $res->status_line, $querytype, $querystr));
         return;
     }
