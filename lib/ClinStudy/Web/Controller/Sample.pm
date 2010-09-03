@@ -68,7 +68,7 @@ sub assay_report : Local {
                         ->search({category => 'StudyType'});
     my @platforms   = $c->model('DB::ControlledVocab')
                         ->search({category => 'PlatformType'});
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/sample/assay_report',
         label => 'Assay reports',
@@ -212,7 +212,7 @@ sub assay_report_by_study_type : Local {
 
     }
     
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/sample/assay_report',
         label => 'Assay reports',

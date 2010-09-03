@@ -61,7 +61,7 @@ sub list : Local {
         undef,
         { order_by => 'username' },
     );
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     $c->stash->{users} = $users;
 }
 
@@ -125,7 +125,7 @@ sub add : Local {
         };
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $user);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $user);
 }
 
 =head2 edit
@@ -180,7 +180,7 @@ sub edit : Local {
         $form->model->default_values( $user );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $user);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $user);
 }
 
 =head2 edit
@@ -238,7 +238,7 @@ sub modify : Local {
         $form->model->default_values( $user );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
 }
 
 =head2 reset
@@ -384,7 +384,7 @@ sub load_form {
     return $form;
 }
 
-sub set_my_breadcrumbs : Private {
+sub _set_my_breadcrumbs : Private {
 
     my ( $self, $c, $user ) = @_;
 

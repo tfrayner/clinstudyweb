@@ -89,7 +89,7 @@ sub add_to_patient : Local {
         # and get them into the database.
         $self->_process_test_values( $c, $form, $visit );
 
-        $self->set_my_updated_message( $c, $visit, $visit->id );
+        $self->_set_my_updated_message( $c, $visit, $visit->id );
 
         $c->res->redirect( $c->uri_for('edit_for_type', $visit->id) );
         $c->detach();
@@ -97,7 +97,7 @@ sub add_to_patient : Local {
     else {
 
         # First time through, or invalid form.
-        $self->set_my_updating_message( $c, $visit, $visit->id );
+        $self->_set_my_updating_message( $c, $visit, $visit->id );
 
         $form->model->default_values( $visit );
 
@@ -105,7 +105,7 @@ sub add_to_patient : Local {
         $self->_populate_test_values($c, $form, $visit);
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $visit, $patient_id);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $visit, $patient_id);
 
     $c->stash->{object} = $visit;
 }
@@ -146,7 +146,7 @@ sub edit : Local {
         # and get them into the database.
         $self->_process_test_values( $c, $form, $visit );
 
-        $self->set_my_updated_message( $c, $visit, $id );
+        $self->_set_my_updated_message( $c, $visit, $id );
 
         $c->res->redirect( $c->uri_for('view', $visit->id) );
         $c->detach();
@@ -154,7 +154,7 @@ sub edit : Local {
     else {
 
         # First time through, or invalid form.
-        $self->set_my_updating_message( $c, $visit, $id );
+        $self->_set_my_updating_message( $c, $visit, $id );
 
         $form->model->default_values( $visit );
 
@@ -162,7 +162,7 @@ sub edit : Local {
         $self->_populate_test_values($c, $form, $visit);
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $visit, $visit->patient_id() );
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $visit, $visit->patient_id() );
 
     $c->stash->{object} = $visit;
 }
@@ -238,7 +238,7 @@ sub edit_for_type : Local {
                 $c->recalculate_aggregates( $visit, $study_type );
             }
 
-            $self->set_my_updated_message( $c, $visit, $visit_id );
+            $self->_set_my_updated_message( $c, $visit, $visit_id );
 
             $c->res->redirect( $c->uri_for('view', $visit_id) );
             $c->detach();
@@ -270,7 +270,7 @@ sub edit_for_type : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $visit, $visit->patient_id());
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $visit, $visit->patient_id());
 }
 
 sub _populate_test_values {

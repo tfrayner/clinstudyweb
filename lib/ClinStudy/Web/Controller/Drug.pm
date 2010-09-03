@@ -83,7 +83,7 @@ sub list_by_patient : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, undef, $patient_id);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, undef, $patient_id);
 
     $c->stash->{drugs_by_date} = \%drugs_by_date;
 }
@@ -216,7 +216,7 @@ sub edit : Local {
         $form->model->default_values( $drug );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $drug);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $drug);
 
     $c->stash->{object}   = $drug;
 }
@@ -268,11 +268,11 @@ sub delete : Local {
     }
 }
 
-sub set_my_breadcrumbs {
+sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $patient_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::set_my_breadcrumbs( $c, $object );
+    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object );
 
     my @fixed = grep { $_->{path} !~ '/drug/list' } @$breadcrumbs;
 

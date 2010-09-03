@@ -51,7 +51,7 @@ ClinStudy::Web::Controller::Root - Root Controller for ClinStudy::Web
 sub index : Private {
 
     my ( $self, $c ) = @_;
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
 }
 
 =head2 default
@@ -67,7 +67,7 @@ sub default : Private {
 
     my ( $self, $c ) = @_;
     $c->response->status('404');
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
         label => 'Not found',
@@ -84,7 +84,7 @@ Where the dispossessed and disenfranchised ultimately end up.
 sub access_denied : Private {
 
     my ( $self, $c, $action ) = @_;
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
         label => 'Access denied',
@@ -103,7 +103,7 @@ sub login : Global FormConfig {
 
     my ( $self, $c ) = @_;
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/login',
         label => 'Login',
@@ -207,7 +207,7 @@ sub logout : Global {
     $c->res->redirect( $c->uri_for('/') );
 }
 
-sub set_my_breadcrumbs : Private {
+sub _set_my_breadcrumbs : Private {
 
     my ( $self, $c ) = @_;
 

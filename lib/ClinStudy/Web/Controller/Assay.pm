@@ -94,7 +94,7 @@ sub add_to_sample : Private {  # Currently not in use because assays
         # Form was submitted and it validated.
         $c->form_values_to_database( $object, $form );
 
-        $self->set_my_updated_message( $c, $object );
+        $self->_set_my_updated_message( $c, $object );
 
         $c->res->redirect( $c->uri_for('view', $object->id) );
         $c->detach();
@@ -102,7 +102,7 @@ sub add_to_sample : Private {  # Currently not in use because assays
     else {
 
         # First time through, or invalid form.
-        $self->set_my_updating_message( $c, $object );
+        $self->_set_my_updating_message( $c, $object );
 
         $form->model->default_values( $object );
 
@@ -112,7 +112,7 @@ sub add_to_sample : Private {  # Currently not in use because assays
         $f->[0]->default( $sample_id );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $object, $sample_id);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $object, $sample_id);
 
     $c->stash->{object} = $object;
 
@@ -144,7 +144,7 @@ sub delete : Private {  # Currently not in use because assays are
             $c->detach();
         }
 
-        $self->set_my_deleted_message( $c, $object );
+        $self->_set_my_deleted_message( $c, $object );
 
         $c->delete_database_object( $object );
 
@@ -162,11 +162,11 @@ sub delete : Private {  # Currently not in use because assays are
 # PRIVATE METHODS #
 ###################
 
-sub set_my_breadcrumbs {
+sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $sample_id, $batch_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::set_my_breadcrumbs( $c, $object );
+    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object );
 
     my @fixed = grep { $_->{path} !~ '/assay/list' } @$breadcrumbs;
 
