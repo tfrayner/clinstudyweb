@@ -1,72 +1,183 @@
 package CIMR::BloodDB::ExpCtVirologyConcat;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
-use base 'DBIx::Class';
+use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("Core");
+
+=head1 NAME
+
+CIMR::BloodDB::ExpCtVirologyConcat
+
+=cut
+
 __PACKAGE__->table("exp_ct_virology_concat");
+
+=head1 ACCESSORS
+
+=head2 hospno
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 24
+
+=head2 resdate
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
+=head2 restime
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
+=head2 anti_hbs_post_vaccination
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 cmv_igg
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 cmv_latex
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 cmv_pcr
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 deletedyn
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 ebv_vca_igg
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 hepbsag
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 hepc
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 hiv
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 hsv
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 labcodeid
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 rowinsertdatetime
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 specimenid
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 toxo
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 vzv
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 table_id
+
+  data_type: 'integer'
+  is_nullable: 0
+  size: 20
+
+=cut
+
 __PACKAGE__->add_columns(
   "hospno",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 24 },
+  { data_type => "char", is_nullable => 1, size => 24 },
   "resdate",
-  {
-    data_type => "timestamp",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "timestamp", is_nullable => 1 },
   "restime",
-  {
-    data_type => "timestamp",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "timestamp", is_nullable => 1 },
   "anti_hbs_post_vaccination",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "cmv_igg",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "cmv_latex",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "cmv_pcr",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "deletedyn",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "ebv_vca_igg",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hepbsag",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hepc",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hiv",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hsv",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "labcodeid",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "rowinsertdatetime",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "specimenid",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "toxo",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "vzv",
-  { data_type => "char", default_value => undef, is_nullable => 1, size => 510 },
+  { data_type => "char", is_nullable => 1, size => 510 },
   "table_id",
-  {
-    data_type => "integer",
-    default_value => undef,
-    is_nullable => 0,
-    size => 20,
-  },
+  { data_type => "integer", is_nullable => 0, size => 20 },
 );
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-02-09 10:32:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rRtY2uwGZ0Z3NTOd6tXpqA
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2010-09-03 14:22:30
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rwxmzBUL1rdoL6iOp9Hjlg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
