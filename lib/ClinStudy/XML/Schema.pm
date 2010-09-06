@@ -98,35 +98,27 @@ ClinStudy::XML::Schema - Class for validating XML against a schema
 This class is a generic validator module for XML which checks that it
 conforms to a given schema.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
-=over 2
-
-=item schema_file
+=head2 schema_file
 
 The XML Schema file against which to check the XML instance
 document. Either this, or the C<schema> attribute is required.
 
-=item schema
+=head2 schema
 
 An instance of the XML::LibXML::Schema class, pointing to the XML
 Schema to use for validation. Either this, or the C<schema_file>
 attribute is required.
 
-=back
+=head1 METHODS
 
-=head2 METHODS
-
-=over 2
-
-=item validate
+=head2 validate
 
 Validate the supplied XML::LibXML::Document object against the stored
 schema. Returns true on success, false otherwise.
 
-=back
-
-=head2 EXPORT
+=head1 EXPORT
 
 None by default.
 

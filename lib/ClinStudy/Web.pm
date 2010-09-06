@@ -427,15 +427,52 @@ sub delete_database_object {
 
 =head1 NAME
 
-ClinStudy::Web - Catalyst based application
+ClinStudy::Web - Catalyst UI for the ClinStudyWeb database
 
 =head1 SYNOPSIS
 
-    script/clinstudyweb_server.pl
+ ./script/clinstudyweb_server.pl
 
 =head1 DESCRIPTION
 
-[enter your description here]
+This is the main Catalyst class which drives the ClinStudyWeb user interface.
+
+=head1 METHODS
+
+=head2 check_model_relationships
+
+Method which checks that there are no objects linked to a given
+DBIx::Class::Row object via non-cascading_delete
+relationships. Returns undef if everything is okay, otherwise a string
+listing the relationships suitable for displaying to the user.
+
+=head2 date_today
+
+Returns current date and time in MySQL-friendly format, i.e. "YYYY-MM-DD HH:MM:SS".
+
+=head2 recalculate_aggregates
+
+Given a database container object (Visit or Hospitalisation) and a
+study type CV, runs any applicable test calculator modules according
+to the configuration file.
+
+=head2 form_values_to_database
+
+Wrapper method for C<$form->model->update($obj)> which tests that the
+database is not read-only and sets the appropriate journal update
+information (user, session ID).
+
+=head2 update_database_object
+
+Wrapper method for C<$obj->update()> which tests that the
+database is not read-only and sets the appropriate journal update
+information (user, session ID).
+
+=head2 delete_database_object
+
+Wrapper method for C<$obj->delete()> which tests that the
+database is not read-only and sets the appropriate journal update
+information (user, session ID).
 
 =head1 SEE ALSO
 

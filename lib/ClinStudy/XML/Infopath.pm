@@ -533,7 +533,31 @@ where dates may be given in multiple formats or simply expressed as a
 nominal timepoint. In other words, if there are dragons anywhere in
 the code they will be here.
 
-=head2 EXPORT
+This module has only been used in anger once, and as such is not
+well-maintained (or well-documented). Use at your own peril.
+
+=head1 ATTRIBUTES
+
+=head2 stylesheet
+
+The XSLT stylesheet to apply. The exact requirements for this
+stylesheet need to be documented FIXME.
+
+=head1 METHODS
+
+=head2 transform
+
+Given a set of XML documents, applies the XSLT transformation and
+merges the result into an XML tree, which is then returned.
+
+=head2 postprocess
+
+Perform a series of clean-up operations on the transformed merged
+XML. Following this step the XML should conform to the ClinStudyML
+schema. Given how sparsely maintained this module is, however, I doubt
+that this is still the case.
+
+=head1 EXPORT
 
 None by default.
 

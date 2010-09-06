@@ -367,26 +367,24 @@ L<load_order> attribute for a way to do this.
 4. At the moment, the primary key fields are all assumed to be
 "id". This will probably be fixed in a future version (FIXME).
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 See L<ClinStudy::XML::Schema> for attributes defined in this
 superclass.
 
-=over 2
-
-=item database
+=head2 database
 
 A DBIx::Class::Schema object to be used for loading data into a
 database. Not required for validation against the XML schema.
 
-=item load_order
+=head2 load_order
 
 An optional array ref indicating the load order for top-level group
 elements in the XML document. If this is used, then all elements to be
 loaded must be included. This is not needed if there is only one
 top-level group, or if object load order does not matter.
 
-=item external_id_map
+=head2 external_id_map
 
 An optional hash ref indicating how fields in the XML document which
 refer to whole database table rows should resolve those rows in an SQL
@@ -394,7 +392,7 @@ query. The hash keys are DBIx::Class::ResultSet names, and the values
 are the (single) fields which confer identity on the rows in that
 resultset. Defaults to an empty hash ref.
 
-=item external_value_map
+=head2 external_value_map
 
 An optional hash ref providing extra values which may be required for
 instantiation of database records external to the XML Schema. The
@@ -425,12 +423,12 @@ other ways; this order was chosen since it was the most succinct
 arrangement for the original use case. Defaults to an empty hash
 ref.
 
-=item is_strict
+=head2 is_strict
 
 Boolean flag indicating whether or not to validate the imported XML
 document against the XML Schema (default=True).
 
-=item onload_callback
+=head2 onload_callback
 
 (Experts only) An optional coderef which is called just prior to
 loading the element into the database. The coderef is passed the class
@@ -439,24 +437,37 @@ attributes. This callback allows you to edit that hashref and return
 it back to the import module just before the object is inserted into
 the database.
 
-=back
-
-=head2 METHODS
+=head1 METHODS
 
 See L<ClinStudy::XML::Schema> for methods defined in this
 superclass.
 
-=over 2
-
-=item load
+=head2 load
 
 Load the supplied XML::LibXML::Document object into a ClinStudy::ORM
 database instance. This process includes a validation step, so any
 prior calls to C<validate> can be omitted.
 
-=back
+=head2 process_attr
 
-=head2 EXPORT
+For a given XML::LibXML::Attr object and a passed-in hashref, update
+the hashref with a value suitable for database loading.
+
+=head2 load_element
+
+Core database loading method; can be overridden in subclasses for
+special cases. Takes an XML::LibXML::Element object and a hashref
+C<{ parent_relationship_id => database_parent_id }> and returns a new
+object which has been loaded into the database.
+
+=head2 load_object
+
+Method used to load all objects into the database. Takes a hashref of
+values to update_or_create and a DBIx::Class::ResultSet. This method is split
+out like this so we can easily subclass and override the loading
+behaviour, e.g. for ControlledVocab.
+
+=head1 EXPORT
 
 None by default.
 
