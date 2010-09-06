@@ -366,9 +366,8 @@ ClinStudyML documents using a temporary SQLite database.
 
 =head1 SEE ALSO
 
-ClinStudy::XML::Import
-ClinStudy::XML::Schema
-ClinStudy::XML::Infopath
+L<ClinStudy::XML::Import>,
+L<ClinStudy::XML::Schema>
 
 =head1 COPYRIGHT AND LICENSE
 
