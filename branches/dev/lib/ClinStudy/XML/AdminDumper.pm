@@ -95,7 +95,7 @@ sub row_to_element {
     else {
 
         # General case.
-        $element = $self->SUPER::row_to_element( $row, $topclass, $parent_class, $parent_row );
+        $element = $self->next::method( $row, $topclass, $parent_class, $parent_row );
     }
 
     return $element;
@@ -126,9 +126,17 @@ authentication data was deliberately omitted from the primary
 ClinStudyML schema since it's a local concern, but we still need a way
 to dump and restore such data.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 See L<ClinStudy::XML::Export> for attributes defined in this superclass.
+
+=head1 METHODS
+
+=head2 row_to_element
+
+Special-cased method handling TestPossibleValue and RelatedVocab
+objects appropriately. See L<ClinStudy::XML::Export> for documentation
+on the generic row_to_element method.
 
 =head1 SEE ALSO
 

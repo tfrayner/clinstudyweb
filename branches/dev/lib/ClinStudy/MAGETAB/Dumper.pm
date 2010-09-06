@@ -537,31 +537,37 @@ ClinStudy::MAGETAB::Dumper - MAGE-TAB export from the ClinStudy database.
 Module created to facilitate the export of MAGE-TAB documents from the
 ClinStudy database, primarily using the web-based REST API.
 
-=head2 OPTIONS
+=head1 ATTRIBUTES
 
-=over 2
-
-=item uri
+=head2 uri
 
 The main URI of the ClinStudy web application (for example, when
 running under the Catalyst test server this would be
 http://localhost:3000 by default).
 
-=item username
+=head2 username
 
 The username to use in connecting to the database.
 
-=item password
+=head2 password
 
 The password to use in connecting to the database.
 
-=item builder
+=head2 builder
 
 A Bio::MAGETAB::Util::Builder object. This will be created automatically by
 default; this option should not typically be used unless you know what
 you're doing.
 
-=back
+=head1 METHODS
+
+=head2 add_file
+
+Add a new filename to the nascent Bio::MAGETAB model.
+
+=head2 dump
+
+Dump out the constructed MAGE-TAB documents using the Bio::MAGETAB::Util::Writer modules.
 
 =head1 SEE ALSO
 

@@ -287,28 +287,28 @@ ClinStudy::XML::TabReannotator - Reannotation of tab-delimited files.
 A module used to connect to a ClinStudy database and pull out missing
 attributes to fill in a partially completed tab-delimited data file.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 Note that XML TabReader attributes are handled by the
 C<ClinStudy::XML::TabReader> superclass.
 
-=over 2
-
-=item database
+=head2 database
 
 The ClinStudy::ORM object to use for database queries.
 
-=back
+=head1 METHODS
 
-=head2 METHODS
+=head2 read
 
-=over 2
+Quick wrapper method which just reads in the header row and spits it
+out in the appropriate column order (i.e. alphabetically sorted). The
+method then hands off control to the read method in the superclass
+(see L<ClinStudy::XML::TabReader>).
 
-=back
+=head1 SEE ALSO
 
-=head2 SEE ALSO
-
-L<ClinStudy::XML::Builder>
+L<ClinStudy::XML::Builder>,
+L<ClinStudy::XML::TabReader>
 
 =head1 COPYRIGHT AND LICENSE
 

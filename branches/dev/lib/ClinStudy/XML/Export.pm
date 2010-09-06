@@ -365,15 +365,13 @@ ClinStudy::XML::Export - XML export from ClinStudyDB databases.
 Generic module handling the generation of XML from a database
 satisfying several assumptions (FIXME list them).
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
-=over 2
-
-=item database
+=head2 database
 
 A DBIx::Class::Schema instance storing the data to be dumped to XML.
 
-=item boundaries
+=head2 boundaries
 
 A hashref of arrayrefs which gives the level of the database schema
 heirarchy at which to stop export for a given resultset class. This
@@ -386,22 +384,71 @@ data structure should be in the following form:
 The output XML heirarchy will not contain any records from the
 bottom-level boundary class.
 
-=item external_id_map
+=head2 external_id_map
 
 See ClinStudy::XML::Loader for discussion of this attribute.
 
-=item irregular_plurals
+=head2 irregular_plurals
 
 All table-derived elements are enclosed within grouping elements. This
 hashref gives the group name in cases where it's not as simple as
 adding 's' onto the end of the table class name.
 
-=item is_strict
+=head2 is_strict
 
 Boolean flag indicating whether or not to validate the exported XML
 document against the XML Schema (default=True).
 
-=back
+=head1 METHODS
+
+=head2 xml
+
+Given a list of database objects, convert them to XML elements, embed
+those elements in a new XML::LibXML::Document instance, and return
+that object.
+
+=head2 xml_all
+
+Dump the entire database into a new XML::LibXML::Document instance,
+and return that object.
+
+=head2 cols_to_attrs
+
+Given a database row and its nascent XML element, populate the element
+with values from the database columns. An optional filter arrayref may
+also be passed in to indicate columns to omit from the output.
+
+=head2 row_to_element
+
+This is the recursive workhorse method of the module. Given a database
+row object and the current top-level element class (e.g. AssayBatch or
+Patient in the case of ClinStudyML) generate an XML::LibXML::Element
+object, if necessary recursing through the database relationships to
+build an entire XML tree.
+
+=head2 rel_to_attr
+
+Given a database row object and relationship column name, a nascent
+XML element object and an optional flag indicating whether the
+relationship should be treated as an XML reference, update the XML
+element with the appropriate attribute. The relationship flag argument
+has been added for use by more complex subclasses which need to be
+able to dump XML references. It is assumed that these XML attrs will
+be named with a "_ref" suffix.
+
+=head2 process_relationships
+
+Given a database row object, a nascent XML element object, and the
+name of the current top-level element class (e.g. AssayBatch or
+Patient in the case of ClinStudyML), this method calls eithe
+C<rel_to_attr> or C<row_to_element> on each table relationship
+according to its cardinality.
+
+=head2 element_group
+
+Simple method which returns the XML grouping element name for a given
+XML element class (e.g. AssayBatches for AssayBatch). Uses the
+internally-maintained C<irregular_plurals> list.
 
 =head1 SEE ALSO
 
