@@ -119,9 +119,8 @@ database-specific subclass of the ClinStudy::XML::Import class.
 
 =head1 SEE ALSO
 
-ClinStudy::XML::Import
-ClinStudy::XML::Schema
-ClinStudy::XML::Infopath
+L<ClinStudy::XML::Import>,
+L<ClinStudy::XML::Schema>
 
 =head1 COPYRIGHT AND LICENSE
 
