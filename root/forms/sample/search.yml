@@ -47,6 +47,10 @@ elements:
             category: MaterialType
           label_column: value
     
+      - type: Text
+        name: notes
+        label: Other Notes
+      
   - type: Fieldset
     legend: Batch Query
 
