@@ -41,6 +41,10 @@ elements:
           resultset: AssayBatch
           label_column: name
 
+      - type: Text
+        name: notes
+        label: Other Notes
+      
   - type: Fieldset
     legend: Batch Query
 

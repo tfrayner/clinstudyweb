@@ -66,6 +66,10 @@ elements:
               attributes:
                 order_by: name
             
+      - type: Text
+        name: notes
+        label: Other Notes
+      
   - type: Fieldset
 
   - type: Submit
