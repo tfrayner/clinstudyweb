@@ -48,6 +48,25 @@ ClinStudy::Web::Controller::FormFuBase - Catalyst Controller base class
 Catalyst Controller. This is a base class used in many of the
 model-specific controller classes.
 
+=head1 ATTRIBUTES
+
+=head2 my_model_class
+
+Set in the BUILD method of subclasses, this links the controller to
+its ClinStudy::ORM class (e.g. the Assay controller would have
+"DB::Assay" here).
+
+=head2 my_sort_field
+
+Optional; set in the BUILD method of subclasses. Indicates which
+database table column to use to sort listings. Note that this is
+often overriden by the sort fields specified in the TT2 templates.
+
+=head2 my_container_namespace
+
+For objects which belong to other, container objects (e.g. Sample
+belongs to Visit). Set in the BUILD method of subclasses.
+
 =head1 METHODS
 
 =cut
@@ -56,7 +75,9 @@ model-specific controller classes.
 # PUBLIC METHODS #
 ##################
 
-=head2 index 
+=head2 index
+
+Dummy method; currently unused (this may change though).
 
 =cut
 
@@ -69,6 +90,8 @@ sub index :Path :Args(0) {
 }
 
 =head2 list
+
+Generate a listing of the desired objects.
 
 =cut
 
@@ -95,6 +118,8 @@ sub list : Local {
 
 =head2 view
 
+Display more detail on an individual object.
+
 =cut
 
 sub view : Local {
@@ -104,7 +129,7 @@ sub view : Local {
     my $class = $self->my_model_class()
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $namespace = $self->action_namespace($c);
-    my $error_redirect = $self->my_error_redirect($c)
+    my $error_redirect = $self->_my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
 
     my $object = $c->model($class)->find({ id => $object_id });
@@ -121,6 +146,8 @@ sub view : Local {
 
 =head2 search
 
+Search for objects in the database.
+
 =cut
 
 sub search : Local {
@@ -132,7 +159,7 @@ sub search : Local {
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $namespace = $self->action_namespace($c);
     my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
-    my $error_redirect = $self->my_error_redirect($c)
+    my $error_redirect = $self->_my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
     
     # Load the form. We do this manually because we want our DBIC
@@ -154,6 +181,8 @@ sub search : Local {
 
 =head2 edit
 
+Edit the object. Requires editor privileges.
+
 =cut
 
 sub edit : Local {
@@ -165,7 +194,7 @@ sub edit : Local {
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
     my $namespace = $self->action_namespace($c);
     my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
-    my $error_redirect = $self->my_error_redirect($c)
+    my $error_redirect = $self->_my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
 
     # Confirm we have privileges to be here.
@@ -239,6 +268,10 @@ sub edit : Local {
 
 =head2 delete
 
+Remove the object from the database. Requires editor privileges. Note
+that this will only be allowed if there are no non-cascading dependent
+relationships for this object.
+
 =cut
 
 sub delete : Local {
@@ -252,7 +285,7 @@ sub delete : Local {
 
     my $class = $self->my_model_class()
         or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
-    my $error_redirect = $self->my_error_redirect($c)
+    my $error_redirect = $self->_my_error_redirect($c)
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
     my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
     my $namespace  = $self->action_namespace($c);
@@ -301,6 +334,11 @@ sub delete : Local {
 
 =head2 list_by_container
 
+Given the numerical database ID for a given container, list objects
+attached to that container. The nature of the container class is
+maintained in the various controller subclasses (via
+my_container_namespace).
+
 =cut
 
 sub list_by_container {
@@ -342,6 +380,9 @@ sub list_by_container {
 
 =head2 add_to_container
 
+Given the numerical database ID for a given container, add a new
+object and attach it to that container.
+
 =cut
 
 sub add_to_container {
@@ -357,8 +398,14 @@ sub add_to_container {
 # PRIVATE METHODS #
 ###################
 
-# We use this in preference to the FormConfig attributes to insert our
-# DBIC object onto each form's stash.
+=head2 load_form
+
+Load the HTML::FormFu form config. We use this in preference to the
+FormConfig attributes because it allows us to automatically insert our
+DBIC object onto each form's stash.
+
+=cut
+
 sub load_form {
 
     my ( $self, $c, $object, $action ) = @_;
@@ -373,12 +420,18 @@ sub load_form {
     return $form;
 }
 
+=head2 camel_case
+
+Convert an underscore_delimited table namespace into a CamelCase class
+name. Taken from DBIx::Class::Schema::Loader::Base for (hopefully) a
+measure of consistency.
+
+=cut
+
 sub camel_case {
 
     my ( $term ) = @_;
 
-    # Taken from DBIx::Class::Schema::Loader::Base for (hopefully) a
-    # measure of consistency.
     my $camel = join '', map { ucfirst $_ } split /[\W_]+/, lc $term;
 
     return $camel;
@@ -401,8 +454,9 @@ sub _my_container_class {
     return ( $dbclass, $dbfield, $namespace );
 }
 
-# A convenient generic method.
-sub my_error_redirect {
+# A convenient generic method. Can be overridden in the subclass,
+# although in practice the requirement is rare.
+sub _my_error_redirect {
 
     my ( $self, $c ) = @_;
 
@@ -557,12 +611,19 @@ sub _set_my_breadcrumbs {
     return \@breadcrumbs;
 }
 
+=head2 process_search_form
+
+Method which takes a completed FormFu form (from the search pages) and
+extracts a pair of hashrefs suitable for passing to
+DBIx::Class::ResultSet->search. This method is designed to be
+subclassed for table-specific behaviour. In principle this method
+should handle nested queries by creating appropriate join conditions;
+in practice this currently only works for relatively simple cases.
+
+=cut
+
 sub process_search_form {
 
-    # Method which takes a completed FormFu form and extracts a pair
-    # of hashrefs suitable for passing to
-    # DBIx::Class::ResultSet->search. This method is designed to be
-    # subclassed for table-specific behaviour.
     my ( $self, $c, $form ) = @_;
 
     # Remove empty fields and the unnecessary 'submit' field.

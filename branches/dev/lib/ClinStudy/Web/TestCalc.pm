@@ -46,3 +46,43 @@ __PACKAGE__->meta->make_immutable();
 no Moose;
 
 1;
+
+__END__
+
+=head1 NAME
+
+ClinStudy::Web::TestCalc - Aggregate test calculator base class
+
+=head1 SYNOPSIS
+
+ use Moose;
+ BEGIN { extends 'ClinStudy::Web::TestCalc' }
+
+=head1 DESCRIPTION
+
+This module forms a base class for all the custom aggregate test
+calculator modules (e.g. BILAG, BVAS etc.).
+
+=head1 METHODS
+
+=head2 check_result_existence
+
+A convenience method which checks for the existence of a given test
+result attached to a given container object (Visit,
+Hospitalisation). Arguments are the ClinStudy::ORM object, the
+container object and the test name. Return value is the number of
+specified test results attached to the container object.
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+
