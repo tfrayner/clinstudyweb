@@ -46,7 +46,10 @@ sub BUILD {
     return;
 }
 
-=head2 list_by_patient 
+=head2 list_by_patient
+
+List all the drug treatments for a given patient, traversing the
+Visit, Hospitalisation and PriorTreatment tables to do so.
 
 =cut
 
@@ -90,6 +93,8 @@ sub list_by_patient : Local {
 
 =head2 add_to_priortreatment
 
+Add a drug to a given prior treatment.
+
 =cut
 
 sub add_to_priortreatment : Local {
@@ -107,6 +112,8 @@ sub add_to_priortreatment : Local {
 }
 
 =head2 add_to_visit
+
+Add a drug to a given visit.
 
 =cut
 
@@ -126,6 +133,8 @@ sub add_to_visit : Local {
 
 =head2 add_to_hospitalisation
 
+Add a drug to a given hospitalisation.
+
 =cut
 
 sub add_to_hospitalisation : Local {
@@ -143,6 +152,9 @@ sub add_to_hospitalisation : Local {
 }
 
 =head2 edit
+
+Edit or add a given drug object; expects a drug container object in
+the latter case.
 
 =cut
 
@@ -223,6 +235,8 @@ sub edit : Local {
 
 =head2 delete
 
+Delete the drug object from the database.
+
 =cut
 
 sub delete : Local {
@@ -272,7 +286,7 @@ sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $patient_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object );
+    my $breadcrumbs = $self->next::method( $c, $object );
 
     my @fixed = grep { $_->{path} !~ '/drug/list' } @$breadcrumbs;
 

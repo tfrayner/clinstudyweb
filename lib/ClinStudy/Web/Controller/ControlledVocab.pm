@@ -58,6 +58,8 @@ sub _set_my_deleted_message {
 
 =head2 add
 
+Add a new CV term in one of the pre-existing CV categories.
+
 =cut
 
 sub add : Local { 
@@ -67,6 +69,10 @@ sub add : Local {
 }
 
 =head2 add_category
+
+Edit a given CV term, but also allow the user to edit the text of the
+CV category, thereby permitting the addition of new CV
+categories. This should be an admin-level operation.
 
 =cut
 
@@ -85,6 +91,9 @@ sub add_category : Local {
 
 =head2 edit
 
+Edit a given CV term. This method prevents the user from adding new CV
+categories, instead presenting a drop-down menu in the interface.
+
 =cut
 
 sub edit : Local { 
@@ -99,6 +108,13 @@ sub edit : Local {
     $c->stash->{template} = 'controlledvocab/edit.tt2'; 
     $c->forward('common_edit', [$id]); 
 }
+
+=head2 common_edit
+
+A private method which the edit, add and add_category methods all use
+behind the scenes.
+
+=cut
 
 sub common_edit : Private {
 

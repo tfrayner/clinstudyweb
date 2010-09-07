@@ -39,7 +39,9 @@ Catalyst Controller.
 =cut
 
 
-=head2 index 
+=head2 index
+
+Dummy action; currently unused.
 
 =cut
 
@@ -50,6 +52,8 @@ sub index :Path :Args(0) {
 }
 
 =head2 list
+
+Generate a listing of local database users.
 
 =cut
 
@@ -66,6 +70,10 @@ sub list : Local {
 }
 
 =head2 add
+
+Add a new user account to the database; this is the public action used
+by new users to set up their initial account prior to being assigned a
+user group. This method does not grant any intrinsic access privileges.
 
 =cut
 
@@ -130,6 +138,8 @@ sub add : Local {
 
 =head2 edit
 
+Edit a user in the database. This is an admin-level operation.
+
 =cut
 
 sub edit : Local {
@@ -183,7 +193,10 @@ sub edit : Local {
     $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $user);
 }
 
-=head2 edit
+=head2 modify
+
+Edit one's own user profile in the database. This action is open to
+any database user.
 
 =cut
 
@@ -243,6 +256,9 @@ sub modify : Local {
 
 =head2 reset
 
+Reset one's own password in the database. Alternatively, admin-level
+users may reset the passwords for any user.
+
 =cut
 
 sub reset : Local {
@@ -278,6 +294,10 @@ sub reset : Local {
 }
 
 =head2 delete
+
+Remove a user from the database. Note that the audit history tables
+link to the user tables, but there are no database constraints
+preventing user removal.
 
 =cut
 
@@ -321,6 +341,9 @@ sub delete : Local {
 
 =head2 create_password
 
+Creates a random alphanumeric password of the specified length
+(default is eight characters).
+
 =cut
 
 {   # Create a closure over this array.
@@ -346,6 +369,9 @@ sub delete : Local {
 
 =head2 reset_user_password
 
+Sets the password of the specified user to the given string. If no
+string is supplied, C<create_password> is used to generate one.
+
 =cut
 
 sub reset_user_password {
@@ -366,10 +392,17 @@ sub reset_user_password {
 # PRIVATE #
 ###########
 
-# We use this in preference to the FormConfig attributes to insert our
-# DBIC object onto each form's stash. This is copied from FormFuBase
-# rather than subclassing, which might have undesirable security
-# implications.
+=head2 load_form
+
+Load the HTML::FormFu form config. We use this in preference to the
+FormConfig attributes because it allows us to automatically insert our
+DBIC object onto each form's stash.
+
+=cut
+
+# This is copied from FormFuBase rather than subclassing, which might
+# have undesirable security implications.
+
 sub load_form {
 
     my ( $self, $c, $object, $action ) = @_;

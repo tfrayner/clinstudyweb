@@ -49,6 +49,8 @@ sub BUILD {
 
 =head2 index
 
+Dummy action; currently unused.
+
 =cut
 
 sub index :Path :Args(0) {
@@ -58,6 +60,8 @@ sub index :Path :Args(0) {
 }
 
 =head2 add_to_assay
+
+Add a new QC value to the specified Assay.
 
 =cut
 

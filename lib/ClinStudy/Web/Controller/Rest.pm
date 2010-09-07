@@ -38,6 +38,13 @@ Catalyst Controller.
 
 #__PACKAGE__->config->{serialize}{default} = 'YAML';
 
+=head2 begin
+
+Initial method called during a REST query. This method handles the
+authentication of the user.
+
+=cut
+
 sub begin : ActionClass('Deserialize') {
 
     my ( $self, $c ) = @_;
@@ -67,12 +74,26 @@ sub begin : ActionClass('Deserialize') {
     return;
 }
 
+=head2 sample
+
+A wrapper action for queries on Samples which redirects to the
+appropriate GET or POST method.
+
+=cut
+
 sub sample : Local : ActionClass('REST') {
 
     my ( $self, $c, $id ) = @_;
 
     $c->stash(id => $id);
 }
+
+=head2 sample_GET
+
+Query Samples by the supplied name attribute and return the
+appropriate serialized hashref to the user.
+
+=cut
 
 sub sample_GET {
 
@@ -83,7 +104,7 @@ sub sample_GET {
     my $sample = $c->model('DB::Sample')->find({ name => $id });
 
     if ( $sample ) {
-        $self->status_ok( $c, entity => dump_sample_entity($sample) );
+        $self->status_ok( $c, entity => $self->dump_sample_entity($c, $sample) );
     }
     else {
         $self->status_not_found( $c, message => 'Sample not found' );
@@ -92,12 +113,26 @@ sub sample_GET {
     return;
 }
 
+=head2 assay_file
+
+A wrapper action for filename-based queries on Assays which
+redirects to the appropriate GET or POST method.
+
+=cut
+
 sub assay_file : Local : ActionClass('REST') {
 
     my ( $self, $c, $id ) = @_;
 
     $c->stash( id => $id );
 }
+
+=head2 assay_file_GET
+
+Query Assays by the supplied filename attribute and return the
+appropriate serialized hashref to the user.
+
+=cut
 
 sub assay_file_GET {
 
@@ -108,7 +143,7 @@ sub assay_file_GET {
     my $assay = $c->model('DB::Assay')->find({ filename => $id });
 
     if ( $assay ) {
-        $self->status_ok( $c, entity => dump_assay_entity($assay) );
+        $self->status_ok( $c, entity => $self->dump_assay_entity($c, $assay) );
     }
     else {
         $self->status_not_found( $c, message => 'File not found' );
@@ -117,12 +152,26 @@ sub assay_file_GET {
     return;
 }
 
+=head2 assay_barcode
+
+A wrapper action for identifier-based queries on Assays which
+redirects to the appropriate GET or POST method.
+
+=cut
+
 sub assay_barcode : Local : ActionClass('REST') {
 
     my ( $self, $c, $id ) = @_;
 
     $c->stash( id => $id );
 }
+
+=head2 assay_barcode_GET
+
+Query Assays by the supplied identifier (barcode) attribute and return the
+appropriate serialized hashref to the user.
+
+=cut
 
 sub assay_barcode_GET {
 
@@ -133,7 +182,7 @@ sub assay_barcode_GET {
     my $assay = $c->model('DB::Assay')->find({ identifier => $id });
 
     if ( $assay ) {
-        $self->status_ok( $c, entity => dump_assay_entity($assay) );
+        $self->status_ok( $c, entity => $self->dump_assay_entity($c, $assay) );
     }
     else {
         $self->status_not_found( $c, message => 'Barcode not found' );
@@ -142,9 +191,16 @@ sub assay_barcode_GET {
     return;
 }
 
+=head2 dump_sample_entity
+
+Given a Sample object from the database, construct a hashref suitable
+for passing back to the user.
+
+=cut
+
 sub dump_sample_entity {
 
-    my ( $sample ) = @_;
+    my ( $self, $c, $sample ) = @_;
 
     my $visit   = $sample->visit_id();
     my $patient = $visit->patient_id();
@@ -227,9 +283,16 @@ sub _get_test_value {
     return $value;
 }
 
+=head2 dump_assay_entity
+
+Given an Assay object from the database, construct a hashref suitable
+for passing back to the user.
+
+=cut
+
 sub dump_assay_entity {
 
-    my ( $assay ) = @_;
+    my ( $self, $c, $assay ) = @_;
 
     my $batch = $assay->assay_batch_id();
 
@@ -247,7 +310,7 @@ sub dump_assay_entity {
     foreach my $ch ( @channels ) {
         push @chdata, {
             label   => $ch->label_id()->value(),
-            sample  => dump_sample_entity( $ch->sample_id() ),
+            sample  => $self->dump_sample_entity( $c, $ch->sample_id() ),
         };
     }
     $dump{channels} = \@chdata;

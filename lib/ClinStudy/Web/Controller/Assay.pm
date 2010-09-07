@@ -48,6 +48,8 @@ sub BUILD {
 
 =head2 add_to_sample
 
+Add a new assay to the Sample with the specified database ID.
+
 =cut
 
 sub add_to_sample : Private {  # Currently not in use because assays
@@ -120,6 +122,8 @@ sub add_to_sample : Private {  # Currently not in use because assays
 
 =head2 delete
 
+Delete the assay.
+
 =cut
 
 sub delete : Private {  # Currently not in use because assays are
@@ -166,7 +170,7 @@ sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $sample_id, $batch_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object );
+    my $breadcrumbs = $self->next::method( $c, $object );
 
     my @fixed = grep { $_->{path} !~ '/assay/list' } @$breadcrumbs;
 
