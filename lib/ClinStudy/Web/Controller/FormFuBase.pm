@@ -600,7 +600,8 @@ sub process_search_form {
                 @search{ keys %$subsearch }        = values %$subsearch;
             }
             elsif ( length($value) ) {
-                $search{$key} = $value;
+                $value =~ tr/*?/%_/;
+                $search{$key} = { like => $value };
             }
         }
     }
@@ -645,7 +646,8 @@ sub _process_nested_query {
         }
         elsif ( length($nextvalue) ) {
             $attrs{$key} = $nextkey;
-            $search{"$key.$nextkey"} = $nextvalue;
+            $nextvalue =~ tr/*?/%_/;
+            $search{"$key.$nextkey"} = { 'like' => $nextvalue };
         }
     }
 
