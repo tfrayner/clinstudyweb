@@ -12,6 +12,13 @@ elements:
     nested_name: simple
     elements:
 
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
       - type: Text
         name: identifier
         label: Identifier
