@@ -75,14 +75,12 @@ sub constrain_value {
 
     # if a row exists, first check whether it matches a known object on the
     # form stash
-
     if ( $existing_row && defined( my $self_stash_key = $self->self_stash_key ) ) {
-        
         if ( defined( my $self_stash = $stash->{ $self_stash_key } ) ) {
             
-            my ($pk) = $resultset->result_source->primary_keys;
+            my ($pk) = $resultset->result_source->primary_columns;
             
-            if ( $existing_row->$pk eq $self->stash->$pk ) {
+            if ( $existing_row->$pk eq $self_stash->$pk ) {
                 return 1;
             }
         }
