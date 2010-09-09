@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::MAGETAB::Dumper - MAGE-TAB export from the
+ClinStudy database.</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#uri">uri</a></li>
+                <li><a href="#username">username</a></li>
+                <li><a href="#password">password</a></li>
+                <li><a href="#builder">builder</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#add_file">add_file</a></li>
+                <li><a href="#dump">dump</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::MAGETAB::Dumper - MAGE-TAB export from the ClinStudy
+database.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::MAGETAB::Dumper;
+ my $dumper = ClinStudy::MAGETAB::Dumper-&gt;new(
+     uri =&gt; $database_home_uri,
+ );
+</pre>
+<pre>
+ # Add annotation for each of the files being included.
+ foreach my $file ( @filenames ) {
+    $dumper-&gt;add_file( $file );
+ }
+</pre>
+<pre>
+ # Write out the MAGE-TAB files.
+ $dumper-&gt;dump();
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Module created to facilitate the export of MAGE-TAB documents
+from the ClinStudy database, primarily using the web-based REST
+API.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<h2><a name="uri">uri</a></h2>
+<p>The main URI of the ClinStudy web application (for example, when
+running under the Catalyst test server this would be <a href=
+"http://localhost:3000">http://localhost:3000</a> by default).</p>
+<h2><a name="username">username</a></h2>
+<p>The username to use in connecting to the database.</p>
+<h2><a name="password">password</a></h2>
+<p>The password to use in connecting to the database.</p>
+<h2><a name="builder">builder</a></h2>
+<p>A Bio::MAGETAB::Util::Builder object. This will be created
+automatically by default; this option should not typically be used
+unless you know what you're doing.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="add_file">add_file</a></h2>
+<p>Add a new filename to the nascent Bio::MAGETAB model.</p>
+<h2><a name="dump">dump</a></h2>
+<p>Dump out the constructed MAGE-TAB documents using the
+Bio::MAGETAB::Util::Writer modules.</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><a href="/trunk/webdocs/pod/Bio/MAGETAB.html">the Bio::MAGETAB
+manpage</a>, <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Dumper.html">the
+ClinStudy::XML::Dumper manpage</a></p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

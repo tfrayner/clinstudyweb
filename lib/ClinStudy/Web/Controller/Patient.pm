@@ -55,7 +55,7 @@ sub index : Path : Args(0) {
 
     my @study_types = $c->model('DB::ControlledVocab')
                         ->search({category => 'StudyType'});
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     $c->stash->{study_types} = \@study_types;
 }
 
@@ -112,7 +112,7 @@ sub list_by_study_type : Local {
         $c->stash->{list_category} = 'Non-assigned';
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     $c->stash->{objects}   = \@patients;
     $c->stash->{template}  = 'patient/list.tt2';
 }
@@ -161,7 +161,7 @@ sub add : Local {
         $form->model()->default_values( $patient );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $patient);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $patient);
 }
 
 =head2 edit
@@ -212,7 +212,7 @@ sub edit : Local {
         $form->model()->default_values( $patient );
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $patient);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $patient);
 }
 
 =head2 edit_for_type
@@ -311,7 +311,7 @@ sub edit_for_type : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $patient);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $patient);
 }
 
 =head1 AUTHOR

@@ -335,3 +335,50 @@ __PACKAGE__->meta->make_immutable();
 no Moose;
 
 1;
+
+__END__
+
+=head1 NAME
+
+ClinStudy::Web::TestCalc::BVAS - Calculation of vasculitis BVAS scores
+
+=head1 SYNOPSIS
+
+ use ClinStudy::Web::TestCalc::BVAS;
+
+=head1 DESCRIPTION
+
+This TestCalc module is designed to convert the per-system scores
+defined by the original BVAS scale (Luqmani R.A. (1994) Birmingham
+Vasculitis Activity Score (BVAS) in systemic necrotizing
+vasculitis. QJM. 87(11):671-8. PubMed ID: 7820541) into two numerical
+indices ("BVAS1" and "BVAS2" in the database). The BVAS1 index relates
+to new or worse illness, while BVAS2 reflects persistent symptoms. A
+final overall score is easily calculated by adding these two indices
+together; at present this calculator does not do this.
+
+=head1 METHODS
+
+=head2 calculate
+
+The method used by the C<ClinStudy::Web::TestCalc> superclass to
+create a new aggregate test result in the database, or update the old
+result. See the superclass documentation for more details.
+
+=head1 SEE ALSO
+
+L<ClinStudy::Web::TestCalc>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

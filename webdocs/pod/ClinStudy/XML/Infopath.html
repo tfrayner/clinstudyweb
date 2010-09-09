@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::XML::Infopath - Perl extension for converting
+Infopath files to ClinStudy XML.</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#stylesheet">stylesheet</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#transform">transform</a></li>
+                <li><a href="#postprocess">postprocess</a></li>
+        </ul>
+
+        <li><a href="#export">EXPORT</a></li>
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::Infopath - Perl extension for converting
+Infopath files to ClinStudy XML.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::Infopath;
+ my $c = ClinStudy::XML::Infopath-&gt;new(stylesheet =&gt; $stylesheet_file);
+ my $doc   = $c-&gt;transform($infopath_file);
+ my $valid = $c-&gt;postprocess($doc);
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Module handling the conversion of Microsoft Infopath XML
+documents into the ClinStudy XML Schema. This process takes the
+form of a fairly straightforward XSLT transformation followed by a
+postprocessing step which cleans up some of the uglier details.
+This latter step is generally concerned with linking e.g. Visits
+with Drug treatments, where dates may be given in multiple formats
+or simply expressed as a nominal timepoint. In other words, if
+there are dragons anywhere in the code they will be here.</p>
+<p>This module has only been used in anger once, and as such is not
+well-maintained (or well-documented). Use at your own peril.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<h2><a name="stylesheet">stylesheet</a></h2>
+<p>The XSLT stylesheet to apply. The exact requirements for this
+stylesheet need to be documented FIXME.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="transform">transform</a></h2>
+<p>Given a set of XML documents, applies the XSLT transformation
+and merges the result into an XML tree, which is then returned.</p>
+<h2><a name="postprocess">postprocess</a></h2>
+<p>Perform a series of clean-up operations on the transformed
+merged XML. Following this step the XML should conform to the
+ClinStudyML schema. Given how sparsely maintained this module is,
+however, I doubt that this is still the case.</p>
+<hr />
+<h1><a name="export">EXPORT</a></h1>
+<p>None by default.</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ClinStudy::XML::Schema</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

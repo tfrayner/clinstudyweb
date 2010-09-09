@@ -36,12 +36,11 @@ use ClinStudy::XML::TabReannotator;
 
 sub parse_args {
 
-    my ( $tabfile, $xsd, $conffile, $want_help );
+    my ( $tabfile, $conffile, $want_help );
 
     GetOptions(
         "f|file=s"   => \$tabfile,
         "c|config=s" => \$conffile,
-        "d|schema=s" => \$xsd,
         "h|help"     => \$want_help,
     );
 
@@ -53,7 +52,7 @@ sub parse_args {
         );
     }
 
-    unless ( $tabfile && $xsd && $conffile ) {
+    unless ( $tabfile && $conffile ) {
         pod2usage(
             -message => qq{Please see "$0 -h" for further help notes.},
             -exitval => 255,
@@ -66,17 +65,16 @@ sub parse_args {
     my $conn_params = $config->{'Model::DB'}->{connect_info};
     my $schema = ClinStudy::ORM->connect( @$conn_params );
 
-    return( $tabfile, $xsd, $schema );
+    return( $tabfile, $schema );
 }
 
 ########
 # MAIN #
 ########
 
-my ( $tabfile, $xsd, $schema ) = parse_args();
+my ( $tabfile, $schema ) = parse_args();
 
 my $builder = ClinStudy::XML::TabReannotator->new(
-    schema_file  => $xsd,
     tabfile      => $tabfile,
     database     => $schema,
 );
@@ -91,7 +89,7 @@ reannotate_tab.pl
 
 =head1 SYNOPSIS
 
- reannotate_tab.pl -f <tab-delimited file> -d <XML Schema file> -c clinstudy_web.yml
+ reannotate_tab.pl -f <tab-delimited file> -c clinstudy_web.yml
 
 =head1 DESCRIPTION
 
@@ -106,10 +104,6 @@ to STDOUT.
 =item -f
 
 The tab-delimited file to convert into XML.
-
-=item -d
-
-The XML Schema document against which to validate.
 
 =item -c
 

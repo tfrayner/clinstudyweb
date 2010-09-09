@@ -55,7 +55,7 @@ sub add : Local {
     $c->forward('edit', [undef]); 
 }
 
-sub set_my_updated_message {
+sub _set_my_updated_message {
 
     my ( $self, $c, $object, $object_id ) = @_;
 
@@ -66,7 +66,7 @@ sub set_my_updated_message {
                       $object->type_id->value,);
 }
 
-sub set_my_deleted_message {
+sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;
 

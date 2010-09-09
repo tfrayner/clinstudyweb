@@ -344,3 +344,134 @@ sub _get_target_generator {
 no Moose;
 
 1;
+
+=head1 NAME
+
+CIMR::DataPipeline - Local data preprocessing pipeline.
+
+=head1 SYNOPSIS
+
+ use CIMR::DataPipeline;
+ my $pipeline = CIMR::DataPipeline->new(
+    config_file => $filename,
+ );
+ $pipeline->run();
+
+=head1 DESCRIPTION
+
+This is a data preprocessing and QC pipeline class used in our local
+installation. When run it checks a specified watch directory and
+processes any new files, writing a log either to screen or to a log
+file. Currently this class is used primarily to process GenePix-style
+extracted microarray data files, filtering out poor hybridizations and
+dubious array probes to give as clean as possible an output. The
+pipeline uses the accompanying R script, dataPipeline.R, in
+conjunction with the Bioconductor limma package to generate a series
+of *.RData files containing MAList objects for individual dye-swap
+pairs of data files, following print-tip loess normalisation.
+
+Note that there is still code in this class which was used to extract
+the original TIFF files, generating the GenePix-style data files; this
+code should still work, but since it is no longer in use it is not
+documented in this POD.
+
+=head1 ATTRIBUTES
+
+=head2 logger
+
+A Log::Log4perl::Logger object; if none is supplied then the logger
+designated as "log4perl.logger.CIMR.DataPipeline" from the config file
+is used (see below).
+
+=head2 interval
+
+The time in seconds between checks on the watch directory.
+
+=head2 config_file
+
+The name or full path of the configuration file.
+
+=head1 METHODS
+
+=head2 run
+
+Start the pipeline.
+
+=head1 CONFIG FILE OPTIONS
+
+=over 2
+
+=item log4perl.logger.CIMR.DataPipeline
+
+The main logger object used by this class. Note that further log4perl
+config options will likely be needed to fully specify the logging
+behaviour. For example:
+
+ log4perl.logger.CIMR.DataPipeline             = DEBUG, A1
+ log4perl.appender.A1                          = Log::Dispatch::Screen
+ log4perl.appender.A1.filename                 = cimr-data-pipeline.log
+ log4perl.appender.A1.mode                     = append
+ log4perl.appender.A1.layout                   = Log::Log4perl::Layout::PatternLayout
+ log4perl.appender.A1.layout.ConversionPattern = %d %p> %F{1}:%L %M - %m%n
+
+=item cimr.datapipeline.watchfolder
+
+The full path to the data watch directory.
+
+=item cimr.datapipeline.watchfolder.cache
+
+This is the DB_File database which keeps track of which files have
+been processed.
+
+=item cimr.datapipeline.fileregexp.tiff
+
+=item cimr.datapipeline.fileregexp.txt
+
+These regular expressions determine what is processed as a TIFF or as
+a text data file. They must contain a single set of capture
+parentheses which return the array barcode. The regexp will be
+anchored to beginning and end of the filename being queried.
+
+=item cimr.datapipeline.clinwebquery.uri
+
+=item cimr.datapipeline.clinwebquery.idfield      = assay_barcode
+
+=item cimr.datapipeline.clinwebquery.samplefield  = sample
+
+=item cimr.datapipeline.clinwebquery.channelfield = channel
+
+=item cimr.datapipeline.clinwebquery.datefield    = date
+
+Parameters used to query ClinWeb database. The query is performed via
+the REST API, using the URI specified. The various field designations
+are unlikely to need changing from the values shown.
+
+=item cimr.datapipeline.adffile
+
+=item cimr.datapipeline.spottypesfile
+
+Full paths to your array annotation files. These are ADF files and Spot
+type files used to provide probe identifier and control type
+information to the dataPipeline.R script.
+
+=back
+
+=head1 SEE ALSO
+
+L<CIMR::TargetGenerator>,
+L<ClinStudy::WebQuery>,
+Log::Log4perl
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

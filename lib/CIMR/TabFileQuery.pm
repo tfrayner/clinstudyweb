@@ -18,10 +18,6 @@
 # along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
 # $Id$
-#
-# Module supporting some kind of generic query structure on
-# tab-delimited files. Note that this effectively reinvents the
-# DBD::CSV module (and badly) so it's probably of questionable use.
 
 use strict;
 use warnings;
@@ -121,3 +117,55 @@ sub report_unused {
 }
 
 1;
+
+=head1 NAME
+
+CIMR::TabFileQuery - CIMR::QueryObj class handling tab-delimited data files (DEPRECATED).
+
+=head1 SYNOPSIS
+
+ use CIMR::TabFileQuery;
+ my $qobj = CIMR::TabFileQuery->new(
+     fh         => $fh,
+     queryterms => \@queryterms,
+     id_field   => $id_field,
+ );
+ my @values = $qobj->query( $id, @queryterms );
+
+=head1 DESCRIPTION
+
+This is a simple module which could easily have been substituted by
+DBD::CSV, and as a result is not intended for further use. It is a
+subclass of CIMR::QueryObj and is intended to support the same
+usage. See L<CIMR::QueryObj> for more information on the API.
+
+=head1 ATTRIBUTES
+
+=head2 fh
+
+The filehandle used to access the tab-delimited file of interest.
+
+=head1 METHODS
+
+=head2 report_unused
+
+Reports those IDs from the data file which have not yet been returned
+by a query.
+
+=head1 SEE ALSO
+
+L<CIMR::QueryObj>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

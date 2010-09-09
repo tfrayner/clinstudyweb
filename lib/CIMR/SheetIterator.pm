@@ -106,3 +106,56 @@ sub next {
 }
 
 1;
+
+=head1 NAME
+
+CIMR::SheetIterator - Simple iterator class for Excel spreadsheets
+
+=head1 SYNOPSIS
+
+ use CIMR::SheetIterator;
+ my $iter = CIMR::SheetIterator->new(sheet => $sheet);
+ my $header = $iter->header();
+ 
+ while ( my $row = $iter->next() ) {
+     # do stuff with $row hashref
+ }
+
+=head1 DESCRIPTION
+
+This is a fairly simple iterator class designed to make reading data
+from an Excel spreadsheet just that little bit more pleasurable. The
+constructor code assumes that the first line in the sheet is a header
+line, and it uses the column names found in this line to index the
+data for every subsequent line.
+
+=head1 ATTRIBUTES
+
+=head2 sheet
+
+The Spreadsheet::ParseExcel::Worksheet object to use for input.
+
+=head1 METHODS
+
+=head2 next
+
+Returns a hashref containing the values from the next line, keyed by
+the column headings found in the first line of the sheet.
+
+=head1 SEE ALSO
+
+Spreadsheet::ParseExcel
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

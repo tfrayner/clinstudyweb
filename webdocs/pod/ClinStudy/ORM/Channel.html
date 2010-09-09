@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>
+/Volumes/CruiserRAID/Users/tfr23/perl/clinstudyweb/webdocs/pod/../../lib/ClinStudy/ORM/Channel.pm</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#accessors">ACCESSORS</a></li>
+        <ul>
+
+                <li><a href="#id">id</a></li>
+                <li><a href="#label_id">label_id</a></li>
+                <li><a href="#sample_id">sample_id</a></li>
+                <li><a href="#assay_id">assay_id</a></li>
+        </ul>
+
+        <li><a href="#relations">RELATIONS</a></li>
+        <ul>
+
+                <li><a href="#label_id">label_id</a></li>
+                <li><a href="#sample_id">sample_id</a></li>
+                <li><a href="#assay_id">assay_id</a></li>
+        </ul>
+
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::ORM::Channel</p>
+<hr />
+<h1><a name="accessors">ACCESSORS</a></h1>
+<h2><a name="id">id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+</pre>
+<h2><a name="label_id">label_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
+<h2><a name="sample_id">sample_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
+<h2><a name="assay_id">assay_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
+<hr />
+<h1><a name="relations">RELATIONS</a></h1>
+<h2><a name="label_id">label_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="sample_id">sample_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Sample.html">the
+ClinStudy::ORM::Sample manpage</a></p>
+<h2><a name="assay_id">assay_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Assay.html">the
+ClinStudy::ORM::Assay manpage</a></p>
+</body>
+</html>

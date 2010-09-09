@@ -71,7 +71,7 @@ sub load_element {
         push @RV_CACHE, [ $element, $parent_ref ];
     }
     else {
-        $obj = $self->SUPER::load_element( $element, $parent_ref );
+        $obj = $self->next::method( $element, $parent_ref );
     }
 
     return $obj;
@@ -81,11 +81,11 @@ sub load {
 
     my ( $self, @args ) = @_;
 
-    my $rc = $self->SUPER::load( @args );
+    my $rc = $self->next::method( @args );
 
     # Take care of the cached RelatedVocab objects.
     foreach my $item ( @RV_CACHE ) {
-        $self->SUPER::load_element( @$item );
+        $self->next::method( @$item );
     }
 
     return $rc;
@@ -117,11 +117,24 @@ A module designed to handle validation of XML according to the
 ClinStudyAdmin schema, and loading of such XML into a database. This is a
 database-specific subclass of the ClinStudy::XML::Import class.
 
+=head1 METHODS
+
+=head2 load_element
+
+Special-cased method handling TestPossibleValue and RelatedVocab
+elements appropriately. See L<ClinStudy::XML::Import> for
+documentation on the generic load_element method.
+
+=head2 load
+
+Special-cased method handling RelatedVocab
+elements appropriately. See L<ClinStudy::XML::Import> for
+documentation on the generic load method.
+
 =head1 SEE ALSO
 
-ClinStudy::XML::Import
-ClinStudy::XML::Schema
-ClinStudy::XML::Infopath
+L<ClinStudy::XML::Import>,
+L<ClinStudy::XML::Schema>
 
 =head1 COPYRIGHT AND LICENSE
 

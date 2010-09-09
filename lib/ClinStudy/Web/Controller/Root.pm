@@ -38,7 +38,9 @@ ClinStudy::Web::Controller::Root - Root Controller for ClinStudy::Web
 
 =head1 DESCRIPTION
 
-[enter your description here]
+This is the main Root controller for the ClinStudy::Web catalyst
+application. It handles the initial start-up pages, authentication and
+404 failure modes.
 
 =head1 METHODS
 
@@ -46,15 +48,20 @@ ClinStudy::Web::Controller::Root - Root Controller for ClinStudy::Web
 
 =head2 index
 
+The start page for the entire application. Most of the heavy work is
+handled by the TT2 templates.
+
 =cut
 
 sub index : Private {
 
     my ( $self, $c ) = @_;
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
 }
 
 =head2 default
+
+Page not found:
 
 Then, in answer to my query,
 Through the net I loved so dearly,
@@ -67,7 +74,7 @@ sub default : Private {
 
     my ( $self, $c ) = @_;
     $c->response->status('404');
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
         label => 'Not found',
@@ -77,14 +84,16 @@ sub default : Private {
 
 =head2 access_denied
 
-Where the dispossessed and disenfranchised ultimately end up.
+The default action called if the user attempts to navigate somewhere
+they're not permitted. Where the dispossessed and disenfranchised
+ultimately end up; here there is wailing and gnashing of teeth.
 
 =cut
 
 sub access_denied : Private {
 
     my ( $self, $c, $action ) = @_;
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
         label => 'Access denied',
@@ -103,7 +112,7 @@ sub login : Global FormConfig {
 
     my ( $self, $c ) = @_;
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/login',
         label => 'Login',
@@ -207,7 +216,7 @@ sub logout : Global {
     $c->res->redirect( $c->uri_for('/') );
 }
 
-sub set_my_breadcrumbs : Private {
+sub _set_my_breadcrumbs : Private {
 
     my ( $self, $c ) = @_;
 
@@ -220,6 +229,12 @@ sub set_my_breadcrumbs : Private {
 
     return \@crumbs;
 }
+
+=head2 update_database_timestamp
+
+A method called upon login to update the date_accessed column in the users table.
+
+=cut
 
 sub update_database_timestamp {
 

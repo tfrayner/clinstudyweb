@@ -290,19 +290,17 @@ A module initially intended to facilitate conversion of tab-delimited
 data to ClinStudyML. See the C<ClinStudy::XML::Builder> superclass for
 more information.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 Note that XML Builder attributes are handled by the
 C<ClinStudy::XML::Builder> superclass.
 
-=over 2
-
-=item tabfile
+=head2 tabfile
 
 The tab-delimited file to read. Only one file can be read per TabReader
 object instantiation.
 
-=item drug_parent
+=head2 drug_parent
 
 Optional. Drugs and TestResults can in principle be attached to either Visit or
 Hospitalisation, and Drugs can further be attached to
@@ -310,19 +308,13 @@ PriorTreatment. Only one parent class can be supported per run of this
 script. By default we attempt to attach everything to Visit, but this
 attribute allows the user to redirect the attachment if necessary.
 
-=back
+=head1 METHODS
 
-=head2 METHODS
-
-=over 2
-
-=item read
+=head2 read
 
 Read the tab-delimited file and create the appropriate XML nodes in memory.
 
-=back
-
-=head2 SEE ALSO
+=head1 SEE ALSO
 
 L<ClinStudy::XML::Builder>
 

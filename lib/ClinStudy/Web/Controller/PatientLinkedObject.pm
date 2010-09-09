@@ -65,7 +65,7 @@ sub _derive_nametag {
     return $name;
 }
 
-sub set_my_updated_message {
+sub _set_my_updated_message {
 
     my ( $self, $c, $object, $object_id ) = @_;
 
@@ -78,7 +78,7 @@ sub set_my_updated_message {
                   $object->patient_id->trial_id,);
 }
 
-sub set_my_updating_message {
+sub _set_my_updating_message {
 
     my ( $self, $c, $object, $object_id ) = @_;
 
@@ -91,7 +91,7 @@ sub set_my_updating_message {
                   $object->patient_id->trial_id,);
 }
 
-sub set_my_deleted_message {
+sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;
 

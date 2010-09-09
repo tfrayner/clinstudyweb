@@ -232,7 +232,7 @@ sub validate {
 
     my ( $self ) = @_;
 
-    return $self->SUPER::validate( $self->document() );
+    return $self->next::method( $self->document() );
 }
 
 sub dump {
@@ -276,45 +276,39 @@ framework required by a ClinStudyML document. It also provides some
 utility methods that can be used to add elements and attributes to the
 nascent document.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 Note that XML schema attributes are handled by the
 C<ClinStudy::XML::Schema> superclass.
 
-=over 2
-
-=item root
+=head2 root
 
 The root node of the XML document. This defaults to a ClinStudyML node
 with the appropriate attributes.
 
-=item document
+=head2 document
 
 The top-level XML::LibXML::Document object. Typically you won't need to access this.
 
-=item is_strict
+=head2 is_strict
 
 A flag indicating whether to validate the output XML against the
 schema or not (default is true).
 
-=back
+=head1 METHODS
 
-=head2 METHODS
-
-=over 2
-
-=item dump( $fh )
+=head2 dump( $fh )
 
 Inserts the root node into a new XML::LibXML::Document object,
 validates it against the schema, and writes the XML out to the
 supplied filehandle (or STDOUT as default).
 
-=item validate
+=head2 validate
 
 Validates the in-memory XML document against the schema, returns true
 if valid.
 
-=item update_or_create_element( $class, $attrhash, $parent )
+=head2 update_or_create_element( $class, $attrhash, $parent )
 
 Method which takes a ClinStudyML element name (e.g. 'Patient'), a
 hashref of attributes, and a parent XML::LibXML::Element, and either
@@ -323,14 +317,12 @@ this method handles the creation of grouping elements
 (e.g. 'Patients') for you, so you can effectively ignore them. If the
 parent element is omitted the root element will be used as a default.
 
-=item find_or_create_group( $class, $parent )
+=head2 find_or_create_group( $class, $parent )
 
 This method takes the desired element class name for a grouping
 element (e.g. 'Patients') and a parent XML::LibXML::Element object and
 either returns the appropriate element associated with $parent, or
 creates a new element and attaches it to $parent for you.
-
-=back
 
 =head1 COPYRIGHT AND LICENSE
 
