@@ -59,7 +59,7 @@ sub index :Path :Args(0) {
         'me.id not in (SELECT test_result_id FROM test_aggregation)'
     )->search_related('test_id', {}, { group_by => 'name, id' });
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
 
     $c->stash->{tests} = \@tests;
 }
@@ -82,7 +82,7 @@ sub list_by_test : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     $c->stash->{objects}  = \@test_results;
     $c->stash->{template} = 'testresult/list.tt2';
 }
@@ -166,7 +166,7 @@ sub list_by_patient : Local {
         $c->stash->{tests} = \@tests;
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, undef, $patient_id);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, undef, $patient_id);
 }
 
 =head2 add_to_visit
@@ -336,7 +336,7 @@ sub edit : Local {
             $c->recalculate_aggregates( $container, $study_type );
         }
 
-        $self->set_my_updated_message( $c, $result, $result_id );
+        $self->_set_my_updated_message( $c, $result, $result_id );
 
         $c->res->redirect( $c->uri_for('view', $result->id) );
         $c->detach();
@@ -344,7 +344,7 @@ sub edit : Local {
     else {
 
         # First time through, or invalid form.
-        $self->set_my_updating_message( $c, $result, $result_id );
+        $self->_set_my_updating_message( $c, $result, $result_id );
         
         $form->model->default_values( $result );
 
@@ -355,7 +355,7 @@ sub edit : Local {
         }
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c, $result);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $result);
 
     $c->stash->{object} = $result;
 }
@@ -391,7 +391,7 @@ sub delete : Local {
             $c->detach();
         }
             
-        $self->set_my_deleted_message( $c, $result );
+        $self->_set_my_deleted_message( $c, $result );
 
         $c->delete_database_object( $result );
 
@@ -455,11 +455,11 @@ sub _add_value_fields {
     return;
 }
 
-sub set_my_breadcrumbs {
+sub _set_my_breadcrumbs {
 
     my ( $self, $c, $object, $patient_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::set_my_breadcrumbs( $c, $object );
+    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object );
 
     my @fixed = grep { $_->{path} !~ '/testresult/list' } @$breadcrumbs;
 

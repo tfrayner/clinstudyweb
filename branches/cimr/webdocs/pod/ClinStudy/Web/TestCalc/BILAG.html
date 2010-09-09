@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::Web::TestCalc::BILAG - Calculation of SLE BILAG
+scores</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#calculate">calculate</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#author">AUTHOR</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::Web::TestCalc::BILAG - Calculation of SLE BILAG
+scores</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::Web::TestCalc::BILAG;
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>This TestCalc module is designed to convert the per-system
+scores defined by BILAG version 3 (Hay E.M. et al. (1993) The BILAG
+index: a reliable and valid instrument for measuring clinical
+disease activity in systemic lupus erythematosus. Q J Med.
+86(7):447-58. PubMed ID: 8210301) into a numerical index (named
+"BILAGPt" in the database). The index is calculated by converting
+the A-E BILAG scores into integers and then calculating the
+sum:</p>
+<pre>
+ A  =&gt;  9
+ B  =&gt;  3
+ C  =&gt;  1
+ D  =&gt;  0
+ E  =&gt;  0
+</pre>
+<p>These scores were found to agree entirely with those calculated
+by the BLIPS software (Isenberg D.A., Gordon C.; BILAG Group.
+British Isles Lupus Assessment Group (2000) From BILAG to
+BLIPS--disease activity assessment in lupus past, present and
+future. Lupus 9(9):651-4. PubMed ID: 11199918). Discussion of this
+index calculation system may be found in Cresswell L. et al. (2009;
+Numerical scoring for the Classic BILAG index. Rheumatology
+(Oxford) 48(12):1548-52 PubMed ID: 19779027). However, the original
+source reference has proven elusive.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="calculate">calculate</a></h2>
+<p>The method used by the <code>ClinStudy::Web::TestCalc</code>
+superclass to create a new aggregate test result in the database,
+or update the old result. See the superclass documentation for more
+details.</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><a href="/trunk/webdocs/pod/ClinStudy/Web/TestCalc.html">the
+ClinStudy::Web::TestCalc manpage</a></p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Tim F. Rayner &lt;<a href=
+"mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+</body>
+</html>

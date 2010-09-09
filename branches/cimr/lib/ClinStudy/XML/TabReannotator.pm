@@ -29,14 +29,28 @@ use Moose;
 extends 'ClinStudy::XML::TabReader';
 
 use Text::CSV_XS;
+use Carp;
 
 has 'database'    => ( is       => 'ro',
                        isa      => 'ClinStudy::ORM',
                        required => 1 );
 
+has 'external_id_map' => ( is       => 'rw',
+                           isa      => 'HashRef',
+                           required => 1,
+                           default  => sub { {} }, );
+
 has '_csv_writer' => ( is       => 'rw',
                        isa      => 'Text::CSV_XS',
                        required => 0 );
+
+# Dummy attribute since we're actually not using a schema here. FIXME
+# consider reorganising this class inheritance - at the moment we're a
+# child of XML::Schema but that now seems inappropriate.
+has 'schema' => ( is       => 'rw',
+                  isa      => 'Int',
+                  required => 1,
+                  default  => 1 );
 
 sub BUILD {
 
@@ -49,7 +63,40 @@ sub BUILD {
 
     $self->_csv_writer( $writer );
 
+    # Note that this is identical to that in the Loader class. Shared config?
+    $self->external_id_map({
+        ControlledVocab => 'value',
+        Test            => 'name',
+        Sample          => 'name',
+    });
+
     return;
+}
+
+sub read {
+
+    # Quick wrapper method which just reads in the header row and
+    # spits it out in the appropriate column order
+    # (i.e. alphabetically sorted).
+    my $self = shift;
+
+    my $tabfile = $self->tabfile();
+    open (my $fh, '<', $tabfile)
+        or die("Unable to open file $tabfile:$!\n");
+    
+    my $header = $self->_csv_writer->getline($fh);
+    unless ( $header && ref $header eq 'ARRAY' ) {
+        die("Unable to read file header line.\n");
+    }
+
+    # Strip whitespace on either side of each column header.
+    $header = [ map { s/ \A \s* (.*?) \s* \z /$1/ixms; $_ } @$header ];
+
+    $self->_csv_writer->print( \*STDOUT, [sort @$header] );
+
+    seek( $fh, 0, 0 ) or die("Unable to rewind input file: $!");
+
+    $self->next::method(@_);
 }
                     
 sub _process_columns {
@@ -84,10 +131,27 @@ sub _process_columns {
             }
 	}
 
+        my $source = $self->database->resultset( $class )->result_source();
         if ( scalar grep { defined $_ } values %attrhash ) {
 
             # First query the database to find our object.
-            my %query_attrs = %{ \%attrhash };
+            my %query_attrs;
+
+            ATTR:
+            while ( my ( $colname, $value ) = each %{ \%attrhash } ) {
+
+                next ATTR unless ( defined $value && $value ne q{} );
+
+                # Extra work needed on *_id columns, e.g. cell_type_id.
+                my $relname = $colname . '_id';
+                if ( $source->has_relationship( $relname ) ) {
+                    $query_attrs{ $relname } =
+                        $self->_map_relname_to_obj( $relname, $value, $class, $source );
+                }
+                else {
+                    $query_attrs{ $colname } = $value;
+                }
+            }
             if ( $db_parent ) {
 
                 # Add in parentage details to the query where
@@ -99,17 +163,33 @@ sub _process_columns {
                 $query_attrs{ $parent_attr } = $db_parent->id();
             }
 
-            # FIXME again, extra work needed on *_id columns, e.g. cell_type_id.
+            my @results = $self->database->resultset( $class )->search( \%query_attrs );
 
-            my $db_object = $self->database->resultset( $class )->find( \%query_attrs );
-
-            next CLASS unless $db_object;
+            my $db_object;
+            if ( @results == 1 ) {
+                $db_object = $results[0];
+            }
+            elsif ( @results == 0 ) {
+                next CLASS;
+            }
+            else {
+                require Data::Dumper;
+                die("\nError: $class object too poorly constrained to be uniquely identified: \n\n" .
+                        Data::Dumper->Dump( [ \%query_attrs ], [ qw(query) ] ));
+            }
 
             # We need to fill in $colhash here where the values eq q{}.
             my %db_col = $db_object->get_columns;
+            COLUMN:
             while ( my ( $colname, $value ) = each %db_col ) {
 
-                # FIXME some extra work needed on *_id columns, e.g. nominal_timepoint_id!
+                next COLUMN unless defined $value;
+
+                # Some extra work needed on *_id columns, e.g. nominal_timepoint_id!
+                if ( $source->has_relationship( $colname ) ) {
+                    ( $colname, $value ) = $self->_map_dbcol_to_value( $colname, $value, $class, $source );
+                    next COLUMN unless $colname;
+                }
 
                 my $colattr = "$class|$colname";
                 if ( exists $colhash->{ $colattr } && $colhash->{ $colattr } eq q{} ) {
@@ -128,6 +208,59 @@ sub _process_columns {
     $self->_csv_writer()->print( \*STDOUT, \@values );
 
     return;
+}
+
+sub _map_relname_to_obj {
+
+    my ( $self, $relname, $value, $class, $source ) = @_;
+
+    my $nextclass = $source->related_class( $relname );
+    $nextclass =~ s/^.*:://;
+    my $valcol = $self->external_id_map()->{ $nextclass };
+    return unless $valcol;
+
+    my $nextrs = $self->database()->resultset( $nextclass )
+        or croak("Error: no ResultSet found for class $nextclass");
+    my @nextrows = $nextrs->search({ $valcol => $value });
+
+    if ( @nextrows == 0 ) {
+        croak("Error: $class relationship $relname returns no"
+                  . " $valcol => $value object from database.");
+    }
+    elsif ( @nextrows > 1 ) {
+        warn("WARNING: Insufficient constraint to uniquely"
+                 . " identify $class $relname object ($valcol => $value)\n");
+        $value = { 'in' => [ map { $_->id } @nextrows ] };
+    }
+    else {
+        $value = $nextrows[0]->id();
+    }
+
+    return $value;
+}
+
+sub _map_dbcol_to_value {
+
+    my ( $self, $colname, $value, $class, $source ) = @_;
+
+    my $nextclass = $source->related_class( $colname );
+    $nextclass =~ s/^.*:://;
+
+    # We only care about the things in the id_map; skip all other
+    # relationships. This behaviour differs slightly from the
+    # XML::Export class.
+    my $valcol = $self->external_id_map()->{ $nextclass };
+    return unless $valcol;
+
+    my $nextrs = $self->database()->resultset( $nextclass )
+        or croak("Error: no ResultSet found for class $nextclass");
+    my $nextrow = $nextrs->find( $value )
+        or croak("Error: $class relationship $colname returns no value from database.");
+
+    $value = $nextrow->get_column($valcol);
+    $colname =~ s/_id \z//xms;
+
+    return( $colname, $value );
 }
 
 1;
@@ -154,28 +287,28 @@ ClinStudy::XML::TabReannotator - Reannotation of tab-delimited files.
 A module used to connect to a ClinStudy database and pull out missing
 attributes to fill in a partially completed tab-delimited data file.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 Note that XML TabReader attributes are handled by the
 C<ClinStudy::XML::TabReader> superclass.
 
-=over 2
-
-=item database
+=head2 database
 
 The ClinStudy::ORM object to use for database queries.
 
-=back
+=head1 METHODS
 
-=head2 METHODS
+=head2 read
 
-=over 2
+Quick wrapper method which just reads in the header row and spits it
+out in the appropriate column order (i.e. alphabetically sorted). The
+method then hands off control to the read method in the superclass
+(see L<ClinStudy::XML::TabReader>).
 
-=back
+=head1 SEE ALSO
 
-=head2 SEE ALSO
-
-L<ClinStudy::XML::Builder>
+L<ClinStudy::XML::Builder>,
+L<ClinStudy::XML::TabReader>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>
+/Volumes/CruiserRAID/Users/tfr23/perl/clinstudyweb/webdocs/pod/../../lib/ClinStudy/ORM/Diagnosis.pm</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#accessors">ACCESSORS</a></li>
+        <ul>
+
+                <li><a href="#id">id</a></li>
+                <li><a href="#patient_id">patient_id</a></li>
+                <li><a href="#condition_name_id">condition_name_id</a></li>
+                <li><a href="#confidence_id">confidence_id</a></li>
+                <li><a href="#date">date</a></li>
+                <li><a href="#previous_episodes">previous_episodes</a></li>
+                <li><a href="#previous_course_id">previous_course_id</a></li>
+                <li><a href="#previous_duration_months">previous_duration_months</a></li>
+                <li><a href="#disease_staging_id">disease_staging_id</a></li>
+                <li><a href="#disease_extent_id">disease_extent_id</a></li>
+        </ul>
+
+        <li><a href="#relations">RELATIONS</a></li>
+        <ul>
+
+                <li><a href="#patient_id">patient_id</a></li>
+                <li><a href="#condition_name_id">condition_name_id</a></li>
+                <li><a href="#confidence_id">confidence_id</a></li>
+                <li><a href="#previous_course_id">previous_course_id</a></li>
+                <li><a href="#disease_staging_id">disease_staging_id</a></li>
+                <li><a href="#disease_extent_id">disease_extent_id</a></li>
+        </ul>
+
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::ORM::Diagnosis</p>
+<hr />
+<h1><a name="accessors">ACCESSORS</a></h1>
+<h2><a name="id">id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+</pre>
+<h2><a name="patient_id">patient_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
+<h2><a name="condition_name_id">condition_name_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
+<h2><a name="confidence_id">confidence_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name="date">date</a></h2>
+<pre>
+  data_type: 'date'
+  is_nullable: 1
+</pre>
+<h2><a name="previous_episodes">previous_episodes</a></h2>
+<pre>
+  data_type: 'tinyint'
+  is_nullable: 1
+</pre>
+<h2><a name="previous_course_id">previous_course_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name=
+"previous_duration_months">previous_duration_months</a></h2>
+<pre>
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+</pre>
+<h2><a name="disease_staging_id">disease_staging_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name="disease_extent_id">disease_extent_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<hr />
+<h1><a name="relations">RELATIONS</a></h1>
+<h2><a name="patient_id">patient_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Patient.html">the
+ClinStudy::ORM::Patient manpage</a></p>
+<h2><a name="condition_name_id">condition_name_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="confidence_id">confidence_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="previous_course_id">previous_course_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="disease_staging_id">disease_staging_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="disease_extent_id">disease_extent_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+</body>
+</html>

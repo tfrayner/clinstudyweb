@@ -137,3 +137,64 @@ sub query {
 }
 
 1;
+
+=head1 NAME
+
+ClinStudy::WebQuery - CIMR::QueryObj class accessing ClinStudyWeb via REST API (DEPRECATED).
+
+=head1 SYNOPSIS
+
+ use ClinStudy::WebQuery;
+ my $qobj = ClinStudy::WebQuery->new(
+     uri        => 'http://localhost:3000',
+     username   => 'my_username',
+     password   => 'my_password',
+     id_field   => 'assay_barcode',
+ );
+ my @values = $qobj->query( $id, @queryterms );
+
+=head1 DESCRIPTION
+
+This is a simple module which has largely been superceded by the
+ClinStudyWeb R package. It is a subclass of CIMR::QueryObj and is
+intended to support the same usage. See L<CIMR::QueryObj> for more
+information on the API. Note that the C<queryterms> attribute is set
+for you by this subclass.
+
+=head1 ATTRIBUTES
+
+=head2 uri
+
+The main ClinStudyWeb uri to use for REST access.
+
+=head2 username
+
+Your ClinStudyWeb username.
+
+=head2 password
+
+Your ClinStudyWeb password.
+
+=head1 METHODS
+
+=head2 query
+
+See L<CIMR::QueryObj> for a description of the query API.
+
+=head1 SEE ALSO
+
+L<CIMR::QueryObj>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

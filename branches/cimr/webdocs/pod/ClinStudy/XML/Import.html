@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::XML::Import - Class for validating and loading
+XML into a database</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#database">database</a></li>
+                <li><a href="#load_order">load_order</a></li>
+                <li><a href="#external_id_map">external_id_map</a></li>
+                <li><a href="#external_value_map">external_value_map</a></li>
+                <li><a href="#is_strict">is_strict</a></li>
+                <li><a href="#onload_callback">onload_callback</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#load">load</a></li>
+                <li><a href="#process_attr">process_attr</a></li>
+                <li><a href="#load_element">load_element</a></li>
+                <li><a href="#load_object">load_object</a></li>
+        </ul>
+
+        <li><a href="#export">EXPORT</a></li>
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::Import - Class for validating and loading XML
+into a database</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::Import;
+ my $loader = ClinStudy::XML::Import-&gt;new(
+     schema_file =&gt; 'my_schema.xsd',
+     database    =&gt; $db_schema,
+ );
+ $loader-&gt;validate($doc) or die("Incorrect XML");
+ $loader-&gt;load($doc);
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>This class is a fairly generic validator/loader module for XML
+which conforms to a given schema. The implementation of the class
+assumes that the XML schema follows the target database schema very
+closely. Mechanisms are provided to allow the automatic population
+of database fields which are referenced, but incompletely
+specified, in the XML schema.</p>
+<p>The assumptions made about the concordance between XML and
+database schemata are as follows:</p>
+<p>1. Database table names are converted from underscore_delim to
+CamelCase (this is the way DBIx::Class generally names its
+ResultSet classes). Database tables are represented as elements,
+and column values are represented as attributes of those elements.
+Attribute names are generally the same as their respective column
+names, with a couple of exceptions (see below).</p>
+<p>2. XML fields can link to entire database rows in tables not
+covered by the XML schema. This allows a local implementation to
+add constraints which aren't deemed necessary as part of the XML
+schema. For example, values in the XML document may reference terms
+in a controlled value table in the database. In such cases, the
+database column name is assumed to be in the form "target_id" and
+the XML field would simply be "target". See the <a href=
+"#external_id_map">the external_id_map manpage</a> and <a href=
+"#external_value_map">the external_value_map manpage</a> class
+attributes for information on how to configure a subclass
+appropriately.</p>
+<p>3. References within the XML document are supported; it is
+assumed that the XML field will be of the form "target_ref" and the
+respective database column will be "target_id". See <a href=
+"#external_id_map">the external_id_map manpage</a> for notes on how
+to specify which database field identifies a given referent row.
+Note that the load order may need to be specified to ensure that
+the referent objects are available for retrieval. See the <a href=
+"#load_order">the load_order manpage</a> attribute for a way to do
+this.</p>
+<p>4. At the moment, the primary key fields are all assumed to be
+"id". This will probably be fixed in a future version (FIXME).</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Schema.html">the
+ClinStudy::XML::Schema manpage</a> for attributes defined in this
+superclass.</p>
+<h2><a name="database">database</a></h2>
+<p>A DBIx::Class::Schema object to be used for loading data into a
+database. Not required for validation against the XML schema.</p>
+<h2><a name="load_order">load_order</a></h2>
+<p>An optional array ref indicating the load order for top-level
+group elements in the XML document. If this is used, then all
+elements to be loaded must be included. This is not needed if there
+is only one top-level group, or if object load order does not
+matter.</p>
+<h2><a name="external_id_map">external_id_map</a></h2>
+<p>An optional hash ref indicating how fields in the XML document
+which refer to whole database table rows should resolve those rows
+in an SQL query. The hash keys are DBIx::Class::ResultSet names,
+and the values are the (single) fields which confer identity on the
+rows in that resultset. Defaults to an empty hash ref.</p>
+<h2><a name="external_value_map">external_value_map</a></h2>
+<p>An optional hash ref providing extra values which may be
+required for instantiation of database records external to the XML
+Schema. The nested hash structure is illustrated below:</p>
+<pre>
+ ExternalResultSet =&gt; {
+     external_column =&gt; {
+         ParentResultSet =&gt; {
+             relationship_column =&gt; 'desired value',
+         }
+     }
+ }
+</pre>
+<p>For example:</p>
+<pre>
+ ControlledVocab =&gt; {
+     category =&gt; {
+         PriorTreatment =&gt; {
+             type_id              =&gt; 'TreatmentType',
+             nominal_timepoint_id =&gt; 'PriorTimepoint' ,
+             duration_unit_id     =&gt; 'TimeUnit',
+         }
+     },
+ },
+</pre>
+<p>The levels of this hash ref could of course be arranged in
+several other ways; this order was chosen since it was the most
+succinct arrangement for the original use case. Defaults to an
+empty hash ref.</p>
+<h2><a name="is_strict">is_strict</a></h2>
+<p>Boolean flag indicating whether or not to validate the imported
+XML document against the XML Schema (default=True).</p>
+<h2><a name="onload_callback">onload_callback</a></h2>
+<p>(Experts only) An optional coderef which is called just prior to
+loading the element into the database. The coderef is passed the
+class name for the database object to be created, and a hashref of
+attributes. This callback allows you to edit that hashref and
+return it back to the import module just before the object is
+inserted into the database.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Schema.html">the
+ClinStudy::XML::Schema manpage</a> for methods defined in this
+superclass.</p>
+<h2><a name="load">load</a></h2>
+<p>Load the supplied XML::LibXML::Document object into a
+ClinStudy::ORM database instance. This process includes a
+validation step, so any prior calls to <code>validate</code> can be
+omitted.</p>
+<h2><a name="process_attr">process_attr</a></h2>
+<p>For a given XML::LibXML::Attr object and a passed-in hashref,
+update the hashref with a value suitable for database loading.</p>
+<h2><a name="load_element">load_element</a></h2>
+<p>Core database loading method; can be overridden in subclasses
+for special cases. Takes an XML::LibXML::Element object and a
+hashref <code>{ parent_relationship_id =</code> database_parent_id
+}&gt; and returns a new object which has been loaded into the
+database.</p>
+<h2><a name="load_object">load_object</a></h2>
+<p>Method used to load all objects into the database. Takes a
+hashref of values to update_or_create and a DBIx::Class::ResultSet.
+This method is split out like this so we can easily subclass and
+override the loading behaviour, e.g. for ControlledVocab.</p>
+<hr />
+<h1><a name="export">EXPORT</a></h1>
+<p>None by default.</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ClinStudy::XML::Schema ClinStudy::XML::Loader XML::LibXML
+XML::Schema</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

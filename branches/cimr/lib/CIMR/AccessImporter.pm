@@ -131,3 +131,77 @@ sub import_data {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+CIMR::AccessImporter - Perl extension for converting MS Access databases to SQLite.
+
+=head1 SYNOPSIS
+
+ use CIMR::AccessImporter qw(import_schema import_data);
+ 
+ import_schema( $access_file, $sqlite_file );
+ import_data( $access_file, $sqlite_file );
+
+=head1 DESCRIPTION
+
+This is a simple Perl Exporter module which provides functions that
+can be called to take data from a MS Access database file (*.mdb) and
+import it into a SQLite database. The output database can either be
+created from scratch or updated with data from the input database.
+
+Behind the scenes this module relies heavily on the MDB Tools package,
+available from http://mdbtools.sourceforge.net/ for Unix-like OSen.
+
+=head1 EXPORT
+
+None by default. Optional exports include:
+
+=head2 import_schema( $access, $sqlite )
+
+Imports just the database schema from an Access database file into a
+SQLite file. The latter will be created automatically if not already
+present.
+
+=head2 import_data( $access, $sqlite )
+
+Imports just the data from the Access file into a SQLite file. The
+latter must have been preloaded with a compatible database schema (see
+C<import_schema>, above).
+
+=head2 clean_sql( $sql )
+
+Takes a string containing SQL statements, and performs a handful of
+operations to clean it up:
+
+=over 2
+
+=item Strip leading and trailing underscores from everything.
+
+=item Reduce long sets of underscores to just one.
+
+=item Quote words which begin with a digit.
+
+=item Remove any non-ASCII characters (Unicode not yet supported).
+
+=back
+
+=head1 SEE ALSO
+
+http://mdbtools.sourceforge.net/
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

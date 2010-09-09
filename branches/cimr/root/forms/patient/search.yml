@@ -8,6 +8,13 @@ elements:
     nested_name: simple
     elements:
 
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
       - type: Text
         name: trial_id
         label: Study ID
@@ -121,6 +128,10 @@ elements:
           - [ F, Female ]
         constraints:
           - AutoSet
+      
+      - type: Text
+        name: notes
+        label: Other Notes
       
   - type: Fieldset
     legend: Batch Query
