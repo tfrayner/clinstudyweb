@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>
+/Volumes/CruiserRAID/Users/tfr23/perl/clinstudyweb/webdocs/pod/../../lib/ClinStudy/ORM/Patient.pm</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#accessors">ACCESSORS</a></li>
+        <ul>
+
+                <li><a href="#id">id</a></li>
+                <li><a href="#year_of_birth">year_of_birth</a></li>
+                <li><a href="#sex">sex</a></li>
+                <li><a href="#trial_id">trial_id</a></li>
+                <li><a href="#ethnicity_id">ethnicity_id</a></li>
+                <li><a href="#home_centre_id">home_centre_id</a></li>
+                <li><a href="#entry_date">entry_date</a></li>
+                <li><a href="#notes">notes</a></li>
+        </ul>
+
+        <li><a href="#relations">RELATIONS</a></li>
+        <ul>
+
+                <li><a href="#adverse_events">adverse_events</a></li>
+                <li><a href="#clinical_features">clinical_features</a></li>
+                <li><a href="#comorbidities">comorbidities</a></li>
+                <li><a href="#diagnoses">diagnoses</a></li>
+                <li><a href="#disease_events">disease_events</a></li>
+                <li><a href="#hospitalisations">hospitalisations</a></li>
+                <li><a href="#ethnicity_id">ethnicity_id</a></li>
+                <li><a href="#home_centre_id">home_centre_id</a></li>
+                <li><a href="#patient_prior_groups">patient_prior_groups</a></li>
+                <li><a href="#prior_observations">prior_observations</a></li>
+                <li><a href="#prior_treatments">prior_treatments</a></li>
+                <li><a href="#risk_factors">risk_factors</a></li>
+                <li><a href="#studies">studies</a></li>
+                <li><a href="#system_involvements">system_involvements</a></li>
+                <li><a href="#visits">visits</a></li>
+        </ul>
+
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::ORM::Patient</p>
+<hr />
+<h1><a name="accessors">ACCESSORS</a></h1>
+<h2><a name="id">id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+</pre>
+<h2><a name="year_of_birth">year_of_birth</a></h2>
+<pre>
+  data_type: 'year'
+  is_nullable: 1
+</pre>
+<h2><a name="sex">sex</a></h2>
+<pre>
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+</pre>
+<h2><a name="trial_id">trial_id</a></h2>
+<pre>
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 15
+</pre>
+<h2><a name="ethnicity_id">ethnicity_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name="home_centre_id">home_centre_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name="entry_date">entry_date</a></h2>
+<pre>
+  data_type: 'date'
+  is_nullable: 0
+</pre>
+<h2><a name="notes">notes</a></h2>
+<pre>
+  data_type: 'text'
+  is_nullable: 1
+</pre>
+<hr />
+<h1><a name="relations">RELATIONS</a></h1>
+<h2><a name="adverse_events">adverse_events</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/AdverseEvent.html">the
+ClinStudy::ORM::AdverseEvent manpage</a></p>
+<h2><a name="clinical_features">clinical_features</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ClinicalFeature.html">the
+ClinStudy::ORM::ClinicalFeature manpage</a></p>
+<h2><a name="comorbidities">comorbidities</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Comorbidity.html">the
+ClinStudy::ORM::Comorbidity manpage</a></p>
+<h2><a name="diagnoses">diagnoses</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Diagnosis.html">the
+ClinStudy::ORM::Diagnosis manpage</a></p>
+<h2><a name="disease_events">disease_events</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/DiseaseEvent.html">the
+ClinStudy::ORM::DiseaseEvent manpage</a></p>
+<h2><a name="hospitalisations">hospitalisations</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Hospitalisation.html">the
+ClinStudy::ORM::Hospitalisation manpage</a></p>
+<h2><a name="ethnicity_id">ethnicity_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="home_centre_id">home_centre_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="patient_prior_groups">patient_prior_groups</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/PatientPriorGroup.html">the
+ClinStudy::ORM::PatientPriorGroup manpage</a></p>
+<h2><a name="prior_observations">prior_observations</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/PriorObservation.html">the
+ClinStudy::ORM::PriorObservation manpage</a></p>
+<h2><a name="prior_treatments">prior_treatments</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/PriorTreatment.html">the
+ClinStudy::ORM::PriorTreatment manpage</a></p>
+<h2><a name="risk_factors">risk_factors</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/RiskFactor.html">the
+ClinStudy::ORM::RiskFactor manpage</a></p>
+<h2><a name="studies">studies</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Study.html">the
+ClinStudy::ORM::Study manpage</a></p>
+<h2><a name="system_involvements">system_involvements</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/SystemInvolvement.html">the
+ClinStudy::ORM::SystemInvolvement manpage</a></p>
+<h2><a name="visits">visits</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
+ClinStudy::ORM::Visit manpage</a></p>
+</body>
+</html>

@@ -476,7 +476,7 @@ information (user, session ID).
 
 =head1 SEE ALSO
 
-L<ClinStudy::Web::Controller::Root>, L<Catalyst>
+L<ClinStudy::Web::Controller::Root>, http://www.catalystframework.org/
 
 =head1 AUTHOR
 
