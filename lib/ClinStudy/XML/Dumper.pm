@@ -52,7 +52,7 @@ sub BUILD {
     });
 
     # Note that this is identical to that in the Loader class. Shared config?
-    $self->external_value_map({
+    $self->external_id_map({
         ControlledVocab => 'value',
         Test            => 'name',
         Sample          => 'name',
@@ -270,7 +270,7 @@ sub row_to_element {
     else {
 
         # General case.
-        $element = $self->SUPER::row_to_element( $row, $topclass, $parent_class );
+        $element = $self->next::method( $row, $topclass, $parent_class );
     }
 
     return $element;
@@ -295,12 +295,12 @@ sub rel_to_attr {
     if ( $nextclass eq 'Sample' ) {
 
         # Generate the attribute as a reference within the XML doc.
-        $self->SUPER::rel_to_attr( $row, $col, $element, 1 );
+        $self->next::method( $row, $col, $element, 1 );
     }
     else {
 
         # Regular attribute.
-        $self->SUPER::rel_to_attr( $row, $col, $element );
+        $self->next::method( $row, $col, $element );
     }
 
     return;
@@ -330,9 +330,25 @@ ClinStudy::XML::Dumper - XML export from ClinStudyDB databases.
 
 Module handling the generation of XML from a ClinStudyDB database.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
 See L<ClinStudy::XML::Export> for attributes defined in this superclass.
+
+=head1 METHODS
+
+=head2 xml
+
+Method which, when passed a list of either Patient or AssayBatch
+database objects, will generate the appropriate in-memory XML::LibXML
+tree structure appropriate for output with C<toString()>.
+
+=head2 row_to_element
+
+Special-cased method which handles TestResult, VisitEmergentGroup and
+PatientPriorGroup appropriately. See L<ClinStudy::XML::Export> for
+documentation on the superclass method.
+
+=head2 rel_to_attr
 
 =head1 SEE ALSO
 

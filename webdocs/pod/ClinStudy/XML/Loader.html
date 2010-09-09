@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::XML::Loader - Perl extension for handling
+ClinStudy XML</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#is_constrained">is_constrained</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#load_element">load_element</a></li>
+                <li><a href="#load_object">load_object</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::Loader - Perl extension for handling ClinStudy
+XML</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::Loader;
+ my $loader = ClinStudy::XML::Loader-&gt;new(
+     schema_file =&gt; 'my_schema.xsd',
+     database    =&gt; $db_schema,
+ );
+ $loader-&gt;validate($doc) or die("Incorrect XML");
+ $loader-&gt;load($doc);
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>A module designed to handle validation of XML according to the
+ClinStudy schema, and loading of such XML into a database. This is
+a database-specific subclass of the ClinStudy::XML::Import
+class.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<h2><a name="is_constrained">is_constrained</a></h2>
+<p>Simple boolean flag indicating whether to raise an exception if
+the semantic framework previously loaded into the database is
+violated by the loaded document (default=True). Typically this is
+only set to False in certain specialised operations, for example
+merging ClinStudyML documents using a temporary SQLite
+database.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="load_element">load_element</a></h2>
+<p>Special handling for TestResult, EmergentGroup and PriorGroup
+(i.e. many-to-many relationships). See <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Import.html">the
+ClinStudy::XML::Import manpage</a> for more information.</p>
+<h2><a name="load_object">load_object</a></h2>
+<p>Special-cased method which, if
+<code>$self-</code>is_constrained&gt;, refuses to load new
+ControlledVocab terms into the database. Otherwise hands off to the
+superclass method documented in <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Import.html">the
+ClinStudy::XML::Import manpage</a>.</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><a href="/trunk/webdocs/pod/ClinStudy/XML/Import.html">the
+ClinStudy::XML::Import manpage</a>, <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Schema.html">the
+ClinStudy::XML::Schema manpage</a></p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

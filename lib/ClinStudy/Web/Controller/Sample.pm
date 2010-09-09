@@ -46,12 +46,18 @@ sub BUILD {
     return;
 }
 
+=head2 view
+
+Generate a view of the specified sample.
+
+=cut
+
 sub view : Local {
 
     my ( $self, $c, $object_id ) = @_;
 
     # Populate the majority of the context stash.
-    $self->SUPER::view( $c, $object_id );
+    $self->next::method( $c, $object_id );
 
     my $object = $c->model('DB::Sample')->find({ id => $object_id });
 
@@ -59,6 +65,13 @@ sub view : Local {
 
     $c->stash->{assays} = \@assays;
 }
+
+=head2 assay_report
+
+Generate a page listing the available assay reports; typically
+displayed as a grid listing assay platforms and study types.
+
+=cut
 
 sub assay_report : Local {
 
@@ -68,7 +81,7 @@ sub assay_report : Local {
                         ->search({category => 'StudyType'});
     my @platforms   = $c->model('DB::ControlledVocab')
                         ->search({category => 'PlatformType'});
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/sample/assay_report',
         label => 'Assay reports',
@@ -76,6 +89,13 @@ sub assay_report : Local {
     $c->stash->{platforms}   = \@platforms;
     $c->stash->{study_types} = \@study_types;
 }
+
+=head2 assay_report_by_study_type
+
+For a given study type and platform, generate a page indicating which
+samples have been assayed and which are still waiting to be processed.
+
+=cut
 
 sub assay_report_by_study_type : Local {
 
@@ -212,7 +232,7 @@ sub assay_report_by_study_type : Local {
 
     }
     
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/sample/assay_report',
         label => 'Assay reports',
@@ -224,6 +244,17 @@ sub assay_report_by_study_type : Local {
     $c->stash->{celltypes} = [ sort values %celltype_map ];
     $c->stash->{visitdata} = \@data;
 }
+
+=head2 switch_channels
+
+Admin-only operation; this action allows the user to quickly switch
+the assays corresponding to a dye-swap pair in the database. This is
+admin only because it doesn't check that the assay pair is actually a
+dye-swap; it just makes sure there is only one pair of assays attached
+to the sample. Given how rarely this is a problem it may be worth
+removing this option in future.
+
+=cut
 
 sub switch_channels : Local {
 

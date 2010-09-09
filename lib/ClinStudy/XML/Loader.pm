@@ -291,7 +291,7 @@ sub load_element {
         }, $sub_rs);
     }
     else {
-        $obj = $self->SUPER::load_element( $element, $parent_ref );
+        $obj = $self->next::method( $element, $parent_ref );
     }
 
     return $obj;
@@ -320,7 +320,7 @@ sub load_object {
         }
     }
     else {
-        $obj = $self->SUPER::load_object( $hashref, $rs );
+        $obj = $self->next::method( $hashref, $rs );
     }
 
     return $obj;
@@ -350,11 +350,9 @@ A module designed to handle validation of XML according to the
 ClinStudy schema, and loading of such XML into a database. This is a
 database-specific subclass of the ClinStudy::XML::Import class.
 
-=head2 ATTRIBUTES
+=head1 ATTRIBUTES
 
-=over 2
-
-=item is_constrained
+=head2 is_constrained
 
 Simple boolean flag indicating whether to raise an exception if the
 semantic framework previously loaded into the database is violated by
@@ -362,7 +360,19 @@ the loaded document (default=True). Typically this is only set to
 False in certain specialised operations, for example merging
 ClinStudyML documents using a temporary SQLite database.
 
-=back
+=head1 METHODS
+
+=head2 load_element
+
+Special handling for TestResult, EmergentGroup and PriorGroup
+(i.e. many-to-many relationships). See L<ClinStudy::XML::Import> for
+more information.
+
+=head2 load_object
+
+Special-cased method which, if C<$self->is_constrained>, refuses to
+load new ControlledVocab terms into the database. Otherwise hands off
+to the superclass method documented in L<ClinStudy::XML::Import>.
 
 =head1 SEE ALSO
 

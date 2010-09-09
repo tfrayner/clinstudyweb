@@ -79,17 +79,17 @@ sub add_to_hospitalisation : Local {
 # PRIVATE METHODS #
 ###################
 
-sub set_my_breadcrumbs {
+sub _set_my_breadcrumbs {
 
     # Since Hospitalisation is itself a PatientLinkedObject we now have more
     # levels of navigation to take care of.
     my ( $self, $c, $object, $container_id ) = @_;
 
-    my $breadcrumbs = $self->SUPER::set_my_breadcrumbs( $c, $object, $container_id );
+    my $breadcrumbs = $self->SUPER::_set_my_breadcrumbs( $c, $object, $container_id );
 
     my @fixed = grep { $_->{path} !~ '/hospitalisation/list' } @$breadcrumbs;
 
-    my ( $container_class, $container_field, $container_namespace ) = $self->my_container_class();
+    my ( $container_class, $container_field, $container_namespace ) = $self->_my_container_class();
 
     if ( $container_field && $object ) {
         my $hospitalisation = $object->$container_field;

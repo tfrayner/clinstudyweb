@@ -12,6 +12,13 @@ elements:
     nested_name: simple
     elements:
 
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
       - type: Text
         name: name
         label: T no.
@@ -47,6 +54,10 @@ elements:
             category: MaterialType
           label_column: value
     
+      - type: Text
+        name: notes
+        label: Other Notes
+      
   - type: Fieldset
     legend: Batch Query
 

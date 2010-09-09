@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::Web::Controller::User - Catalyst
+Controller</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#index">index</a></li>
+                <li><a href="#list">list</a></li>
+                <li><a href="#add">add</a></li>
+                <li><a href="#edit">edit</a></li>
+                <li><a href="#modify">modify</a></li>
+                <li><a href="#reset">reset</a></li>
+                <li><a href="#delete">delete</a></li>
+                <li><a href="#create_password">create_password</a></li>
+                <li><a href="#reset_user_password">reset_user_password</a></li>
+                <li><a href="#load_form">load_form</a></li>
+        </ul>
+
+        <li><a href="#author">AUTHOR</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::Web::Controller::User - Catalyst Controller</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Catalyst Controller.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="index">index</a></h2>
+<p>Dummy action; currently unused.</p>
+<h2><a name="list">list</a></h2>
+<p>Generate a listing of local database users.</p>
+<h2><a name="add">add</a></h2>
+<p>Add a new user account to the database; this is the public
+action used by new users to set up their initial account prior to
+being assigned a user group. This method does not grant any
+intrinsic access privileges.</p>
+<h2><a name="edit">edit</a></h2>
+<p>Edit a user in the database. This is an admin-level
+operation.</p>
+<h2><a name="modify">modify</a></h2>
+<p>Edit one's own user profile in the database. This action is open
+to any database user.</p>
+<h2><a name="reset">reset</a></h2>
+<p>Reset one's own password in the database. Alternatively,
+admin-level users may reset the passwords for any user.</p>
+<h2><a name="delete">delete</a></h2>
+<p>Remove a user from the database. Note that the audit history
+tables link to the user tables, but there are no database
+constraints preventing user removal.</p>
+<h2><a name="create_password">create_password</a></h2>
+<p>Creates a random alphanumeric password of the specified length
+(default is eight characters).</p>
+<h2><a name="reset_user_password">reset_user_password</a></h2>
+<p>Sets the password of the specified user to the given string. If
+no string is supplied, <code>create_password</code> is used to
+generate one.</p>
+<h2><a name="load_form">load_form</a></h2>
+<p>Load the HTML::FormFu form config. We use this in preference to
+the FormConfig attributes because it allows us to automatically
+insert our DBIC object onto each form's stash.</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Tim F. Rayner &lt;<a href=
+"mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+</body>
+</html>

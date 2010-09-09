@@ -12,6 +12,13 @@ elements:
     nested_name: simple
     elements:
 
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
       - type: Text
         name: identifier
         label: Identifier
@@ -41,6 +48,10 @@ elements:
           resultset: AssayBatch
           label_column: name
 
+      - type: Text
+        name: notes
+        label: Other Notes
+      
   - type: Fieldset
     legend: Batch Query
 

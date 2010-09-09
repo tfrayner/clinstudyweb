@@ -57,7 +57,7 @@ sub index :Path :Args(0) {
 
     my @severities = $c->model('DB::ControlledVocab')
                        ->search({category => 'AdverseSeverity'});
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     $c->stash->{severities} = \@severities;
 }
 
@@ -84,7 +84,7 @@ sub list_by_severity : Local {
         $c->detach();
     }
 
-    $c->stash->{breadcrumbs} = $self->set_my_breadcrumbs($c);    
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
     $c->stash->{objects}   = \@adverses;
     $c->stash->{list_type} = 'Severity';
     $c->stash->{template}  = 'adverseevent/list.tt2';

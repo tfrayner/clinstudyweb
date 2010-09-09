@@ -145,3 +145,65 @@ __PACKAGE__->meta->make_immutable();
 no Moose;
 
 1;
+
+__END__
+
+=head1 NAME
+
+ClinStudy::Web::TestCalc::BILAG - Calculation of SLE BILAG scores
+
+=head1 SYNOPSIS
+
+ use ClinStudy::Web::TestCalc::BILAG;
+
+=head1 DESCRIPTION
+
+This TestCalc module is designed to convert the per-system scores
+defined by BILAG version 3 (Hay E.M. et al. (1993) The BILAG index: a
+reliable and valid instrument for measuring clinical disease activity
+in systemic lupus erythematosus. Q J Med. 86(7):447-58. PubMed ID:
+8210301) into a numerical index (named "BILAGPt" in the database). The
+index is calculated by converting the A-E BILAG scores into integers
+and then calculating the sum:
+
+ A  =>  9
+ B  =>  3
+ C  =>  1
+ D  =>  0
+ E  =>  0
+
+These scores were found to agree entirely with those calculated by the
+BLIPS software (Isenberg D.A., Gordon C.; BILAG Group. British Isles
+Lupus Assessment Group (2000) From BILAG to BLIPS--disease activity
+assessment in lupus past, present and
+future. Lupus 9(9):651-4. PubMed ID: 11199918). Discussion of
+this index calculation system may be found in Cresswell L. et
+al. (2009; Numerical scoring for the Classic BILAG index. Rheumatology
+(Oxford) 48(12):1548-52 PubMed ID: 19779027). However, the
+original source reference has proven elusive.
+
+=head1 METHODS
+
+=head2 calculate
+
+The method used by the C<ClinStudy::Web::TestCalc> superclass to
+create a new aggregate test result in the database, or update the old
+result. See the superclass documentation for more details.
+
+=head1 SEE ALSO
+
+L<ClinStudy::Web::TestCalc>
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut
+

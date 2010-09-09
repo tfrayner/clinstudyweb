@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::Web - Catalyst UI for the ClinStudyWeb
+database</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#check_model_relationships">check_model_relationships</a></li>
+                <li><a href="#date_today">date_today</a></li>
+                <li><a href="#recalculate_aggregates">recalculate_aggregates</a></li>
+                <li><a href="#form_values_to_database">form_values_to_database</a></li>
+                <li><a href="#update_database_object">update_database_object</a></li>
+                <li><a href="#delete_database_object">delete_database_object</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#author">AUTHOR</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::Web - Catalyst UI for the ClinStudyWeb database</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ ./script/clinstudyweb_server.pl
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>This is the main Catalyst class which drives the ClinStudyWeb
+user interface.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name=
+"check_model_relationships">check_model_relationships</a></h2>
+<p>Method which checks that there are no objects linked to a given
+DBIx::Class::Row object via non-cascading_delete relationships.
+Returns undef if everything is okay, otherwise a string listing the
+relationships suitable for displaying to the user.</p>
+<h2><a name="date_today">date_today</a></h2>
+<p>Returns current date and time in MySQL-friendly format, i.e.
+"YYYY-MM-DD HH:MM:SS".</p>
+<h2><a name=
+"recalculate_aggregates">recalculate_aggregates</a></h2>
+<p>Given a database container object (Visit or Hospitalisation) and
+a study type CV, runs any applicable test calculator modules
+according to the configuration file.</p>
+<h2><a name=
+"form_values_to_database">form_values_to_database</a></h2>
+<p>Wrapper method for <code>$form-</code>model-&gt;update($obj)&gt;
+which tests that the database is not read-only and sets the
+appropriate journal update information (user, session ID).</p>
+<h2><a name=
+"update_database_object">update_database_object</a></h2>
+<p>Wrapper method for <code>$obj-</code>update()&gt; which tests
+that the database is not read-only and sets the appropriate journal
+update information (user, session ID).</p>
+<h2><a name=
+"delete_database_object">delete_database_object</a></h2>
+<p>Wrapper method for <code>$obj-</code>delete()&gt; which tests
+that the database is not read-only and sets the appropriate journal
+update information (user, session ID).</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><a href=
+"/trunk/webdocs/pod/ClinStudy/Web/Controller/Root.html">the
+ClinStudy::Web::Controller::Root manpage</a>, <a href=
+"http://www.catalystframework.org/">http://www.catalystframework.org/</a></p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Tim F. Rayner &lt;<a href=
+"mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+</body>
+</html>
