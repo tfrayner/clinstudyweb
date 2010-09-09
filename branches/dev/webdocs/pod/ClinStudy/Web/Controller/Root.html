@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::Web::Controller::Root - Root Controller for
+ClinStudy::Web</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#index">index</a></li>
+                <li><a href="#default">default</a></li>
+                <li><a href="#access_denied">access_denied</a></li>
+                <li><a href="#login">login</a></li>
+                <li><a href="#raven_login">raven_login</a></li>
+                <li><a href="#logout">logout</a></li>
+                <li><a href="#update_database_timestamp">update_database_timestamp</a></li>
+                <li><a href="#end">end</a></li>
+        </ul>
+
+        <li><a href="#author">AUTHOR</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::Web::Controller::Root - Root Controller for
+ClinStudy::Web</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>This is the main Root controller for the ClinStudy::Web catalyst
+application. It handles the initial start-up pages, authentication
+and 404 failure modes.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="index">index</a></h2>
+<p>The start page for the entire application. Most of the heavy
+work is handled by the TT2 templates.</p>
+<h2><a name="default">default</a></h2>
+<p>Page not found:</p>
+<p>Then, in answer to my query, Through the net I loved so dearly,
+Came its answer, dark and dreary: Quoth the server, "404".</p>
+<h2><a name="access_denied">access_denied</a></h2>
+<p>The default action called if the user attempts to navigate
+somewhere they're not permitted. Where the dispossessed and
+disenfranchised ultimately end up; here there is wailing and
+gnashing of teeth.</p>
+<h2><a name="login">login</a></h2>
+<p>The primary login action, tied into the users/roles table system
+in the underlying ClinStudy database.</p>
+<h2><a name="raven_login">raven_login</a></h2>
+<p>A completely separate login action that (in theory) uses the
+University of Cambridge Raven authentication system. Note that
+roles are still managed locally by the underlying ClinStudy
+instance, so a user logging in using Raven still needs an account
+in ClinStudy.</p>
+<h2><a name="logout">logout</a></h2>
+<p>Standard logout action.</p>
+<h2><a name=
+"update_database_timestamp">update_database_timestamp</a></h2>
+<p>A method called upon login to update the date_accessed column in
+the users table.</p>
+<h2><a name="end">end</a></h2>
+<p>Attempt to render a view, if needed.</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Tim F. Rayner &lt;<a href=
+"mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+</body>
+</html>
