@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::XML::Dumper - XML export from ClinStudyDB
+databases.</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#xml">xml</a></li>
+                <li><a href="#row_to_element">row_to_element</a></li>
+                <li><a href="#rel_to_attr">rel_to_attr</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::Dumper - XML export from ClinStudyDB
+databases.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::Dumper;
+ my $dump = ClinStudy::XML::Dumper-&gt;new(
+     database =&gt; $db_schema,
+ );
+</pre>
+<pre>
+ # Export a list of DBIx::Class::Row objects.
+ my $doc  = $dump-&gt;xml(\@patients);
+ 
+ # Export all data.
+ my $full = $dump-&gt;xml_all();
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Module handling the generation of XML from a ClinStudyDB
+database.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Export.html">the
+ClinStudy::XML::Export manpage</a> for attributes defined in this
+superclass.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="xml">xml</a></h2>
+<p>Method which, when passed a list of either Patient or AssayBatch
+database objects, will generate the appropriate in-memory
+XML::LibXML tree structure appropriate for output with
+<code>toString()</code>.</p>
+<h2><a name="row_to_element">row_to_element</a></h2>
+<p>Special-cased method which handles TestResult,
+VisitEmergentGroup and PatientPriorGroup appropriately. See
+<a href="/trunk/webdocs/pod/ClinStudy/XML/Export.html">the
+ClinStudy::XML::Export manpage</a> for documentation on the
+superclass method.</p>
+<h2><a name="rel_to_attr">rel_to_attr</a></h2>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ClinStudy::XML::Export, ClinStudy::XML::Schema,
+ClinStudy::XML::Loader</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

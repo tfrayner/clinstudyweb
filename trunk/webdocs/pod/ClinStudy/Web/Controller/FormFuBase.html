@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::Web::Controller::FormFuBase - Catalyst Controller
+base class</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#my_model_class">my_model_class</a></li>
+                <li><a href="#my_sort_field">my_sort_field</a></li>
+                <li><a href="#my_container_namespace">my_container_namespace</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#index">index</a></li>
+                <li><a href="#list">list</a></li>
+                <li><a href="#view">view</a></li>
+                <li><a href="#search">search</a></li>
+                <li><a href="#edit">edit</a></li>
+                <li><a href="#delete">delete</a></li>
+                <li><a href="#list_by_container">list_by_container</a></li>
+                <li><a href="#add_to_container">add_to_container</a></li>
+                <li><a href="#load_form">load_form</a></li>
+                <li><a href="#camel_case">camel_case</a></li>
+                <li><a href="#process_search_form">process_search_form</a></li>
+        </ul>
+
+        <li><a href="#author">AUTHOR</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::Web::Controller::FormFuBase - Catalyst Controller
+base class</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Catalyst Controller. This is a base class used in many of the
+model-specific controller classes.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<h2><a name="my_model_class">my_model_class</a></h2>
+<p>Set in the BUILD method of subclasses, this links the controller
+to its ClinStudy::ORM class (e.g. the Assay controller would have
+"DB::Assay" here).</p>
+<h2><a name="my_sort_field">my_sort_field</a></h2>
+<p>Optional; set in the BUILD method of subclasses. Indicates which
+database table column to use to sort listings. Note that this is
+often overriden by the sort fields specified in the TT2
+templates.</p>
+<h2><a name=
+"my_container_namespace">my_container_namespace</a></h2>
+<p>For objects which belong to other, container objects (e.g.
+Sample belongs to Visit). Set in the BUILD method of
+subclasses.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="index">index</a></h2>
+<p>Dummy method; currently unused (this may change though).</p>
+<h2><a name="list">list</a></h2>
+<p>Generate a listing of the desired objects.</p>
+<h2><a name="view">view</a></h2>
+<p>Display more detail on an individual object.</p>
+<h2><a name="search">search</a></h2>
+<p>Search for objects in the database.</p>
+<h2><a name="edit">edit</a></h2>
+<p>Edit the object. Requires editor privileges.</p>
+<h2><a name="delete">delete</a></h2>
+<p>Remove the object from the database. Requires editor privileges.
+Note that this will only be allowed if there are no non-cascading
+dependent relationships for this object.</p>
+<h2><a name="list_by_container">list_by_container</a></h2>
+<p>Given the numerical database ID for a given container, list
+objects attached to that container. The nature of the container
+class is maintained in the various controller subclasses (via
+my_container_namespace).</p>
+<h2><a name="add_to_container">add_to_container</a></h2>
+<p>Given the numerical database ID for a given container, add a new
+object and attach it to that container.</p>
+<h2><a name="load_form">load_form</a></h2>
+<p>Load the HTML::FormFu form config. We use this in preference to
+the FormConfig attributes because it allows us to automatically
+insert our DBIC object onto each form's stash.</p>
+<h2><a name="camel_case">camel_case</a></h2>
+<p>Convert an underscore_delimited table namespace into a CamelCase
+class name. Taken from DBIx::Class::Schema::Loader::Base for
+(hopefully) a measure of consistency.</p>
+<h2><a name="process_search_form">process_search_form</a></h2>
+<p>Method which takes a completed FormFu form (from the search
+pages) and extracts a pair of hashrefs suitable for passing to
+DBIx::Class::ResultSet-&gt;search. This method is designed to be
+subclassed for table-specific behaviour. In principle this method
+should handle nested queries by creating appropriate join
+conditions; in practice this currently only works for relatively
+simple cases.</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Tim F. Rayner &lt;<a href=
+"mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+</body>
+</html>

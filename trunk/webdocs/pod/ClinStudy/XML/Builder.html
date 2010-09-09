@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
+<title>ClinStudy::XML::Builder - Utility module for creating
+ClinStudyML documents.</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href=
+"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#root">root</a></li>
+                <li><a href="#document">document</a></li>
+                <li><a href="#is_strict">is_strict</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#dump___fh__">dump( $fh )</a></li>
+                <li><a href="#validate">validate</a></li>
+                <li><a href="#update_or_create_element___class___attrhash___parent__">update_or_create_element( $class, $attrhash, $parent )</a></li>
+                <li><a href="#find_or_create_group___class___parent__">find_or_create_group( $class, $parent )</a></li>
+        </ul>
+
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::Builder - Utility module for creating
+ClinStudyML documents.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::Builder;
+ my $builder = ClinStudy::XML::Builder-&gt;new();
+ my $root    = $builder-&gt;root();
+</pre>
+<pre>
+ # Add nodes as appropriate.
+</pre>
+<pre>
+ # Output the finished document.
+ $builder-&gt;dump( \*STDOUT );
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>A (hopefully) convenient module that can be used to provide the
+common framework required by a ClinStudyML document. It also
+provides some utility methods that can be used to add elements and
+attributes to the nascent document.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<p>Note that XML schema attributes are handled by the
+<code>ClinStudy::XML::Schema</code> superclass.</p>
+<h2><a name="root">root</a></h2>
+<p>The root node of the XML document. This defaults to a
+ClinStudyML node with the appropriate attributes.</p>
+<h2><a name="document">document</a></h2>
+<p>The top-level XML::LibXML::Document object. Typically you won't
+need to access this.</p>
+<h2><a name="is_strict">is_strict</a></h2>
+<p>A flag indicating whether to validate the output XML against the
+schema or not (default is true).</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="dump___fh__">dump( $fh )</a></h2>
+<p>Inserts the root node into a new XML::LibXML::Document object,
+validates it against the schema, and writes the XML out to the
+supplied filehandle (or STDOUT as default).</p>
+<h2><a name="validate">validate</a></h2>
+<p>Validates the in-memory XML document against the schema, returns
+true if valid.</p>
+<h2><a name=
+"update_or_create_element___class___attrhash___parent__">update_or_create_element(
+$class, $attrhash, $parent )</a></h2>
+<p>Method which takes a ClinStudyML element name (e.g. 'Patient'),
+a hashref of attributes, and a parent XML::LibXML::Element, and
+either creates a new child element or returns a pre-existing one.
+Note that this method handles the creation of grouping elements
+(e.g. 'Patients') for you, so you can effectively ignore them. If
+the parent element is omitted the root element will be used as a
+default.</p>
+<h2><a name=
+"find_or_create_group___class___parent__">find_or_create_group(
+$class, $parent )</a></h2>
+<p>This method takes the desired element class name for a grouping
+element (e.g. 'Patients') and a parent XML::LibXML::Element object
+and either returns the appropriate element associated with $parent,
+or creates a new element and attaches it to $parent for you.</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>
