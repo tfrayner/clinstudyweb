@@ -56,8 +56,7 @@ sub constrain_value {
         my @others = ref $self->others ? @{ $self->others }
                        : $self->others;
 
-        # Assumes we're running under Catalyst.
-        my $param = $stash->{context}->request->parameters;
+        my $param = $self->form->input;
         %others = map { $_ => $param->{$_} }
                   grep { defined $param->{$_} && $param->{$_} ne q{} } @others;
 
