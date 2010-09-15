@@ -8,20 +8,14 @@ fixture_sets:
         - id
         - trial_id
         - entry_date
-        - firstname
-        - surname
       -
         - 1
         - 100
         - 2008-01-01
-        - John
-        - Smith
       -
         - 2
         - 101
         - 2009-10-23
-        - Jolly
-        - Roger
     - Visit:
       -
         - patient_id
@@ -74,8 +68,8 @@ fixture_sets:
         - CV2
       -
         - 3
-        - DrugType
-        - immunosuppressant
+        - DrugName
+        - Prednisolone
         - CV3
       -
         - 4
@@ -91,7 +85,7 @@ fixture_sets:
         - 6
         - PatientGroup
         - CD6
-        - CV1
+        - CV6
       -
         - 7
         - PriorGroup
@@ -116,12 +110,10 @@ fixture_sets:
     - Drug:
       -
         - id
-        - name
-        - type_id
+        - name_id
         - locale_id
       -
         - 1
-        - Prednisolone
         - 3
         - 4
     - EmergentGroup:
@@ -145,3 +137,4 @@ fixture_sets:
         - 1
         - 7
         - V1
+
