@@ -394,6 +394,49 @@ sub add_to_container {
     $c->forward('edit', [undef, $container_id]);
 }
 
+=head2 audit_history
+
+Display the change history for this object.
+
+=cut
+
+sub audit_history : Local {
+
+    my ( $self, $c, $object_id ) = @_;
+
+    my $class = $self->my_model_class()
+        or confess("Error: CIMR database class not set in FormFuBase controller " . ref $self);
+    my $error_redirect = $self->_my_error_redirect($c)
+        or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
+
+    # FIXME some of this is rather special-cased.
+    $class =~ s/^DB:://;
+    my $audit_class = $class . 'AuditHistory';
+
+    my $obj = $c->model( $class )->find( $object_id );
+    unless ( $obj ) {
+        $c->flash->{error} = "No $class found for database ID $object_id.";
+        $c->res->redirect( $c->uri_for( $error_redirect ) );
+        $c->detach();        
+    }
+
+    # DOUBLE FIXME _journal_schema is a "private" method in
+    # DBIx::Class::Schema::Journal, needs removing
+    my $rs = $c->model( $class )->result_source->schema->_journal_schema->resultset( $audit_class );
+
+    my @changes = $rs->find( $object_id );
+    if ( scalar @changes > 1 ) {
+        $c->flash->{error} = "No audit history found! Please report this to your database administrator.";
+        $c->res->redirect( $c->uri_for( $error_redirect ) );
+        $c->detach();        
+    }
+
+    $c->stash->{objects} = \@changes;
+    $c->stash->{object_class} = $class;
+    $c->stash->{object_id}    = $object_id;
+    $c->stash->{template} = "audithistory/list.tt2";
+}
+
 ###################
 # PRIVATE METHODS #
 ###################
