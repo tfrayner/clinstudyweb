@@ -27,6 +27,11 @@
     [% END %] 
 
     [% content %]
+
+    [% IF c.action.name == 'view' %]
+      <h6><a href="[% c.uri_for('audit_history', object.id ) %]">Audit History</a></h6>
+    [% END %]
+
   </div>
 </div>
 
