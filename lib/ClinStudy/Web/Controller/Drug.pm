@@ -340,6 +340,13 @@ sub _set_my_breadcrumbs {
     return \@fixed;
 }
 
+sub _my_error_redirect {
+
+    my ( $self, $c ) = @_;
+
+    return '/'; # Probably the best we can do, given that our object probably doesn't exist.
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>
