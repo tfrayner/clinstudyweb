@@ -19,8 +19,9 @@
       [% FOREACH audit = objects.sort('audit_history_id') %]
         <tr> 
           <td> [% audit.change.changeset.set_date | html %] </td>
-          <td> [% IF audit.change.changeset.user_id.defined -%]
-                 [%- audit.change.changeset.user_id.username | html -%]
+          <td> [% SET user = audit.change.changeset.user_id %]
+               [% IF user.defined -%]
+                 [%- usermap.$user | html -%] &nbsp;
                [%- ELSE -%]
                  N/A
                [%- END %]</td>

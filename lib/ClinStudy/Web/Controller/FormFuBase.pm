@@ -424,16 +424,21 @@ sub audit_history : Local {
     # DBIx::Class::Schema::Journal, needs removing
     my $rs = $c->model( $class )->result_source->schema->_journal_schema->resultset( $audit_class );
 
-    my @changes = $rs->find( $object_id );
-    if ( scalar @changes > 1 ) {
+    my @changes = $rs->search({ id => $object_id });
+    if ( scalar @changes < 1 ) {
         $c->flash->{error} = "No audit history found! Please report this to your database administrator.";
         $c->res->redirect( $c->uri_for( $error_redirect ) );
         $c->detach();        
     }
 
+    # This is a kludge until I can figure out why DBIx::Class::Journal
+    # is misbehaving wrt its changeset.user relationship. FIXME.
+    my %usermap = map { $_->id => $_->username } $c->model('DB::User')->all();
+
     $c->stash->{objects} = \@changes;
     $c->stash->{object_class} = $class;
     $c->stash->{object_id}    = $object_id;
+    $c->stash->{usermap}      = \%usermap;
     $c->stash->{template} = "audithistory/list.tt2";
 }
 
