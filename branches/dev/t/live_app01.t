@@ -23,9 +23,11 @@
 use strict;
 use warnings;
 use Test::More;
+use File::Copy;
 
 BEGIN {
     $ENV{CLINSTUDY_WEB_CONFIG} = 'clinstudy_web_testing.yml';
+    copy('t/pristine_testing.db', 't/testing.db');
 };
 
 use ok "Test::WWW::Mechanize::Catalyst" => "ClinStudy::Web";
@@ -41,6 +43,7 @@ my $ua2 = Test::WWW::Mechanize::Catalyst->new;
 $_->get_ok("http://localhost/", "Check access to base URL") for $ua1, $ua2;
 
 my $main_title = "Welcome to ClinStudyWeb";
+my $denied     = "You are not allowed to access this resource";
 
 # Use title_is() to check the contents of the <title>...</title> tags
 $_->title_is($main_title, "Check for main page title") for $ua1, $ua2;
@@ -50,15 +53,15 @@ $_->content_contains("Not logged in.",
     "Check we are NOT logged in") for $ua1, $ua2;
 
 $_->get_ok("http://localhost/patient/list", "Check patient list URL") for $ua1, $ua2;
-$_->content_contains("You are not allowed to access this resource",
+$_->content_contains($denied,
                      "Check restricted access to patient list") for $ua1, $ua2;
 
 # Log in as each user
 # Specify username and password on the URL
 $ua1->get_ok("http://localhost/login?login=1&username=testuser&password=testuser",
              "Login 'testuser'");
-$ua2->get_ok("http://localhost/login?login=1&username=testeditor&password=testeditor",
-             "Login 'testeditor'");
+$ua2->get_ok("http://localhost/login?login=1&username=admin&password=admin",
+             "Login 'admin'");
 
 $_->title_is($main_title, "Check for redirect to main page") for $ua1, $ua2;
 
@@ -78,62 +81,35 @@ $_->content_contains("Not logged in.",
 # Log back in
 $ua1->get_ok("http://localhost/login?username=testuser&password=testuser&login=1",
              "Login 'testuser'");
-$ua2->get_ok("http://localhost/login?username=testeditor&password=testeditor&login=1",
-             "Login 'testeditor'");
+$ua2->get_ok("http://localhost/login?username=admin&password=admin&login=1",
+             "Login 'admin'");
 
 # Confirm we can access the patients listing.
 $_->get_ok("http://localhost/patient/list", "Check patient list URL now logged in") for $ua1, $ua2;
 $_->title_is("Patients", "Check for patient list title") for $ua1, $ua2;
+$_->content_contains("List patients by study type", "Confirm we now have access") for $ua1, $ua2;
 
-die;
-
-$ua1->get_ok("http://localhost/books/list", "'test01' book list");
-$ua1->get_ok("http://localhost/login", "Login Page");
-$ua1->get_ok("http://localhost/books/list", "'test01' book list");
-
-$_->content_contains("Book List", "Check for book list title") for $ua1, $ua2;
+$_->get_ok("http://localhost/", "Navigate back to main page") for $ua1, $ua2;
+$_->title_is($main_title, "Check for main page title") for $ua1, $ua2;
 
 # Make sure the appropriate logout buttons are displayed
-$_->content_contains("/logout\">User Logout</a>",
-    "Both users should have a 'User Logout'") for $ua1, $ua2;
-$ua1->content_contains("/books/form_create\">Admin Create</a>",
-    "'test01' should have a create link");
-$ua2->content_lacks("/books/form_create\">Admin Create</a>",
-    "'test02' should NOT have a create link");
+$_->content_contains(qq{/logout\">Log out</a>},
+    "Both users should have a 'Log out' link") for $ua1, $ua2;
 
-$ua1->get_ok("http://localhost/books/list", "View book list as 'test01'");
+# Check on user listing access.
+$ua1->content_lacks("List local database users", "testuser has no link to user listing");
+$ua2->content_contains("List local database users", "admin has link to user listing");
+$_->get_ok("http://localhost/user/list", "Navigate to user list") for $ua1, $ua2;
 
-# User 'test01' should be able to create a book with the "formless create" URL
-$ua1->get_ok("http://localhost/books/url_create/TestTitle/2/4",
-    "'test01' formless create");
-$ua1->title_is("Book Created", "Book created title");
-$ua1->content_contains("Added book 'TestTitle'", "Check title added OK");
-$ua1->content_contains("by 'Stevens'", "Check author added OK");
-$ua1->content_contains("with a rating of 2.", "Check rating added");
+# Regular user should be denied.
+$ua1->title_is("Access denied", "Check for denial of access");
+$ua1->content_contains($denied, "Check that regular users have no access to user list");
 
-# Try a regular expression to combine the previous 3 checks & account for whitespace
-$ua1->content_like(qr/Added book 'TestTitle'\s+by 'Stevens'\s+with a rating of 2./, "Regex check");
+# Admin user gets access.
+$ua2->title_is("User List", "Check for admin-level user list title");
+$ua2->content_contains("Last access date", "Check for admin-level content");
 
-# Make sure the new book shows in the list
-$ua1->get_ok("http://localhost/books/list", "'test01' book list");
-$ua1->title_is("Book List", "Check logged in and at book list");
-$ua1->content_contains("Book List", "Book List page test");
-$ua1->content_contains("TestTitle", "Look for 'TestTitle'");
-
-# Make sure the new book can be deleted
-# Get all the Delete links on the list page
-my @delLinks = $ua1->find_all_links(text => 'Delete');
-
-# Use the final link to delete the last book
-$ua1->get_ok($delLinks[$#delLinks]->url, 'Delete last book');
-
-# Check that delete worked
-$ua1->content_contains("Book List", "Book List page test");
-$ua1->content_contains("Book deleted", "Book was deleted");
-
-# User 'test02' should not be able to add a book
-$ua2->get_ok("http://localhost/books/url_create/TestTitle2/2/5", "'test02' add");
-$ua2->content_contains("Unauthorized!", "Check 'test02' cannot add");
+# FIXME could try adding/editing content.
 
 done_testing;
 
