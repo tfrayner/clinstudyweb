@@ -106,6 +106,19 @@ sub _process_columns {
 
     # Note that $parent, the XML element, is completely unused here.
 
+    $self->_recurse_element_tree( $colhash, $tree, $db_parent, $level );
+
+    # Finally write out a serialised updated $colhash to STDOUT.
+    my @values = map { $colhash->{$_} } sort keys %$colhash;
+    $self->_csv_writer()->print( \*STDOUT, \@values );
+
+    return;
+}
+
+sub _recurse_element_tree {
+
+    my ( $self, $colhash, $tree, $db_parent, $level ) = @_;
+    
     # Try to do this safely.
     unless ( $level++ < 100 ) {
 	die("Error: deep recursion in column processing.");
@@ -199,13 +212,9 @@ sub _process_columns {
             
             # Recursion time. This works because the $colhash hashref
             # is being passed down the recursion tree as-is.
-            $self->_process_columns( $colhash, $tree->{ $class }, undef, $level, $db_object );
+            $self->_recurse_element_tree( $colhash, $tree->{ $class }, $db_object, $level );
         }
     }
-
-    # Finally write out a serialised updated $colhash to STDOUT.
-    my @values = map { $colhash->{$_} } sort keys %$colhash;
-    $self->_csv_writer()->print( \*STDOUT, \@values );
 
     return;
 }
