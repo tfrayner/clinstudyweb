@@ -302,6 +302,7 @@ sub dump_assay_entity {
         batch_date => $batch->date(),
         identifier => $assay->identifier(),
         operator   => $batch->operator(),
+        platform   => $batch->platform_id()->value(),
     );
 
     my @channels = $assay->channels();
