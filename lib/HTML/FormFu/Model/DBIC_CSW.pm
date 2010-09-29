@@ -1,4 +1,4 @@
-package HTML::FormFu::Model::DBIC;
+package HTML::FormFu::Model::DBIC_CSW;
 use strict;
 use warnings;
 use base 'HTML::FormFu::Model';
@@ -881,9 +881,13 @@ __END__
 
 =head1 NAME
 
-HTML::FormFu::Model::DBIC - Integrate HTML::FormFu with DBIx::Class
+HTML::FormFu::Model::DBIC_CSW - Integrate HTML::FormFu with DBIx::Class (CSW fork).
 
 =head1 SYNOPSIS
+
+** N.B. This is a short-term fork of HTML::FormFu::Model::DBIC which
+attempts to address issues with Repeatable objects in forms. This
+module is UNSUPPORTED and may be withdrawn at any time. **
 
 If using L<Catalyst>, ensure your L<DBIx::Class> schema is placed in the
 form's L<stash|HTML::FormFu/stash>, by setting this in your application
