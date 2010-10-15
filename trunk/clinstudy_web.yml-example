@@ -64,12 +64,6 @@ Model::DB:
 #  SLE:        BILAG
 #  Vasculitis: BVAS
 
-# HTML::FormFu configuration.
-Controller::HTML::FormFu:
-  constructor:
-    render_method: tt
-    auto_constraint_class: '%t'
-
 # Optional configuration for MAGE-TAB export system.
 MAGETAB:
   
