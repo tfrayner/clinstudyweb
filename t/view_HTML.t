@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
-# $Id$
+# $Id: 01app.t 161 2010-09-03 11:57:57Z tfrayner $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
+use ClinStudy::Web;
 
-BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
+BEGIN { use_ok 'ClinStudy::Web::View::HTML' }
 
-ok( request('/')->is_success, 'Request for main page should succeed' );
-ok( request('/login')->is_success, 'Request for login page should succeed' );
+done_testing();

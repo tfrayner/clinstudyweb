@@ -49,7 +49,7 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint(
-  "aggregate_test_result",
+  "aggregate_result_id",
   ["aggregate_result_id", "test_result_id"],
 );
 
@@ -84,8 +84,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-30 08:45:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DQXLXYNDdcyqy4UtZD09fg
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:X1hH/Y/c/G+iiqV0a8ezGg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

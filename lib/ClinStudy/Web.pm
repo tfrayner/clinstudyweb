@@ -90,6 +90,14 @@ __PACKAGE__->config(
         model_stash => {
             schema => 'DB',
         },
+        constructor => {
+            render_method         => 'tt',
+            auto_constraint_class => '%t',
+
+            # FIXME this can be removed once we migrate to the
+            # H::F::Model::DBIC main trunk.
+            default_model         => 'DBIC_CSW',
+        },
     },
 );
 

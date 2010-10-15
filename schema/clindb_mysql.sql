@@ -34,11 +34,11 @@ CREATE TABLE `adverse_event` (
   `outcome_id` int(11) default NULL,
   `trial_related_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `severity_id` (`severity_id`),
-  KEY `action_id` (`action_id`),
-  KEY `outcome_id` (`outcome_id`),
-  KEY `trial_related_id` (`trial_related_id`),
+  KEY (`patient_id`),
+  KEY (`severity_id`),
+  KEY (`action_id`),
+  KEY (`outcome_id`),
+  KEY (`trial_related_id`),
   CONSTRAINT `adverse_event_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `adverse_event_ibfk_2` FOREIGN KEY (`severity_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `adverse_event_ibfk_3` FOREIGN KEY (`action_id`) REFERENCES `controlled_vocab` (`id`),
@@ -69,7 +69,7 @@ CREATE TABLE `comorbidity` (
   `condition_name` varchar(255) NOT NULL,
   `date` date default NULL,
   PRIMARY KEY  (`id`),
-  KEY `patient_id` (`patient_id`),
+  KEY (`patient_id`),
   CONSTRAINT `comorbidity_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -96,8 +96,8 @@ CREATE TABLE `controlled_vocab` (
   `category` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `accession` (`accession`),
-  UNIQUE KEY `category` (`category`,`value`)
+  UNIQUE KEY (`accession`),
+  UNIQUE KEY (`category`,`value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -123,10 +123,10 @@ CREATE TABLE `related_vocab` (
   `target_id` int(11) NOT NULL,
   `relationship_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `cv_relationship` (`controlled_vocab_id`,`target_id`,`relationship_id`),
-  KEY `controlled_vocab_id` (`controlled_vocab_id`),
-  KEY `target_id` (`target_id`),
-  KEY `relationship_id` (`relationship_id`),
+  UNIQUE KEY (`controlled_vocab_id`,`target_id`,`relationship_id`),
+  KEY (`controlled_vocab_id`),
+  KEY (`target_id`),
+  KEY (`relationship_id`),
   CONSTRAINT `related_vocab_ibfk_1` FOREIGN KEY (`controlled_vocab_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `related_vocab_ibfk_2` FOREIGN KEY (`target_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `related_vocab_ibfk_3` FOREIGN KEY (`relationship_id`) REFERENCES `controlled_vocab` (`id`)
@@ -161,11 +161,11 @@ CREATE TABLE `diagnosis` (
   `disease_staging_id` int(11) default NULL,
   `disease_extent_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `condition_name_id` (`condition_name_id`),
-  KEY `confidence_id` (`confidence_id`),
-  KEY `disease_staging_id` (`disease_staging_id`),
-  KEY `disease_extent_id` (`disease_extent_id`),
+  KEY (`patient_id`),
+  KEY (`condition_name_id`),
+  KEY (`confidence_id`),
+  KEY (`disease_staging_id`),
+  KEY (`disease_extent_id`),
   CONSTRAINT `diagnosis_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `diagnosis_ibfk_2` FOREIGN KEY (`condition_name_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `diagnosis_ibfk_3` FOREIGN KEY (`confidence_id`) REFERENCES `controlled_vocab` (`id`),
@@ -197,8 +197,8 @@ CREATE TABLE `study` (
   `type_id` int(11) NOT NULL,
   `external_id` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `type_id` (`type_id`),
+  KEY (`patient_id`),
+  KEY (`type_id`),
   CONSTRAINT `study_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `study_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -227,8 +227,8 @@ CREATE TABLE `disease_event` (
   `start_date` date NOT NULL,
   `notes` text,
   PRIMARY KEY  (`id`),
-  KEY `type_id` (`type_id`),
-  KEY `patient_id` (`patient_id`),
+  KEY (`type_id`),
+  KEY (`patient_id`),
   CONSTRAINT `disease_event_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `disease_event_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -264,18 +264,18 @@ CREATE TABLE `drug` (
   `prior_treatment_id` int(11) default NULL,
   `hospitalisation_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `name_id` (`name_id`),
-  KEY `locale_id` (`locale_id`),
-  KEY `dose_unit_id` (`dose_unit_id`),
-  KEY `dose_freq_id` (`dose_freq_id`),
-  KEY `duration_unit_id` (`duration_unit_id`),
-  KEY `visit_id` (`visit_id`),
-  KEY `prior_treatment_id` (`prior_treatment_id`),
-  KEY `hospitalisation_id` (`hospitalisation_id`),
+  KEY (`name_id`),
+  KEY (`locale_id`),
+  KEY (`dose_unit_id`),
+  KEY (`dose_freq_id`),
+  KEY (`duration_unit_id`),
+  KEY (`visit_id`),
+  KEY (`prior_treatment_id`),
+  KEY (`hospitalisation_id`),
   -- Only one instance of a given drug allowed per visit (or whatever).
-  UNIQUE KEY `drug_visit_id` (`name_id`, `visit_id`),
-  UNIQUE KEY `drug_hospitalisation_id` (`name_id`, `hospitalisation_id`),
-  UNIQUE KEY `drug_prior_treatment_id` (`name_id`, `prior_treatment_id`),
+  UNIQUE KEY (`name_id`, `visit_id`),
+  UNIQUE KEY (`name_id`, `hospitalisation_id`),
+  UNIQUE KEY (`name_id`, `prior_treatment_id`),
   CONSTRAINT `drug_ibfk_1` FOREIGN KEY (`dose_unit_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_2` FOREIGN KEY (`dose_freq_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_3` FOREIGN KEY (`name_id`) REFERENCES `controlled_vocab` (`id`),
@@ -300,8 +300,8 @@ CREATE TABLE `risk_factor` (
   `type_id` int(11) NOT NULL,
   `notes` text, 
   PRIMARY KEY  (`id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `type_id` (`type_id`),
+  KEY (`patient_id`),
+  KEY (`type_id`),
   CONSTRAINT `risk_factor_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `risk_factor_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -338,9 +338,9 @@ CREATE TABLE `emergent_group` (
   `type_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`,`type_id`),
-  KEY `basis_id` (`basis_id`),
-  KEY `type_id` (`type_id`),
+  UNIQUE KEY (`name`,`type_id`),
+  KEY (`basis_id`),
+  KEY (`type_id`),
   CONSTRAINT `emergent_group_ibfk_1` FOREIGN KEY (`basis_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `emergent_group_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -367,8 +367,8 @@ CREATE TABLE `prior_group` (
   `type_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`,`type_id`),
-  KEY `type_id` (`type_id`),
+  UNIQUE KEY (`name`,`type_id`),
+  KEY (`type_id`),
   CONSTRAINT `prior_group_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -394,9 +394,9 @@ CREATE TABLE `system_involvement` (
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `patient_type` (`patient_id`, `type_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `type_id` (`type_id`),
+  UNIQUE KEY (`patient_id`, `type_id`),
+  KEY (`patient_id`),
+  KEY (`type_id`),
   CONSTRAINT `system_involvement_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
   CONSTRAINT `system_involvement_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -423,9 +423,9 @@ CREATE TABLE `clinical_feature` (
   `patient_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY patient_type  (`patient_id`, `type_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `type_id` (`type_id`),
+  UNIQUE KEY (`patient_id`, `type_id`),
+  KEY (`patient_id`),
+  KEY (`type_id`),
   CONSTRAINT `clinical_feature_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
   CONSTRAINT `clinical_feature_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -456,7 +456,7 @@ CREATE TABLE `hospitalisation` (
   `reason_for_admission` varchar(255) default NULL,
   `notes` text,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `patient_id_2` (`patient_id`,`date`),    -- only one hosp per patient per date.
+  UNIQUE KEY (`patient_id`,`date`),    -- only one hosp per patient per date.
   CONSTRAINT `hospitalisation_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -487,9 +487,9 @@ CREATE TABLE `patient` (
   `entry_date` date NOT NULL,
   `notes` text,
   PRIMARY KEY  (`id`),
-  KEY `ethnicity_id` (`ethnicity_id`),
-  KEY `home_centre_id` (`home_centre_id`),
-  UNIQUE KEY `trial_id` (`trial_id`),
+  KEY (`ethnicity_id`),
+  KEY (`home_centre_id`),
+  UNIQUE KEY (`trial_id`),
   CONSTRAINT `patient_ibfk_1` FOREIGN KEY (`ethnicity_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `patient_ibfk_2` FOREIGN KEY (`home_centre_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -516,9 +516,9 @@ CREATE TABLE `patient_prior_group` (
   `patient_id` int(11) NOT NULL,
   `prior_group_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `patient_prior_group` (`patient_id`,`prior_group_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `prior_group_id` (`prior_group_id`),
+  UNIQUE KEY (`patient_id`,`prior_group_id`),
+  KEY (`patient_id`),
+  KEY (`prior_group_id`),
   CONSTRAINT `patient_prior_group_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`) ON DELETE CASCADE,
   CONSTRAINT `patient_prior_group_ibfk_2` FOREIGN KEY (`prior_group_id`) REFERENCES `prior_group` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -545,9 +545,9 @@ CREATE TABLE `visit_emergent_group` (
   `visit_id` int(11) NOT NULL,
   `emergent_group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `visit_emergent_group` (`visit_id`,`emergent_group_id`),
-  KEY `visit_id` (`visit_id`),
-  KEY `emergent_group_id` (`emergent_group_id`),
+  UNIQUE KEY (`visit_id`,`emergent_group_id`),
+  KEY (`visit_id`),
+  KEY (`emergent_group_id`),
   CONSTRAINT `visit_emergent_group_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`) ON DELETE CASCADE,
   CONSTRAINT `visit_emergent_group_ibfk_2` FOREIGN KEY (`emergent_group_id`) REFERENCES `emergent_group` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -576,8 +576,8 @@ CREATE TABLE `prior_observation` (
   `value` varchar(255) default NULL,
   `date` date default NULL,
   PRIMARY KEY  (`id`),
-  KEY `type_id` (`type_id`),
-  KEY `patient_id` (`patient_id`),
+  KEY (`type_id`),
+  KEY (`patient_id`),
   CONSTRAINT `prior_observation_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `prior_observation_ibfk_2` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -606,9 +606,9 @@ CREATE TABLE `prior_treatment` (
   `value` varchar(255) default NULL,
   `notes` text default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `unique_treatment` (`patient_id`, `type_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `type_id` (`type_id`),
+  UNIQUE KEY (`patient_id`, `type_id`),
+  KEY (`patient_id`),
+  KEY (`type_id`),
   CONSTRAINT `prior_treatment_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `prior_treatment_ibfk_4` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -634,7 +634,7 @@ CREATE TABLE `role` (
   `id` int(11) NOT NULL auto_increment,
   `rolename` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `rolename` (`rolename`)
+  UNIQUE KEY (`rolename`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -670,11 +670,11 @@ CREATE TABLE `sample` (
   `notes` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`name`),
---  UNIQUE KEY `location` (`freezer_box`,`box_slot`),  -- Not available for some samples;
-  KEY `visit_id` (`visit_id`),
-  KEY `cell_type_id` (`cell_type_id`),
-  KEY `material_type_id` (`material_type_id`),
-  KEY `quality_score_id` (`quality_score_id`),
+--  UNIQUE KEY (`freezer_box`,`box_slot`),  -- Not available for some samples;
+  KEY (`visit_id`),
+  KEY (`cell_type_id`),
+  KEY (`material_type_id`),
+  KEY (`quality_score_id`),
   CONSTRAINT `sample_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
   CONSTRAINT `sample_ibfk_2` FOREIGN KEY (`cell_type_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `sample_ibfk_3` FOREIGN KEY (`material_type_id`) REFERENCES `controlled_vocab` (`id`),
@@ -733,9 +733,9 @@ CREATE TABLE `assay` (
   `filename` varchar(255) default NULL,
   `notes` text,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `identifier` (`identifier`),
-  UNIQUE KEY `filename` (`filename`),
-  KEY `assay_batch_id` (`assay_batch_id`),
+  UNIQUE KEY (`identifier`),
+  UNIQUE KEY (`filename`),
+  KEY (`assay_batch_id`),
   CONSTRAINT `assay_ibfk_1` FOREIGN KEY (`assay_batch_id`) REFERENCES `assay_batch` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -763,8 +763,8 @@ CREATE TABLE `assay_qc_value` (
   `type` varchar(255) default NULL,
   `assay_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name_assay` (`name`,`assay_id`),
-  KEY `assay_id` (`assay_id`),
+  UNIQUE KEY (`name`,`assay_id`),
+  KEY (`assay_id`),
   CONSTRAINT `assay_qc_value_ibfk_1` FOREIGN KEY (`assay_id`) REFERENCES `assay` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -791,10 +791,10 @@ CREATE TABLE `channel` (
   `sample_id` int(11) NOT NULL,
   `assay_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `label_id` (`label_id`),
-  KEY `sample_id` (`sample_id`),
-  KEY `assay_id` (`assay_id`),
-  UNIQUE KEY `assay_label` (`assay_id`,`label_id`),
+  KEY (`label_id`),
+  KEY (`sample_id`),
+  KEY (`assay_id`),
+  UNIQUE KEY (`assay_id`,`label_id`),
   CONSTRAINT `channel_ibfk_1` FOREIGN KEY (`label_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `channel_ibfk_2` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`) ON DELETE CASCADE,
   CONSTRAINT `channel_ibfk_3` FOREIGN KEY (`assay_id`) REFERENCES `assay` (`id`) ON DELETE CASCADE
@@ -821,7 +821,7 @@ CREATE TABLE `test` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -846,9 +846,9 @@ CREATE TABLE `test_aggregation` (
   `aggregate_result_id` int(11) NOT NULL,
   `test_result_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `aggregate_test_result`  (`aggregate_result_id`,`test_result_id`),
-  KEY `aggregate_result_id` (`aggregate_result_id`),
-  KEY `test_result_id` (`test_result_id`),
+  UNIQUE KEY (`aggregate_result_id`,`test_result_id`),
+  KEY (`aggregate_result_id`),
+  KEY (`test_result_id`),
   CONSTRAINT `test_aggregation_ibfk_1` FOREIGN KEY (`aggregate_result_id`) REFERENCES `test_result` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `test_aggregation_ibfk_2` FOREIGN KEY (`test_result_id`) REFERENCES `test_result` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -875,9 +875,9 @@ CREATE TABLE `test_possible_value` (
   `test_id` int(11) NOT NULL,
   `possible_value_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `test_possible_value`  (`test_id`,`possible_value_id`),
-  KEY `test_id` (`test_id`),
-  KEY `possible_value_id` (`possible_value_id`),
+  UNIQUE KEY (`test_id`,`possible_value_id`),
+  KEY (`test_id`),
+  KEY (`possible_value_id`),
   CONSTRAINT `test_possible_value_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `test` (`id`) ON DELETE CASCADE,
   CONSTRAINT `test_possible_value_ibfk_2` FOREIGN KEY (`possible_value_id`) REFERENCES `controlled_vocab` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -909,12 +909,12 @@ CREATE TABLE `test_result` (
   `date` date NOT NULL,
   `needs_reparenting` tinyint(1) default NULL, 
   PRIMARY KEY  (`id`),
-  KEY `test_id` (`test_id`),
-  KEY `visit_id` (`visit_id`),
-  KEY `hospitalisation_id` (`hospitalisation_id`),
-  KEY `controlled_value_id` (`controlled_value_id`),
-  UNIQUE KEY `test_result_visit_id` (`test_id`, `date`, `visit_id`),
-  UNIQUE KEY `test_result_hospitalisation_id` (`test_id`, `date`, `hospitalisation_id`),
+  KEY (`test_id`),
+  KEY (`visit_id`),
+  KEY (`hospitalisation_id`),
+  KEY (`controlled_value_id`),
+  UNIQUE KEY (`test_id`, `date`, `visit_id`),
+  UNIQUE KEY (`test_id`, `date`, `hospitalisation_id`),
   CONSTRAINT `test_result_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `test` (`id`),
   CONSTRAINT `test_result_ibfk_2` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
   CONSTRAINT `test_result_ibfk_3` FOREIGN KEY (`hospitalisation_id`) REFERENCES `hospitalisation` (`id`),
@@ -956,11 +956,11 @@ CREATE TABLE `transplant` (
   `donor_cause_of_death` varchar(255) default NULL,
   `donor_cmv` tinyint(1) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `hospitalisation_id` (`hospitalisation_id`),
-  KEY `sensitisation_status_id` (`sensitisation_status_id`),
-  KEY `organ_type_id` (`organ_type_id`),
-  KEY `reperfusion_quality_id` (`reperfusion_quality_id`),
-  KEY `donor_type_id` (`donor_type_id`),
+  KEY (`hospitalisation_id`),
+  KEY (`sensitisation_status_id`),
+  KEY (`organ_type_id`),
+  KEY (`reperfusion_quality_id`),
+  KEY (`donor_type_id`),
   CONSTRAINT `transplant_ibfk_1` FOREIGN KEY (`hospitalisation_id`) REFERENCES `hospitalisation` (`id`),
   CONSTRAINT `transplant_ibfk_2` FOREIGN KEY (`sensitisation_status_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `transplant_ibfk_3` FOREIGN KEY (`organ_type_id`) REFERENCES `controlled_vocab` (`id`),
@@ -995,7 +995,7 @@ CREATE TABLE `user` (
   `date_modified` datetime,
   `date_accessed` datetime,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -1020,9 +1020,9 @@ CREATE TABLE `user_role` (
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_role` (`user_id`,`role_id`),
-  KEY `user_id` (`user_id`),
-  KEY `role_id` (`role_id`),
+  UNIQUE KEY (`user_id`,`role_id`),
+  KEY (`user_id`),
+  KEY (`role_id`),
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1053,10 +1053,10 @@ CREATE TABLE `visit` (
   `nominal_timepoint_id` int(11) default NULL,
   `treatment_escalation` tinyint(1) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `patient_id_2` (`patient_id`,`date`),
-  KEY `patient_id` (`patient_id`),
-  KEY `disease_activity_id` (`disease_activity_id`),
-  KEY `nominal_timepoint_id` (`nominal_timepoint_id`),
+  UNIQUE KEY (`patient_id`,`date`),
+  KEY (`patient_id`),
+  KEY (`disease_activity_id`),
+  KEY (`nominal_timepoint_id`),
   CONSTRAINT `visit_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `visit_ibfk_2` FOREIGN KEY (`disease_activity_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `visit_ibfk_3` FOREIGN KEY (`nominal_timepoint_id`) REFERENCES `controlled_vocab` (`id`)
@@ -1086,7 +1086,7 @@ CREATE TABLE `graft_failure` (
   `notes` text,
   `transplant_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `transplant_id` (`transplant_id`),
+  UNIQUE KEY (`transplant_id`),
   CONSTRAINT `graft_failure_ibfk_1` FOREIGN KEY (`transplant_id`) REFERENCES `transplant` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
