@@ -197,6 +197,7 @@ root/lib/site/header
 root/lib/site/html
 root/lib/site/layout
 root/lib/site/wrapper
+root/src/audithistory/list.tt2
 root/src/adverseevent/edit.tt2
 root/src/adverseevent/index.tt2
 root/src/adverseevent/list.tt2
