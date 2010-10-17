@@ -23,12 +23,9 @@
 use strict;
 use warnings;
 use Test::More;
-use File::Copy;
 
-BEGIN {
-    $ENV{CLINSTUDY_WEB_CONFIG} = 'clinstudy_web_testing.yml';
-    copy('t/pristine_testing.db', 't/testing.db');
-};
+use lib 't/lib';
+use CSWTestLib;
 
 use ok "Test::WWW::Mechanize::Catalyst" => "ClinStudy::Web";
 
