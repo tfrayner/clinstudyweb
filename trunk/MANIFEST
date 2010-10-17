@@ -88,7 +88,6 @@ lib/ClinStudy/XML/Builder.pm
 lib/ClinStudy/XML/Dumper.pm
 lib/ClinStudy/XML/Export.pm
 lib/ClinStudy/XML/Import.pm
-lib/ClinStudy/XML/Infopath.pm
 lib/ClinStudy/XML/Loader.pm
 lib/ClinStudy/XML/Schema.pm
 lib/ClinStudy/XML/TabReader.pm
