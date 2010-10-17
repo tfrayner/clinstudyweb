@@ -1,5 +1,6 @@
 Changes
 clinstudy_web.yml-example
+clinstudy_web_testing.yml
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -90,8 +91,9 @@ lib/ClinStudy/XML/Import.pm
 lib/ClinStudy/XML/Infopath.pm
 lib/ClinStudy/XML/Loader.pm
 lib/ClinStudy/XML/Schema.pm
-lib/HTML/FormFu/Constraint/DBIC/Unique.pm
-lib/HTML/FormFu/Model/DBIC.pm
+lib/ClinStudy/XML/TabReader.pm
+lib/ClinStudy/XML/TabReannotator.pm
+lib/HTML/FormFu/Model/DBIC_CSW.pm
 LICENSE
 Makefile.PL
 MANIFEST
@@ -195,6 +197,7 @@ root/lib/site/header
 root/lib/site/html
 root/lib/site/layout
 root/lib/site/wrapper
+root/src/audithistory/list.tt2
 root/src/adverseevent/edit.tt2
 root/src/adverseevent/index.tt2
 root/src/adverseevent/list.tt2
@@ -535,8 +538,12 @@ t/controller_TestResult.t
 t/controller_Transplant.t
 t/controller_User.t
 t/controller_Visit.t
+t/live_app01.t
+t/view_HTML.t
+t/pristine_testing.db
 t/etc/schema.yml
 t/model_DB.t
+t/lib/CSWTestLib.pm
 TODO
 util/clinstudy_dump.pl
 util/clinstudy_import.pl
