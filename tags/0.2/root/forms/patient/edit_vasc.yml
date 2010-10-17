@@ -1,0 +1,33 @@
+---
+auto_fieldset: { legend: 'Study-Specific Patient Data' }
+
+elements:
+
+  - type: Hidden
+    name: id
+
+############################
+# Vasculitis-specific info #
+############################
+
+  - type: Select
+    name: system_involvement_types
+    label: System involvement
+    multiple: 1
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: Organ involvement at presentation; for new systems involved add date to "Other Notes".
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: SystemInvolvement
+      label_column: value
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+

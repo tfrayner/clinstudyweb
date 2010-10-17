@@ -1,0 +1,17 @@
+---
+elements:
+
+  - type: Multi
+    container_attributes:
+      class: submit_buttons
+    attributes:
+      class: submit_buttons
+    elements:
+
+    - type: Reset
+      name: reset
+      value: Reset Form
+
+    - type: Submit
+      name: submit
+      value: Submit Form

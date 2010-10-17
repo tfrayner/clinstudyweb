@@ -1,0 +1,7 @@
+[% META title = "Add a user" %]
+
+[% form %]
+
+<p class="text">Please note that creating a new user will not automatically grant you
+access to this database; your account will need to be added to the
+appropriate user group(s) by an administrator.</p>

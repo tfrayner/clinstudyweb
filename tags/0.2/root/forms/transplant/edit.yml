@@ -1,0 +1,197 @@
+---
+auto_fieldset: { legend: 'Transplant' }
+
+##############
+# Transplant #
+##############
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Text
+    name: date
+    label: Transplant Date
+    constraints:
+      - type: DateTime
+        parser: &PARSER
+          strptime: '%Y-%m-%d'
+      - type: Length
+        max:  10
+        min:  1
+    label_attributes:
+      tooltipText: The date of the transplant; click on the entry box for a pop-up calendar.
+
+  - type: Text
+    name: number
+    label: Transplant Number
+    constraints:
+      - Integer
+      - type: Length
+        max:  6
+        min:  1
+    label_attributes:
+      tooltipText: The number of this transplant.
+
+  - type: Select
+    name: organ_type_id
+    label: Organ Type
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    label_attributes:
+      tooltipText: The type of organ being transplanted.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: OrganType
+      label_column: value
+      
+  - type: Select
+    name: sensitisation_status_id
+    label: Sensitisation Status
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: Sensitisation status.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: SensitisationStatus
+      label_column: value
+
+  - type: Select
+    name: reperfusion_quality_id
+    label: Reperfusion Quality
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: Reperfusion quality.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: ReperfusionQuality
+      label_column: value
+
+  - type: Checkbox
+    name: delayed_graft_function
+    label: Delayed Graft Function
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Was graft function delayed following transplant?
+
+  - type: Text
+    name: days_delayed_function
+    label: Delayed Function Duration (days)
+    constraints:
+      - Integer
+      - type: Length
+        max:  6
+        min:  1
+      - type: DependOn
+        others: delayed_graft_function
+    label_attributes:
+      tooltipText: The number of days of delayed organ function following transplant in days.
+
+  - type: Text
+    name: mins_cold_ischaemic
+    label: Time Cold Ischaemic
+    constraints:
+      - Integer
+      - type: Length
+        max:  6
+        min:  1
+    label_attributes:
+      tooltipText: The number minutes the organ was cold ischaemic.
+
+  - type: Text
+    name: hla_mismatch
+    label: HLA Mismatch
+    constraints:
+      - ASCII
+      - type: Length
+        max:  5
+        min:  1
+    label_attributes:
+      tooltipText: HLA mismatch information.
+
+  - type: Select
+    name: recip_cmv
+    label: Recipient CMV status
+    options:
+      - [ '', -select- ]
+      - [ 0, No ]
+      - [ 1, Yes ]
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: The CMV status of the recipient.
+
+  - type: Select
+    name: donor_type_id
+    label: Donor Type
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    label_attributes:
+      tooltipText: The type of donor for this transplant.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: DonorType
+      label_column: value
+
+  - type: Text
+    name: donor_age
+    label: Donor Age
+    constraints:
+      - Integer
+      - type: Length
+        max:  3
+        min:  1
+    label_attributes:
+      tooltipText: The age of the donor, in years.
+
+  - type: Text
+    name: donor_cause_of_death
+    label: Donor Cause of Death
+    constraints:
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: The cause of the donor's death.
+
+  - type: Select
+    name: donor_cmv
+    label: Donor CMV status
+    options:
+      - [ '', -select- ]
+      - [ 0, No ]
+      - [ 1, Yes ]
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: The CMV status of the donor.
+      
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

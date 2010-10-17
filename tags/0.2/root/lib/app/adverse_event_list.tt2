@@ -1,0 +1,54 @@
+[% DEFAULT tableHeight = 120 %]
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id="adverseList">
+      <thead>
+        <tr>
+          <td>Start Date</td>
+          <td>End Date</td>
+          <td>Type</td>
+          <td>Severity</td>
+          <td>Action</td>
+          <td>Outcome</td>
+          <td>Trial related</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH adverse = objects.sort('start_date') %]
+        <tr> 
+          <td> [% adverse.start_date | html %] </td>
+          <td> [% adverse.end_date | html %] &nbsp; </td>
+          <td> [% adverse.type | html %] </td>
+          [% FOREACH rel = [ 'severity_id', 'action_id', 'outcome_id', 'trial_related_id' ] %]
+            <td>
+            [% IF adverse.$rel.defined %]
+              [% adverse.$rel.value | html %]
+            [% ELSE %]
+              N/A
+            [% END %]
+            </td>
+          [% END %]
+          <td><a href="[% c.uri_for("/adverseevent/view/$adverse.id") | html %]">View</a>
+              <a href="[% c.uri_for("/adverseevent/edit/$adverse.id") | html %]">Edit</a> 
+              <a href="[% c.uri_for("/adverseevent/delete/$adverse.id") | html %]"
+                 onclick="return confirm('Really delete adverse event from [% adverse.start_date | html %] ?');">Delete</a></td>        
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('adverseList');
+      tableWidgetObj.setTableHeight('[% tableHeight %]');
+      tableWidgetObj.setColumnSort(Array('S','S','S','S','S','S','S',false));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+  </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

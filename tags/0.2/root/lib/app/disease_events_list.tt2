@@ -1,0 +1,40 @@
+[% IF objects && objects.size > 0 %]
+  <div>
+    <table id='diseaseEventList'>
+    <thead>
+      <tr>
+        <td>Event Type</td>
+        <td>Start Date</td>
+        <td>Notes</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH event = objects.sort('date') %]
+      <tr>
+        <td>[% event.type_id.value | html %]</td>
+        <td>[% event.start_date | html %]</td>
+        <td>[% event.notes | truncate(30) | html %] &nbsp;</td>
+        <td><a href="[% c.uri_for("/diseaseevent/view/$event.id") | html %]">View</a>
+            <a href="[% c.uri_for("/diseaseevent/edit/$event.id") | html %]">Edit</a> 
+            <a href="[% c.uri_for("/diseaseevent/delete/$event.id") | html %]"
+               onclick="return confirm('Really delete event from [% event.date | html %] ?');">Delete</a></td>        
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('diseaseEventList');
+      tableWidgetObj.setTableHeight(100);
+      tableWidgetObj.setColumnSort(Array('S','S','S','S','S',false));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the name column
+  </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

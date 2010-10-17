@@ -1,0 +1,35 @@
+[% IF objects && objects > 0 %]
+  <div>
+  <table id="patientGroups">
+  <thead>
+    <tr>
+      <td>Group type</td>
+      <td>Group name</td>
+      <td>Basis for categorisation</td>
+    </tr>
+  </thead>
+  <tbody>
+  [% FOREACH group = objects %]
+    <tr>
+      <td>[% group.type_id.value | html %]</td>
+      <td>[% group.name | html %]</td>
+      <td>[% group.basis_id.value | ucfirst | replace('_+', ' ') | html %]</td>
+    </tr>
+  [% END %]
+  </tbody>
+  </table>
+  </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('patientGroups');
+        tableWidgetObj.setTableHeight(100);
+        tableWidgetObj.setColumnSort(Array('S','S','S'));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %]
+  <p>None</p>
+[% END %]

@@ -1,0 +1,70 @@
+---
+auto_fieldset: { legend: 'Test Result' }
+
+########
+# Drug #
+########
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Hidden
+    name: visit_id
+
+  - type: Hidden
+    name: hospitalisation_id
+
+  - type: Select
+    name: test_id
+    label: Test Name
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+      - type:    DBIC::Unique
+        resultset:   TestResult
+        self_stash_key:  object
+        message: A result for this test has already been given for this visit or hospitalisation.
+        others:
+          - visit_id
+          - hospitalisation_id
+    model_config:
+      resultset: Test
+      label_column: name
+    label_attributes:
+      tooltipText: The name of the test to which this result belongs.
+
+  - type: Text
+    name: date
+    label: Test Date
+    constraints:
+      - Required
+      - type: DateTime
+        parser: &PARSER
+          strptime: '%Y-%m-%d'
+      - type: Length
+        max:  22
+        min:  1
+    inflators:
+      - type: DateTime
+        parser: *PARSER
+        strptime: '%Y-%m-%d'
+    label_attributes:
+      tooltipText: The date of the visit; click on the entry box for a pop-up calendar.
+
+      # Further elements are added to the form in the controller, based on the test_id submitted.
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    name: submit_buttons
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

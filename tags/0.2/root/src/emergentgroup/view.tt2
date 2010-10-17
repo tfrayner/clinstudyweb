@@ -1,0 +1,15 @@
+[% META title = 'Emergent Group Details' %]
+
+<fieldset class="data_view">
+<legend>Emergent Group <span><a href="[% c.uri_for("/emergentgroup/edit", object.id) | html %]">Edit</a></span></legend>
+<table id="emergentGroupInfo" class="horizontal">
+  <tbody>
+     <tr><th>Name:</th>
+         <td>[% object.name | html %]</td></tr>
+     <tr><th>Type:</th>
+         <td>[% object.type_id.value | html %]</td></tr>
+     <tr><th>Basis:</th>
+         <td>[% object.basis_id.value | replace('_+', ' ') | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>

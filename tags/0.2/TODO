@@ -1,0 +1,34 @@
+$Date$
+
+Wish List
+---------
+
+- Add js to autopopulate compound terms from the database while typing
+  ("google suggest").
+
+- Controllers with appropriate add/edit/view/delete methods for the
+  following:
+
+  GraftFailure
+
+- TestCalc API wants modifying to include some kind of validation
+  call; e.g. BVAS has system-specific "none" fields which imply the
+  rest of that system should be clear.
+
+- Figure out how to allow the user to aggregate test results
+  themselves (easily, that is. Normally this will be automated).
+  Consider maybe encoding how to aggregate tests in the database? Or,
+  perhaps better, in a config file somewhere? May need some kind of
+  mini-language to cover basic arithmetical operations; starts to
+  sound overly complex...
+
+- Add Drugs and PriorTreatments in main patient entry form. This needs
+  nesting, which raises all kinds of issues. In particular it seems to
+  need a substantial rewrite of HTML::FormFu::Model::DBIC :-(
+
+- SemanticValidator loader class to check CVs and Test names against
+  the database prior to ClinStudyML loading?
+
+- Generic ClinStudy::XML::Import PK derivation through introspection
+  (i.e. not simply "id" throughout).
+

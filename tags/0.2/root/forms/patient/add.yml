@@ -1,0 +1,634 @@
+---
+auto_fieldset: { legend: 'New Patient' }
+
+# Unless it's clear that Select field options are set here in the
+# form, they are handled by default in the Controller, which knows
+# about the ControlledVocab model table.
+
+elements:
+
+  - type: Hidden
+    name: id
+
+#####################
+# Core patient data #
+#####################
+
+  - type: Block
+    nested_name: studies
+    elements:
+
+    - type: Select
+      name: type_id
+      label: Patient category
+      empty_first: 1
+      empty_first_label: -select-
+      constraints:
+        - Required
+        - AutoSet
+      model_config:
+        resultset: ControlledVocab
+        condition:
+          category: StudyType
+        label_column: value
+      label_attributes:
+        tooltipText: >-
+          The type of study in which this patient is enrolled.
+          This will be used to determine which web forms need to be completed.
+
+  - type: Text
+    name: trial_id
+    label: TRIAD ID
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  15
+        min:  1
+      - type: DBIC::Unique
+        resultset: Patient
+        message: Must be a unique ID
+    label_attributes:
+      tooltipText: >-
+        The ID used internally for the TRIAD study.
+
+  - type: Text
+    name: entry_date
+    label: TRIAD Entry Date
+    constraints:
+      - Required
+      - type: DateTime
+        parser: &PARSER
+          strptime: '%Y-%m-%d'
+      - type: Length
+        max:  10
+        min:  1
+    label_attributes:
+      tooltipText: >-
+        The date the patient was entered into TRIAD;
+        click on the entry box for a pop-up calendar.
+
+  - type: Select
+    name: sex
+    label: Gender
+# For reasons unknown these don't want to work here, so we fake it manually.
+#    empty_first: 1
+#    empty_first_label: -select-
+    options:
+      - [ '', -select- ]
+      - [ M, Male ]
+      - [ F, Female ]
+    constraints:
+      - Required
+      - AutoSet
+    label_attributes:
+      tooltipText: >-
+        The patient's sex.
+
+  - type: Text
+    name: year_of_birth
+    label: Year of Birth
+    constraints:
+      - Required
+      - Integer
+      - type: Length
+        max:  4
+        min:  4
+      - type: Range
+        min:  1901
+        max:  2155
+    label_attributes:
+      tooltipText: >-
+        The patient's year of birth.
+
+  - type: Select
+    name: ethnicity_id
+    label: Ethnicity
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: Ethnicity
+      label_column: value
+    label_attributes:
+      tooltipText: >-
+        The patient's ethnicity.
+
+  - type: Select
+    name: home_centre_id
+    label: Home Centre
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: HomeCentre
+      label_column: value
+    label_attributes:
+      tooltipText: >-
+        The patient's home centre.
+
+  - type: Checkboxgroup
+    name: risk_factor_types
+    label: Risk Factors
+    model_config:
+      resultset:    ControlledVocab
+      condition:
+        category:     RiskFactor
+      label_column:   value
+      default_column: me.id
+      id_column:      id
+    label_attributes:
+      tooltipText: The risk factors which apply to this patient.
+
+  - type: Fieldset
+    legend: Diagnosis
+
+  - type: Repeatable
+    nested_name: diagnoses
+    counter_name: diagnosis_count
+    model_config:
+      new_empty_row: condition_name_id
+      empty_rows: 1
+    elements:
+       
+      # N.B. nested Repeatable Selects don't populate correctly when
+      # using HTML::FormFu::Model::DBIC version 0.3007; we use an
+      # internal version with the bug fixed, for now.
+      - type: Select
+        name: condition_name_id
+        label: Condition
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - type: DependOn
+            others: date
+            message: Required if Condition is given
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            The name of the condition with which the patient has been diagnosed.
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: DiagnosisCondition
+          label_column: value
+          delete_if_empty: 1
+
+      - type: Text
+        name: date
+        label: Diagnosis Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  1
+        label_attributes:
+          tooltipText: >-
+            The date of the diagnosis; click on the entry
+            box for a pop-up calendar.
+
+      - type: Select
+        name: confidence_id
+        label: Confidence
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            The level of confidence attached to this diagnosis.
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: DiagnosisConfidence
+          label_column: value
+      
+      - type: Select
+        name: previous_episodes
+        label: Previous Disease Episodes
+        options:
+          - [ 0, No ]
+          - [ 1, Yes ]
+        constraints:
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            Has the patient suffered previous disease episodes?
+            Presentation defined as <= 3/12 previous treatment OR WGET definition = 
+     
+      - type: Select
+        name: previous_course_id
+        label: Previous Disease Course
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            The course of the previous disease episode
+            (leave blank if no previous episodes).
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: PreviousDiseaseCourse
+          label_column: value
+            
+      - type: Hidden
+        name: id
+
+  - type: Hidden
+    name: diagnosis_count
+
+  - type: Fieldset
+    legend: Disease Events
+
+  - type: Repeatable
+    nested_name: disease_events
+    model_config:
+      new_empty_row: type_id
+      empty_rows: 1
+    counter_name: disease_event_count
+    elements:
+      - type: Select
+        name: type_id
+        label: Disease Event
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - type: DependOn
+            others: start_date
+            message: Required if Disease Event is given
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            The the type of disease event being described.
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: DiseaseEventType
+          label_column: value
+          delete_if_empty: 1
+      - type: Text
+        name: start_date
+        label: Event Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  1
+        label_attributes:
+          tooltipText: >-
+            The commencement date of the disease event; click on the entry box
+            for a pop-up calendar. This is for complete remission/relapse only;
+            partial remission data can be entered as disease activity under Visit. 
+      - type: Hidden
+        name: id
+  - type: Hidden
+    name: disease_event_count
+
+###############
+# Comorbidity #
+###############
+
+  - type: Fieldset
+    legend: Comorbidity
+
+  - type: Repeatable
+    nested_name: comorbidities
+    counter_name: comorbidity_count
+    model_config:
+      new_empty_row: condition_name
+      empty_rows: 1
+    elements:
+      - type: Text
+        name: condition_name
+        label: Comorbidity
+        constraints:
+          - type: ASCII
+          - type: Length
+            max:  255
+            min:  0
+          - type: DependOn
+            others: date
+            message: Required if Comorbidity is given
+        label_attributes:
+          tooltipText: >-
+            The patient's diagnosed comorbidities. To delete an entry,
+            clear this field and resubmit the form.
+        model_config:
+          delete_if_empty: 1
+      - type: Text
+        name: date
+        label: Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  0
+        label_attributes:
+          tooltipText: >-
+            The date of the comorbidity diagnosis; click on the
+            entry box for a pop-up calendar.
+      - type: Hidden
+        name: id
+  - type: Hidden
+    name: comorbidity_count
+
+#######################
+# Biopsy observations #
+#######################
+
+  - type: Fieldset
+    legend: Biopsy Observations
+
+  - type: Repeatable
+    nested_name: prior_observations
+    model_config:
+      new_empty_row: type_id
+      empty_rows: 1
+    counter_name: observation_count
+    elements:
+      - type: Select
+        name: type_id
+        label: Histology
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - type: DependOn
+            others: date
+            message: Required if Histology is given
+          - AutoSet
+        label_attributes:
+          tooltipText: >-
+            Any biopsy results for the patient. To delete an entry,
+            set this menu back to "-select-".
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: ObservationType
+          label_column: value
+          delete_if_empty: 1
+      - type: Text
+        name: value
+        label: Class
+        constraints:
+          - type: Length
+            max:  255
+            min:  0
+        label_attributes:
+          tooltipText: >-
+            The biopsy class.
+      - type: Text
+        name: date
+        label: Biopsy Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  0
+        label_attributes:
+          tooltipText: >-
+            The date of the biopsy.
+      - type: Hidden
+        name: id
+  - type: Hidden
+    name: observation_count
+
+####################
+# Prior treatments #
+####################
+
+# Commented out until such time as HTML::FormFu::Model::DBIC properly
+# handles doubly-nested Repeatable elements. PriorTreatments works
+# okay, but without Drugs it's a bit pointless.
+
+#   - type: Fieldset
+#     legend: Prior Treatments
+
+#   - type: Repeatable
+#     nested_name: prior_treatments
+#     model_config:
+#       new_empty_row: type_id
+#       empty_rows: 1
+#     counter_name: treatment_count
+#     elements:
+#       - type: Select
+#         name: type_id
+#         label: Treatment
+#         empty_first: 1
+#         empty_first_label: -select-
+#         constraints:
+#           - type: DependOn
+#             others: date
+#             message: Required if Treatment is given
+#           - AutoSet
+#         label_attributes:
+#           tooltipText: >-
+#             The type of treatment. To delete an entry,
+#             set this menu back to "-select-".
+#         model_config:
+#           resultset: ControlledVocab
+#           condition:
+#             category: TreatmentType
+#           label_column: value
+#           delete_if_empty: 1
+#       - type: Text
+#         name: value
+#         label: Subtype
+#         constraints:
+#           - type: ASCII
+#           - type: Length
+#             max:  255
+#             min:  0
+#         label_attributes:
+#           tooltipText: >-
+#             A more specific term qualifying the type of treatment
+#             (e.g., 'HD' or 'PD' for renal replacement therapy).
+#             Leave blank for simple drug treatments.
+#       - type: Text
+#         name: date
+#         label: Treatment Date
+#         constraints:
+#           - type: DateTime
+#             parser: &PARSER
+#               strptime: '%Y-%m-%d'
+#           - type: Length
+#             max:  10
+#             min:  0
+#         label_attributes:
+#           tooltipText: >-
+#             The date of the treatment.
+#       - type: Select
+#         name: nominal_timepoint_id
+#         label: Time of treatment before entry
+#         empty_first: 1
+#         empty_first_label: -select-
+#         constraints:
+#           - AutoSet
+#         model_config:
+#           resultset: ControlledVocab
+#           condition:
+#             category: PriorTimepoint
+#           label_column: value
+#         label_attributes:
+#           tooltipText: >-
+#             The number of months prior to entry into the study
+#             at which the treatment was applied.
+#       - type: Text
+#         name: duration
+#         label: Duration
+#         constraints:
+#           - type: Number
+#           - type: Length
+#             max:  15
+#             min:  0
+#           - type: DependOn
+#             others: duration_unit_id
+#             message: Required if Duration is given
+#         label_attributes:
+#           tooltipText: >-
+#             The length of time for which the treatment was applied.
+#       - type: Select
+#         name: duration_unit_id
+#         label: Duration Unit
+#         empty_first: 1
+#         empty_first_label: -select-
+#         constraints:
+#           - AutoSet
+#         model_config:
+#           resultset: ControlledVocab
+#           condition:
+#             category: TimeUnit
+#           label_column: value
+#         label_attributes:
+#           tooltipText: >-
+#             The unit of duration.
+#       - type: Hidden
+#         name: id
+        
+#       - type: Repeatable
+#         nested_name: drugs
+#         model_config:
+#           new_empty_row: name
+#           empty_rows: 1
+#         counter_name: drug_treatment_count
+#         elements:
+#           - type: Text
+#             name: name
+#             label: Drug Name
+#             constraints:
+#               - type: ASCII
+#               - type: Length
+#                 max:  255
+#                 min:  0
+#               - type: DependOn
+#                 others: type_id
+#                 message: Required if Treatment is given
+#             label_attributes:
+#               tooltipText: >-
+#                 The name of the drug.
+#           - type: Hidden
+#             name: id
+
+#           - type: Select
+#             name: type_id
+#             label: Drug Type
+#             empty_first: 1
+#             empty_first_label: -select-
+#             constraints:
+#               - AutoSet
+#             model_config:
+#               resultset: ControlledVocab
+#               condition:
+#                 category: DrugType
+#               label_column: value
+#             label_attributes:
+#               tooltipText: The type of drug used (i.e. is it immunosuppressive?).
+
+#   - type: Hidden
+#     name: treatment_count
+#   - type: Hidden
+#     name: drug_treatment_count
+
+#####################
+# Kidney transplant #
+#####################
+
+  - type: Fieldset
+    legend: Kidney Transplant
+
+  - type: Repeatable
+    nested_name: hospitalisations
+    model_config:
+      new_empty_row: date
+      empty_rows: 1
+    counter_name: hospitalisation_count
+    elements:
+      - type: Hidden
+        name: reason_for_admission
+        label: Kidney Transplant
+        value: kidney transplant
+      - type: Text
+        name: date
+        label: Kidney Transplant Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  0
+        model_config:
+          delete_if_empty: 1
+        label_attributes:
+          tooltipText: >-
+            Has the patient received a kidney transplant? If so,
+            please enter the date of the transplant. Click on the
+            entry box for a pop-up calendar.
+      - type: Hidden
+        name: id
+    
+  - type: Hidden
+    name: hospitalisation_count
+
+###############
+# Other notes #
+###############
+
+  - type: Fieldset
+    legend: Notes
+
+  - type: Textarea
+    name: notes
+    label: Other Notes
+    label_attributes:
+      tooltipText: >-
+        Enter any other information here.
+    attributes:
+      rows: 10
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

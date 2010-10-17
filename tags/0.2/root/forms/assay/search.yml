@@ -1,0 +1,88 @@
+---
+auto_fieldset: { legend: 'Simple Query' }
+
+#########
+# Assay #
+#########
+
+elements:
+
+  - type: Block
+    name: simple
+    nested_name: simple
+    elements:
+
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
+      - type: Text
+        name: identifier
+        label: Identifier
+        constraints:
+          - ASCII
+          - type: Length
+            max:  255
+            min:  1
+
+      - type: Text
+        name: filename
+        label: File name
+        constraints:
+          - ASCII
+          - type: Length
+            max:  255
+            min:  1
+
+      - type: Select
+        name: assay_batch_id
+        label: Batch Name
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: AssayBatch
+          label_column: name
+
+      - type: Text
+        name: notes
+        label: Other Notes
+      
+  - type: Fieldset
+    legend: Batch Query
+
+  - type: Block
+    name: batch
+    nested_name: batch
+    elements:
+
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Query the database with a list of data file names. Note that
+          any text entered in the batch query area will override the
+          simple query settings above.
+
+      - type: Textarea
+        name: filename
+        label: List of file names
+        attributes:
+          rows: 4
+
+##########
+# Submit #
+##########
+
+  - type: Fieldset
+
+  - type: Submit
+    name: submit
+    label: ' '
+    value: Submit Form
+

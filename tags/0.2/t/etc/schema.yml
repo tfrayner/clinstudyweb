@@ -1,0 +1,204 @@
+---
+schema_class: ClinStudy::ORM
+
+fixture_sets:
+  patient:
+    - Patient:
+      -
+        - id
+        - trial_id
+        - entry_date
+      -
+        - 1
+        - 100
+        - 2008-01-01
+      -
+        - 2
+        - 101
+        - 2009-10-23
+    - Visit:
+      -
+        - patient_id
+        - date
+      -
+        - 1
+        - 2009-10-10
+      -
+        - 1
+        - 2009-10-11
+      -
+        - 2
+        - 2008-01-01
+
+    - AdverseEvent:
+      -
+        - patient_id
+        - start_date
+        - type
+      -
+        - 1
+        - 2008-01-19
+        - rejection
+#    Assay:
+#    AssayBatch:
+#    AssayQcValue:
+#    Channel:
+    - Comorbidity:
+      -
+        - patient_id
+        - condition_name
+      -
+        - 2
+        - Angina
+    - ControlledVocab:
+      -
+        - id
+        - category
+        - value
+        - accession
+      -
+        - 1
+        - DiagnosisCondition
+        - Systemic Lupus Erythematosus
+        - CV1
+      -
+        - 2
+        - DiseaseEvent
+        - Relapse
+        - CV2
+      -
+        - 3
+        - DrugName
+        - Prednisolone
+        - CV3
+      -
+        - 4
+        - DrugLocale
+        - in clinic
+        - CV4
+      -
+        - 5
+        - PatientGroupBasis
+        - gene expression study
+        - CV5
+      -
+        - 6
+        - PatientGroup
+        - CD6
+        - CV6
+      -
+        - 7
+        - PriorGroup
+        - vaccination
+        - CV7
+    - Diagnosis:
+      -
+        - patient_id
+        - condition_name_id
+      -
+        - 2
+        - 1
+    - DiseaseEvent:
+      -
+        - patient_id
+        - type_id
+        - start_date
+      -
+        - 1
+        - 2
+        - 2007-02-03
+    - Drug:
+      -
+        - id
+        - name_id
+        - locale_id
+      -
+        - 1
+        - 3
+        - 4
+    - EmergentGroup:
+      -
+        - id
+        - basis_id
+        - type_id
+        - name
+      -
+        - 1
+        - 5
+        - 6
+        - 8.1
+
+    - PriorGroup:
+      -
+        - id
+        - type_id
+        - name
+      -
+        - 1
+        - 7
+        - V1
+
+  accounts:
+    - User:
+      -
+        - id
+        - username
+        - name
+        - password
+        - date_created
+      -
+        - 1
+        - admin
+        - Administrator
+        - d033e22ae348aeb5660fc2140aec35850c4da997
+        - '2009-01-01 00:00:00'
+      -
+        - 2
+        - testeditor
+        - Test Editor
+        - 7d4d68260b1600381598ba46c69aad3d491d6f31
+        - '2009-01-01 00:00:00'
+      -
+        - 3
+        - testuser
+        - Test User
+        - 45c571a156ddcef41351a713bcddee5ba7e95460
+        - '2009-01-01 00:00:00'
+
+    - Role:
+      -
+        - id
+        - rolename
+      -
+        - 1
+        - admin
+      -
+        - 2
+        - editor
+      -
+        - 3
+        - user
+
+    - UserRole:
+      -
+        - user_id
+        - role_id
+      -
+        - 1
+        - 1
+      -
+        - 1
+        - 2
+      -
+        - 1
+        - 3
+      -
+        - 2
+        - 2
+      -
+        - 2
+        - 3
+      -
+        - 3
+        - 3
+        

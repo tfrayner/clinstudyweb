@@ -1,0 +1,164 @@
+---
+auto_fieldset: { legend: 'Sample' }
+
+##############
+# Sample #
+##############
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Text
+    name: name
+    label: T no.
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  31
+        min:  1
+      - type: DBIC::Unique
+        resultset: Sample
+        self_stash_key: object
+        message: Must be a unique ID
+    label_attributes:
+      tooltipText: Sample T number.
+
+  - type: Select
+    name: cell_type_id
+    label: Cell Type
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    label_attributes:
+      tooltipText: The type of cell from which the sample is derived.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: CellType
+      label_column: value
+
+  - type: Select
+    name: material_type_id
+    label: Material Type
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - Required
+      - AutoSet
+    label_attributes:
+      tooltipText: The type of material stored.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: MaterialType
+      label_column: value
+
+  - type: Text
+    name: freezer_location
+    label: Freezer Location
+    constraints:
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: The location of the freezer containing the sample aliquots.
+
+  - type: Text
+    name: freezer_box
+    label: Freezer Box
+    constraints:
+      - ASCII
+      - type: Length
+        max:  31
+        min:  1
+    label_attributes:
+      tooltipText: The box number containing the aliquots.
+
+  - type: Text
+    name: box_slot
+    label: Box Slot
+    constraints:
+      - ASCII
+      - type: Length
+        max:  31
+        min:  1
+      - type:    DBIC::Unique
+        resultset: Sample
+        self_stash_key:  object
+        message: This location has already been used.
+        others:  freezer_box
+    label_attributes:
+      tooltipText: The location(s) of the tube(s) within the box (e.g. A3, B6 etc.).
+      
+  - type: Text
+    name: num_aliquots
+    label: Number of Aliquots
+    constraints:
+      - Integer
+      - type: Length
+        max:  6
+        min:  1
+    label_attributes:
+      tooltipText: The number of aliquots of this sample which have been stored in this location.
+
+  - type: Text
+    name: concentration
+    label: Concentration
+    label_attributes:
+      tooltipText: The sample concentration (ng/ul).
+    constraints:
+      - type: Number
+      - type: Length
+        max:  12
+        min:  0
+
+  - type: Text
+    name: purity
+    label: Purity
+    label_attributes:
+      tooltipText: The sample purity (260/280 ratio).
+    constraints:
+      - type: Number
+      - type: Length
+        max:  12
+        min:  0
+
+  - type: Select
+    name: quality_score_id
+    label: Quality Score
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    label_attributes:
+      tooltipText: A quality score assigned during the sample processing stage.
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: QualityScore
+      label_column: value
+
+  - type: Textarea
+    name: notes
+    label: Other Notes
+    label_attributes:
+      tooltipText: Enter any other information here.
+    attributes:
+      rows: 10
+
+##########
+# Submit #
+##########
+
+  - type: Src
+    load_config_filestem: lib/submit
+
+constraints:
+  - SingleValue
+

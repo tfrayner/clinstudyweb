@@ -1,0 +1,58 @@
+[% META title = 'User List' %] 
+
+<fieldset class="data_view">
+<legend>Users <span><a href="[% c.uri_for("/user/add") | html %]">Add</a></span></legend>
+[% IF users.count > 0 %]
+    <div>
+    <table id='userList'>
+    <thead>
+      <tr>
+        <td>Username</td>
+        <td>Real name</td>
+        <td>Email</td>
+        <td>Groups</td>
+        <td>Last access date</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% WHILE (user = users.next) %] 
+        <tr> 
+        <td> [% user.username | html %] </td>
+        <td> [% user.name     | html_entity %] </td>
+        <td> [% user.email    | html_entity %] &nbsp; </td>
+        <td>
+          [% FOREACH role = user.roles %]
+            [% IF role.rolename == 'admin' %]
+              <font color='red'>[% role.rolename | html %]</font>
+            [% ELSE %]
+              [% role.rolename | html %]
+            [% END %]
+          [% END %] &nbsp;
+        </td>
+        <td> [% user.date_accessed | html_entity %] &nbsp; </td>
+        <td> <a href="[% c.uri_for("/user/edit/$user.id") | html %]">Edit</a>
+             <a href="[% c.uri_for("/user/reset/$user.id") | html %]"     
+             onclick="return confirm('Really reset password for [% user.username | html %] ?');">Reset password</a>
+             <a href="[% c.uri_for("/user/delete/$user.id") | html %]"     
+             onclick="return confirm('Really delete [% user.username | html %] ?');">Delete</a> </td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('userList');
+        tableWidgetObj.setTableHeight(200);
+        tableWidgetObj.setColumnSort(Array('S','S','S',false,'S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %] 
+    <p>No users yet!</p> 
+[% END %] 
+</fieldset>

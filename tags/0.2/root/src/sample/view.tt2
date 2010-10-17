@@ -1,0 +1,53 @@
+[% META title = 'Sample Details' %]
+
+<h3>[% object.visit_id.patient_id.trial_id | html %]; visit date: [% object.visit_id.date %]</h3>
+
+<fieldset class="data_view">
+<legend>Sample <span><a href="[% c.uri_for("/sample/edit", object.id) %]">Edit</a></span></legend>
+<table id="sampleInfo" class="horizontal">
+  <tbody>
+     <tr><th>Sample T no.:</th>
+         <td>[% object.name | html %]</td></tr>
+     <tr><th>Cell Type:</th>
+         <td>[% object.cell_type_id.value | html %]</td></tr>
+     <tr><th>Material Type:</th>
+         <td>[% object.material_type_id.value | html %]</td></tr>
+     <tr><th>Freezer Location:</th>
+         <td>[% object.freezer_location | html %]</td></tr>
+     <tr><th>Freezer Box:</th>
+         <td>[% object.freezer_box | html %]</td></tr>
+     <tr><th>Box Slot:</th>
+         <td>[% object.box_slot | html %]</td></tr>
+     <tr><th>Number of aliquots:</th>
+         <td>[% object.num_aliquots | html %]</td></tr>
+     <tr><th>Concentration:</th>
+         <td>[% object.concentration | format("%.02f") | html %]</td></tr>
+     <tr><th>Purity:</th>
+         <td>[% object.purity | format("%.02f") | html %]</td></tr>
+     <tr><th>Quality Score:</th>
+         <td>[% IF object.quality_score_id -%]
+               [%- object.quality_score_id.value | html -%]
+             [%- ELSE -%]
+               &nbsp;
+             [%- END %]</td></tr>
+     <tr><th>Other Notes:</th>
+         <td>[% object.notes | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Assays</legend>
+[% IF object.channels.blessed %]
+  [% SET objects = [ object.channels ] %]
+[% ELSE %]
+  [% SET objects = object.channels.list %]
+[% END %]
+[% INCLUDE 'app/sample_channels_list.tt2' %]
+
+[% IF object.channels.size == 2 %]
+   <p class="text"><a href="[% c.uri_for("/sample/switch_channels/$object.id") | html %]"
+       onclick="return confirm('Really switch channels for these assays?');">Switch channels for these assays</a></p>
+[% END %]
+
+</fieldset>

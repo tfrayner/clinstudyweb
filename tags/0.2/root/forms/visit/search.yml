@@ -1,0 +1,86 @@
+---
+auto_fieldset: { legend: 'Search visits' }
+
+elements:
+
+  - type: Block
+    name: simple
+    nested_name: simple
+    elements:
+
+      - type: Block
+        tag: h5
+        attributes:
+          class: text
+        content_xml: >-
+          Wildcard searches available: ? for single character, * for multiple characters.
+
+      - type: Text
+        name: date
+        label: Visit Date
+        constraints:
+          - type: DateTime
+            parser: &PARSER
+              strptime: '%Y-%m-%d'
+          - type: Length
+            max:  10
+            min:  1
+        inflators:
+          - type: DateTime
+            parser: *PARSER
+            strptime: '%Y-%m-%d'
+    
+      - type: Select
+        name: nominal_timepoint_id
+        label: Nominal Timepoint
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: NominalTimepoint
+          label_column: value
+    
+      - type: Select
+        name: disease_activity_id
+        label: Disease Activity
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: DiseaseActivity
+          label_column: value
+    
+      - type: Block
+        nested_name: visit_emergent_groups
+        elements:
+
+          - type: Select
+            name: emergent_group_id
+            label: Emergent Group
+            empty_first: 1
+            empty_first_label: -select-
+            constraints:
+              - AutoSet
+            model_config:
+              resultset: EmergentGroup
+              label_column: name
+              attributes:
+                order_by: name
+            
+      - type: Text
+        name: notes
+        label: Other Notes
+      
+  - type: Fieldset
+
+  - type: Submit
+    name: submit
+    label: ' '
+    value: Submit Form
+

@@ -1,0 +1,84 @@
+<div >
+<p>From here, you can: </p>
+<ul>
+  <li>
+    <h4>Search the database</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for('/patient/search') %]">Search for patients</a></li> 
+      <li><a href="[% c.uri_for('/visit/search') %]">Search for clinical visits</a></li> 
+      <li><a href="[% c.uri_for('/sample/search') %]">Search for samples</a></li> 
+      <li><a href="[% c.uri_for('/assay/search') %]">Search for assays</a></li> 
+    </ul>
+  </li>
+  <li>
+    <h4>Browse records</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for('/patient') %]">Patients by study type</a></li> 
+      <li><a href="[% c.uri_for('/assaybatch/list') %]">Assay batches</a></li> 
+      <li><a href="[% c.uri_for('/adverseevent') %]">Adverse events</a></li> 
+      <li><a href="[% c.uri_for('/sample/assay_report') %]">Sample assay reports</a></li> 
+    </ul>
+  </li>
+  <li>
+    <h4>Add new records</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for('/patient/add') %]">Add a new patient</a></li>
+    </ul>
+  </li>
+[% IF c.user %]
+
+  [% IF c.check_any_user_role("admin") %]
+  <li>
+    <h4>Administrate the database</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for("/user/list") | html %]">List local database users</a></li> 
+      <li><a href="[% c.uri_for("/controlledvocab/list") | html %]">List controlled vocabulary terms</a></li> 
+      <li><a href="[% c.uri_for("/test/list") | html %]">List clinical tests</a></li>
+      <li><a href="[% c.uri_for("/priorgroup/list") | html %]">List patient 'prior groups'</a></li> 
+      <li><a href="[% c.uri_for("/emergentgroup/list") | html %]">List patient 'emergent groups'</a></li> 
+    </ul>
+  </li>  
+  [% END %]
+  <li>
+    <h4>Edit your account details</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for("/user/modify/$c.user.id") | html %]">Edit your user details...</a></li>
+    </ul>
+  </li>
+
+[% ELSE %]
+  <li>
+    <h4>Apply for access to the database</h4>
+    <ul class="linklist">
+      <li><a href="[% c.uri_for("/user/add") | html %]">Create a new user account...</a></li>
+    </ul>
+  </li>
+[% END %]
+
+</ul>
+<ul>
+</ul> 
+</div> 
+
+<div class="linklist">
+<ul>
+</ul>
+</div>
+
+<div class="thawte_seal">
+  <table width="10" border="0" cellspacing="0" align="center">
+    <tr>
+      <td>
+        <script src="https://siteseal.thawte.com/cgi/server/thawte_seal_generator.exe"></script>
+      </td>
+    </tr>
+    <tr>
+      <td height="0" align="center">
+        <a style="color:#AD0034" target="_new"
+        href="http://www.thawte.com/digital-certificates/">
+         <span style="font-family:arial; font-size:8px; color:#AD0034">
+          ABOUT SSL CERTIFICATES</span></a>
+      </td>
+    </tr>
+  </table>
+</div>
