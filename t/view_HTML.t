@@ -23,6 +23,10 @@
 use strict;
 use warnings;
 use Test::More;
+
+use lib 't/lib';
+use CSWTestLib;
+
 use ClinStudy::Web;
 
 BEGIN { use_ok 'ClinStudy::Web::View::HTML' }

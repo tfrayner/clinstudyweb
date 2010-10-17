@@ -6,6 +6,9 @@ use strict;
 use warnings;
 use Test::More;
 
+use lib 't/lib';
+use CSWTestLib;
+
 {
     use Test::DBIx::Class qw(:resultsets);
 
