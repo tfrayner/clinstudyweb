@@ -1,5 +1,3 @@
-#!/usr/bin/env perl
-# 
 # Copyright 2010 Tim Rayner, University of Cambridge
 # 
 # This file is part of ClinStudy::Web.
@@ -17,17 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
-# $Id$
+# $Id: clinstudy_web.yml 2179 2010-02-27 16:18:09Z tfrayner $
 #
+# Configuration file for testing purposes only (in-memory SQLite database).
+#
+# This file can be renamed to use other config schemes (e.g. .xml, .ini, .conf).
 
-use strict;
-use warnings;
-use Test::More tests => 3;
+name: ClinStudy::Web
 
-use lib 't/lib';
-use CSWTestLib;
+# Test database configuration. We use a pre-existing SQLite file
+# database here, rather than relying on Test::DBIx::Class which
+# currently generates bus errors when populating on-disk databases.
+Model::DB:
 
-BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
+  connect_info:
+    - 'dbi:SQLite:dbname=t/testing.db'
+    -
+    -
+    - RaiseError: 1
+      AutoCommit: 1
 
-ok( request('/')->is_success, 'Request for main page should succeed' );
-ok( request('/login')->is_success, 'Request for login page should succeed' );
+# HTML::FormFu configuration.
+Controller::HTML::FormFu:
+  constructor:
+    render_method: tt
+    auto_constraint_class: '%t'

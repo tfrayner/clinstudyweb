@@ -85,7 +85,7 @@ sub load {
 
     # Take care of the cached RelatedVocab objects.
     foreach my $item ( @RV_CACHE ) {
-        $self->next::method( @$item );
+        $self->SUPER::load_element( @$item );
     }
 
     return $rc;

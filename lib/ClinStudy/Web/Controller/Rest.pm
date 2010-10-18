@@ -213,6 +213,7 @@ sub dump_sample_entity {
         visit_date     => $visit->date(),
         material_type  => $sample->material_type_id()->value(),
         cell_type      => $sample->cell_type_id()->value(),
+        studies        => join(', ', map { $_->type_id()->value() } $patient->studies() ),
     );
 
     if ( my $tp = $sample->visit_id()->nominal_timepoint_id() ) {
@@ -302,6 +303,7 @@ sub dump_assay_entity {
         batch_date => $batch->date(),
         identifier => $assay->identifier(),
         operator   => $batch->operator(),
+        platform   => $batch->platform_id()->value(),
     );
 
     my @channels = $assay->channels();

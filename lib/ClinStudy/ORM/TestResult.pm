@@ -86,11 +86,8 @@ __PACKAGE__->add_columns(
   { data_type => "tinyint", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("test_result_visit_id", ["test_id", "date", "visit_id"]);
-__PACKAGE__->add_unique_constraint(
-  "test_result_hospitalisation_id",
-  ["test_id", "date", "hospitalisation_id"],
-);
+__PACKAGE__->add_unique_constraint("test_id_3", ["test_id", "date", "hospitalisation_id"]);
+__PACKAGE__->add_unique_constraint("test_id_2", ["test_id", "date", "visit_id"]);
 
 =head1 RELATIONS
 
@@ -173,8 +170,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LHlb4mW7mHHytnm0Po3UeA
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DZyuxwlmnExYENNg5Ju2aw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

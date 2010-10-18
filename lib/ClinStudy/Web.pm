@@ -50,7 +50,7 @@ use Catalyst qw/ConfigLoader
 
 use 5.008001;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 #################
 # Configuration #
@@ -89,6 +89,14 @@ __PACKAGE__->config(
     'Controller::HTML::FormFu' => {
         model_stash => {
             schema => 'DB',
+        },
+        constructor => {
+            render_method         => 'tt',
+            auto_constraint_class => '%t',
+
+            # FIXME this can be removed once we migrate to the
+            # H::F::Model::DBIC main trunk.
+            default_model         => 'DBIC_CSW',
         },
     },
 );
