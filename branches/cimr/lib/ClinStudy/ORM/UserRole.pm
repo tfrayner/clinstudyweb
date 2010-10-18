@@ -48,7 +48,7 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("user_role", ["user_id", "role_id"]);
+__PACKAGE__->add_unique_constraint("user_id", ["user_id", "role_id"]);
 
 =head1 RELATIONS
 
@@ -73,8 +73,8 @@ Related object: L<ClinStudy::ORM::Role>
 __PACKAGE__->belongs_to("role_id", "ClinStudy::ORM::Role", { id => "role_id" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 21:47:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wZQB2BuVTMPkRvfjR6lpbw
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LhGjLOP/jUimerPJA4n9Nw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

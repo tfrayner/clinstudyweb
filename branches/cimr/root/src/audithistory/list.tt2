@@ -1,0 +1,49 @@
+[% META title = 'Audit History' %]
+
+<h3>Listing audit events for stored '[% object_class %]' object with internal database rowID '[% object_id %]':</h3>
+
+[% IF objects.size > 0 %]
+
+<fieldset class="data_view">
+<legend>Audit History</legend>
+  <div>
+    <table id="auditList">
+      <thead>
+        <tr>
+          <td>Date</td>
+          <td>User</td>
+          <td>File or Session ID</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH audit = objects.sort('audit_history_id') %]
+        <tr> 
+          <td> [% audit.change.changeset.set_date | html %] </td>
+          <td> [% SET user = audit.change.changeset.user_id %]
+               [% IF user.defined -%]
+                 [%- usermap.$user | html -%] &nbsp;
+               [%- ELSE -%]
+                 N/A
+               [%- END %]</td>
+          <td> [% audit.change.changeset.session_id | html %] &nbsp; </td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+      DHTMLSuite.include("tableWidget"); 
+  </script>
+  <script type="text/javascript">
+      var tableWidgetObj = new DHTMLSuite.tableWidget();
+      tableWidgetObj.setTableId('auditList');
+      tableWidgetObj.setTableHeight('200');
+      tableWidgetObj.setColumnSort(Array('S','S','S'));
+      tableWidgetObj.init();
+      tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+  </script>
+[% ELSE %]
+  <p>No audit history! This is almost certainly an error. Please contact your database administrator.</p>
+[% END %]
+
+</fieldset>

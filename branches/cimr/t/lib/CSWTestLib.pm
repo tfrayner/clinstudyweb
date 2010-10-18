@@ -19,15 +19,48 @@
 #
 # $Id$
 #
+package CSWTestLib;
 
-use strict;
+use 5.008;
+
+use strict; 
 use warnings;
-use Test::More tests => 3;
 
-use lib 't/lib';
-use CSWTestLib;
+use Carp;
 
-BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
+use Data::Dumper;
 
-ok( request('/')->is_success, 'Request for main page should succeed' );
-ok( request('/login')->is_success, 'Request for login page should succeed' );
+use File::Copy;
+
+BEGIN {
+    $ENV{CLINSTUDY_WEB_CONFIG} = 'clinstudy_web_testing.yml';
+    copy('t/pristine_testing.db', 't/testing.db');
+};
+
+1;
+__END__
+
+=head1 NAME
+
+CSWTestLib - Test library for use with ClinStudyWeb
+
+=head1 SYNOPSIS
+
+ use CSWTestLib;
+
+=head1 DESCRIPTION
+
+This library is part of the test suite for ClinStudyWeb.
+
+=head1 AUTHOR
+
+Tim F. Rayner <tfrayner@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Tim F. Rayner, University of Cambridge
+
+This library is released under version 2 of the GNU General Public
+License (GPL).
+
+=cut

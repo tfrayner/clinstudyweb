@@ -155,6 +155,7 @@ elements:
     counter_name: diagnosis_count
     model_config:
       new_empty_row: condition_name_id
+      empty_rows: 1
     elements:
        
       # N.B. nested Repeatable Selects don't populate correctly when
@@ -254,6 +255,7 @@ elements:
     nested_name: disease_events
     model_config:
       new_empty_row: type_id
+      empty_rows: 1
     counter_name: disease_event_count
     elements:
       - type: Select
@@ -307,6 +309,7 @@ elements:
     counter_name: comorbidity_count
     model_config:
       new_empty_row: condition_name
+      empty_rows: 1
     elements:
       - type: Text
         name: condition_name
@@ -355,6 +358,7 @@ elements:
     nested_name: prior_observations
     model_config:
       new_empty_row: type_id
+      empty_rows: 1
     counter_name: observation_count
     elements:
       - type: Select
@@ -420,6 +424,7 @@ elements:
 #     nested_name: prior_treatments
 #     model_config:
 #       new_empty_row: type_id
+#       empty_rows: 1
 #     counter_name: treatment_count
 #     elements:
 #       - type: Select
@@ -520,6 +525,7 @@ elements:
 #         nested_name: drugs
 #         model_config:
 #           new_empty_row: name
+#           empty_rows: 1
 #         counter_name: drug_treatment_count
 #         elements:
 #           - type: Text
@@ -570,6 +576,7 @@ elements:
     nested_name: hospitalisations
     model_config:
       new_empty_row: date
+      empty_rows: 1
     counter_name: hospitalisation_count
     elements:
       - type: Hidden
