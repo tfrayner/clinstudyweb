@@ -410,8 +410,8 @@ sub audit_history : Local {
         or confess("Error: CIMR error redirect not set in FormFuBase controller " . ref $self);
 
     # FIXME some of this is rather special-cased.
-    $class =~ s/^DB:://;
     my $audit_class = $class . 'AuditHistory';
+    $audit_class =~ s/^DB:://;
 
     my $obj = $c->model( $class )->find( $object_id );
     unless ( $obj ) {
@@ -422,7 +422,8 @@ sub audit_history : Local {
 
     # DOUBLE FIXME _journal_schema is a "private" method in
     # DBIx::Class::Schema::Journal, needs removing
-    my $rs = $c->model( $class )->result_source->schema->_journal_schema->resultset( $audit_class );
+    my $schema = $c->model( $class )->result_source->schema();
+    my $rs = $schema->_journal_schema->resultset( $audit_class );
 
     my @changes = $rs->search({ id => $object_id });
     if ( scalar @changes < 1 ) {
