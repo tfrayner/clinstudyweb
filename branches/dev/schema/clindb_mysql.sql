@@ -161,6 +161,7 @@ CREATE TABLE `diagnosis` (
   `disease_staging_id` int(11) default NULL,
   `disease_extent_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY (`patient_id`, `date`),
   KEY (`patient_id`),
   KEY (`condition_name_id`),
   KEY (`confidence_id`),
