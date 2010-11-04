@@ -44,11 +44,18 @@
     <xs:attribute name="accession" type="shortvarcharType" use="required"/>
     <xs:attribute name="category" type="varcharType" use="required"/>
     <xs:attribute name="value" type="varcharType" use="required"/>
+    <xs:attribute name="term_source_ref" type="shortvarcharType"/>
   </xs:complexType>
 
   <xs:complexType name="relatedVocabType">
     <xs:attribute name="target_ref" type="shortvarcharType" use="required"/>
     <xs:attribute name="relationship_ref" type="shortvarcharType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="termSourceType">
+    <xs:attribute name="name" type="shortvarcharType" use="required"/>
+    <xs:attribute name="version" type="shortvarcharType"/>
+    <xs:attribute name="uri" type="varcharType"/>
   </xs:complexType>
 
   <xs:complexType name="testType">
@@ -94,6 +101,12 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="termSourceGroup">
+    <xs:sequence>
+      <xs:element name="TermSource" type="termSourceType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="testGroup">
     <xs:sequence>
       <xs:element name="Test" type="testType" maxOccurs="unbounded"/>
@@ -124,6 +137,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="ControlledVocabs" type="controlledVocabGroup" minOccurs="0"/>
+        <xs:element name="TermSources" type="termSourceGroup" minOccurs="0"/>
         <xs:element name="Tests" type="testGroup" minOccurs="0"/>
         <xs:element name="Users" type="userGroup" minOccurs="0"/>
       </xs:sequence>
@@ -135,6 +149,10 @@
     <xs:key name="controlledVocabAccession">
       <xs:selector xpath=".//ControlledVocab"/>
       <xs:field xpath="@accession"/>
+    </xs:key>
+    <xs:key name="termSourceName">
+      <xs:selector xpath=".//TermSource"/>
+      <xs:field xpath="@name"/>
     </xs:key>
     <xs:key name="controlledVocabKey">
       <xs:selector xpath=".//ControlledVocab"/>
@@ -153,6 +171,10 @@
     <xs:keyref name="relatedVocabRelationshipKeyRef" refer="controlledVocabAccession">
       <xs:selector xpath=".//RelatedVocab"/>
       <xs:field xpath="@relationship_ref"/>
+    </xs:keyref>
+    <xs:keyref name="termSourceKeyRef" refer="termSourceName">
+      <xs:selector xpath=".//ControlledVocab"/>
+      <xs:field xpath="@term_source_ref"/>
     </xs:keyref>
   </xs:element>
 
