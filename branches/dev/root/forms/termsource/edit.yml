@@ -1,0 +1,51 @@
+---
+auto_fieldset: { legend: 'Term Source' }
+
+elements:
+
+  - type: Hidden
+    name: id
+
+  - type: Text
+    name: name
+    label: Name
+    constraints:
+      - Required
+      - ASCII
+      - type: Length
+        max:  31
+        min:  1
+      - type: DBIC::Unique
+        resultset: TermSource
+        self_stash_key: object
+        message: Must be a unique name
+    label_attributes:
+      tooltipText: The name of the term source.
+
+  - type: Text
+    name: version
+    label: Version
+    constraints:
+      - ASCII
+      - type: Length
+        max:  31
+        min:  1
+    label_attributes:
+      tooltipText: The version number associated with this term source.
+
+  - type: Text
+    name: uri
+    label: URI
+    constraints:
+      - ASCII
+      - type: Length
+        max:  255
+        min:  1
+    label_attributes:
+      tooltipText: >-
+        A URI indicating where the term source can be located (this
+        may be a filename, a web link, an FTP site or similar).
+
+  - type: Src
+    load_config_filestem: lib/submit
+
