@@ -198,7 +198,7 @@ sub update_or_create_element {
     }
     my @objects = $parent->findnodes($xpath);
 
-    my $is_undef = qr!\A (?:|unknown|n[\/\.]?[adk]) \z!ixms;
+    my $is_undef = qr!\A (?:|unknown|n[\/\.]?[ak]) \z!ixms;
 
     my $obj;
     if ( scalar @objects == 1 ) {

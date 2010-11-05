@@ -95,9 +95,12 @@ CREATE TABLE `controlled_vocab` (
   `accession` varchar(31) NOT NULL,
   `category` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL,
+  `term_source_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`accession`),
-  UNIQUE KEY (`category`,`value`)
+  UNIQUE KEY (`category`,`value`),
+  KEY (`term_source_id`),
+  CONSTRAINT `controlled_vocab_ibfk_1` FOREIGN KEY (`term_source_id`) REFERENCES `term_source` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -143,6 +146,32 @@ LOCK TABLES `related_vocab` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `term_source`
+--
+
+DROP TABLE IF EXISTS `term_source`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `term_source` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(31) NOT NULL,
+  `version` varchar(31) default NULL,
+  `uri` varchar(255) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `term_source`
+--
+
+LOCK TABLES `term_source` WRITE;
+/*!40000 ALTER TABLE `term_source` DISABLE KEYS */;
+/*!40000 ALTER TABLE `term_source` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `diagnosis`
 --
 
@@ -161,6 +190,7 @@ CREATE TABLE `diagnosis` (
   `disease_staging_id` int(11) default NULL,
   `disease_extent_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY (`patient_id`, `date`),
   KEY (`patient_id`),
   KEY (`condition_name_id`),
   KEY (`confidence_id`),

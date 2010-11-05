@@ -131,6 +131,10 @@ import_mapping:
         table:  exp_ct_haematol_concat
         attr:   Lymphocytes
         
+    Neuts:
+        table:  exp_ct_haematol_concat
+        attr:   Neutrophils
+        
     Plts:
         table:  exp_ct_haematol_concat
         attr:   Plts

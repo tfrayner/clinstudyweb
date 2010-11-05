@@ -50,4 +50,4 @@ requires:
   perl: 5.8.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 0.1
+version: 0.3
