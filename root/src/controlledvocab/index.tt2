@@ -1,0 +1,19 @@
+[% META title = 'Controlled Vocab Terms' %]
+
+<div>
+<ul class="linklist">
+<li><a href="[% c.uri_for("/controlledvocab/add") %]">Add a new term in an existing category</a></li>
+<li><a href="[% c.uri_for("/controlledvocab/add_category") %]">Add a new term in a new category</a></li>
+</ul>
+</div>
+
+<div>
+   <ul><li>List CVs by category:</li>
+      <ul class="linklist">
+        [% FOREACH cat = categories.sort %]
+          <li><a href="[% c.uri_for("/controlledvocab/list_by_category", cat) %]">[% cat %] terms</a></li>
+        [% END %]
+      </ul>
+   </ul>
+</div>
+
