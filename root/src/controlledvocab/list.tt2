@@ -10,6 +10,7 @@
         <td>Accession</td>
         <td>Category</td>
         <td>Value</td>
+        <td>Term Source</td>
         <td>&nbsp;</td>
       </tr>
     </thead>
@@ -19,6 +20,11 @@
         <td> [% cv.accession | html %] </td>
         <td> [% cv.category | html %] </td>
         <td> [% cv.value    | html %] </td>
+        <td>[% IF cv.term_source_id.defined -%]
+              [%- cv.term_source_id.name | html -%]
+            [%- ELSE -%]
+              &nbsp;
+            [%- END %]</td>
         <td> <a href="[% c.uri_for("/controlledvocab/view/$cv.id") | html %]">View</a>
              <a href="[% c.uri_for("/controlledvocab/edit/$cv.id") | html %]">Edit</a>
              <a href="[% c.uri_for("/controlledvocab/delete/$cv.id") | html %]"     
@@ -40,7 +46,7 @@
         tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
     </script>
 [% ELSE %] 
-    <p>No controlled vocabulary terms yet!</p> 
+    <p>No controlled vocabulary terms defined yet.</p> 
 [% END %]
 </fieldset>
 
