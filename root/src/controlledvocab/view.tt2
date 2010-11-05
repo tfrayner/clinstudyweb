@@ -10,6 +10,13 @@
          <td>[% object.category | html %]</td></tr>
      <tr><th>Value:</th>
          <td>[% object.value | html %]</td></tr>
+     <tr><th>Term Source:</th>
+         <td>[% IF object.term_source_id.defined -%]
+               [%- object.term_source_id.name | html -%]
+             [%- ELSE -%]
+               Locally defined term
+             [%- END %]
+         </td></tr>
   </tbody>
 </table>
 </fieldset>

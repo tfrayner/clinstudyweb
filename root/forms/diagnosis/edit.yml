@@ -10,6 +10,9 @@ elements:
   - type: Hidden
     name: id
 
+  - type: Hidden
+    name: patient_id
+
   - type: Select
     name: condition_name_id
     label: Condition
@@ -37,6 +40,11 @@ elements:
       - type: Length
         max:  10
         min:  1
+      - type:    DBIC::Unique
+        resultset:   Diagnosis
+        self_stash_key:  object
+        message: Only one diagnosis allowed per patient per date.
+        others:  patient_id
     label_attributes:
       tooltipText: >-
         The date of the diagnosis; click on the entry box for a pop-up calendar.

@@ -51,6 +51,21 @@ elements:
     label_attributes:
       tooltipText: The actual term value.
 
+  - type: Select
+    name: term_source_id
+    label: Term Source
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
+    model_config:
+      resultset: TermSource
+      label_column: name
+    label_attributes:
+      tooltipText: >-
+        An optional term source (i.e. the source ontology) associated
+        with this controlled vocabulary term.
+
   - type: Src
     load_config_filestem: lib/submit
 

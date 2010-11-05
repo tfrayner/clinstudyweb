@@ -42,11 +42,12 @@ sub BUILD {
         'xsi:noNamespaceSchemaLocation' => 'clindb_admin.xsd',
     });
 
-    $self->classes([qw( ControlledVocab Test User )]);
+    $self->classes([qw( ControlledVocab TermSource Test User )]);
 
-    $self->external_value_map({
+    $self->external_id_map({
         'Role'            => 'rolename',
         'ControlledVocab' => 'value',
+        'TermSource'      => 'name',
     });
 
     $self->boundaries({
@@ -54,6 +55,7 @@ sub BUILD {
                                 DiseaseEvent Drug EmergentGroup Patient PriorGroup PriorObservation
                                 PriorTreatment RiskFactor Sample Study SystemInvolvement
                                 TestPossibleValue TestResult Transplant Visit) ],
+        TermSource => [ qw(ControlledVocab) ],
         Test => [ qw(TestResult) ],
     });
 
@@ -99,6 +101,34 @@ sub row_to_element {
     }
 
     return $element;
+}
+
+sub rel_to_attr {
+
+    # The generic superclass doesn't know about reference elements in
+    # the XML (it would have to parse the schema doc to detect these,
+    # and it's not smart enough yet to do that). We tell it which
+    # relationships should be treated as references here.
+    my ( $self, $row, $col, $element ) = @_;
+
+    my $source  = $row->result_source();
+    my $class   = $source->source_name();
+    my $nextclass = $source->related_class( $col );
+    $nextclass =~ s/^.*:://;
+
+    # Only TermSource is used as a reference for now.
+    if ( $nextclass eq 'TermSource' ) {
+
+        # Generate the attribute as a reference within the XML doc.
+        $self->next::method( $row, $col, $element, 1 );
+    }
+    else {
+
+        # Regular attribute.
+        $self->next::method( $row, $col, $element );
+    }
+
+    return;
 }
 
 1;
