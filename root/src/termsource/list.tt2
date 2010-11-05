@@ -1,0 +1,44 @@
+[% META title = 'Term Source List' %] 
+
+<fieldset class="data_view">
+<legend>Term Sources <span><a href="[% c.uri_for("/termsource/add") | html %]">Add</a></span></legend>
+[% IF objects && objects.size > 0 %]
+    <div>
+    <table id='termSourceList'>
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Version</td>
+        <td>URI</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH ts = objects.sort('name') %] 
+        <tr> 
+        <td> [% ts.name | html %] </td>
+        <td> [% ts.version | html %] &nbsp; </td>
+        <td> [% ts.uri | html %] &nbsp; </td>
+        <td> <a href="[% c.uri_for("/termsource/edit/$ts.id") | html %]">Edit</a>
+             <a href="[% c.uri_for("/termsource/delete/$ts.id") | html %]"     
+             onclick="return confirm('Really delete term source [% ts.name %] ?');">Delete</a> </td>
+        </tr> 
+    [% END %]
+    </tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('termSourceList');
+        tableWidgetObj.setTableHeight(200);
+        tableWidgetObj.setColumnSort(Array('S','S','S',false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
+    </script>
+[% ELSE %] 
+    <p>No term sources defined yet.</p> 
+[% END %]
+</fieldset>

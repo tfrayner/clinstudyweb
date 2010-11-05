@@ -101,10 +101,14 @@ sub read {
     my $tabfile = $self->tabfile();
     open (my $fh, '<', $tabfile)
         or die("Unable to open file $tabfile:$!\n");
-    
-    my $header = $csv->getline($fh);
-    unless ( $header && ref $header eq 'ARRAY' ) {
-        die("Unable to read file header line.\n");
+
+    my ( $headstr, $header );
+    until ( $headstr && $headstr !~ /^\s*#/ ) {
+        $header = $csv->getline($fh);
+        unless ( $header && ref $header eq 'ARRAY' ) {
+            die("Unable to read file header line.\n");
+        }
+        $headstr = join('', @$header);
     }
 
     # Strip whitespace on either side of each column header.

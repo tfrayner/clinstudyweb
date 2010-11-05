@@ -50,7 +50,7 @@ use Catalyst qw/ConfigLoader
 
 use 5.008001;
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 #################
 # Configuration #

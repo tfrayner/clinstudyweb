@@ -43,6 +43,12 @@ __PACKAGE__->table("controlled_vocab");
   is_nullable: 0
   size: 255
 
+=head2 term_source_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -54,6 +60,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "value",
   { data_type => "varchar", is_nullable => 0, size => 255 },
+  "term_source_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("category", ["category", "value"]);
@@ -164,6 +172,20 @@ __PACKAGE__->has_many(
   "ClinStudy::ORM::ClinicalFeature",
   { "foreign.type_id" => "self.id" },
   {},
+);
+
+=head2 term_source_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::TermSource>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "term_source_id",
+  "ClinStudy::ORM::TermSource",
+  { id => "term_source_id" },
 );
 
 =head2 diagnosis_condition_name_ids
@@ -692,8 +714,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7QsTFs7lE5849hQZV5/kbg
+# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-11-04 17:45:47
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Z5Mpc77xFwPjLPx3XbSHYw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

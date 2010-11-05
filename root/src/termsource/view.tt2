@@ -1,0 +1,15 @@
+[% META title = 'Term Source Details' %]
+
+<fieldset class="data_view">
+<legend>Term Source <span><a href="[% c.uri_for("/termsource/edit", object.id) | html %]">Edit</a></span></legend>
+<table id="testInfo" class="horizontal">
+  <tbody>
+     <tr><th>Term Source Name:</th>
+         <td>[% object.name | html %]</td></tr>
+     <tr><th>Version:</th>
+         <td>[% object.version | html %]</td></tr>
+     <tr><th>URI:</th>
+         <td>[% object.uri | html %]</td></tr>
+  </tbody>
+</table>
+</fieldset>
