@@ -36,10 +36,11 @@ sub BUILD {
     my ( $self, $params ) = @_;
 
     # Set up our subclass config here.
-    $self->load_order( [ qw( ControlledVocabs Tests Users ) ] );
+    $self->load_order( [ qw( TermSources ControlledVocabs Tests Users ) ] );
 
     $self->external_id_map( { Role            => 'rolename',
-                              ControlledVocab => 'accession' } );
+                              ControlledVocab => 'accession',
+                              TermSource      => 'name' } );
 
     return;
 }
