@@ -133,7 +133,7 @@ sub assay_report_by_study_type : Local {
 
     # Prefetch here is absolutely *required* for scalability when
     # handling hundreds of patient visits.
-    my %visit_attrs = ( order_by => 'trial_id',
+    my %visit_attrs = ( order_by => [ qw(trial_id date) ],
                         distinct => 1,
                         prefetch => { samples => 'cell_type_id' }, );
 
