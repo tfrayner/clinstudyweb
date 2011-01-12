@@ -41,7 +41,7 @@
         var tableWidgetObj = new DHTMLSuite.tableWidget();
         tableWidgetObj.setTableId('cvList');
         tableWidgetObj.setTableHeight(800);
-        tableWidgetObj.setColumnSort(Array('S','S',false));
+        tableWidgetObj.setColumnSort(Array('S','S','S','S',false));
         tableWidgetObj.init();
         tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the first column
     </script>
