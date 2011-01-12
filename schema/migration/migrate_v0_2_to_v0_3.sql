@@ -1,4 +1,13 @@
+-- $Id$
+--
 -- Upgrade script to handle migration of database schema adding term_source table and accoutrements.
+
+-- Fix to diagnosis constraints; if this fails I'm afraid some data in
+-- your database will need to be rationalised such that each patient
+-- only receives a single diagnosis on any given date.
+ALTER TABLE diagnosis ADD UNIQUE KEY (`patient_id`, `date`);
+
+-- Adding in term source structures. There should be no reason for this to fail.
 --
 -- Table structure for table `term_source`
 --
@@ -64,3 +73,5 @@ ALTER TABLE controlled_vocab ADD CONSTRAINT `controlled_vocab_ibfk_1` FOREIGN KE
  
 ALTER TABLE controlled_vocab_audit_history ADD COLUMN `term_source_id` int(11) DEFAULT NULL;
  
+-- End of term source structures.
+
