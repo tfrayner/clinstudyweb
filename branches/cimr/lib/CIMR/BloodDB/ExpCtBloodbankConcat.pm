@@ -245,6 +245,12 @@ __PACKAGE__->table("exp_ct_bloodbank_concat");
   is_nullable: 1
   size: 510
 
+=head2 specimenid
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
 =head2 uktnumber
 
   data_type: 'char'
@@ -336,6 +342,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 510 },
   "rowinsertdatetime",
   { data_type => "char", is_nullable => 1, size => 510 },
+  "specimenid",
+  { data_type => "char", is_nullable => 1, size => 510 },
   "uktnumber",
   { data_type => "char", is_nullable => 1, size => 510 },
   "table_id",
@@ -344,8 +352,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2010-09-03 14:22:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cyJgwEtsaTSIgMZ7SyN7JQ
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-01-12 10:56:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I29W/c2n8EuzHBNsxE730Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
