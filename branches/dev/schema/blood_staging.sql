@@ -158,6 +158,7 @@ CREATE TABLE exp_ct_bloodbank_concat (
   PercentPBLstrong char(510),
   Pregnancies char(510),
   RowInsertDateTime char(510),
+  SpecimenID char(510),
   UKTnumber char(510),
   Table_ID integer(20) PRIMARY KEY NOT NULL
 );
