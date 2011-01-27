@@ -53,7 +53,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check
-    stopifnot( all( p$filename == files ) )
+    stopifnot( all( as.character(p$filename) == as.character(files) ) )
     
     rownames(p) <- files
 
