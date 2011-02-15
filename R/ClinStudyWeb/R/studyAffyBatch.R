@@ -252,6 +252,13 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, pass
             attrs[[attrname]]<-as.character(pg[n])
         }
     }
+    pt <- sample$prior_treatment
+    if ( !is.null(pt) ) {
+        for ( n in 1:length(pt) ) {
+            attrname <- paste('prior_treatment', names(pt)[n], sep='.')
+            attrs[[attrname]]<-as.character(pt[n])
+        }
+    }
 
     ## We handle TestResults in much the same way.
     tr <- sample$test_result

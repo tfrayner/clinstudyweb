@@ -244,6 +244,11 @@ sub dump_sample_entity {
                 $visit->emergent_groups();
     $dump{emergent_group} = \%group;
 
+    my %ptreat = map { _xml_sanitize( $_->type_id->value() ) => $_->value() }
+                 grep { defined $_->value() && $_->value ne q{} }
+                 $patient->prior_treatments();
+    $dump{prior_treatment} = \%ptreat;
+    
     $dump{treatment_escalations} =
         $patient->search_related( 'visits',
                                  { treatment_escalation => 1 } )->count();
