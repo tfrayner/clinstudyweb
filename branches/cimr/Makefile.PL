@@ -31,6 +31,7 @@ requires 'Catalyst::Runtime'                              => '5.71';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
 requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
+requires 'Catalyst::Controller::REST'                     => '0.89';
 requires 'Catalyst::Controller::HTML::FormFu'             => '0.06001';
 requires 'HTML::FormFu::Model::DBIC'                      => '0.08002';
 requires 'HTML::FormFu'                                   => '0.08002';
@@ -60,6 +61,7 @@ test_requires 'Test::DBIx::Class' => '0.09';
 recommends 'Bio::MAGETAB' => '1.1';
 recommends 'LWP::UserAgent';
 recommends 'Term::ReadKey';
+recommends 'FCGI::ProcManager';
 
 # Classes not included by PAR due to obfuscated linking.
 catalyst_par_classes('DBD::mysql');
