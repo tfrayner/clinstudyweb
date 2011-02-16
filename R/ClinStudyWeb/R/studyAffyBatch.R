@@ -53,7 +53,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check
-    stopifnot( all( p$filename == files ) )
+    stopifnot( all( as.character(p$filename) == as.character(files) ) )
     
     rownames(p) <- files
 
@@ -250,6 +250,13 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, pass
         for ( n in 1:length(pg) ) {
             attrname <- paste('prior_group', names(pg)[n], sep='.')
             attrs[[attrname]]<-as.character(pg[n])
+        }
+    }
+    pt <- sample$prior_treatment
+    if ( !is.null(pt) ) {
+        for ( n in 1:length(pt) ) {
+            attrname <- paste('prior_treatment', names(pt)[n], sep='.')
+            attrs[[attrname]]<-as.character(pt[n])
         }
     }
 
