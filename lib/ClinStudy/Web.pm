@@ -165,6 +165,11 @@ __PACKAGE__->deny_access( '/assaybatch' );
 __PACKAGE__->allow_access_if( '/assayqcvalue', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/assayqcvalue' );
 
+# This means the JSON query infrastructure needs the connecting
+# application to be able to manage session info.
+__PACKAGE__->allow_access_if( '/query', [ qw( user ) ] );
+__PACKAGE__->deny_access( '/query' );
+
 # These are currently admin-only.
 __PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( admin ) ] );
 __PACKAGE__->deny_access( '/controlledvocab' );
