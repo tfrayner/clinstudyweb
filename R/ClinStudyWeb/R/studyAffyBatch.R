@@ -319,3 +319,56 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return(list(username=userReturnVal, password=passReturnVal))
 }
 
+### Example query to retrieve all CD19 arrays on MEDIANTE platform.
+###
+### x <- csJSONQuery('Assay',
+###                  condition=list(
+###                    'cell_type_id.value'='CD19',
+###                    'platform_id.value'='MEDIANTE'),
+###                  attributes=list(join=c(
+###                                    list(channels=list(sample_id='cell_type_id')),
+###                                    list(assay_batch_id='platform_id'))
+###                    ),
+###                  cred=cred,
+###                  uri=uri)
+
+csJSONQuery <- function( resultSet, condition, attributes=NULL, uri, .opts=list(), cred ) {
+
+    uri <- sub( '/+$', '', uri )
+
+    ## We use tcltk to generate a nice echo-free password entry field.
+    if ( is.null(cred) ) {
+        cred <- getCredentials()
+        if ( any(is.na(cred)) )
+            stop('User cancelled database connection.')
+    }
+
+    ## Set up our session and authenticate.
+    curl <- RCurl::getCurlHandle()
+    RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
+
+    RCurl::postForm(uri=paste(uri, 'login', sep='/'),
+                    username=cred$username,
+                    password=cred$password,
+                    login='1',
+                    .opts=.opts,
+                    curl=curl)
+
+    ## Run the query.
+    query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
+    status <- basicTextGatherer()
+    res    <- curlPerform(url=paste(uri, 'query', sep='/'),
+                          postfields=paste('data', toJSON(query), sep='='),
+                          .opts=.opts,
+                          curl=curl,
+                          writefunction=status$update)
+
+    ## Check the response for errors.
+    status  <- fromJSON(status$value())
+    if ( ! isTRUE(status$success) )
+        stop(status$errorMessage)
+
+    RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+    return( status$data )
+}

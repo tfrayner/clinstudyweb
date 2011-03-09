@@ -67,6 +67,7 @@ __PACKAGE__->config(
     name    => 'ClinStudy::Web',
     session => { flash_to_stash => 1,
                  expires        => 3600, },
+    default_view => 'HTML',
     authentication => {  
         default_realm => 'clindb',
         realms => {

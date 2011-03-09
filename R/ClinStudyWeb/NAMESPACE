@@ -50,6 +50,7 @@ export(
        csWebQuery,
        csWebReannotate,
        csWebAffyBatch,
-       csWebRGList
+       csWebRGList,
+       csJSONQuery
        )
 

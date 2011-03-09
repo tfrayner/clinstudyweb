@@ -43,38 +43,56 @@ Catalyst Controller.
 
 =cut
 
-sub select : Local {
+sub index : Path {
 
     my ( $self, $c ) = @_;
 
-    my $dbclass = $c->request->param( 'resultSet' );
-    $dbclass =~ s/.*::/DB::/;
+    # Here $query is a hashref with keys resultSet, cond and attrs.
+    my $j    = JSON::Any->new;
+    my $query;
+    eval {
+        $query = $j->jsonToObj( $c->request->param( 'data' ) );
+    };
+    if ( $@ ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Unable to decode JSON request: $@};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    my $dbclass = $query->{ 'resultSet' };
+    $dbclass =~ s/^(?:.*::)?/DB::/;
 
     my $rs = $c->model($dbclass);
     if ( ! $rs ) {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' } = qq{Error: Unrecognised ResultSet "$dbclass"};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    # Run the actual query.
+    my $cond  = $query->{ 'condition' }  || {};
+    my $attrs = $query->{ 'attributes' } || {};
+    
+    my @results;
+    eval {
+        @results = $rs->search( $cond, $attrs );
+    };
+    if ( $@ ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
     }
     else {
+        $c->stash->{ 'success' } = JSON::Any->true();
 
-        # Run the actual query.
-        my $query = $c->request->param( 'query' ) || {};
-        my $attrs = $c->request->param( 'attrs' ) || {};
+        # Just take the column values and put them in a hash for JSON encoding.
+        my @hashes;
+        foreach my $res ( @results ) {
+            push @hashes, { $res->get_columns() };
+        }
 
-        my @results;
-        eval {
-            @results = $rs->search( $query, $attrs );
-        };
-        if ( $@ ) {
-            $c->stash->{ 'success' } = JSON::Any->false();
-            $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
-        }
-        else {
-            $c->stash->{ 'success' } = JSON::Any->true();
-            $c->stash->{ 'results' } = \@results;
-        }
+        $c->stash->{ 'data' } = \@hashes;
     }
-
+    
     $c->detach( $c->view( 'JSON' ) );
 
     return;        
