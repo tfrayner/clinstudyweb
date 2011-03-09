@@ -23,6 +23,7 @@ package ClinStudy::Web::Controller::Query;
 use Moose;
 use namespace::autoclean;
 
+use List::Util qw(first);
 require JSON::Any;
 
 BEGIN {extends 'Catalyst::Controller'; }
@@ -55,17 +56,24 @@ sub index : Path {
     };
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Unable to decode JSON request: $@};
+        $c->stash->{ 'errorMessage' } = qq{Unable to decode JSON request: $@\n};
         $c->detach( $c->view( 'JSON' ) );
     }
 
     my $dbclass = $query->{ 'resultSet' };
     $dbclass =~ s/^(?:.*::)?/DB::/;
 
+    # User privileges tables are off-limits
+    if ( first { $_ eq $dbclass } qw( DB::User DB::Role DB::UserRole ) ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: JSON access disallowed to that table\n};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
     my $rs = $c->model($dbclass);
     if ( ! $rs ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error: Unrecognised ResultSet "$dbclass"};
+        $c->stash->{ 'errorMessage' } = qq{Error: Unrecognised ResultSet "$dbclass"\n};
         $c->detach( $c->view( 'JSON' ) );
     }
 
@@ -79,7 +87,7 @@ sub index : Path {
     };
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@\n};
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->true();
