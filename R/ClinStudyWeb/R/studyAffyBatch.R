@@ -332,8 +332,9 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 ###                  cred=cred,
 ###                  uri=uri)
 
-csJSONQuery <- function( resultSet, condition, attributes=NULL, uri, .opts=list(), cred ) {
+csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred ) {
 
+    ## Strip the trailing slash; we will be concatenating actions later.
     uri <- sub( '/+$', '', uri )
 
     ## We use tcltk to generate a nice echo-free password entry field.
@@ -368,7 +369,14 @@ csJSONQuery <- function( resultSet, condition, attributes=NULL, uri, .opts=list(
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
+    ## Log out for the sake of completeness.
     RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+    ## No results returned; rather than passing back a list of lenth 1
+    ## with a single null entry we just pass back null; it's simpler
+    ## to detect.
+    if ( length(status$data) == 1 & is.null(status$data[[1]]) )
+        return(NULL)
 
     return( status$data )
 }
