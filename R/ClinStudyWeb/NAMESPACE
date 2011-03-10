@@ -52,6 +52,6 @@ export(
        csWebAffyBatch,
        csWebRGList,
        csJSONQuery,
-       findAssayFiles
+       csFindAssays
        )
 

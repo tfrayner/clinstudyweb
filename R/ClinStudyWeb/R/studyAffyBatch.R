@@ -358,15 +358,15 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
-    status <- basicTextGatherer()
-    res    <- curlPerform(url=paste(uri, 'query', sep='/'),
-                          postfields=paste('data', toJSON(query), sep='='),
-                          .opts=.opts,
-                          curl=curl,
-                          writefunction=status$update)
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
+                                 postfields=paste('data', RJSONIO::toJSON(query), sep='='),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
 
     ## Check the response for errors.
-    status  <- fromJSON(status$value())
+    status  <- RJSONIO::fromJSON(status$value())
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
@@ -382,8 +382,8 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     return( status$data )
 }
 
-findAssayFiles <- function(cell.type, platform, batch.name, study,
-                           diagnosis, timepoint, trial.id, uri, .opts=list(), cred=NULL ) {
+csFindAssays <- function(cell.type, platform, batch.name, study,
+                         diagnosis, timepoint, trial.id, uri, .opts=list(), cred=NULL ) {
 
     stopifnot( ! missing(uri) )
 
@@ -444,5 +444,5 @@ findAssayFiles <- function(cell.type, platform, batch.name, study,
                           .opts=.opts,
                           cred=cred)
 
-    return(sort(unlist(lapply(assays, function(x) { x$filename } ))))
+    return(assays)
 }
