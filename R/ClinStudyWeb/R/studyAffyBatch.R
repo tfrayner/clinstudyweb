@@ -332,7 +332,7 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 ###                  cred=cred,
 ###                  uri=uri)
 
-csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred ) {
+csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred=NULL ) {
 
     ## Strip the trailing slash; we will be concatenating actions later.
     uri <- sub( '/+$', '', uri )
@@ -348,12 +348,13 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     curl <- RCurl::getCurlHandle()
     RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
 
-    RCurl::postForm(uri=paste(uri, 'login', sep='/'),
-                    username=cred$username,
-                    password=cred$password,
-                    login='1',
-                    .opts=.opts,
-                    curl=curl)
+    ## FIXME we need to detect login failures here.
+    res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
+                           username=cred$username,
+                           password=cred$password,
+                           login='1',
+                           .opts=.opts,
+                           curl=curl)
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
@@ -369,7 +370,7 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
-    ## Log out for the sake of completeness.
+    ## Log out for the sake of completeness. (FIXME check for failure and warn)
     RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
 
     ## No results returned; rather than passing back a list of lenth 1
@@ -379,4 +380,69 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
         return(NULL)
 
     return( status$data )
+}
+
+findAssayFiles <- function(cell.type, platform, batch.name, study,
+                           diagnosis, timepoint, trial.id, uri, .opts=list(), cred=NULL ) {
+
+    stopifnot( ! missing(uri) )
+
+    cond  <- list()
+    attrs <- list(join=c())
+
+    if ( ! missing(cell.type) ) {
+        cond       <- append(cond, list('cell_type_id.value'=cell.type))
+        attrs$join <- append(attrs$join, list(list(channels=list(sample_id='cell_type_id'))))
+    }
+
+    if ( ! missing(diagnosis) ) {   # FIXME this needs to use only the latest diagnosis.
+        cond       <- append(cond, list('condition_name_id.value'=diagnosis))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=c(list(
+                                                       visit_id=list(
+                                                         patient_id=list(
+                                                           diagnoses='condition_name_id'))))))))
+    }
+
+    if ( ! missing(study) ) {
+        cond       <- append(cond, list('type_id.value'=study))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id=list(
+                                                         patient_id=list(
+                                                           studies='type_id')))))))
+    }
+
+    if ( ! missing(timepoint) ) {
+        cond       <- append(cond, list('nominal_timepoint_id.value'=timepoint))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id='nominal_timepoint_id')))))
+    }
+
+    if ( ! missing(trial.id) ) {
+        cond       <- append(cond, list('patient_id.trial_id'=trial.id))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id='patient_id')))))
+    }    
+
+    if ( ! missing(platform) ) {
+        cond       <- append(cond, list('platform_id.value'=platform))
+        attrs$join <- append(attrs$join, list(list(assay_batch_id='platform_id')))
+    }
+
+    if ( ! missing(batch.name) ) {
+        cond       <- append(cond, list('assay_batch_id.name'=batch.name))
+        attrs$join <- append(attrs$join, 'assay_batch_id')
+    }
+
+    assays <- csJSONQuery(resultSet='Assay',
+                          condition=cond,
+                          attributes=attrs,
+                          uri=uri,
+                          .opts=.opts,
+                          cred=cred)
+
+    return(sort(unlist(lapply(assays, function(x) { x$filename } ))))
 }

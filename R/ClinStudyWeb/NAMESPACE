@@ -51,6 +51,7 @@ export(
        csWebReannotate,
        csWebAffyBatch,
        csWebRGList,
-       csJSONQuery
+       csJSONQuery,
+       findAssayFiles
        )
 
