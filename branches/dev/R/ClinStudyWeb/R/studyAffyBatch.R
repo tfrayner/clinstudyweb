@@ -348,13 +348,17 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     curl <- RCurl::getCurlHandle()
     RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
 
-    ## FIXME we need to detect login failures here.
+    ## We need to detect login failures here.
     res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
                            username=cred$username,
                            password=cred$password,
                            login='1',
                            .opts=.opts,
                            curl=curl)
+
+    ## FIXME at present this relies on the web server behaviour, which might change.
+    if ( nchar(res) > 0 )
+        stop("Unable to log in.")
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
@@ -370,8 +374,12 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
-    ## Log out for the sake of completeness. (FIXME check for failure and warn)
-    RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+    ## Log out for the sake of completeness (check for failure and warn).
+    res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+    ## FIXME at present this relies on the web server behaviour, which might change.
+    if ( nchar(res) > 0 )
+        warning("Unable to log out.")
 
     ## No results returned; rather than passing back a list of lenth 1
     ## with a single null entry we just pass back null; it's simpler
