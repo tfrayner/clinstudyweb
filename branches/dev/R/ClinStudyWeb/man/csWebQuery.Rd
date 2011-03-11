@@ -6,7 +6,7 @@
   Retrieves sample annotation for a given array barcode or filename.
 }
 \usage{
-csWebQuery ( assay.file=NULL, assay.barcode=NULL, uri, username,
+csWebQuery ( assay.file=NULL, assay.barcode=NULL, sample.name=NULL, uri, username,
 password, .opts )
 }
 \arguments{
@@ -14,6 +14,9 @@ password, .opts )
   \item{assay.file}{The name of the file of interest.}
 
   \item{assay.barcode}{The barcode used for the assay of interest.}
+
+  \item{sample.name}{The identifier of the sample of interest. If used,
+    this argument causes the database query to ignore all assay information.}
 
   \item{uri}{The top-level URI for the clinical database web site.}
 
