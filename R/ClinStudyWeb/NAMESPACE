@@ -39,7 +39,7 @@ importClassesFrom(Biobase, ExpressionSet)
 importClassesFrom(limma, MAList, RGList)
 
 importFrom(affy, ReadAffy)
-importFrom(Biobase, sampleNames, 'pData<-')
+importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-')
 importFrom(limma, read.maimages)
 
 importFrom(XML, xmlParse, xmlToList)
@@ -50,6 +50,8 @@ export(
        csWebQuery,
        csWebReannotate,
        csWebAffyBatch,
-       csWebRGList
+       csWebRGList,
+       csJSONQuery,
+       csFindAssays
        )
 

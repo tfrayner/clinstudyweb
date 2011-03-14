@@ -47,16 +47,29 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .filenamesToPData <- function( files, ... ) {
 
-    p <- .batchDBQuery( files, ... )
+    p <- .batchDBQuery( files=files, samples=NULL, ... )
     p <- .conformLists(p)
     p <- lapply(p, unlist)
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check
-    stopifnot( all( as.character(p$filename) == as.character(files) ) )
+    stopifnot( all( as.character(p$filename) == files ) )
     
     rownames(p) <- files
 
+    return(p)
+}
+
+.samplesToPData <- function( samples, ... ) {
+
+    p <- .batchDBQuery( samples=samples, files=NULL, ... )
+    p <- .conformLists(p)
+    p <- lapply(p, unlist)
+    p <- data.frame(do.call('rbind', p))
+
+    # Quick sanity check
+    stopifnot( all( as.character(p$sample_name) == samples ) )
+    
     return(p)
 }
 
@@ -83,7 +96,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .filenamesToTargets <- function( files, ... ) {
 
-    p <- .batchDBQuery( files, ... )
+    p <- .batchDBQuery( files=files, samples=NULL, ... )
 
     p <- lapply(p, .annotateTargetLabels)
     p <- .conformLists(p)
@@ -96,11 +109,28 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check.
-    stopifnot( all(p$filename == files) )
+    stopifnot( all(as.character(p$filename) == files) )
 
     colnames(p)[colnames(p) == 'filename'  ] <- 'FileName'
     colnames(p)[colnames(p) == 'identifier'] <- 'SlideNumber'
     colnames(p)[colnames(p) == 'batch_date'] <- 'Date'
+
+    return(p)
+}
+
+.samplesToTargets <- function( samples, ... ) {
+
+    warning("Reannotation of MAList objects at the sample level does not preserve channel information.")
+
+    p <- .batchDBQuery( samples=samples, files=NULL, ... )
+
+    p <- .conformLists(p)
+
+    p <- lapply(p, unlist)
+    p <- data.frame(do.call('rbind', p))
+
+    # Quick sanity check.
+    stopifnot( all(as.character(p$sample_name) == samples) )
 
     return(p)
 }
@@ -128,7 +158,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(p)
 }
 
-.batchDBQuery <- function( files, uri, .opts=list(), cred ) {
+.batchDBQuery <- function( files, samples=NULL, uri, .opts=list(), cred ) {
 
     ## We use tcltk to generate a nice echo-free password entry field.
     if ( is.null(cred) ) {
@@ -145,41 +175,61 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     ## This call relies on assay.file being the first argument to
     ## csWebQuery
     message("Querying the database for annotation...")
-    p <- lapply(as.list(files), csWebQuery,
-                uri=uri, username=cred$username, password=cred$password, .opts=.opts)
+    if ( is.null(samples) )
+        p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL, sample.name=NULL,
+                    uri=uri, username=cred$username, password=cred$password, .opts=.opts)
+    else
+        p <- lapply(as.list(samples), csWebQuery, assay.file=NULL, assay.barcode=NULL,
+                    uri=uri, username=cred$username, password=cred$password, .opts=.opts)
 
     return(p)
 }
 
-.reannotateEset <- function( data, uri, .opts=list(), cred=NULL ) {
+.reannotateEset <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL ) {
 
     ## ExpressionSet or AffyBatch.
-    files <- sampleNames(data)
-
-    p <- .filenamesToPData(files, uri, .opts, cred)
-
-    stopifnot(all(as.character(p$filename) == as.character(sampleNames(data))))
+    if ( is.null(sample.column) ) {
+        files <- as.character(sampleNames(data))
+        p <- .filenamesToPData(files, uri, .opts, cred)
+        stopifnot(all(as.character(p$filename) == as.character(files)))
+    } else {
+        stopifnot( sample.column %in% varLabels(data) )
+        samples <- as.character(pData(data)[ , sample.column ])
+        stopifnot( all( ! is.na(samples) ) )
+        p <- .samplesToPData(samples, uri, .opts, cred)
+        stopifnot(all(as.character(p$sample_name) == as.character(samples)))
+        rownames(p) <- sampleNames(data)
+    }
+    
     pData(data) <- p
 
     return(data)
 }
 
-.reannotateMAList <- function( data, uri, .opts=list(), cred=NULL ) {
+.reannotateMAList <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL ) {
 
     ## MAList or RGList, both have similar targets structure.
-    files <- data$targets$FileName
-
-    stopifnot( all( ! is.na(files) ) )
-
-    p <- .filenamesToTargets(files, uri, .opts, cred)
-
+    if ( is.null(sample.column) ) {
+        files <- as.character(data$targets$FileName)
+        stopifnot( all( ! is.na(files) ) )
+        p <- .filenamesToTargets(files, uri, .opts, cred)
+        stopifnot(all(as.character(p$FileName) == files))
+    } else {
+        stopifnot( sample.column %in% colnames(data$targets) )
+        samples <- as.character(data$targets[, sample.column ])
+        stopifnot( all( ! is.na(samples) ) )
+        p <- .samplesToTargets(samples, uri, .opts, cred)
+        stopifnot(all(as.character(p$sample_name) == samples))
+        rownames(p) <- rownames(data$targets)
+    }
+        
     data$targets <- p
 
     return(data)
 }
 
 ## Define a series of functions for various object signatures.
-setGeneric('csWebReannotate', def=function(data, uri, .opts=list(), cred=NULL)
+setGeneric('csWebReannotate', def=function(data, sample.column=NULL, uri, .opts=list(), cred=NULL)
            standardGeneric('csWebReannotate'))
 
 setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
@@ -189,10 +239,11 @@ setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
-csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, password, .opts) {
+csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
+                        uri, username, password, .opts) {
 
-    if ( is.null(assay.file) && is.null(assay.barcode) )
-        stop("Error: Either assay.file or assay.barcode must be specified")
+    if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
+        stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
 
     if ( missing(uri) || missing(username) || missing(password) )
         stop("Error: uri, username and password are required")
@@ -212,16 +263,19 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, pass
 
     ## Strip off trailing /
     uri <- gsub( '/+$', '', uri )
-    if ( ! is.null(assay.file) )
-        uri <- paste(uri, '/rest/assay_file/',    RCurl::curlEscape(assay.file),    sep='')
+    if ( ! is.null(sample.name) )
+        uri <- paste(uri, '/rest/sample/', RCurl::curlEscape(sample.name), sep='')            
     else
-        uri <- paste(uri, '/rest/assay_barcode/', RCurl::curlEscape(assay.barcode), sep='')
+        if ( ! is.null(assay.file) )
+            uri <- paste(uri, '/rest/assay_file/',    RCurl::curlEscape(assay.file),    sep='')
+        else
+            uri <- paste(uri, '/rest/assay_barcode/', RCurl::curlEscape(assay.barcode), sep='')
 
     ## Retrieve the xml
     .opts$HTTPHEADER=header
     rc <- try(xml <- RCurl::getURLContent(uri, .opts=.opts))
     if ( inherits (rc, 'try-error') )
-        stop("Unable to retrieve annotation from database: ", assay.file, assay.barcode)
+        stop("Unable to retrieve annotation from database: ", assay.file, assay.barcode, sample.name)
 
     ## parse the XML, return the info.
     rc <- try(xml <- XML::xmlParse(xml, asText=TRUE))
@@ -230,13 +284,18 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, uri, username, pass
 
     xml <- XML::xmlToList(xml)
 
-    attrs <- as.list(c(xml$data$.attrs,
-                       xml$data$channels$.attrs,
-                       xml$data$channels$sample$.attrs,
-                       xml$data$qc))
+    if ( ! is.null(sample.name) ) {
+        attrs <- as.list(c(xml$data$.attrs))
+        sample <- xml$data
+    } else {
+        attrs <- as.list(c(xml$data$.attrs,
+                           xml$data$channels$.attrs,
+                           xml$data$channels$sample$.attrs,
+                           xml$data$qc))
+        sample <- xml$data$channels$sample
+    }
 
     ## EmergentGroups and PriorGroups are a bit trickier, since they're 0..n
-    sample <- xml$data$channels$sample
 
     eg <- sample$emergent_group
     if ( !is.null(eg) ) {
@@ -319,3 +378,138 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return(list(username=userReturnVal, password=passReturnVal))
 }
 
+### Example query to retrieve all CD19 arrays on MEDIANTE platform.
+###
+### x <- csJSONQuery('Assay',
+###                  condition=list(
+###                    'cell_type_id.value'='CD19',
+###                    'platform_id.value'='MEDIANTE'),
+###                  attributes=list(join=c(
+###                                    list(channels=list(sample_id='cell_type_id')),
+###                                    list(assay_batch_id='platform_id'))
+###                    ),
+###                  cred=cred,
+###                  uri=uri)
+
+csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred=NULL ) {
+
+    ## Strip the trailing slash; we will be concatenating actions later.
+    uri <- sub( '/+$', '', uri )
+
+    ## We use tcltk to generate a nice echo-free password entry field.
+    if ( is.null(cred) ) {
+        cred <- getCredentials()
+        if ( any(is.na(cred)) )
+            stop('User cancelled database connection.')
+    }
+
+    ## Set up our session and authenticate.
+    curl <- RCurl::getCurlHandle()
+    RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
+
+    ## We need to detect login failures here.
+    res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
+                           username=cred$username,
+                           password=cred$password,
+                           login='1',
+                           .opts=.opts,
+                           curl=curl)
+
+    ## FIXME at present this relies on the web server behaviour, which might change.
+    if ( nchar(res) > 0 )
+        stop("Unable to log in.")
+
+    ## Run the query.
+    query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
+                                 postfields=paste('data', RJSONIO::toJSON(query), sep='='),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
+
+    ## Check the response for errors.
+    status  <- RJSONIO::fromJSON(status$value())
+    if ( ! isTRUE(status$success) )
+        stop(status$errorMessage)
+
+    ## Log out for the sake of completeness (check for failure and warn).
+    res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+    ## FIXME at present this relies on the web server behaviour, which might change.
+    if ( nchar(res) > 0 )
+        warning("Unable to log out.")
+
+    ## No results returned; rather than passing back a list of lenth 1
+    ## with a single null entry we just pass back null; it's simpler
+    ## to detect.
+    if ( length(status$data) == 1 & is.null(status$data[[1]]) )
+        return(NULL)
+
+    return( status$data )
+}
+
+csFindAssays <- function(cell.type, platform, batch.name, study,
+                         diagnosis, timepoint, trial.id, uri, .opts=list(), cred=NULL ) {
+
+    stopifnot( ! missing(uri) )
+
+    cond  <- list()
+    attrs <- list(join=c())
+
+    if ( ! missing(cell.type) ) {
+        cond       <- append(cond, list('cell_type_id.value'=cell.type))
+        attrs$join <- append(attrs$join, list(list(channels=list(sample_id='cell_type_id'))))
+    }
+
+    if ( ! missing(diagnosis) ) {   # FIXME this needs to use only the latest diagnosis.
+        cond       <- append(cond, list('condition_name_id.value'=diagnosis))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=c(list(
+                                                       visit_id=list(
+                                                         patient_id=list(
+                                                           diagnoses='condition_name_id'))))))))
+    }
+
+    if ( ! missing(study) ) {
+        cond       <- append(cond, list('type_id.value'=study))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id=list(
+                                                         patient_id=list(
+                                                           studies='type_id')))))))
+    }
+
+    if ( ! missing(timepoint) ) {
+        cond       <- append(cond, list('nominal_timepoint_id.value'=timepoint))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id='nominal_timepoint_id')))))
+    }
+
+    if ( ! missing(trial.id) ) {
+        cond       <- append(cond, list('patient_id.trial_id'=trial.id))
+        attrs$join <- append(attrs$join, list(list(channels=list(
+                                                     sample_id=list(
+                                                       visit_id='patient_id')))))
+    }    
+
+    if ( ! missing(platform) ) {
+        cond       <- append(cond, list('platform_id.value'=platform))
+        attrs$join <- append(attrs$join, list(list(assay_batch_id='platform_id')))
+    }
+
+    if ( ! missing(batch.name) ) {
+        cond       <- append(cond, list('assay_batch_id.name'=batch.name))
+        attrs$join <- append(attrs$join, 'assay_batch_id')
+    }
+
+    assays <- csJSONQuery(resultSet='Assay',
+                          condition=cond,
+                          attributes=attrs,
+                          uri=uri,
+                          .opts=.opts,
+                          cred=cred)
+
+    return(assays)
+}
