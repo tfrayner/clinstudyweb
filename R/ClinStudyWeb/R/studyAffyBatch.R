@@ -53,7 +53,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check
-    stopifnot( all( as.character(p$filename) == as.character(files) ) )
+    stopifnot( all( as.character(p$filename) == files ) )
     
     rownames(p) <- files
 
@@ -68,7 +68,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check
-    stopifnot( all( as.character(p$sample_name) == as.character(samples) ) )
+    stopifnot( all( as.character(p$sample_name) == samples ) )
     
     return(p)
 }
@@ -109,7 +109,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check.
-    stopifnot( all(p$filename == files) )
+    stopifnot( all(as.character(p$filename) == files) )
 
     colnames(p)[colnames(p) == 'filename'  ] <- 'FileName'
     colnames(p)[colnames(p) == 'identifier'] <- 'SlideNumber'
@@ -120,20 +120,17 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
 .samplesToTargets <- function( samples, ... ) {
 
+    warning("Reannotation of MAList objects at the sample level does not preserve channel information.")
+
     p <- .batchDBQuery( samples=samples, files=NULL, ... )
 
-    p <- lapply(p, .annotateTargetLabels)
     p <- .conformLists(p)
-
-    labels <- Reduce(union, lapply(p, function(x) { x$label } ) )
-    for ( l in labels )
-        p <- lapply(p, .addRefLabels, l)
 
     p <- lapply(p, unlist)
     p <- data.frame(do.call('rbind', p))
 
     # Quick sanity check.
-    stopifnot( all(p$sample_name == samples) )
+    stopifnot( all(as.character(p$sample_name) == samples) )
 
     return(p)
 }
@@ -192,12 +189,12 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
     ## ExpressionSet or AffyBatch.
     if ( is.null(sample.column) ) {
-        files <- sampleNames(data)
+        files <- as.character(sampleNames(data))
         p <- .filenamesToPData(files, uri, .opts, cred)
         stopifnot(all(as.character(p$filename) == as.character(files)))
     } else {
         stopifnot( sample.column %in% varLabels(data) )
-        samples <- pData(data)[ , sample.column ]
+        samples <- as.character(pData(data)[ , sample.column ])
         stopifnot( all( ! is.na(samples) ) )
         p <- .samplesToPData(samples, uri, .opts, cred)
         stopifnot(all(as.character(p$sample_name) == as.character(samples)))
@@ -213,16 +210,16 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
     ## MAList or RGList, both have similar targets structure.
     if ( is.null(sample.column) ) {
-        files <- data$targets$FileName
+        files <- as.character(data$targets$FileName)
         stopifnot( all( ! is.na(files) ) )
         p <- .filenamesToTargets(files, uri, .opts, cred)
-        stopifnot(all(as.character(p$FileName) == as.character(files)))
+        stopifnot(all(as.character(p$FileName) == files))
     } else {
         stopifnot( sample.column %in% colnames(data$targets) )
-        samples <- data$targets[, sample.column ]
+        samples <- as.character(data$targets[, sample.column ])
         stopifnot( all( ! is.na(samples) ) )
         p <- .samplesToTargets(samples, uri, .opts, cred)
-        stopifnot(all(as.character(p$sample_name) == as.character(samples)))
+        stopifnot(all(as.character(p$sample_name) == samples))
         rownames(p) <- rownames(data$targets)
     }
         
