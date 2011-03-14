@@ -17,36 +17,20 @@
 #
 # $Id$
 
-package ClinStudy::Web::View::HTML;
+package ClinStudy::Web::View::JSON;
 
 use Moose;
 use namespace::autoclean;
 
-BEGIN {extends 'Catalyst::View::TT'; }
-
-__PACKAGE__->config({
-    INCLUDE_PATH => [
-        ClinStudy::Web->path_to( 'root', 'src' ),
-        ClinStudy::Web->path_to( 'root', 'lib' ),
-    ],
-    PRE_PROCESS  => 'config/main',
-    WRAPPER      => 'site/wrapper',
-    ERROR        => 'error.tt2',
-    TIMER        => 0,
-    TEMPLATE_EXTENSION => '.tt2',        
-});
+BEGIN {extends 'Catalyst::View::JSON'};
 
 =head1 NAME
 
-ClinStudy::Web::View::HTML - Catalyst TTSite View
-
-=head1 SYNOPSIS
-
-See L<ClinStudy::Web>
+ClinStudy::Web::View::JSON - Catalyst View
 
 =head1 DESCRIPTION
 
-Catalyst TTSite View.
+Catalyst JSON View.
 
 =head1 AUTHOR
 
@@ -62,4 +46,3 @@ License (GPL).
 =cut
 
 1;
-
