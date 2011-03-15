@@ -158,13 +158,19 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(p)
 }
 
-.batchDBQuery <- function( files, samples=NULL, uri, .opts=list(), cred ) {
+.batchDBQuery <- function( files, samples=NULL, uri, .opts=list(), cred, curl=NULL ) {
 
     ## We use tcltk to generate a nice echo-free password entry field.
     if ( is.null(cred) ) {
         cred <- getCredentials()
         if ( any(is.na(cred)) )
             stop('User cancelled database connection.')
+    }
+
+    needs.logout <- 0
+    if ( is.null(curl) ) {
+        curl <- .csGetAuthenticatedHandle( uri, cred$username, cred$password, .opts )
+        needs.logout <- 1
     }
 
     ## Quick check to ensure our credentials look okay.
@@ -177,10 +183,21 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     message("Querying the database for annotation...")
     if ( is.null(samples) )
         p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL, sample.name=NULL,
-                    uri=uri, username=cred$username, password=cred$password, .opts=.opts)
+                    uri=uri, username=cred$username, password=cred$password,
+                    .opts=.opts, curl=curl)
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL, assay.barcode=NULL,
-                    uri=uri, username=cred$username, password=cred$password, .opts=.opts)
+                    uri=uri, username=cred$username, password=cred$password,
+                    .opts=.opts, curl=curl)
+
+    if ( needs.logout == 1 ) {
+        ## Log out for the sake of completeness (check for failure and warn).
+        res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+        ## FIXME at present this relies on the web server behaviour, which might change.
+        if ( nchar(res) > 0 )
+            warning("Unable to log out.")
+    }
 
     return(p)
 }
@@ -240,7 +257,9 @@ setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
 csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
-                        uri, username, password, .opts) {
+                        uri, username, password, .opts=list(), curl=NULL ) {
+
+    require(rjson)
 
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
@@ -248,51 +267,59 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     if ( missing(uri) || missing(username) || missing(password) )
         stop("Error: uri, username and password are required")
 
-    if ( missing(.opts) )
-        .opts <- list()
-    else
-        if ( ! is.list(.opts) )
-            stop("Error: .opts must be a list object")
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
 
-    ## Return a list of key-value pairs suitable for inserting into an
-    ## AnnotatedDataFrame
-
-    header <- list('X-Username' = username, 'X-Password' = password, 'Content-type' = 'text/xml')
-    header <- do.call('rbind', header)
-    header <- paste(rownames(header), header, sep=':', collapse="\n")
+    needs.logout <- 0
+    if ( is.null(curl) ) {
+        curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
+        needs.logout <- 1
+    }
 
     ## Strip off trailing /
     uri <- gsub( '/+$', '', uri )
     if ( ! is.null(sample.name) )
-        uri <- paste(uri, '/rest/sample/', RCurl::curlEscape(sample.name), sep='')            
+        quri <- paste(uri, '/query/sample_dump', sep='')            
     else
-        if ( ! is.null(assay.file) )
-            uri <- paste(uri, '/rest/assay_file/',    RCurl::curlEscape(assay.file),    sep='')
-        else
-            uri <- paste(uri, '/rest/assay_barcode/', RCurl::curlEscape(assay.barcode), sep='')
+        quri <- paste(uri, '/query/assay_dump', sep='')
 
-    ## Retrieve the xml
-    .opts$HTTPHEADER=header
-    rc <- try(xml <- RCurl::getURLContent(uri, .opts=.opts))
-    if ( inherits (rc, 'try-error') )
-        stop("Unable to retrieve annotation from database: ", assay.file, assay.barcode, sample.name)
+    ## Undef (NULL) in queries is acceptable.
+    query  <- list(filename=assay.file, identifier=assay.barcode, name=sample.name)
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=quri,
+                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
 
-    ## parse the XML, return the info.
-    rc <- try(xml <- XML::xmlParse(xml, asText=TRUE))
-    if ( inherits(rc, 'try-error') )
-        stop("Error parsing XML")
+    status  <- rjson::fromJSON(status$value())
+    if ( ! isTRUE(status$success) )
+        stop(status$errorMessage)
 
-    xml <- XML::xmlToList(xml)
+    if ( needs.logout == 1 ) {
+        ## Log out for the sake of completeness (check for failure and warn).
+        res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
+
+        ## FIXME at present this relies on the web server behaviour, which might change.
+        if ( nchar(res) > 0 )
+            warning("Unable to log out.")
+    }
+
+    .extractAttrs <- function(x) { class(x)!='list' }
 
     if ( ! is.null(sample.name) ) {
-        attrs <- as.list(c(xml$data$.attrs))
-        sample <- xml$data
+        attrs  <- Filter( .extractAttrs, status$data )
+        sample <- status$data
     } else {
-        attrs <- as.list(c(xml$data$.attrs,
-                           xml$data$channels$.attrs,
-                           xml$data$channels$sample$.attrs,
-                           xml$data$qc))
-        sample <- xml$data$channels$sample
+
+        ## N.B. this all assumes a single channel only (FIXME)
+        attrs <- as.list(c(Filter( .extractAttrs, status$data),
+                           lapply(status$data$channels,
+                                  function(x) { Filter(.extractAttrs, x) } )[[1]],
+                           lapply(status$data$channels,
+                                  function(x) { Filter(.extractAttrs, x$sample) } )[[1]],
+                           Filter( .extractAttrs, status$data$qc)))
+        sample <- status$data$channels[[1]]$sample
     }
 
     ## EmergentGroups and PriorGroups are a bit trickier, since they're 0..n
@@ -391,6 +418,27 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 ###                  cred=cred,
 ###                  uri=uri)
 
+.csGetAuthenticatedHandle <- function( uri, username, password, .opts=list() ) {
+
+    ## Set up our session and authenticate.
+    curl <- RCurl::getCurlHandle()
+    RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
+
+    ## We need to detect login failures here.
+    res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
+                           username=username,
+                           password=password,
+                           login='1',
+                           .opts=.opts,
+                           curl=curl)
+
+    ## FIXME at present this relies on the web server behaviour, which might change.
+    if ( nchar(res) > 0 )
+        stop("Unable to log in.")    
+
+    return(curl)
+}
+
 csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred=NULL ) {
 
     ## Strip the trailing slash; we will be concatenating actions later.
@@ -403,33 +451,19 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
             stop('User cancelled database connection.')
     }
 
-    ## Set up our session and authenticate.
-    curl <- RCurl::getCurlHandle()
-    RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
-
-    ## We need to detect login failures here.
-    res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
-                           username=cred$username,
-                           password=cred$password,
-                           login='1',
-                           .opts=.opts,
-                           curl=curl)
-
-    ## FIXME at present this relies on the web server behaviour, which might change.
-    if ( nchar(res) > 0 )
-        stop("Unable to log in.")
+    curl <- .csGetAuthenticatedHandle( uri, cred$username, cred$password, .opts )
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
-                                 postfields=paste('data', RJSONIO::toJSON(query), sep='='),
+                                 postfields=paste('data', rjson::toJSON(query), sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
 
     ## Check the response for errors.
-    status  <- RJSONIO::fromJSON(status$value())
+    status  <- rjson::fromJSON(status$value())
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
@@ -440,7 +474,7 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     if ( nchar(res) > 0 )
         warning("Unable to log out.")
 
-    ## No results returned; rather than passing back a list of lenth 1
+    ## No results returned; rather than passing back a list of length 1
     ## with a single null entry we just pass back null; it's simpler
     ## to detect.
     if ( length(status$data) == 1 & is.null(status$data[[1]]) )

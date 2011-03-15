@@ -46,7 +46,7 @@ csJSONQuery( resultSet, condition=NULL, attributes=NULL,
   resultset giving values for each column.
 
 }
-\references{ RCurl package, RJSONIO package }
+\references{ RCurl package, rjson package }
 \author{ Tim F Rayner }
 \seealso{
   \code{\link{csFindAssays}}
