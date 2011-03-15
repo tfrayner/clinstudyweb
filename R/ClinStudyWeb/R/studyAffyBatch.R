@@ -405,24 +405,12 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return(list(username=userReturnVal, password=passReturnVal))
 }
 
-### Example query to retrieve all CD19 arrays on MEDIANTE platform.
-###
-### x <- csJSONQuery('Assay',
-###                  condition=list(
-###                    'cell_type_id.value'='CD19',
-###                    'platform_id.value'='MEDIANTE'),
-###                  attributes=list(join=c(
-###                                    list(channels=list(sample_id='cell_type_id')),
-###                                    list(assay_batch_id='platform_id'))
-###                    ),
-###                  cred=cred,
-###                  uri=uri)
-
 .csGetAuthenticatedHandle <- function( uri, username, password, .opts=list() ) {
 
     ## Set up our session and authenticate.
-    curl <- RCurl::getCurlHandle()
-    RCurl::curlSetOpt(cookiefile='cookies.txt', curl=curl)
+    curl    <- RCurl::getCurlHandle()
+    cookies <- file.path(Sys.getenv('HOME'), '.cookies.txt')
+    RCurl::curlSetOpt(cookiefile=cookies, curl=curl)
 
     ## We need to detect login failures here.
     res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
