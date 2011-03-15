@@ -56,21 +56,22 @@ sub index : Path {
     my $query = $self->_decode_json( $c );
 
     my $dbclass = $query->{ 'resultSet' };
+    if ( ! $dbclass ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: No resultSet JSON query attribute specified.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
     $dbclass =~ s/^(?:.*::)?/DB::/;
 
     # User privileges tables are off-limits
     if ( first { $_ eq $dbclass } qw( DB::User DB::Role DB::UserRole ) ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error: JSON access disallowed to that table\n};
+        $c->stash->{ 'errorMessage' } = qq{Error: JSON access to that table is not permitted.};
         $c->detach( $c->view( 'JSON' ) );
     }
 
+    # This will generally refuse to fail, even if $dbclass is empty.
     my $rs = $c->model($dbclass);
-    if ( ! $rs ) {
-        $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error: Unrecognised ResultSet "$dbclass"\n};
-        $c->detach( $c->view( 'JSON' ) );
-    }
 
     # Run the actual query.
     my $cond  = $query->{ 'condition' }  || {};
@@ -82,7 +83,7 @@ sub index : Path {
     };
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@\n};
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->true();
@@ -123,7 +124,7 @@ sub assay_dump : Local {
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' }
-            = qq{Error: JSON parameters must include either filename or identifier.\n};
+            = qq{Error: JSON parameters must include either filename or identifier.};
         $c->detach( $c->view( 'JSON' ) );
     }
 
@@ -133,7 +134,7 @@ sub assay_dump : Local {
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error: Assay "$id" not found in database.\n};
+        $c->stash->{ 'errorMessage' } = qq{Error: Assay "$id" not found in database.};
     }
 
     $c->detach( $c->view( 'JSON' ) );
@@ -159,7 +160,7 @@ sub sample_dump : Local {
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' }
-            = qq{Error: JSON parameters must include sample name.\n};
+            = qq{Error: JSON parameters must include sample name.};
         $c->detach( $c->view( 'JSON' ) );
     }
 
@@ -169,7 +170,7 @@ sub sample_dump : Local {
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error: Sample "$name" not found in database.\n};
+        $c->stash->{ 'errorMessage' } = qq{Error: Sample "$name" not found in database.};
     }
 
     $c->detach( $c->view( 'JSON' ) );
@@ -192,7 +193,7 @@ sub _decode_json : Private {
     };
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Unable to decode JSON request: $@\n};
+        $c->stash->{ 'errorMessage' } = qq{Unable to decode JSON request: $@};
         $c->detach( $c->view( 'JSON' ) );
     }
 
