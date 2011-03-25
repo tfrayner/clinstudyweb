@@ -22,9 +22,6 @@ use warnings;
 
 package CIMR::DataPipeline;
 
-use ClinStudy::WebQuery;
-use CIMR::TargetGenerator;
-
 use Log::Log4perl qw(get_logger);
 use POSIX qw(:fcntl_h);
 use DB_File;
@@ -138,9 +135,6 @@ sub run {
         check_interval  => $self->interval(),
     );
 
-    # This is a factory object used to create targets files for limma.
-    my $tgen = $self->_get_target_generator();
-    
     while (1) {
 
         # Run a quick check to reload the config if necessary.
@@ -170,35 +164,47 @@ sub run {
 
         # We manage this regexp fairly carefully, so that we can be
         # sure all passing TXT file names can be parsed into
-        # barcodes. The regexp is used here and when creating the
-        # TargetGenerator object ($tgen).
+        # barcodes.
         my $text_re   = $self->_config->value('cimr.datapipeline.fileregexp.txt');
         $text_re      = qr/\A $text_re \z/ixms;
         my @extracted = grep { $_ =~ $text_re } @$files;
         my $ext_num = scalar @extracted;
         $self->logger->info("Found $ext_num new extracted data files");
-        my ( $targets_file, $targets_fh, $num_swaps ) = $tgen->create( \@extracted );
+        my $targets_file = '.cimr.datapipeline.targets';
+        if ( -f $targets_file ) {
+            die("Old targets file $targets_file still exists. Please check that "
+              . "other data pipeline instances are not running, delete targets file "
+              . "if appropriate, and restart.\n");
+        }
+        open ( my $targets_fh, '>', $targets_file ) or die($!);
+        foreach my $file ( @extracted ) {
+            print $targets_fh, "$file\n";
+        }
+        close( $targets_fh ) or die($!);
 
+        # Save changes to the database.
+        my $cache  = $self->_cache();
+        $cache->sync() != -1
+            or confess("Error: problem synchronising cache DB: $!");
+
+        # Finally, call the R code here.
+        my $unused = [];
+        if ( $ext_num ) {
+            $unused = $self->_call_r_code( $targets_file );
+        }
+
+        # Clean up.
+        unlink( $targets_file ) or die($!);
+        
         # Delete unused filenames from the cache; we'll look at them
         # again next time around.
-        my @unused = $tgen->unused();
-        my $cache  = $self->_cache();
-        foreach my $file ( @unused ) {
+        foreach my $file ( @$unused ) {
             $self->logger->info("Targets generation skipped file: $file");
             my $status = $cache->del( $file );
             $self->logger->debug(
                 sub { sprintf(qq{Deleted unused file "%s" from cache file with status %s}, $file, $status) } );
         }
 
-        # Save changes to the database.
-        $cache->sync() != -1
-            or confess("Error: problem synchronising cache DB: $!");
-
-        # Finally, call the R code here.
-        if ( $num_swaps ) {
-            $self->_call_r_code( $targets_file );
-        }
-        
         sleep( $self->interval() );
     }
 
@@ -208,31 +214,49 @@ sub run {
 
 sub _call_r_code {
 
-    my ( $self, $targets_file ) = @_;
+    my ( $self, $filenames ) = @_;
 
-    $self->logger->info("Running R analysis on targets file: $targets_file");
+    $self->logger->info("Running R analysis on files listed here: $filenames");
 
     my $cwd = getcwd();
     chdir( $self->_config->value('cimr.datapipeline.watchfolder') )
         or croak("Error changing directory: $!");
 
+    # This file will contain a list of files not paired up into dye swaps.
+    my $unused_file = '.cimr.datapipeline.unused';
+    if ( -f $unused_file ) {
+        die("Old unused_file $unused_file is still present. Please "
+          . "check for other running data pipelines, delete file if appropriate and restart.");
+    }
+
     # N.B. assumes that Rscript is on the user's PATH.
     # N.B. now also assumes an x86 64bit architecture. FIXME.
     my $syscall = sprintf(
-        "Rscript --arch=x86_64 %s %s %s %s",
+        "Rscript --arch=x86_64 %s %s %s %s %s %s %s %s",
         $self->_rscript(),
-        $targets_file,
+        $filenames,
         $self->_config->value('cimr.datapipeline.spottypesfile'),
         $self->_config->value('cimr.datapipeline.adffile'),
+        $self->_config->value('cimr.datapipeline.clinwebquery.uri'),
+        $self->_config->value('cimr.datapipeline.clinwebquery.username'),
+        $self->_config->value('cimr.datapipeline.clinwebquery.password'),
+        $unused_file,
     );
     system( $syscall ) == 0
         or croak("ERROR: Problem running R analysis: $?");
     $self->logger->info("Completed R analysis");
 
+    # Read in list of unused files and clean up.
+    open( my $unused_fh, '<', $unused_file)
+        or die("Unable to reopen list of unused files: $!");
+    my @unused = <$unused_fh>;
+    close( $unused_fh ) or die($!);
+    unlink( $unused_file ) or die($!);
+
     chdir( $cwd )
         or croak("Error changing directory: $!");
 
-    return;
+    return \@unused;
 }
 
 sub _find_new_files {
@@ -314,31 +338,6 @@ sub _extract_data {
         or croak("Error executing data extraction application: $?");
 
     return;
-}
-
-sub _get_target_generator {
-
-    my ( $self ) = @_;
-
-    # Most of this information will comes from $self->_config().
-    my $qobj = ClinStudy::WebQuery->new(
-        'uri'        => $self->_config->value('cimr.datapipeline.clinwebquery.uri'),
-        'username'   => $self->_config->value('cimr.datapipeline.clinwebquery.username'),
-        'password'   => $self->_config->value('cimr.datapipeline.clinwebquery.password'),
-        'id_field'   => $self->_config->value('cimr.datapipeline.clinwebquery.idfield'),
-    );
-
-    my $regexp = $self->_config->value('cimr.datapipeline.fileregexp.txt');
-    $regexp    = qr/\A $regexp \z/ixms;
-    my $tgen = CIMR::TargetGenerator->new(
-        queryobj      => $qobj,
-        file_regexp   => $regexp,
-        sample_field  => $self->_config->value('cimr.datapipeline.clinwebquery.samplefield'),
-        channel_field => $self->_config->value('cimr.datapipeline.clinwebquery.channelfield'),
-        date_field    => $self->_config->value('cimr.datapipeline.clinwebquery.datefield'),
-    );
-
-    return $tgen;
 }
 
 no Moose;
@@ -434,17 +433,12 @@ anchored to beginning and end of the filename being queried.
 
 =item cimr.datapipeline.clinwebquery.uri
 
-=item cimr.datapipeline.clinwebquery.idfield      = assay_barcode
+=item cimr.datapipeline.clinwebquery.username
 
-=item cimr.datapipeline.clinwebquery.samplefield  = sample
-
-=item cimr.datapipeline.clinwebquery.channelfield = channel
-
-=item cimr.datapipeline.clinwebquery.datefield    = date
+=item cimr.datapipeline.clinwebquery.password
 
 Parameters used to query ClinWeb database. The query is performed via
-the REST API, using the URI specified. The various field designations
-are unlikely to need changing from the values shown.
+the JSON API, using the URI, username and password specified.
 
 =item cimr.datapipeline.adffile
 
@@ -458,8 +452,6 @@ information to the dataPipeline.R script.
 
 =head1 SEE ALSO
 
-L<CIMR::TargetGenerator>,
-L<ClinStudy::WebQuery>,
 Log::Log4perl
 
 =head1 AUTHOR
