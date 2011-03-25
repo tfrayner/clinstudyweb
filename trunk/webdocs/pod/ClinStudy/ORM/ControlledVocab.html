@@ -2,15 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
-<title>
-/Volumes/CruiserRAID/Users/tfr23/perl/clinstudyweb/webdocs/pod/../../lib/ClinStudy/ORM/ControlledVocab.pm</title>
+"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+<title>ClinStudy::ORM::ControlledVocab</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
 <meta http-equiv="content-type" content=
 "text/html; charset=us-ascii" />
-<link rev="made" href=
-"mailto:&#116;&#102;&#114;&#50;&#51;&#64;&#99;&#114;&#117;&#105;&#115;&#101;&#114;&#46;&#112;&#114;&#105;&#118;&#97;&#116;&#101;&#46;&#99;&#105;&#109;&#114;&#46;&#99;&#97;&#109;&#46;&#97;&#99;&#46;&#117;&#107;" />
+<link rev="made" href="mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#99;&#97;&#108;&#105;&#98;&#97;&#110;&#46;&#108;&#111;&#99;&#97;&#108;" />
 </head>
 <body>
 <!-- INDEX BEGIN -->
@@ -28,6 +26,7 @@
                 <li><a href="#accession">accession</a></li>
                 <li><a href="#category">category</a></li>
                 <li><a href="#value">value</a></li>
+                <li><a href="#term_source_id">term_source_id</a></li>
         </ul>
 
         <li><a href="#relations">RELATIONS</a></li>
@@ -40,6 +39,7 @@
                 <li><a href="#assay_batches">assay_batches</a></li>
                 <li><a href="#channels">channels</a></li>
                 <li><a href="#clinical_features">clinical_features</a></li>
+                <li><a href="#term_source_id">term_source_id</a></li>
                 <li><a href="#diagnosis_condition_name_ids">diagnosis_condition_name_ids</a></li>
                 <li><a href="#diagnosis_confidence_ids">diagnosis_confidence_ids</a></li>
                 <li><a href="#diagnosis_previous_course_ids">diagnosis_previous_course_ids</a></li>
@@ -109,6 +109,12 @@
   is_nullable: 0
   size: 255
 </pre>
+<h2><a name="term_source_id">term_source_id</a></h2>
+<pre>
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+</pre>
 <hr />
 <h1><a name="relations">RELATIONS</a></h1>
 <h2><a name=
@@ -150,6 +156,11 @@ ClinStudy::ORM::Channel manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ClinicalFeature.html">the
 ClinStudy::ORM::ClinicalFeature manpage</a></p>
+<h2><a name="term_source_id">term_source_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/TermSource.html">the
+ClinStudy::ORM::TermSource manpage</a></p>
 <h2><a name=
 "diagnosis_condition_name_ids">diagnosis_condition_name_ids</a></h2>
 <p>Type: has_many</p>

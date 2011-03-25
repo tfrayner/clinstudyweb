@@ -19,8 +19,10 @@
 
 package ClinStudy::Web::View::HTML;
 
-use strict;
-use base 'Catalyst::View::TT';
+use Moose;
+use namespace::autoclean;
+
+BEGIN {extends 'Catalyst::View::TT'; }
 
 __PACKAGE__->config({
     INCLUDE_PATH => [
