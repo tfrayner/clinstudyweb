@@ -31,12 +31,10 @@
 ##    representing markers which should not be present (e.g. CD4,
 ##    CD8 in CD8 and CD4 cell types respectively).
 
-processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipelineR.log' ) {
+processData <- function(filenames, spotTypesFile, adfFile,
+                        uri, username, password, unused.file, logFile='datapipelineR.log' ) {
 
-    ## The targetFile must be a standard limma targets file,
-    ## indicating which channels contain sample and which contain
-    ## reference. The reference name must be 'Ref' for automated
-    ## design discovery.
+    ## The filenames file contains a newline-delimited list of GenePix data files.
 
     ## The spotTypesFile should link probe Name (ID = *) to control
     ## types. Names should match those in the passed adf object.
@@ -45,13 +43,16 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
     ## Reporter.Name in exactly the same row order as that in the data
     ## files.
 
+    require('ClinStudyWeb')
     require('limma')
 
     ## Read in the data, background correct, filter and print-tip
     ## loess adjustment.
-    targets <- limma::readTargets(targetFile)
+    files <- readLines(filenames)
     f <- function(x) as.numeric(x$Flags > -50)
-    RG <- limma::read.maimages(targets, source='genepix', wt.fun=f)
+    RG <- csWebRGList(files=files, uri=uri,
+                      cred=list(username=username, password=password),
+                      source='genepix', wt.fun=f)
 
     ## Sort out RG$genes$Status; Weight buffer and empty spots
     ## two-fold for print tip-loess normalisation.
@@ -78,19 +79,26 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
 
     ## Filter out any spots with particularly poor correlation between
     ## dye swaps.
-    design <- limma::modelMatrix(targets, ref='Ref')
+    design <- limma::modelMatrix(RG$targets, ref='Ref')
     MA <- filterDeviantSpots( MA, design, logFile )
 
     ## Save the data into one file per dye swap.
+    unused <- c()
     for ( i in 1:ncol(design) ) {
 
         ## Figure out the filename from the design colnames.
         ix <- design[,i] != 0
+        if ( sum(ix) != 2 ) {
+
+            ## Skip design columns where the dye swap isn't complete.
+            unused <- append( unused, MA$targets$FileName[ix] )
+            next
+        }
+
         MAsubset <- MA[, ix]
 
-        ## Assumes that the target file column 1 contains barcodes.
-        fn <- paste( sort(targets[ix,]$Slidename), collapse='_' )
-#        fn <- colnames(design)[i]
+        ## targets$SlideNumber must be set by ClinStudyWeb::csWebRGList.
+        fn <- paste( sort(RG$targets[ix,]$SlideNumber), collapse='_' )
         fn <- gsub('[^A-Za-z0-9]+', '_', fn, perl=TRUE)
         filename <- paste(fn, 'RData', sep='.')
 
@@ -111,6 +119,8 @@ processData <- function( targetFile, spotTypesFile, adfFile, logFile='datapipeli
 
         save(MAsubset, file=filename)
     }
+
+    writeLines(unused, con=unused.file)
 
     return(MA)
 }
@@ -185,5 +195,4 @@ filterDeviantSpots <- function( MA, design, logFile ) {
 
 ## The script proper starts here.
 args <- commandArgs(TRUE)
-MA <- processData(args[1], args[2], args[3])
-## save(MA, file=args[4])
+MA <- processData(args[1], args[2], args[3], args[4], args[5], args[6], args[7])
