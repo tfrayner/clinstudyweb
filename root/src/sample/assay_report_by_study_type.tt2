@@ -19,6 +19,7 @@
   <tr>
   <th>TRIAD ID</th>
   <th>Visit Date</th>
+  <th>Timepoint</th>
   [% FOREACH ct = celltypes -%]
     <th>[% ct %]</th>
   [%- END %]
@@ -27,6 +28,9 @@
   <tr>
   <td><a href="[% c.uri_for("/patient/view", row.visit.patient_id.id) %]">[% row.visit.patient_id.trial_id | html %]</a></td>
   <td><a href="[% c.uri_for("/visit/view", row.visit.id) %]">[% row.visit.date | html %]</a></td>
+  <td>[% IF row.visit.nominal_timepoint_id.defined -%]
+        [%- row.visit.nominal_timepoint_id.value -%]
+      [%- ELSE %]&nbsp;[% END %]</td>
   [% FOREACH ct = celltypes -%]
     [%- SET type = ct -%]
         [%- IF row.sample.$type.defined -%]

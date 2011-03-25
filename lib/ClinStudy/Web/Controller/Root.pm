@@ -73,7 +73,7 @@ Quoth the server, "404".
 sub default : Private {
 
     my ( $self, $c ) = @_;
-    $c->response->status('404');
+    $c->res->status('404');
     $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
@@ -93,6 +93,7 @@ ultimately end up; here there is wailing and gnashing of teeth.
 sub access_denied : Private {
 
     my ( $self, $c, $action ) = @_;
+    $c->res->status('403');
     $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);
     push @{ $c->stash->{breadcrumbs} }, {
         path  => '/',
@@ -133,6 +134,7 @@ sub login : Global FormConfig {
         $c->detach();
     }
     else {
+        $c->res->status('401');
         $c->stash->{error} = 'Login failed.';
     }
 }

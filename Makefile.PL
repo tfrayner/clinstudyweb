@@ -31,6 +31,7 @@ requires 'Catalyst::Runtime'                              => '5.71';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
 requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
+requires 'Catalyst::Controller::REST'                     => '0.89';
 requires 'Catalyst::Controller::HTML::FormFu'             => '0.06001';
 requires 'HTML::FormFu::Model::DBIC'                      => '0.08002';
 requires 'HTML::FormFu'                                   => '0.08002';
@@ -50,6 +51,9 @@ requires 'DBD::mysql'                                     => '4.005';
 requires 'DBIx::Class'                                    => '0.08010';
 requires 'DBIx::Class::Journal'                           => '0.900200';
 requires 'XML::LibXML'                                    => '1.7.0';
+requires 'Catalyst::View::TT'                             => '0.34';
+requires 'Catalyst::View::JSON'                           => '0.30';
+requires 'JSON::Any'                                      => '1.22';
 
 # REST currently serialises via XML::Simple
 requires 'XML::Simple'                                    => '2.18';
@@ -60,6 +64,7 @@ test_requires 'Test::DBIx::Class' => '0.09';
 recommends 'Bio::MAGETAB' => '1.1';
 recommends 'LWP::UserAgent';
 recommends 'Term::ReadKey';
+recommends 'FCGI::ProcManager';
 
 # Classes not included by PAR due to obfuscated linking.
 catalyst_par_classes('DBD::mysql');

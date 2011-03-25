@@ -46,6 +46,68 @@ sub BUILD {
     return;
 }
 
+=head2 index
+
+=cut
+
+sub index : Path : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $class = $self->my_model_class()
+        or confess("Error: CIMR database class not set in ControlledVocab controller " . ref $self);
+
+    my @categories = $c->model($class)->get_column('category')->func('distinct');
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
+    $c->stash->{categories} = \@categories;
+}
+
+=head2 list
+
+=cut
+
+sub list : Local {
+
+    # A full listing of all CVs is increasingly impractical (and not generally useful).
+    my ( $self, $c, @args ) = @_;
+
+    # We just redirect to the index action.
+    $c->res->redirect( $c->uri_for( '' ) );
+    $c->detach();
+}
+
+=head2 list_by_category
+
+=cut
+
+sub list_by_category : Local {
+
+    my ( $self, $c, $category ) = @_;
+
+    my @cvs;
+
+    my $class = $self->my_model_class()
+        or confess("Error: CIMR database class not set in ControlledVocab controller " . ref $self);
+
+    my $error_redirect = $self->_my_error_redirect($c)
+        or confess("Error: CIMR error redirect not set in ControlledVocab controller " . ref $self);
+
+    if ( defined $category ) {
+        @cvs = $c->model($class)->search({ category => $category });
+        $c->stash->{list_category} = $category;
+    }
+    else {
+
+        # Error.
+        $c->flash->{error} = "CV category not defined!";
+        $c->res->redirect( $c->uri_for( $error_redirect ) );
+        $c->detach();
+    }
+
+    $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c);    
+    $c->stash->{objects}   = \@cvs;
+    $c->stash->{template}  = 'controlledvocab/list.tt2';
+}
+
 sub _set_my_deleted_message {
 
     my ( $self, $c, $object ) = @_;

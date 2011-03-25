@@ -10,12 +10,18 @@
 
 }
 \usage{
-csWebReannotate ( data, uri, .opts=list(), cred=NULL )
+csWebReannotate ( data, sample.column=NULL, uri, .opts=list(), cred=NULL )
 }
 \arguments{
 
   \item{data}{A data object to reannotate. See the individual methods
     documentation for more details.}
+
+  \item{sample.column}{An optional argument indicating the column of the
+    data object's annotation which contains sample identifiers. If used,
+    these identifiers will be used to retrieve annotation instead of the
+    assay file names. As a result no assay annotation will be included
+    in the output.}
 
   \item{uri}{The URI for the clinical database web site.}
 
