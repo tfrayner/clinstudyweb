@@ -40,11 +40,71 @@ Catalyst Controller.
 
 =cut
 
+=head2 json_login
+
+This is the primary authentication method which is to be used prior to
+any other queries in order to obtain an authenticated connection. See
+e.g. the curl documentation for details on how this may be used (RCurl
+example available in the associated ClinStudyWeb R package). Success
+or failure is denoted by a boolean "success" flag in the returned
+object.
+
+=cut
+
+sub json_login : Global {
+
+    my ( $self, $c ) = @_;
+
+    # Here $query is a hashref with keys username and password.
+    my $query = $self->_decode_json( $c );
+
+    # This is stupidly explicit, considering, but may help avoid
+    # mistakes in future.
+    if ( $c->authenticate({ username => $query->{'username'},
+                            password => $query->{'password'}, }) ) {
+
+        # Note that we're deliberately not setting the access date
+        # here; read-only programmatic access is not of much interest
+        # for audit purposes. Perhaps revisit this if we ever allow
+        # read-write access in the JSON API.
+
+        $c->stash->{ 'success' } = JSON::Any->true();
+    }
+    else {
+        $c->stash->{ 'errorMessage' } = qq{Error: Unable to authenticate.};
+        $c->stash->{ 'success' } = JSON::Any->false();
+    }
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;        
+}
+
+=head2 json_logout
+
+A method which simply deauthenticates the user.
+
+=cut
+
+sub json_logout : Global {
+
+    my ( $self, $c ) = @_;
+
+    # Whatever happens we want to log out.
+    $c->logout;
+    
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;        
+}
+
 =head2 index
 
 This is the core of the generic JSON query API. JSON parameters are as
 follows: resultSet, condition, attributes. These parameters are passed
-in as a hashref named "data".
+in as a hashref named "data". Return values are similarly passed under
+a "data" key. Success or failure is denoted by a boolean "success"
+flag in the returned object.
 
 =cut
 

@@ -27,7 +27,7 @@ csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     ## Merge the lists into a data frame, and create the phenoData object.
     message("Reading CEL files...")
     ph   <- new('AnnotatedDataFrame', data=p)
-    cels <- affy::ReadAffy(filenames=as.character(p$filename), phenoData=ph, ...)
+    cels <- affy::ReadAffy(filenames=files, phenoData=ph, ...)
 
     return(cels)
 }
@@ -52,10 +52,12 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- lapply(p, unlist)
     p <- data.frame(do.call('rbind', p))
 
-    # Quick sanity check
+    ## Quick sanity check
+    ## Strip out file paths which won't have been stored in the database.
+    files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
     stopifnot( all( as.character(p$filename) == files ) )
     
-    rownames(p) <- files
+    rownames(p) <- as.character(p$filename)
 
     return(p)
 }
@@ -108,7 +110,14 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- lapply(p, unlist)
     p <- data.frame(do.call('rbind', p))
 
-    # Quick sanity check.
+    ## Support for full-path file names. Unsure if read.maimages will
+    ## honour this though FIXME.
+    rownames(p) <- p$filename
+    p$filename  <- files
+
+    ## Quick sanity check.
+    ## Strip out file paths which won't have been stored in the database.
+    files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
     stopifnot( all(as.character(p$filename) == files) )
 
     colnames(p)[colnames(p) == 'filename'  ] <- 'FileName'
@@ -178,6 +187,9 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     stopifnot( all( c('username', 'password') %in% names(cred) ) )
     stopifnot( ! any(is.na(cred)) )
 
+    ## Strip out file paths which won't have been stored in the database.
+    files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
+
     ## This call relies on assay.file being the first argument to
     ## csWebQuery
     message("Querying the database for annotation...")
@@ -191,12 +203,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
                     .opts=.opts, curl=curl)
 
     if ( needs.logout == 1 ) {
-        ## Log out for the sake of completeness (check for failure and warn).
-        res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
-
-        ## FIXME at present this relies on the web server behaviour, which might change.
-        if ( nchar(res) > 0 )
-            warning("Unable to log out.")
+        .csLogOutAuthenticatedHandle( uri, curl )
     }
 
     return(p)
@@ -297,12 +304,7 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         stop(status$errorMessage)
 
     if ( needs.logout == 1 ) {
-        ## Log out for the sake of completeness (check for failure and warn).
-        res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
-
-        ## FIXME at present this relies on the web server behaviour, which might change.
-        if ( nchar(res) > 0 )
-            warning("Unable to log out.")
+        .csLogOutAuthenticatedHandle( uri, curl )
     }
 
     .extractAttrs <- function(x) { class(x)!='list' }
@@ -413,18 +415,36 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     RCurl::curlSetOpt(cookiefile=cookies, curl=curl)
 
     ## We need to detect login failures here.
-    res <- RCurl::postForm(uri=paste(uri, 'login', sep='/'),
-                           username=username,
-                           password=password,
-                           login='1',
-                           .opts=.opts,
-                           curl=curl)
+    query  <- list(username=username, password=password)
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=paste(uri, 'json_login', sep='/'),
+                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
 
-    ## FIXME at present this relies on the web server behaviour, which might change.
-    if ( nchar(res) > 0 )
-        stop("Unable to log in.")    
+    ## Check the response for errors.
+    status  <- rjson::fromJSON(status$value())
+    if ( ! isTRUE(status$success) )
+        stop(status$errorMessage)
 
     return(curl)
+}
+
+.csLogOutAuthenticatedHandle <- function( uri, curl ) {
+
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=paste(uri, 'json_logout', sep='/'),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
+
+    ## Check the response for errors.
+    status  <- rjson::fromJSON(status$value())
+    if ( res != 0 )
+        warning('Unable to log out.')
+
+    return()
 }
 
 csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred=NULL ) {
@@ -456,11 +476,7 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
         stop(status$errorMessage)
 
     ## Log out for the sake of completeness (check for failure and warn).
-    res <- RCurl::postForm(uri=paste(uri, 'logout', sep='/'), logout='1')
-
-    ## FIXME at present this relies on the web server behaviour, which might change.
-    if ( nchar(res) > 0 )
-        warning("Unable to log out.")
+    .csLogOutAuthenticatedHandle( uri, curl )
 
     ## No results returned; rather than passing back a list of length 1
     ## with a single null entry we just pass back null; it's simpler
