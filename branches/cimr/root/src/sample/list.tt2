@@ -12,6 +12,7 @@
         <td>Name</td>
         <td>Cell type</td>
         <td>Material type</td>
+        <td>Sample expired</td>
         <td>&nbsp;</td>
       </tr>
     </thead>
@@ -21,6 +22,7 @@
         <td> [% sample.name | html %]</td>
         <td> [% sample.cell_type_id.value | html %]</td>
         <td> [% sample.material_type_id.value | html %] &nbsp; </td>
+        <td> [% IF sample.has_expired %]<font color="red">YES</font>[% ELSE %]No[% END %] </td>
         <td><a href="[% c.uri_for("/sample/view/$sample.id") | html %]">View</a></td>
         </tr> 
     [% END %]
@@ -34,7 +36,7 @@
         var tableWidgetObj = new DHTMLSuite.tableWidget();
         tableWidgetObj.setTableId('sampleList');
         tableWidgetObj.setTableHeight(400);
-        tableWidgetObj.setColumnSort(Array('S','S','S',false));
+        tableWidgetObj.setColumnSort(Array('S','S','S','S',false));
         tableWidgetObj.init();
         tableWidgetObj.sortTableByColumn(0); // Initially sort the table by the sample name
     </script>

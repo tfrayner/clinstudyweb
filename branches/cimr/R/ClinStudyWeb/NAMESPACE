@@ -42,7 +42,6 @@ importFrom(affy, ReadAffy)
 importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-')
 importFrom(limma, read.maimages)
 
-importFrom(XML, xmlParse, xmlToList)
 importFrom(RCurl, getURLContent, curlEscape)
 
 export(

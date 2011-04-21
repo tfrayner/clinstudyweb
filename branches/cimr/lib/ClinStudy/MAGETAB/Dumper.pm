@@ -32,11 +32,12 @@ use Bio::MAGETAB::Util::Writer;
 use ClinStudy::Web;
 use URI;
 use LWP::UserAgent;
-use XML::LibXML;
 use List::Util qw(first);
 use Storable qw(dclone);
 use Config::YAML;
 use Readonly;
+use File::Spec;
+use JSON::Any;
 
 use Carp;
 use Data::Dumper;
@@ -46,6 +47,9 @@ our $VERSION = '0.01';
 has 'uri'      => ( is       => 'ro',
                     isa      => 'URI',
                     required => 1, );
+
+has 'useragent' => ( is      => 'rw',
+                     isa     => 'LWP::UserAgent', );
 
 has 'username' => ( is       => 'ro',
                     isa      => 'Str',
@@ -82,6 +86,7 @@ sub BUILD {
 
     my ( $self, $params ) = @_;
 
+    # First read our config file and create some objects.
     if ( my $conffile = $params->{'config_file'} ) {
         my $c = Config::YAML->new( config => $conffile );
         my $h = $c->get_MAGETAB();
@@ -119,7 +124,43 @@ sub BUILD {
     $idf->set_protocols(\@protocols);
 
     $self->_investigation( $idf );
+
+    # Now we create our useragent and log into the web interface.
+    my $uri = $params->{uri};
+
+    # Strip trailing /, add the path to the JSON API for query type
+    # (typically 'assay_file').
+    $uri =~ s/\/+$//;
+    $uri .= '/login';
+    my $ua = LWP::UserAgent->new();
+    $ua->agent("ClinStudyWeb/$ClinStudy::Web::VERSION");
+    $ua->cookie_jar({ file => File::Spec->catfile($ENV{HOME}, '.cookies.txt') });
+    my $res = $ua->post($uri, { username => $params->{username},
+                                password => $params->{password},
+                                login    => 1 });
+
+    # Detect login failure (redirect is a valid response).
+    if ( $res->is_error() ) {
+        croak("Unable to log in: " . $res->status_line);
+    }
+
+    $self->useragent( $ua );
     
+    return;
+}
+
+sub DEMOLISH {
+
+    my ( $self ) = @_;
+
+    # Log out of our LWP user agent.
+    if ( my $ua = $self->useragent() ) {
+        my $uri = $self->uri();
+        $uri =~ s/\/+$//;
+        $uri .= '/logout';
+        $ua->post($uri, { logout => 1 });
+    }
+
     return;
 }
 
@@ -168,47 +209,43 @@ sub dump {
     return;
 }
 
-sub _query_rest {
+sub _query_json {
 
-    my ( $self, $querytype, $querystr ) = @_;
+    my ( $self, $query ) = @_;
+
+    my $ua  = $self->useragent();
 
     my $uri = $self->uri();
-
-    # Strip trailing /, add the path to the REST API for query type
-    # (typically 'assay_file').
     $uri =~ s/\/+$//;
-    $uri .= sprintf("/rest/%s/%s", $querytype, $querystr);
-    my $ua = LWP::UserAgent->new();
+    $uri .= "/query/assay_dump";
 
-    # Add our login details and content type.
-    $ua->default_header( 'X-Username' => $self->username() );
-    $ua->default_header( 'X-Password' => $self->password() );
-    $ua->default_header( 'Content-Type' => 'text/xml' );
+    my $json = JSON::Any->objToJson( $query );
+    my $res  = $ua->post($uri, { data => $json });
 
-    # Get the response.
-    my $res = $ua->get($uri);
-
-    # Error-check the response, give feedback on failure.
-    unless ( $res->is_success() ) {
-        warn(sprintf("Warning: ClinStudyWeb REST query returned error %s for %s %s\n",
-                     $res->status_line, $querytype, $querystr));
+    my $data;
+    if ( $res->is_success() ) {
+        $data = JSON::Any->jsonToObj( $res->content() );
+        if ( $data->{success} ) {
+            $data = $data->{data};
+        }
+        else {
+            warn(sprintf("Warning: ClinStudyWeb JSON query returned error: %s\n",
+                         $data->{errorMessage}));
+            return;
+        }
+    }
+    else {
+        warn(sprintf("Warning: ClinStudyWeb HTTP query returned error: %s\n",
+                     $res->status_line));
         return;
     }
-
-    # Parse the returned data, remove the unnecessary top-level wrappers.
-    my $doc     = XML::LibXML->load_xml(string => $res->content);
-    my $dataset = $doc->find('/opt/data');
-    if ( $dataset->size() != 1 ) {
-        croak("Error: ClinStudyWeb REST response must contain a single data entry");
-    }
-    my $data = $dataset->get_node(0);
 
     return $data;
 }
 
 sub _create_datafile {
 
-    my ( $self, $filename, $xml_data_node ) = @_;
+    my ( $self, $filename, $json_data ) = @_;
 
     # FIXME this should be a config setting.
     my %extmap = (
@@ -249,14 +286,14 @@ sub _create_datafile {
     });
 
     # Hybridization
-    my $hyb = $self->_create_hyb( $xml_data_node, $file );
+    my $hyb = $self->_create_hyb( $json_data, $file );
 
     return $file;
 }
 
 sub _create_hyb {
 
-    my ( $self, $xml_data_node, $file ) = @_;
+    my ( $self, $json_data, $file ) = @_;
 
     my $builder = $self->builder();
 
@@ -265,7 +302,7 @@ sub _create_hyb {
         value    => 'hybridization',
     });
 
-    my $hybid = $xml_data_node->getAttribute('identifier');
+    my $hybid = $json_data->{'identifier'};
     my $hyb = $self->_create_node_and_edge(
         'assay',
         {
@@ -279,15 +316,15 @@ sub _create_hyb {
         or croak(qq{Error retrieving protocol named "$HYB_PROTOCOL_NAME".});
     my $hyb_pa_attrs = {
         protocol   => $hyb_prot,
-        date       => $xml_data_node->getAttribute('batch_date'),
+        date       => $json_data->{'batch_date'},
     };
-    if ( my $op = $xml_data_node->getAttribute('operator') ) {
+    if ( my $op = $json_data->{'operator'} ) {
         $hyb_pa_attrs->{'performers'} = [ $builder->find_or_create_contact({
             lastName => $op,
         }) ];
     }
 
-    foreach my $channel ( $xml_data_node->findnodes('./channels') ) {
+    foreach my $channel ( @{ $json_data->{'channels'} || [] } ) {
         $self->_process_channel( $channel, $hyb, $hyb_pa_attrs );
     }
 
@@ -300,27 +337,26 @@ sub _process_channel {
 
     my $builder = $self->builder();
 
-    my $label_str = $channel->getAttribute('label');
+    my $label_str = $channel->{'label'};
     my $label     = $builder->find_or_create_controlled_term({
         category => 'LabelCompound',
         value    => $label_str,
     });
 
-    foreach my $sample ( $channel->findnodes('./sample' ) ) {
+    my $sample = $channel->{'sample'};
 
-        my $sample_name = $sample->getAttribute('sample_name');
+    my $sample_name = $sample->{'sample_name'};
     
-        my $le = $self->_create_node_and_edge(
-            'labeled_extract',
-            {
-                name  => "$sample_name ($label_str)",
-                label => $label,
-            },
-            $hyb,
-            $hyb_pa_attrs,
-        );
-        $self->_process_sample( $sample, $le );
-    }
+    my $le = $self->_create_node_and_edge(
+        'labeled_extract',
+        {
+            name  => "$sample_name ($label_str)",
+            label => $label,
+        },
+        $hyb,
+        $hyb_pa_attrs,
+    );
+    $self->_process_sample( $sample, $le );
 
     return;
 }
@@ -329,7 +365,7 @@ sub _process_sample {
 
     my ( $self, $sample, $le ) = @_;
 
-    my $sample_name = $sample->getAttribute('sample_name');
+    my $sample_name = $sample->{'sample_name'};
 
     my $builder = $self->builder();
 
@@ -363,7 +399,7 @@ sub _process_sample {
     my $so = $self->_create_node_and_edge(
         'source',
         {
-            name  => $sample->getAttribute('patient_number'),
+            name  => $sample->{'patient_number'},
         },
         $sa,
         {
@@ -390,21 +426,26 @@ sub _process_sample {
     my @hidden_attr_names = qw();
 
     ATTR:
-    foreach my $attr ( $sample->attributes() ) {
-        my $attrname = $attr->name();
+    while ( my ( $attrname, $value ) = each %{ $sample || {} } ) {
+
+        # Skip anything flagged as hidden.
+        next ATTR if ( first { $_ eq $attrname } @hidden_attr_names, 'year_of_birth', 'sample_name' );
+
+        # Skip empty attributes, or references.
+        next ATTR if ( ref $value || ! defined( $value ) || $value eq q{} );
 
         # First, a couple of special cases.
         if ( $attrname eq 'material_type' ) {
             my $mt = $builder->find_or_create_controlled_term({
                 category => 'MaterialType',
-                value    => $attr->value(),
+                value    => $value,
             });
             $ex->set_materialType($mt);
             next ATTR;
         }
         if ( $attrname eq 'entry_date' ) {
-            if ( my $yob = $sample->getAttribute('year_of_birth') ) {
-                my ( $entry_year ) = ( $attr->value =~ m/\A (\d{4}) /xms );
+            if ( my $yob = $sample->{'year_of_birth'} ) {
+                my ( $entry_year ) = ( $value =~ m/\A (\d{4}) /xms );
                 my $age_str = $entry_year - $yob;
                 my $age = $builder->find_or_create_controlled_term({
                     category => 'age_at_entry',
@@ -415,16 +456,10 @@ sub _process_sample {
             next ATTR;
         }
 
-        # Skip anything flagged as hidden.
-        next ATTR if ( first { $_ eq $attrname } @hidden_attr_names, 'year_of_birth', 'sample_name' );
-
-        # Skip empty attributes.
-        next ATTR if ( $attr->value() eq q{} );
-
         # For everything else, create controlled terms.
         my $char = $builder->find_or_create_controlled_term({
-            category => $attr->name(),
-            value    => $attr->value(),
+            category => $attrname,
+            value    => $value,
         });
 
         # A handful of things relate to the sample; most attributes
@@ -437,32 +472,26 @@ sub _process_sample {
         }
     }
 
-    foreach my $eg_group ( $sample->findnodes('./emergent_group') ) {
-        foreach my $attr ( $eg_group->attributes() ) {
-            my $char = $builder->find_or_create_controlled_term({
-                category => 'emergent_group.' . $attr->name(),
-                value    => $attr->value(),
-            });
-            push @sample_chars, $char;
-        }
+    while ( my ( $name, $val ) = each %{ $sample->{'emergent_group'} || {} } ) {
+        my $char = $builder->find_or_create_controlled_term({
+            category => 'emergent_group.' . $name,
+            value    => $val,
+        });
+        push @sample_chars, $char;
     }
-    foreach my $pg_group ( $sample->findnodes('./prior_group') ) {
-        foreach my $attr ( $pg_group->attributes() ) {
-            my $char = $builder->find_or_create_controlled_term({
-                category => 'prior_group.' . $attr->name(),
-                value    => $attr->value(),
-            });
-            push @source_chars, $char;
-        }
+    while ( my ( $name, $val ) = each %{ $sample->{'prior_group'} || {} } ) {
+        my $char = $builder->find_or_create_controlled_term({
+            category => 'prior_group.' . $name,
+            value    => $val,
+        });
+        push @source_chars, $char;
     }
-    foreach my $test_group ( $sample->findnodes('./test_result') ) {
-        foreach my $attr ( $test_group->attributes() ) {
-            my $char = $builder->find_or_create_controlled_term({
-                category => 'test_result.' . $attr->name(),
-                value    => $attr->value(),
-            });
-            push @source_chars, $char;
-        }
+    while ( my ( $name, $val ) = each %{ $sample->{'test_result'} || {} } ) {
+        my $char = $builder->find_or_create_controlled_term({
+            category => 'test_result.' . $name,
+            value    => $val,
+        });
+        push @source_chars, $char;
     }
 
     $sa->set_characteristics( [ sort { $a->get_category cmp $b->get_category } @sample_chars ] );
@@ -500,12 +529,12 @@ sub add_file {
 
     my ( $self, $filename ) = @_;
 
-    my $xml_data_node = $self->_query_rest( 'assay_file', $filename );
+    my $json_data = $self->_query_json( { filename => $filename } );
 
     my $builder = $self->builder();
 
     # Data file
-    my $file = $self->_create_datafile( $filename, $xml_data_node );
+    my $file = $self->_create_datafile( $filename, $json_data );
 
     return;
 }
@@ -535,7 +564,7 @@ ClinStudy::MAGETAB::Dumper - MAGE-TAB export from the ClinStudy database.
 =head1 DESCRIPTION
 
 Module created to facilitate the export of MAGE-TAB documents from the
-ClinStudy database, primarily using the web-based REST API.
+ClinStudy database, primarily using the web-based JSON API.
 
 =head1 ATTRIBUTES
 
