@@ -2,6 +2,8 @@
 
 <h3>[% object.visit_id.patient_id.trial_id | html %]; visit date: [% object.visit_id.date %]</h3>
 
+[% IF object.has_expired %]<h4><font color="red">Warning:</font> Sample is marked as expired or otherwise unavailable.</h4>[% END %]
+
 <fieldset class="data_view">
 <legend>Sample <span><a href="[% c.uri_for("/sample/edit", object.id) %]">Edit</a></span></legend>
 <table id="sampleInfo" class="horizontal">
@@ -10,6 +12,8 @@
          <td>[% object.name | html %]</td></tr>
      <tr><th>Cell Type:</th>
          <td>[% object.cell_type_id.value | html %]</td></tr>
+     <tr><th>Sample Expired/Unavailable:</th>
+         <td>[% IF object.has_expired %]<font color="red">YES</font>[% ELSE %]No[% END %]</td></tr>
      <tr><th>Material Type:</th>
          <td>[% object.material_type_id.value | html %]</td></tr>
      <tr><th>Freezer Location:</th>

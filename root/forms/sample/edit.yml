@@ -144,6 +144,14 @@ elements:
         category: QualityScore
       label_column: value
 
+  - type: Checkbox
+    name: has_expired
+    label: Sample Unavailable/Expired
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Is the sample no longer available in storage, or has it been discarded from future studies?
+
   - type: Textarea
     name: notes
     label: Other Notes
