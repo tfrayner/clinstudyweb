@@ -33,6 +33,7 @@ use DBIx::Class::Schema::Loader;
 use base qw(DBIx::Class::Schema::Loader);
 
 __PACKAGE__->loader_options(
+    datetime_undef_if_invalid => 0,
 #    debug => 1,
 );
 
