@@ -184,7 +184,7 @@ sub assay_report_by_study_type : Local {
     my @data;
     foreach my $visit ( @visits ) {
 
-        my %sample;
+        my ( %sample, %expired );
 
         # MaterialType filter only once we've registered the visit.
         my @rnas = $visit->samples({ material_type_id => $mt->id() });
@@ -221,13 +221,15 @@ sub assay_report_by_study_type : Local {
                     $count += $val;
                 }
             }
-            $sample{$celltype} = $count;
+            $sample{$celltype}  = $count;
+            $expired{$celltype} = $rna->has_expired();
         }
 
         # %sample can be empty.
         push @data, {
             visit   => $visit,
             sample  => \%sample,
+            expired => \%expired,
         };
 
     }

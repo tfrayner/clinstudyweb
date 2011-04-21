@@ -75,3 +75,9 @@ ALTER TABLE controlled_vocab_audit_history ADD COLUMN `term_source_id` int(11) D
  
 -- End of term source structures.
 
+--
+-- Adding a flag to sample table to indicate freshness.
+--
+ALTER TABLE sample ADD COLUMN (has_expired tinyint(1) DEFAULT NULL);
+ALTER TABLE sample_audit_history ADD COLUMN (has_expired tinyint(1) DEFAULT NULL);
+
