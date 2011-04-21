@@ -213,9 +213,7 @@ __PACKAGE__->deny_access( '/visitlinkedobject' );
 __PACKAGE__->allow_access( '/default' );
 __PACKAGE__->allow_access( '/index' );
 __PACKAGE__->allow_access( '/login' );
-
-# The REST API uses its own authentication based on password.
-__PACKAGE__->allow_access( '/rest' );
+__PACKAGE__->allow_access( '/query/json_login' );
 
 # A convenience method to check that there are no objects linked to a
 # given DBIx::Class::Row via non-cascading_delete

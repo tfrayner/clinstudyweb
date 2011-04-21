@@ -299,10 +299,8 @@ CIMR::TargetGenerator - Create limma Targets files from CIMR::QueryObj instances
 =head1 SYNOPSIS
 
  use CIMR::TargetGenerator;
- my $qobj = ClinStudy::WebQuery->new(
-     uri        => 'http://localhost:3000',
-     username   => 'my_username',
-     password   => 'my_password',
+ my $qobj = ClinStudy::TabFileQuery->new(
+     fh         => $database_fh,
      id_field   => 'assay_barcode',
  );
  my $tgen = CIMR::TargetGenerator->new(

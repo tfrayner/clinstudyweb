@@ -72,7 +72,10 @@ sub base_wanted {
 
     my ( $libdir, $cwd, $modules, $pattern ) = @_;
 
-    return unless $File::Find::name =~ m/ $pattern .* \.pm \z/xms;
+    my ( $title ) = ( $File::Find::name =~ m/ ( $pattern .* \.pm ) \z/xms );
+    return unless $title;
+    $title =~ s/\//::/g;
+    $title =~ s/\.pm\z//xms;
     
     my $modfile = File::Spec->abs2rel( $File::Find::name, $libdir );
     my $htmldoc = File::Spec->rel2abs( $modfile, $cwd );
@@ -90,6 +93,7 @@ sub base_wanted {
         "--outfile=$htmldoc",
         "--css=/trunk/webdocs/style.css",
         "--noindex",
+        "--title=$title",
         "--htmlroot=/trunk/webdocs/pod",
     );
 
