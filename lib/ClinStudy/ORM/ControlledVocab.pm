@@ -47,7 +47,7 @@ __PACKAGE__->table("controlled_vocab");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =cut
 
@@ -61,7 +61,7 @@ __PACKAGE__->add_columns(
   "value",
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "term_source_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("category", ["category", "value"]);
@@ -714,8 +714,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-11-04 17:45:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Z5Mpc77xFwPjLPx3XbSHYw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-04-21 13:55:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7jXYF4c+1E7X2z6NL1NnyQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
