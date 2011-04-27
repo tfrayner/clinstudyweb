@@ -203,7 +203,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
                     .opts=.opts, curl=curl)
 
     if ( needs.logout == 1 ) {
-        .csLogOutAuthenticatedHandle( uri, curl )
+        .csLogOutAuthenticatedHandle( uri, curl, .opts )
     }
 
     return(p)
@@ -304,7 +304,7 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         stop(status$errorMessage)
 
     if ( needs.logout == 1 ) {
-        .csLogOutAuthenticatedHandle( uri, curl )
+        .csLogOutAuthenticatedHandle( uri, curl, .opts )
     }
 
     .extractAttrs <- function(x) { class(x)!='list' }
@@ -327,21 +327,21 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     ## EmergentGroups and PriorGroups are a bit trickier, since they're 0..n
 
     eg <- sample$emergent_group
-    if ( !is.null(eg) ) {
+    if ( !is.null(eg) & length(eg) ) {
         for ( n in 1:length(eg) ) {
             attrname <- paste('emergent_group', names(eg)[n], sep='.')
             attrs[[attrname]]<-as.character(eg[n])
         }
     }
     pg <- sample$prior_group
-    if ( !is.null(pg) ) {
+    if ( !is.null(pg) & length(pg) ) {
         for ( n in 1:length(pg) ) {
             attrname <- paste('prior_group', names(pg)[n], sep='.')
             attrs[[attrname]]<-as.character(pg[n])
         }
     }
     pt <- sample$prior_treatment
-    if ( !is.null(pt) ) {
+    if ( !is.null(pt) & length(pt) ) {
         for ( n in 1:length(pt) ) {
             attrname <- paste('prior_treatment', names(pt)[n], sep='.')
             attrs[[attrname]]<-as.character(pt[n])
@@ -350,7 +350,7 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
 
     ## We handle TestResults in much the same way.
     tr <- sample$test_result
-    if ( !is.null(tr) ) {
+    if ( !is.null(tr) & length(tr) ) {
         for ( n in 1:length(tr) ) {
             attrname <- paste('test', names(tr)[n], sep='.')
             attrs[[attrname]]<-as.character(tr[n])
@@ -431,7 +431,7 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return(curl)
 }
 
-.csLogOutAuthenticatedHandle <- function( uri, curl ) {
+.csLogOutAuthenticatedHandle <- function( uri, curl, .opts=list() ) {
 
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'json_logout', sep='/'),
@@ -476,7 +476,7 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
         stop(status$errorMessage)
 
     ## Log out for the sake of completeness (check for failure and warn).
-    .csLogOutAuthenticatedHandle( uri, curl )
+    .csLogOutAuthenticatedHandle( uri, curl, .opts )
 
     ## No results returned; rather than passing back a list of length 1
     ## with a single null entry we just pass back null; it's simpler
