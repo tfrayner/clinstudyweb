@@ -58,6 +58,11 @@ __PACKAGE__->table("visit");
   data_type: 'tinyint'
   is_nullable: 1
 
+=head2 has_infection
+
+  data_type: 'tinyint'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -74,6 +79,8 @@ __PACKAGE__->add_columns(
   "nominal_timepoint_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "treatment_escalation",
+  { data_type => "tinyint", is_nullable => 1 },
+  "has_infection",
   { data_type => "tinyint", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -184,8 +191,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gTwAZsqat1/oKtnPCyX1yw
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-05-05 13:28:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wnnBvctr1lKE6napIPAfQA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
