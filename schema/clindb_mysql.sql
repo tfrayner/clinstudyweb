@@ -69,6 +69,7 @@ CREATE TABLE `comorbidity` (
   `condition_name` varchar(255) NOT NULL,
   `date` date default NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY (`patient_id`,`condition_name`,`date`),
   KEY (`patient_id`),
   CONSTRAINT `comorbidity_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -190,7 +191,7 @@ CREATE TABLE `diagnosis` (
   `disease_staging_id` int(11) default NULL,
   `disease_extent_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY (`patient_id`, `date`),
+  UNIQUE KEY (`patient_id`, `condition_name_id`),
   KEY (`patient_id`),
   KEY (`condition_name_id`),
   KEY (`confidence_id`),
@@ -1083,6 +1084,7 @@ CREATE TABLE `visit` (
   `patient_id` int(11) NOT NULL,
   `nominal_timepoint_id` int(11) default NULL,
   `treatment_escalation` tinyint(1) default NULL,
+  `has_infection` tinyint(1) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`patient_id`,`date`),
   KEY (`patient_id`),

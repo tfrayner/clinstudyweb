@@ -21,6 +21,11 @@
         [%- ELSE %] No
         [%- END %]</td></tr>
 
+<tr><th>Has infection:</th>
+    <td>[% IF object.has_infection == 1 -%] Yes
+        [%- ELSE %] No
+        [%- END %]</td></tr>
+
 <tr><th>Notes:</th>
 <td>[% object.notes | html | html_line_break %]</td></tr></table>
 </fieldset>

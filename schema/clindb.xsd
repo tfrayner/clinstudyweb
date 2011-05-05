@@ -198,6 +198,7 @@
     <xs:attribute name="disease_activity" type="varcharType"/>
     <xs:attribute name="nominal_timepoint" type="varcharType"/>
     <xs:attribute name="treatment_escalation" type="tinyintType"/>
+    <xs:attribute name="has_infection" type="tinyintType"/>
   </xs:complexType>
 
   <xs:complexType name="graftFailureType">
