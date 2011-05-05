@@ -102,7 +102,7 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "date"]);
+__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "condition_name_id"]);
 
 =head1 RELATIONS
 
@@ -191,8 +191,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-11-04 17:45:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:emUCx6FjYDM5qMWBwlMqgw
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-05-05 13:28:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:59IUbQVyE+v74PSka9Cesg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

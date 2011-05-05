@@ -74,6 +74,14 @@ elements:
       tooltipText: >-
         Has the patient's treatment been escalated?
 
+  - type: Checkbox
+    name: has_infection
+    label: Infection present
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Is the patient suffering from an infection?
+
   - type: Block
     nested_name: test_cont_results_0
     elements:
