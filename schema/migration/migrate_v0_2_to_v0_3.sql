@@ -81,3 +81,19 @@ ALTER TABLE controlled_vocab_audit_history ADD COLUMN `term_source_id` int(11) D
 ALTER TABLE sample ADD COLUMN (has_expired tinyint(1) DEFAULT NULL);
 ALTER TABLE sample_audit_history ADD COLUMN (has_expired tinyint(1) DEFAULT NULL);
 
+--
+-- Adding a flag to visit table to indicate infection status.
+--
+ALTER TABLE visit ADD COLUMN (has_infection tinyint(1) DEFAULT NULL);
+ALTER TABLE visit_audit_history ADD COLUMN (has_infection tinyint(1) DEFAULT NULL);
+
+--
+-- Changing how our diagnoses are identified; date is optional so is inappropriate as a key component.
+--
+ALTER TABLE diagnosis ADD UNIQUE KEY (`patient_id`, `condition_name_id`);
+ALTER TABLE diagnosis DROP KEY patient_id_2;
+
+--
+-- Comorbidity is a little more flexible (and far less mission-critical).
+--
+ALTER TABLE comorbidity ADD UNIQUE KEY (`patient_id`, `condition_name`, `date`);
