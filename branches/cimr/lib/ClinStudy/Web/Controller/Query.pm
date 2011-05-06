@@ -368,6 +368,8 @@ sub dump_sample_entity : Private {
         $patient->search_related( 'visits',
                                  { treatment_escalation => 1 } )->count();
 
+    $dump{has_infection} = $visit->has_infection();
+
     # We only want those TestResults which have no parents. FIXME is
     # there a better way via SQL::Abstract?
     my %tests = map { $_->test_id->name() => _get_test_value($_) }
