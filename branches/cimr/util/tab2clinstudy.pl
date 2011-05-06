@@ -34,7 +34,7 @@ use ClinStudy::XML::TabReader;
 
 sub parse_args {
 
-    my ( $tabfile, $xsd, $drug_parent, $xmldoc, $relaxed, $want_help );
+    my ( $tabfile, $xsd, $drug_parent, $xmldoc, $relaxed, $want_help, $use_recdescent );
 
     GetOptions(
         "f|file=s"   => \$tabfile,
@@ -43,6 +43,7 @@ sub parse_args {
         "x|xml=s"    => \$xmldoc,
         "p|drug-parent=s" => \$drug_parent,
         "h|help"     => \$want_help,
+        "parse-drugs" => \$use_recdescent,
     );
 
     if ($want_help) {
@@ -70,14 +71,14 @@ sub parse_args {
         $xml       = $parser->parse_file($xmldoc);
     }
 
-    return( $tabfile, $xsd, $relaxed, $drug_parent, $xml );
+    return( $tabfile, $xsd, $relaxed, $drug_parent, $xml, $use_recdescent );
 }
 
 ########
 # MAIN #
 ########
 
-my ( $tabfile, $xsd, $relaxed, $drug_parent, $xml ) = parse_args();
+my ( $tabfile, $xsd, $relaxed, $drug_parent, $xml, $use_recdescent ) = parse_args();
 
 my %build_opts = (
     schema_file  => $xsd,
@@ -86,7 +87,15 @@ my %build_opts = (
     tabfile      => $tabfile,
 );
 $build_opts{root} = $xml->getDocumentElement() if ( $xml );
-my $builder = ClinStudy::XML::TabReader->new(%build_opts);
+my $builder;
+
+if ( $use_recdescent ) {
+    require ClinStudy::XML::TabDrugReader;
+    $builder = ClinStudy::XML::TabDrugReader->new(%build_opts);
+}
+else {
+    $builder = ClinStudy::XML::TabReader->new(%build_opts);
+}
 
 $builder->read();
 
@@ -138,6 +147,16 @@ Hospitalisation, and Drugs can further be attached to
 PriorTreatment. Only one parent class can be supported per run of this
 script. By default we attempt to attach everything to Visit, but this
 option allows the user to redirect the attachment if necessary.
+
+=item --parse-drugs
+
+An EXPERIMENTAL option indicating that rather than having drug
+information carefully curated and split across several columns,
+everything has been dumped into a single column named "Drugs". The
+script will attempt to apply a Parse::RecDescent grammar to extract
+meaningful information, but don't be surprised when it fails since
+natural-language processing is a hard problem. Any improvements to the
+grammar (specified in C<ClinStudy::XML::TabDrugReader>) are welcome.
 
 =item -h
 
