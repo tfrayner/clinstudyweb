@@ -46,6 +46,19 @@ sub BUILD {
     return;
 }
 
+=head2 list
+
+=cut
+
+sub list : Local {
+
+    my ( $self, $c ) = @_;
+
+    # There's really no occasion where one would want to pull down
+    # every single assay in the database.
+    $c->res->redirect( $c->uri_for('/assaybatch/list'));
+}
+
 =head2 add_to_sample
 
 Add a new assay to the Sample with the specified database ID.
