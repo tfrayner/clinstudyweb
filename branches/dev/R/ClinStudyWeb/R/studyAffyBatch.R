@@ -22,6 +22,8 @@ csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
 
+    files <- as.character(files)
+
     p <- .filenamesToPData( files, uri, .opts, cred )
 
     ## Merge the lists into a data frame, and create the phenoData object.
@@ -36,6 +38,8 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
+
+    files <- as.character(files)
 
     targets <- .filenamesToTargets( files, uri, .opts, cred )
     message("Reading data files...")
