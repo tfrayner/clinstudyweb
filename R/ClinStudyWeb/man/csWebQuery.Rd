@@ -7,7 +7,7 @@
 }
 \usage{
 csWebQuery ( assay.file=NULL, assay.barcode=NULL, sample.name=NULL, uri, username,
-password, .opts )
+password, .opts=list(), curl=NULL )
 }
 \arguments{
 
@@ -28,6 +28,7 @@ password, .opts )
     \code{getURLContent}. This can be used, for example, to deactivate SSL
     certificate checking using \code{list(ssl.verifypeer=FALSE)}. }
 
+  \item{curl}{An optional CURL handle, used in authenticated session management.}
 }
 \details{
 

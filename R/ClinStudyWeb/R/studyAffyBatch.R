@@ -50,7 +50,15 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     p <- .batchDBQuery( files=files, samples=NULL, ... )
     p <- .conformLists(p)
     p <- lapply(p, unlist)
-    p <- data.frame(do.call('rbind', p))
+
+    ## This is perhaps more complicated than it needs to be because a
+    ## large do.call('rbind',...) fails with deep recursion.
+    stopifnot( length(p) > 1 ) ## Always need more than one hyb anyway.
+    p2 <- do.call('rbind', p[1:2])
+    if ( length(p) > 2 )
+        for ( n in 3:length(p) )
+            p2 <- rbind(p2, p[[n]])
+    p <- as.data.frame(p2)
 
     ## Quick sanity check
     ## Strip out file paths which won't have been stored in the database.
