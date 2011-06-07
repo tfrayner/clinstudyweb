@@ -48,6 +48,11 @@ __PACKAGE__->table("assay_batch");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -61,6 +66,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "platform_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "notes",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("name", ["name"]);
@@ -97,8 +104,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L8c9mYYFiUGR1iOon5kZtg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-07 17:53:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UWsfPhGr0GplkHRAd8q/GA
 
 
 # Custom has_many so that we track the cascade_delete behaviour of the

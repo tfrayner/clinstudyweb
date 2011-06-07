@@ -736,6 +736,7 @@ CREATE TABLE `assay_batch` (
   `name` varchar(31) NOT NULL,
   `operator` varchar(255) default NULL,
   `platform_id` int(11) NOT NULL,
+  `notes` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`name`),
   CONSTRAINT `assay_batch_ibfk_1` FOREIGN KEY (`platform_id`) REFERENCES `controlled_vocab` (`id`)
