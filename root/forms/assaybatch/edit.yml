@@ -77,6 +77,16 @@ elements:
       tooltipText: >-
         The name of the assay operator, recorded for QC purposes.
 
+  - type: Textarea
+    name: notes
+    label: Notes
+    constraints:
+      - ASCII
+    attributes:
+      rows: 5
+    label_attributes:
+      tooltipText: Any notes on this assay batch.
+
 ##########
 # Submit #
 ##########
