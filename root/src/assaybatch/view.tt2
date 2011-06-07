@@ -13,6 +13,8 @@
     <td>[% object.platform_id.value | html %]</td></tr>
 <tr><th>Operator:</th>
     <td>[% object.operator | html %]</td></tr>
+<tr><th>Notes:</th>
+    <td>[% object.notes | html | html_line_break %]</td></tr>
 </table>
 </fieldset>
 
