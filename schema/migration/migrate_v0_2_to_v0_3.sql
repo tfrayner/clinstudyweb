@@ -102,3 +102,4 @@ ALTER TABLE comorbidity ADD UNIQUE KEY (`patient_id`, `condition_name`, `date`);
 -- Adding a notes field to assay_batch.
 --
 ALTER TABLE assay_batch ADD COLUMN (notes text);
+ALTER TABLE assay_batch_audit_history ADD COLUMN (notes text);
