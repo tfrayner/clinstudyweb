@@ -157,6 +157,7 @@
     <xs:attribute name="name" type="shortvarcharType" use="required"/>
     <xs:attribute name="operator" type="varcharType"/>
     <xs:attribute name="platform" type="varcharType" use="required"/>
+    <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
   <xs:complexType name="assayType">
