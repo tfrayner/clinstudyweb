@@ -97,3 +97,8 @@ ALTER TABLE diagnosis DROP KEY patient_id_2;
 -- Comorbidity is a little more flexible (and far less mission-critical).
 --
 ALTER TABLE comorbidity ADD UNIQUE KEY (`patient_id`, `condition_name`, `date`);
+
+--
+-- Adding a notes field to assay_batch.
+--
+ALTER TABLE assay_batch ADD COLUMN (notes text);
