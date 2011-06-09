@@ -68,7 +68,7 @@
 
 <div class="security_seal">
   <a href="http://www.instantssl.com">
-    <img src="http://www.instantssl.com/ssl-certificate-images/support/secure_white.gif"
+    <img src="static/images/secure_white.gif"
          alt="Instant SSL Certificate Secure Site"
          width="76" height="26"
          style="border: 0px;"/><br/>
