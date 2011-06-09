@@ -2,22 +2,14 @@
 
 [% form %]
 
-<div class="thawte_seal">
-  <table width="10" border="0" cellspacing="0" align="center">
-    <tr>
-      <td>
-        <script src="https://siteseal.thawte.com/cgi/server/thawte_seal_generator.exe"></script>
-      </td>
-    </tr>
-    <tr>
-      <td height="0" align="center">
-        <a style="color:#AD0034" target="_new"
-        href="http://www.thawte.com/digital-certificates/">
-         <span style="font-family:arial; font-size:8px; color:#AD0034">
-          ABOUT SSL CERTIFICATES</span></a>
-      </td>
-    </tr>
-  </table>
+<div class="security_seal">
+  <a href="http://www.instantssl.com">
+    <img src="http://www.instantssl.com/ssl-certificate-images/support/secure_white.gif"
+         alt="Instant SSL Certificate Secure Site"
+         width="76" height="26"
+         style="border: 0px;"/><br/>
+     <span style="font-weight:bold; font-size:7pt">Instant SSL Certificate Secured</span>
+  </a><br/>
 </div>
 
 [% IF c.config.authentication.realms.raven.defined %]
