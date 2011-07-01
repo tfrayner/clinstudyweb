@@ -84,6 +84,7 @@ sub recursive_cols_to_elements {
                                 dose      => $item->[1][0],
                                 dose_unit => $item->[1][1],
                                 dose_freq => $item->[2],
+                                dose_regime => $item->[3],
                             },
                             $parent,
                         );
@@ -186,15 +187,15 @@ drug_list:       drug_item(s) end_of_line
 
                  | <error: Unable to parse drug_list starting here: $text>
 
-drug_item:       drug_date(?) drug_name drug_dosage(?) drug_frequency(?) delimiter
+drug_item:       drug_date(?) drug_name drug_dosage(?) drug_frequency(?) dose_regime(?) delimiter
 
-                 { [ $item[2], $item[3][0], $item[4][0] ] }
+                 { [ $item[2], $item[3][0], $item[4][0], $item[5][0] ] }
 
                  | <error: Unable to parse drug_item starting here: $text>
 
-drug_dosage:     number dosage_unit(?)
+drug_dosage:     number dosage_unit
 
-                 { [ $item[1], $item[2][0] ] }
+                 { [ $item[1], $item[2] ] }
 
 drug_frequency:  /od|bd|tds|qds|prn|weekly|3x \/ wk|2x \/ wk|hourly|mane|nocte|every 2 weeks|alt(?:ernate)? days/
 
@@ -214,6 +215,12 @@ drug_attr:       drug_dosage | drug_frequency
 drug_part:       ...!drug_attr /[\w-]+/
 
 drug_date:       /\d{2}\/\d{2}\/\d{4}/
+
+dose_regime:     /[^\;]+/ ...delimiter
+
+                 { $item[1] }
+
+                 | <error: Unable to parse dose_regime starting here: $text>
 
 delimiter:       /;/
 
