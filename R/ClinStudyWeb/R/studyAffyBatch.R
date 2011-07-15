@@ -490,10 +490,9 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     ## Log out for the sake of completeness (check for failure and warn).
     .csLogOutAuthenticatedHandle( uri, curl, .opts )
 
-    ## No results returned; rather than passing back a list of length 1
-    ## with a single null entry we just pass back null; it's simpler
-    ## to detect.
-    if ( length(status$data) == 1 & is.null(status$data[[1]]) )
+    ## No results returned; rather than passing back a list of length
+    ## 0 we just pass back null; it's simpler to detect.
+    if ( length(status$data) == 0 )
         return(NULL)
 
     return( status$data )
