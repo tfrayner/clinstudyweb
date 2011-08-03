@@ -1,0 +1,1048 @@
+<?xml version="1.0"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <start>
+        <choice>
+            <notAllowed/>
+            <element name="ClinStudyML">
+                <optional>
+                    <element name="AssayBatches">
+                        <zeroOrMore>
+                            <element name="AssayBatch">
+                                <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <attribute name="platform">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                </attribute>
+                                <optional>
+                                    <attribute name="operator">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <attribute name="name">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">31</param>
+                                    </data>
+                                </attribute>
+                                <attribute name="date">
+                                    <data type="date"/>
+                                </attribute>
+                                <optional>
+                                    <element name="Assays">
+                                    <zeroOrMore>
+                                    <element name="Assay">
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="filename">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="identifier">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    <optional>
+                                    <element name="AssayQcValues">
+                                    <zeroOrMore>
+                                    <element name="AssayQcValue">
+                                    <optional>
+
+                                    <attribute name="type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+
+                                    <attribute name="value">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+
+                                    <attribute name="name">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                    </optional>
+                                    <element name="Channels">
+                                    <oneOrMore>
+                                    <element name="Channel">
+                                    <attribute name="sample_ref">
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">31</param>
+                                    </data>
+                                    </attribute>
+                                    <attribute name="label">
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </oneOrMore>
+                                    </element>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                            </element>
+                        </zeroOrMore>
+                    </element>
+                </optional>
+                <optional>
+                    <element name="Patients">
+                        <oneOrMore>
+                            <element name="Patient">
+                                <optional>
+                                    <attribute name="study_type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <attribute name="entry_date">
+                                    <data type="date"/>
+                                </attribute>
+                                <optional>
+                                    <attribute name="home_centre">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="ethnicity">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <attribute name="trial_id">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                </attribute>
+                                <optional>
+                                    <attribute name="sex">
+                                    <choice>
+                                    <value type="string">M</value>
+                                    <value type="string">F</value>
+                                    </choice>
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <attribute name="year_of_birth">
+                                    <data type="integer">
+                                    <param name="totalDigits">4</param>
+                                    </data>
+                                    </attribute>
+                                </optional>
+                                <optional>
+                                    <element name="AdverseEvents">
+                                    <zeroOrMore>
+                                    <element name="AdverseEvent">
+                                    <optional>
+                                    <attribute name="trial_related">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="outcome">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="action">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="severity">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="end_date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="start_date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="ClinicalFeatures">
+                                    <zeroOrMore>
+                                    <element name="ClinicalFeature">
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="Comorbidities">
+                                    <zeroOrMore>
+                                    <element name="Comorbidity">
+                                    <optional>
+                                    <attribute name="date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="condition_name">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="Diagnoses">
+                                    <zeroOrMore>
+                                    <element name="Diagnosis">
+                                    <optional>
+                                    <attribute name="disease_extent">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="disease_staging">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="previous_duration_months">
+                                    <data type="decimal"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="previous_course">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="previous_episodes">
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="confidence">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="condition_name">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="DiseaseEvents">
+                                    <zeroOrMore>
+                                    <element name="DiseaseEvent">
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="start_date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="Hospitalisations">
+                                    <zeroOrMore>
+                                    <element name="Hospitalisation">
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="reason_for_admission">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="postop_days_duration">
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="days_duration">
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    <optional>
+                                    <element name="Drugs">
+                                    <ref name="drugGroup"/>
+                                    </element>
+                                    </optional>
+                                    <optional>
+                                    <element name="TestResults">
+                                    <ref name="testResultGroup"/>
+                                    </element>
+                                    </optional>
+                                    <optional>
+                                    <element name="Transplants">
+                                    <zeroOrMore>
+                                    <element name="Transplant">
+                                    <optional>
+
+                                    <attribute name="donor_cmv">
+
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="donor_cause_of_death">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="donor_age">
+
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+
+                                    <attribute name="donor_type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    <optional>
+
+                                    <attribute name="hla_mismatch">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="reperfusion_quality">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="mins_cold_ischaemic">
+
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+
+                                    <attribute name="organ_type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    <optional>
+
+                                    <attribute name="days_delayed_function">
+
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="delayed_graft_function">
+
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="recip_cmv">
+
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="sensitisation_status">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="number">
+
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="date">
+
+                                    <data type="date"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <element name="GraftFailures">
+                                    <optional>
+
+                                    <element name="GraftFailure">
+                                    <optional>
+
+                                    <attribute name="notes">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="reason">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+
+                                    <attribute name="date">
+
+                                    <data type="date"/>
+                                    </attribute>
+                                    </element>
+                                    </optional>
+                                    </element>
+                                    </optional>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                    </optional>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="PriorGroups">
+                                    <zeroOrMore>
+                                    <element name="PriorGroup">
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    <attribute name="name">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="PriorObservations">
+                                    <zeroOrMore>
+                                    <element name="PriorObservation">
+                                    <optional>
+                                    <attribute name="date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="value">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="PriorTreatments">
+                                    <zeroOrMore>
+                                    <element name="PriorTreatment">
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="value">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    <optional>
+                                    <element name="Drugs">
+                                    <ref name="drugGroup"/>
+                                    </element>
+                                    </optional>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="RiskFactors">
+                                    <zeroOrMore>
+                                    <element name="RiskFactor">
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="Studies">
+                                    <zeroOrMore>
+                                    <element name="Study">
+                                    <optional>
+                                    <attribute name="external_id">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="SystemInvolvements">
+                                    <zeroOrMore>
+                                    <element name="SystemInvolvement">
+                                    <attribute name="type">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                                <optional>
+                                    <element name="Visits">
+                                    <zeroOrMore>
+                                    <element name="Visit">
+                                    <optional>
+                                    <attribute name="has_infection">
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="treatment_escalation">
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="nominal_timepoint">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="disease_activity">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+                                    <attribute name="notes">
+                                    <data type="string">
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <attribute name="date">
+                                    <data type="date"/>
+                                    </attribute>
+                                    <optional>
+                                    <element name="Drugs">
+                                    <ref name="drugGroup"/>
+                                    </element>
+                                    </optional>
+                                    <optional>
+                                    <element name="EmergentGroups">
+                                    <zeroOrMore>
+                                    <element name="EmergentGroup">
+
+                                    <attribute name="type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+
+                                    <attribute name="basis">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+
+                                    <attribute name="name">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                    </optional>
+                                    <optional>
+                                    <element name="Samples">
+                                    <zeroOrMore>
+                                    <element name="Sample">
+                                    <optional>
+
+                                    <attribute name="notes">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="has_expired">
+
+                                    <data type="byte"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="quality_score">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="purity">
+
+                                    <data type="decimal"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="concentration">
+
+                                    <data type="decimal"/>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="box_slot">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">31</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="freezer_box">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">31</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="freezer_location">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </optional>
+                                    <optional>
+
+                                    <attribute name="num_aliquots">
+
+                                    <data type="integer"/>
+                                    </attribute>
+                                    </optional>
+
+                                    <attribute name="material_type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+
+                                    <attribute name="cell_type">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+
+                                    <attribute name="name">
+
+                                    <data type="string">
+
+                                    <param name="minLength">1</param>
+
+                                    <param name="maxLength">255</param>
+                                    </data>
+                                    </attribute>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                    </optional>
+                                    <optional>
+                                    <element name="TestResults">
+                                    <ref name="testResultGroup"/>
+                                    </element>
+                                    </optional>
+                                    </element>
+                                    </zeroOrMore>
+                                    </element>
+                                </optional>
+                            </element>
+                        </oneOrMore>
+                    </element>
+                </optional>
+            </element>
+        </choice>
+    </start>
+    <define name="drugGroup">
+        <zeroOrMore>
+            <choice>
+                <notAllowed/>
+                <element name="Drug">
+                    <optional>
+                        <attribute name="locale">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="dose_regime">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="duration_unit">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="dose_duration">
+                            <data type="decimal"/>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="dose_freq">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="dose_unit">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="dose">
+                            <data type="decimal"/>
+                        </attribute>
+                    </optional>
+                    <attribute name="name">
+                        <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">255</param>
+                        </data>
+                    </attribute>
+                </element>
+            </choice>
+        </zeroOrMore>
+        <empty/>
+    </define>
+    <define name="testResultGroup">
+        <zeroOrMore>
+            <choice>
+                <notAllowed/>
+                <element name="TestResult">
+                    <attribute name="date">
+                        <data type="date"/>
+                    </attribute>
+                    <optional>
+                        <attribute name="value">
+                            <data type="string">
+                                <param name="minLength">1</param>
+                                <param name="maxLength">255</param>
+                            </data>
+                        </attribute>
+                    </optional>
+                    <attribute name="test">
+                        <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">255</param>
+                        </data>
+                    </attribute>
+                    <optional>
+                        <element name="ChildTestResults">
+                            <ref name="testResultGroup"/>
+                        </element>
+                    </optional>
+                </element>
+            </choice>
+        </zeroOrMore>
+        <empty/>
+    </define>
+</grammar>
