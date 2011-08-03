@@ -1,202 +1,204 @@
-<?xml version="1.0"?>
-<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-    <start>
-        <choice>
-            <notAllowed/>
-            <element name="ClinStudyAdminML">
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <choice>
+      <notAllowed/>
+      <element name="ClinStudyAdminML">
+        <optional>
+          <attribute name="xsi:noNamespaceSchemaLocation">
+            <data type="anyURI"/>
+          </attribute>
+        </optional>
+        <optional>
+          <element name="ControlledVocabs">
+            <oneOrMore>
+              <element name="ControlledVocab">
                 <optional>
-                    <element name="ControlledVocabs">
-                        <oneOrMore>
-                            <element name="ControlledVocab">
-                                <optional>
-                                    <attribute name="term_source_ref">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <attribute name="value">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                </attribute>
-                                <attribute name="category">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                </attribute>
-                                <attribute name="accession">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                </attribute>
-                                <optional>
-                                    <element name="RelatedVocabs">
-                                    <oneOrMore>
-                                    <element name="RelatedVocab">
-                                    <attribute name="relationship_ref">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                    </attribute>
-                                    <attribute name="target_ref">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                    </attribute>
-                                    </element>
-                                    </oneOrMore>
-                                    </element>
-                                </optional>
-                            </element>
-                        </oneOrMore>
-                    </element>
+                  <attribute name="term_source_ref">
+                    <data type="string">
+                      <param name="minLength">1</param>
+                      <param name="maxLength">31</param>
+                    </data>
+                  </attribute>
+                </optional>
+                <attribute name="value">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">255</param>
+                  </data>
+                </attribute>
+                <attribute name="category">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">255</param>
+                  </data>
+                </attribute>
+                <attribute name="accession">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">31</param>
+                  </data>
+                </attribute>
+                <optional>
+                  <element name="RelatedVocabs">
+                    <oneOrMore>
+                      <element name="RelatedVocab">
+                        <attribute name="relationship_ref">
+                          <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">31</param>
+                          </data>
+                        </attribute>
+                        <attribute name="target_ref">
+                          <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">31</param>
+                          </data>
+                        </attribute>
+                      </element>
+                    </oneOrMore>
+                  </element>
+                </optional>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="TermSources">
+            <oneOrMore>
+              <element name="TermSource">
+                <optional>
+                  <attribute name="uri">
+                    <data type="string">
+                      <param name="minLength">1</param>
+                      <param name="maxLength">255</param>
+                    </data>
+                  </attribute>
                 </optional>
                 <optional>
-                    <element name="TermSources">
-                        <oneOrMore>
-                            <element name="TermSource">
-                                <optional>
-                                    <attribute name="uri">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <optional>
-                                    <attribute name="version">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <attribute name="name">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">31</param>
-                                    </data>
-                                </attribute>
-                            </element>
-                        </oneOrMore>
-                    </element>
+                  <attribute name="version">
+                    <data type="string">
+                      <param name="minLength">1</param>
+                      <param name="maxLength">31</param>
+                    </data>
+                  </attribute>
+                </optional>
+                <attribute name="name">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">31</param>
+                  </data>
+                </attribute>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="Tests">
+            <oneOrMore>
+              <element name="Test">
+                <attribute name="name">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">255</param>
+                  </data>
+                </attribute>
+                <optional>
+                  <element name="TestPossibleValues">
+                    <oneOrMore>
+                      <element name="TestPossibleValue">
+                        <attribute name="value">
+                          <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">255</param>
+                          </data>
+                        </attribute>
+                        <attribute name="category">
+                          <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">255</param>
+                          </data>
+                        </attribute>
+                      </element>
+                    </oneOrMore>
+                  </element>
+                </optional>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="Users">
+            <oneOrMore>
+              <element name="User">
+                <optional>
+                  <attribute name="date_accessed">
+                    <data type="string">
+                      <param name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
+                    </data>
+                  </attribute>
                 </optional>
                 <optional>
-                    <element name="Tests">
-                        <oneOrMore>
-                            <element name="Test">
-                                <attribute name="name">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                </attribute>
-                                <optional>
-                                    <element name="TestPossibleValues">
-                                    <oneOrMore>
-                                    <element name="TestPossibleValue">
-                                    <attribute name="value">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                    <attribute name="category">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                    </element>
-                                    </oneOrMore>
-                                    </element>
-                                </optional>
-                            </element>
-                        </oneOrMore>
-                    </element>
+                  <attribute name="date_modified">
+                    <data type="string">
+                      <param name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
+                    </data>
+                  </attribute>
                 </optional>
                 <optional>
-                    <element name="Users">
-                        <oneOrMore>
-                            <element name="User">
-                                <optional>
-                                    <attribute name="date_accessed">
-                                    <data type="string">
-                                    <param
-                                    name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <optional>
-                                    <attribute name="date_modified">
-                                    <data type="string">
-                                    <param
-                                    name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <optional>
-                                    <attribute name="date_created">
-                                    <data type="string">
-                                    <param
-                                    name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <attribute name="password">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">40</param>
-                                    </data>
-                                </attribute>
-                                <optional>
-                                    <attribute name="email">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <optional>
-                                    <attribute name="name">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                </optional>
-                                <attribute name="username">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                </attribute>
-                                <optional>
-                                    <element name="UserRoles">
-                                    <oneOrMore>
-                                    <element name="UserRole">
-                                    <attribute name="role">
-                                    <data type="string">
-                                    <param name="minLength">1</param>
-                                    <param name="maxLength">255</param>
-                                    </data>
-                                    </attribute>
-                                    </element>
-                                    </oneOrMore>
-                                    </element>
-                                </optional>
-                            </element>
-                        </oneOrMore>
-                    </element>
+                  <attribute name="date_created">
+                    <data type="string">
+                      <param name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}</param>
+                    </data>
+                  </attribute>
                 </optional>
-            </element>
-        </choice>
-    </start>
+                <attribute name="password">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">40</param>
+                  </data>
+                </attribute>
+                <optional>
+                  <attribute name="email">
+                    <data type="string">
+                      <param name="minLength">1</param>
+                      <param name="maxLength">255</param>
+                    </data>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="name">
+                    <data type="string">
+                      <param name="minLength">1</param>
+                      <param name="maxLength">255</param>
+                    </data>
+                  </attribute>
+                </optional>
+                <attribute name="username">
+                  <data type="string">
+                    <param name="minLength">1</param>
+                    <param name="maxLength">255</param>
+                  </data>
+                </attribute>
+                <optional>
+                  <element name="UserRoles">
+                    <oneOrMore>
+                      <element name="UserRole">
+                        <attribute name="role">
+                          <data type="string">
+                            <param name="minLength">1</param>
+                            <param name="maxLength">255</param>
+                          </data>
+                        </attribute>
+                      </element>
+                    </oneOrMore>
+                  </element>
+                </optional>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+      </element>
+    </choice>
+  </start>
 </grammar>
