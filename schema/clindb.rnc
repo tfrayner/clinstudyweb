@@ -1,8 +1,11 @@
 default namespace = ""
 
+namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
+
 start =
   notAllowed
   | element ClinStudyML {
+      attribute xsi:noNamespaceSchemaLocation { xsd:anyURI }?,
       element AssayBatches {
         element AssayBatch {
           attribute notes {

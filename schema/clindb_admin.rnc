@@ -1,8 +1,11 @@
 default namespace = ""
 
+namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
+
 start =
   notAllowed
   | element ClinStudyAdminML {
+      attribute xsi:noNamespaceSchemaLocation { xsd:anyURI }?,
       element ControlledVocabs {
         element ControlledVocab {
           attribute term_source_ref {
