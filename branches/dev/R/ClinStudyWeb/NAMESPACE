@@ -39,6 +39,7 @@ importClassesFrom(Biobase, ExpressionSet)
 importClassesFrom(limma, MAList, RGList)
 
 importFrom(affy, ReadAffy)
+importFrom(oligo, read.celfiles)
 importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-')
 importFrom(limma, read.maimages)
 
@@ -49,6 +50,7 @@ export(
        csWebQuery,
        csWebReannotate,
        csWebAffyBatch,
+       csWebGeneFeatureSet,
        csWebRGList,
        csJSONQuery,
        csFindAssays
