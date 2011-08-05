@@ -17,7 +17,17 @@
 ##
 ## $Id$
 
+## Classic AffyBatch-based workflow.
 csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
+    return( .csWebEset( affy::ReadAffy, files, uri, .opts, cred, ... ) )
+}
+
+## Newer, recommended Oligo-based workflow.
+csWebGeneFeatureSet <- function( files, uri, .opts=list(), cred=NULL, ... ) {
+    return( .csWebEset( oligo::read.celfiles, files, uri, .opts, cred, ... ) )
+}
+
+.csWebEset <- function ( read.fun, files, uri, .opts=list(), cred=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
@@ -29,7 +39,8 @@ csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     ## Merge the lists into a data frame, and create the phenoData object.
     message("Reading CEL files...")
     ph   <- new('AnnotatedDataFrame', data=p)
-    cels <- affy::ReadAffy(filenames=files, phenoData=ph, ...)
+    varMetadata(ph)$channel <- factor('_ALL_')  # Fixes some dubious NChannelSet validity requirement.
+    cels <- read.fun(filenames=files, phenoData=ph, ...)
 
     return(cels)
 }
@@ -270,6 +281,8 @@ setGeneric('csWebReannotate', def=function(data, sample.column=NULL, uri, .opts=
 
 setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='AffyBatch'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='GeneFeatureSet'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='ExonFeatureSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='MAList'), .reannotateMAList)
 setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 
