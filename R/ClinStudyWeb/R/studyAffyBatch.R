@@ -445,9 +445,11 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 
     ## We need to detect login failures here.
     query  <- list(username=username, password=password)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'json_login', sep='/'),
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
@@ -492,9 +494,11 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
