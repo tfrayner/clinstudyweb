@@ -54,9 +54,16 @@ sub list : Local {
 
     my ( $self, $c ) = @_;
 
-    # There's really no occasion where one would want to pull down
-    # every single assay in the database.
-    $c->res->redirect( $c->uri_for('/assaybatch/list'));
+    unless ( exists $c->stash()->{'search_terms'} ) {
+
+        # There's really no occasion where one would want to pull down
+        # every single assay in the database. This is a safety measure
+        # to prevent that.
+        $c->res->redirect( $c->uri_for('/assaybatch/list'));
+    }
+    else {
+        $self->next::method( $c );
+    }
 }
 
 =head2 add_to_sample
