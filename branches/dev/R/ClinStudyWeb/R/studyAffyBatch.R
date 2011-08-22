@@ -316,10 +316,14 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         quri <- paste(uri, '/query/assay_dump', sep='')
 
     ## Undef (NULL) in queries is acceptable.
-    query  <- list(filename=assay.file, identifier=assay.barcode, name=sample.name)
+    query  <- list(filename=assay.file,
+                   identifier=assay.barcode,
+                   name=sample.name)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=quri,
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
