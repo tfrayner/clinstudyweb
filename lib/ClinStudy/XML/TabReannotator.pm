@@ -99,7 +99,7 @@ sub read {
     $self->next::method(@_);
 }
                     
-sub _process_columns {
+sub recursive_cols_to_elements {
 
     # Here we override the business end of the parent TabReader class.
     my ( $self, $colhash, $tree, $parent, $level, $db_parent ) = @_;
