@@ -17,7 +17,17 @@
 ##
 ## $Id$
 
+## Classic AffyBatch-based workflow.
 csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
+    return( .csWebEset( affy::ReadAffy, files, uri, .opts, cred, ... ) )
+}
+
+## Newer, recommended Oligo-based workflow.
+csWebGeneFeatureSet <- function( files, uri, .opts=list(), cred=NULL, ... ) {
+    return( .csWebEset( oligo::read.celfiles, files, uri, .opts, cred, ... ) )
+}
+
+.csWebEset <- function ( read.fun, files, uri, .opts=list(), cred=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
@@ -29,7 +39,8 @@ csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     ## Merge the lists into a data frame, and create the phenoData object.
     message("Reading CEL files...")
     ph   <- new('AnnotatedDataFrame', data=p)
-    cels <- affy::ReadAffy(filenames=files, phenoData=ph, ...)
+    varMetadata(ph)$channel <- factor('_ALL_')  # Fixes some dubious NChannelSet validity requirement.
+    cels <- read.fun(filenames=files, phenoData=ph, ...)
 
     return(cels)
 }
@@ -270,6 +281,8 @@ setGeneric('csWebReannotate', def=function(data, sample.column=NULL, uri, .opts=
 
 setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='AffyBatch'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='GeneFeatureSet'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='ExonFeatureSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='MAList'), .reannotateMAList)
 setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 
@@ -303,10 +316,14 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         quri <- paste(uri, '/query/assay_dump', sep='')
 
     ## Undef (NULL) in queries is acceptable.
-    query  <- list(filename=assay.file, identifier=assay.barcode, name=sample.name)
+    query  <- list(filename=assay.file,
+                   identifier=assay.barcode,
+                   name=sample.name)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=quri,
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
@@ -428,9 +445,11 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 
     ## We need to detect login failures here.
     query  <- list(username=username, password=password)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'json_login', sep='/'),
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
@@ -475,9 +494,11 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
 
     ## Run the query.
     query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
-                                 postfields=paste('data', rjson::toJSON(query), sep='='),
+                                 postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,
                                  writefunction=status$update)
@@ -490,10 +511,9 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     ## Log out for the sake of completeness (check for failure and warn).
     .csLogOutAuthenticatedHandle( uri, curl, .opts )
 
-    ## No results returned; rather than passing back a list of length 1
-    ## with a single null entry we just pass back null; it's simpler
-    ## to detect.
-    if ( length(status$data) == 1 & is.null(status$data[[1]]) )
+    ## No results returned; rather than passing back a list of length
+    ## 0 we just pass back null; it's simpler to detect.
+    if ( length(status$data) == 0 )
         return(NULL)
 
     return( status$data )
