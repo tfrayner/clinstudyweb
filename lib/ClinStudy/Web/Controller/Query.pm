@@ -238,6 +238,46 @@ sub sample_dump : Local {
     return;
 }
 
+=head2 assay_drugs
+
+=cut
+
+sub assay_drugs : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    my $rs = $c->model('DB::Assay');
+
+    my ( $assay, $id );
+    if ( defined ( $id = $query->{filename} ) ) {
+        $assay = $rs->find({ filename => $id });
+    }
+    elsif ( defined ( $id = $query->{identifier} ) ) {
+        $assay = $rs->find({ identifier => $id });
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: JSON parameters must include either filename or identifier.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    if ( $assay ) {
+        $c->stash->{ 'success' } = JSON::Any->true();
+        $c->stash->{ 'data' } = $self->dump_assay_drugs($c, $assay, $query);
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: Assay "$id" not found in database.};
+    }
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
 ###################
 # Private methods #
 ###################
@@ -377,6 +417,78 @@ sub dump_sample_entity : Private {
                 $visit->test_results();
     $dump{test_result} = \%tests;
 
+    return \%dump;
+}
+
+sub dump_assay_drugs : Private {
+
+    my ( $self, $c, $assay, $query ) = @_;
+
+    my %dump;
+    my @channels = $assay->channels();
+
+    my @chdata;
+    foreach my $ch ( @channels ) {
+        push @chdata, {
+            label   => $ch->label_id()->value(),
+            sample  => $ch->sample_id()->name(),
+            drugs   => $self->dump_sample_drugs( $c, $ch->sample_id(), $query ),
+        };
+    }
+    $dump{channels} = \@chdata;
+
+    return \%dump;
+}
+
+sub dump_sample_drugs : Private {
+
+    my ( $self, $c, $sample, $query ) = @_;
+# N.B. I'm mainly just jotting ideas down here, nothing is tested FIXME
+    my %dump;
+
+    # $query keys may contain months_prior, prior_treatment_type,
+    # drug_type. Note that drug_type can be used to filter both
+    # DrugType and DrugName CVs. Both that filter and any synonym_of
+    # or part_of pointers must be resolved recursively (with a check
+    # on cycles FIXME).
+
+    my $curr_visit = $sample->visit_id();
+    my $patient    = $curr_visit->patient_id();
+
+    my $drug_rs;
+    if ( my $prior_type = $query->{'prior_treatment_type'} ) {
+
+        # Undated prior drug treatments, categorised.
+        my $pt_cv = $c->model('DB::ControlledVocab')->find({category => 'PriorTreatmentType',
+                                                            value    => $prior_type});
+        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv });
+    }
+    else {
+
+        # Drug treatments related to documented clinical visits.
+        my $visit_attr = {
+
+            # Visits prior to this one.
+            date => { '<' => $curr_visit->date() },
+        };
+        if ( my $months_prior = $query->{'months_prior'} ) {
+            ## FIXME calculate the prior date and add it to $visit_attr
+        }
+        
+        $drug_rs = $patient->search_related('visits', $visit_attr)
+                           ->search_related('drugs');
+    }
+
+    if ( my $drug_type = $query->{'drug_type'} ) {
+        # FIXME examine $drug_rs to find things which match
+        # drug_type. This will require recursive resolution of
+        # synonym_of and part_of.
+    }
+    else {
+        # FIXME just dump all drugs, having resolved synonym_of and
+        # possibly also part_of.
+    }
+    
     return \%dump;
 }
 
