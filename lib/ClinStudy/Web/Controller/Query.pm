@@ -455,13 +455,24 @@ sub dump_sample_drugs : Private {
     my $curr_visit = $sample->visit_id();
     my $patient    = $curr_visit->patient_id();
 
+    my $synonym_of = $c->model('DB::ControlledVocab')->find({
+        category => 'CVRelationshipType',
+        value    => 'synonym_of',
+    }) or die("Error: synonym_of CV is not present in database.");
+    my $has_part   = $c->model('DB::ControlledVocab')->find({
+        category => 'CVRelationshipType',
+        value    => 'has_part',
+    }) or die("Error: has_part CV is not present in database.");
+
     my $drug_rs;
     if ( my $prior_type = $query->{'prior_treatment_type'} ) {
 
         # Undated prior drug treatments, categorised.
         my $pt_cv = $c->model('DB::ControlledVocab')->find({category => 'PriorTreatmentType',
                                                             value    => $prior_type});
-        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv });
+        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv })
+                           ->search_related('drugs')
+                           ->search_related('drug_id');
     }
     else {
 
@@ -476,18 +487,41 @@ sub dump_sample_drugs : Private {
         }
         
         $drug_rs = $patient->search_related('visits', $visit_attr)
-                           ->search_related('drugs');
+                           ->search_related('drugs')
+                           ->search_related('drug_id');
+    }
+
+    # Resolve synonym_of and part_of. N.B. I think I'd prefer this to
+    # be structured as has_part FIXME edit directly in the database.
+
+    my @drug_cvs;
+
+    # FIXME this part of the code needs to recurse. And check for cycles.
+    my %unwanted;
+    my $syn_rs = $drug_rs->search_related('related_vocab_controlled_vocab_ids',
+                                          {relationship_id => $synonym_of})
+                         ->search_related('target_id');
+    my $syn_source_rs = $syn_rs->search_related('related_vocab_target_ids',
+                                          {relationship_id => $synonym_of})
+                               ->search_related('controlled_vocab_id');
+    while ( my $cv = $syn_source_rs->next() ) {
+        $unwanted{ $cv->id() }++;
+    }
+    while ( my $cv = $syn_rs->next() ) {  ## FIXME we'd probably want to recurse down into $syn_rs.
+        push @drug_cvs, $cv unless $unwanted{ $cv->id() };
+    }
+
+    # Final catch-all for CVs which aren't synonyms or agglomerations.
+    while ( my $cv = $drug_rs->next() ) {
+        push @drug_cvs, $cv unless $unwanted{ $cv->id() };
     }
 
     if ( my $drug_type = $query->{'drug_type'} ) {
-        # FIXME examine $drug_rs to find things which match
-        # drug_type. This will require recursive resolution of
-        # synonym_of and part_of.
+        # FIXME examine @drug_cvs to find things which match
+        # drug_type.
     }
-    else {
-        # FIXME just dump all drugs, having resolved synonym_of and
-        # possibly also part_of.
-    }
+
+    # Convert @drug_cvs to some kind of dump format FIXME.
     
     return \%dump;
 }
