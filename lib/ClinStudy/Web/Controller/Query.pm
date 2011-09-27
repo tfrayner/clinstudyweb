@@ -443,7 +443,7 @@ sub dump_assay_drugs : Private {
 sub dump_sample_drugs : Private {
 
     my ( $self, $c, $sample, $query ) = @_;
-# N.B. I'm mainly just jotting ideas down here, nothing is tested FIXME
+
     my @dump;
 
     # $query keys may contain months_prior, prior_treatment_type,
@@ -477,47 +477,29 @@ sub dump_sample_drugs : Private {
     else {
 
         # Drug treatments related to documented clinical visits.
-        my $visit_attr = {
-
-            # Visits prior to this one.
-            date => { '<' => $curr_visit->date() },
-        };
+        my $date_query = { '<' => $curr_visit->date() };
         if ( my $months_prior = $query->{'months_prior'} ) {
             ## FIXME calculate the prior date and add it to $visit_attr
+
+            my $prior_date = 'FIXME this needs a calculation using Date::Calc';
+            $date_query = [ $date_query, { '>' => $prior_date } ];
         }
         
-        $drug_rs = $patient->search_related('visits', $visit_attr)
+        $drug_rs = $patient->search_related('visits', { date => $date_query })
                            ->search_related('drugs')
                            ->search_related('drug_id');
     }
 
-    # Resolve synonym_of relationships.
+    # Resolve synonym_of and has_part relationships.
     my @drug_cvs;
 
-    # FIXME this part of the code needs to recurse. And check for cycles.
-    my %unwanted;
-    my $syn_rs = $drug_rs->search_related('related_vocab_controlled_vocab_ids',
-                                          {relationship_id => $synonym_of})
-                         ->search_related('target_id');
-    my $syn_source_rs = $syn_rs->search_related('related_vocab_target_ids',
-                                          {relationship_id => $synonym_of})
-                               ->search_related('controlled_vocab_id');
-    while ( my $cv = $syn_source_rs->next() ) {
-        $unwanted{ $cv->id() }++;
-    }
-    while ( my $cv = $syn_rs->next() ) {  ## FIXME we'd probably want to recurse down into $syn_rs.
-        push @drug_cvs, $cv unless $unwanted{ $cv->id() };
-    }
+    my $leaves  = $self->_find_all_related_leaves( $drug_rs, [ $synonym_of, $has_part ] );
+    my $leaf_rs = $c->model('DB::ControlledVocab')->search( { id => { 'in' => @$leaves } } );
+    
+    while ( my $cv = $leaf_rs->next() ) { push @drug_cvs, $cv }
 
-    # Resolve has_part relationships.
-
-    # Final catch-all for CVs which aren't synonyms or agglomerations.
-    while ( my $cv = $drug_rs->next() ) {
-        push @drug_cvs, $cv unless $unwanted{ $cv->id() };
-    }
-
-    # FIXME this really ought to be recursive as well; there might be
-    # multiple levels of is_a relationships.
+    # This is recursive as well; there might be multiple levels of
+    # is_a relationships.
     if ( my $drug_type = $query->{'drug_type'} ) {
 
         # Examine @drug_cvs to find things which match drug_type.
@@ -526,16 +508,13 @@ sub dump_sample_drugs : Private {
                              value    => 'is_a' })
                         or die(qq{Error: is_a CV is not present in database});
 
-        my $rs = $c->model('DB::ControlledVocab')
-                   ->search({ category => 'DrugType',
-                              value    => $drug_type })
-                   ->search_related('related_vocab_target_ids',
-                                    { relationship_id => $isa })
-                   ->search_related('controlled_vocab_id');
-        my %wanted;
-        while ( my $cv = $rs->next() ) {
-            $wanted{ $cv->id() }++;
-        }
+        my $start_rs = $c->model('DB::ControlledVocab')
+                         ->search({ category => 'DrugType',
+                                    value    => $drug_type });
+
+        # Recursion here.
+        my %wanted = map { $_ => 1 } @{ $self->_find_all_isa_children( $start_rs, $isa ) };
+
         foreach my $cv ( @drug_cvs ) {
             push @dump, $cv->value() if $wanted{ $cv->id() };
         }
@@ -547,6 +526,62 @@ sub dump_sample_drugs : Private {
     }
 
     return @dump;
+}
+
+sub _find_all_isa_children : Private {
+
+    ## Recursive function to take a CV ResultSet, the is_a
+    ## relationship CV term, and find all linked is_a terms. Typically
+    ## called with the output of $c->model()->search();
+
+    ## FIXME this is currently vulnerable to cycles in the ontology.
+    my ( $self, $start_rs, $isa_query ) = @_;
+
+    return [] unless $start_rs->count() > 0;
+
+    my $rs = $start_rs->search_related('related_vocab_target_ids',
+                                       { relationship_id => $isa_query })
+                      ->search_related('controlled_vocab_id');
+    
+    my %wanted;
+    while ( my $cv = $rs->next() ) {
+        $wanted{ $cv->id() }++;
+    }
+
+    my $sub = $self->_find_all_isa_children( $rs, $isa_query );
+
+    foreach my $s ( @$sub ) { $wanted{ $s }++ }
+
+    return [ keys %wanted ];
+}
+
+sub _find_all_related_leaves : Private {
+
+    ## Basically this is an almost complementary method to
+    ## _find_all_isa_children, scanning up through the ontology DAG
+    ## instead of down. It differs, however, in only including leaf
+    ## terms in the results. FIXME the same caveats apply, especially
+    ## regarding cycles.
+    my ( $self, $start_rs, $related_query ) = @_;
+
+    ## FIXME need to process the records in $start_rs to include them as leaves.
+    return [] unless $start_rs->count() > 0;
+
+    my $rs = $start_rs->search_related('related_vocab_controlled_vocab_ids',
+                                       { relationship_id => $related_query })
+                      ->search_related('target_id');
+    
+    my %wanted;
+    while ( my $cv = $rs->next() ) {
+        $wanted{ $cv->id() }++;
+    }
+
+    my $sub = $self->_find_all_related_leaves( $rs, $related_query );
+
+    ## FIXME this needs to take only the leaf terms somehow.
+    foreach my $s ( @$sub ) { $wanted{ $s }++ }
+
+    return [ keys %wanted ];
 }
 
 sub _get_test_value : Private {
