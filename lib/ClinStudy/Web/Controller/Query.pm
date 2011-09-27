@@ -444,7 +444,7 @@ sub dump_sample_drugs : Private {
 
     my ( $self, $c, $sample, $query ) = @_;
 # N.B. I'm mainly just jotting ideas down here, nothing is tested FIXME
-    my %dump;
+    my @dump;
 
     # $query keys may contain months_prior, prior_treatment_type,
     # drug_type. Note that drug_type can be used to filter both
@@ -491,9 +491,7 @@ sub dump_sample_drugs : Private {
                            ->search_related('drug_id');
     }
 
-    # Resolve synonym_of and part_of. N.B. I think I'd prefer this to
-    # be structured as has_part FIXME edit directly in the database.
-
+    # Resolve synonym_of relationships.
     my @drug_cvs;
 
     # FIXME this part of the code needs to recurse. And check for cycles.
@@ -511,19 +509,44 @@ sub dump_sample_drugs : Private {
         push @drug_cvs, $cv unless $unwanted{ $cv->id() };
     }
 
+    # Resolve has_part relationships.
+
     # Final catch-all for CVs which aren't synonyms or agglomerations.
     while ( my $cv = $drug_rs->next() ) {
         push @drug_cvs, $cv unless $unwanted{ $cv->id() };
     }
 
+    # FIXME this really ought to be recursive as well; there might be
+    # multiple levels of is_a relationships.
     if ( my $drug_type = $query->{'drug_type'} ) {
-        # FIXME examine @drug_cvs to find things which match
-        # drug_type.
+
+        # Examine @drug_cvs to find things which match drug_type.
+        my $isa = $c->model('DB::ControlledVocab')
+                    ->find({ category => 'CVRelationshipType',
+                             value    => 'is_a' })
+                        or die(qq{Error: is_a CV is not present in database});
+
+        my $rs = $c->model('DB::ControlledVocab')
+                   ->search({ category => 'DrugType',
+                              value    => $drug_type })
+                   ->search_related('related_vocab_target_ids',
+                                    { relationship_id => $isa })
+                   ->search_related('controlled_vocab_id');
+        my %wanted;
+        while ( my $cv = $rs->next() ) {
+            $wanted{ $cv->id() }++;
+        }
+        foreach my $cv ( @drug_cvs ) {
+            push @dump, $cv->value() if $wanted{ $cv->id() };
+        }
+    }
+    else {
+
+        # Dump everything.
+        @dump = map { $_->value() } @drug_cvs;
     }
 
-    # Convert @drug_cvs to some kind of dump format FIXME.
-    
-    return \%dump;
+    return @dump;
 }
 
 sub _get_test_value : Private {
