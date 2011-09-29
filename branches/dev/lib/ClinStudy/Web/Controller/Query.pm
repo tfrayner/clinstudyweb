@@ -468,11 +468,18 @@ sub dump_sample_drugs : Private {
     if ( my $prior_type = $query->{'prior_treatment_type'} ) {
 
         # Undated prior drug treatments, categorised.
-        my $pt_cv = $c->model('DB::ControlledVocab')->find({category => 'PriorTreatmentType',
+        my $pt_cv = $c->model('DB::ControlledVocab')->find({category => 'TreatmentType',
                                                             value    => $prior_type});
-        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv })
+
+        unless ( $pt_cv ) {
+            $c->stash->{ 'success' } = JSON::Any->false();
+            $c->stash->{ 'errorMessage' }
+                = qq{PriorTreatmentType "$prior_type" not found in database.};
+            $c->detach( $c->view( 'JSON' ) );
+        }
+        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv->id() })
                            ->search_related('drugs')
-                           ->search_related('drug_id');
+                           ->search_related('name_id');
     }
     else {
 
@@ -487,14 +494,14 @@ sub dump_sample_drugs : Private {
         
         $drug_rs = $patient->search_related('visits', { date => $date_query })
                            ->search_related('drugs')
-                           ->search_related('drug_id');
+                           ->search_related('name_id');
     }
 
     # Resolve synonym_of and has_part relationships.
     my @drug_cvs;
 
-    my $leaves  = $self->_find_all_related_leaves( $drug_rs, [ $synonym_of, $has_part ] );
-    my $leaf_rs = $c->model('DB::ControlledVocab')->search( { id => { 'in' => @$leaves } } );
+    my $leaves  = $self->_find_all_related_leaves( $c, $drug_rs, [ $synonym_of->id(), $has_part->id() ] );
+    my $leaf_rs = $c->model('DB::ControlledVocab')->search( { id => { 'in' => $leaves } } );
     
     while ( my $cv = $leaf_rs->next() ) { push @drug_cvs, $cv }
 
@@ -508,12 +515,13 @@ sub dump_sample_drugs : Private {
                              value    => 'is_a' })
                         or die(qq{Error: is_a CV is not present in database});
 
+        # FIXME also support drug_name here as an option?
         my $start_rs = $c->model('DB::ControlledVocab')
-                         ->search({ category => 'DrugType',
-                                    value    => $drug_type });
+                         ->search({ 'me.category' => 'DrugType',
+                                    'me.value'    => $drug_type });
 
         # Recursion here.
-        my %wanted = map { $_ => 1 } @{ $self->_find_all_isa_children( $start_rs, $isa ) };
+        my %wanted = map { $_ => 1 } @{ $self->_find_all_isa_children( $start_rs, $isa->id() ) };
 
         foreach my $cv ( @drug_cvs ) {
             push @dump, $cv->value() if $wanted{ $cv->id() };
@@ -525,7 +533,7 @@ sub dump_sample_drugs : Private {
         @dump = map { $_->value() } @drug_cvs;
     }
 
-    return @dump;
+    return \@dump;
 }
 
 sub _find_all_isa_children : Private {
@@ -540,7 +548,8 @@ sub _find_all_isa_children : Private {
     return [] unless $start_rs->count() > 0;
 
     my $rs = $start_rs->search_related('related_vocab_target_ids',
-                                       { relationship_id => $isa_query })
+                                       { 'related_vocab_target_ids.relationship_id'
+                                             => $isa_query })
                       ->search_related('controlled_vocab_id');
     
     my %wanted;
@@ -562,23 +571,31 @@ sub _find_all_related_leaves : Private {
     ## instead of down. It differs, however, in only including leaf
     ## terms in the results. FIXME the same caveats apply, especially
     ## regarding cycles.
-    my ( $self, $start_rs, $related_query ) = @_;
+    my ( $self, $c, $start_rs, $related_query ) = @_;
 
-    ## FIXME need to process the records in $start_rs to include them as leaves.
     return [] unless $start_rs->count() > 0;
 
-    my $rs = $start_rs->search_related('related_vocab_controlled_vocab_ids',
-                                       { relationship_id => $related_query })
-                      ->search_related('target_id');
-    
+    ## We need to process the records in $start_rs to include them as leaves.
     my %wanted;
-    while ( my $cv = $rs->next() ) {
-        $wanted{ $cv->id() }++;
+    while ( my $cv = $start_rs->next() ) {
+
+        ## Only take leaf terms.
+        my $num_targets = $c->model('DB::RelatedVocab')->search({
+            controlled_vocab_id => $cv->id(),
+            relationship_id     => $related_query
+        })->count();
+        if ( $num_targets == 0 ) {
+            $wanted{ $cv->id() }++;
+        }
     }
 
-    my $sub = $self->_find_all_related_leaves( $rs, $related_query );
+    my $rs = $start_rs->search_related('related_vocab_controlled_vocab_ids',
+                                       { 'related_vocab_controlled_vocab_ids.relationship_id'
+                                             => $related_query })
+                      ->search_related('target_id');
+    
+    my $sub = $self->_find_all_related_leaves( $c, $rs, $related_query );
 
-    ## FIXME this needs to take only the leaf terms somehow.
     foreach my $s ( @$sub ) { $wanted{ $s }++ }
 
     return [ keys %wanted ];
