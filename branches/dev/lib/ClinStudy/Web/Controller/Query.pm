@@ -25,6 +25,8 @@ use namespace::autoclean;
 
 use List::Util qw(first);
 require JSON::Any;
+require DateTime;
+require DateTime::Format::Mysql;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -484,15 +486,24 @@ sub dump_sample_drugs : Private {
     else {
 
         # Drug treatments related to documented clinical visits.
-        my $date_query = { '<' => $curr_visit->date() };
-        if ( my $months_prior = $query->{'months_prior'} ) {
-            ## FIXME calculate the prior date and add it to $visit_attr
+        my $vdate        = $curr_visit->date();
+        my @date_query   = ( 'date' => { '<' => $vdate } );
 
-            my $prior_date = 'FIXME this needs a calculation using Date::Calc';
-            $date_query = [ $date_query, { '>' => $prior_date } ];
+        # Limit query to N months prior.
+        my $months_prior = $query->{'months_prior'};
+        if ( defined $months_prior ) {
+
+            ## Calculate the prior date and add it to @date_query.
+            my ( $y, $m, $d ) = ( $vdate =~ m/(\d{4})-(\d{2})-(\d{2})/ );
+            my $dt = DateTime->new( year => $y, month => $m, day => $d );
+            my $pt = $dt->subtract( months => $months_prior );
+            my $prior_date = DateTime::Format::MySQL->format_datetime( $pt );
+
+            push @date_query, ( 'date' => { '>' => $prior_date } );
+            @date_query = ( '-and' => [ @date_query ] );
         }
         
-        $drug_rs = $patient->search_related('visits', { date => $date_query })
+        $drug_rs = $patient->search_related('visits', { @date_query })
                            ->search_related('drugs')
                            ->search_related('name_id');
     }
@@ -515,9 +526,9 @@ sub dump_sample_drugs : Private {
                              value    => 'is_a' })
                         or die(qq{Error: is_a CV is not present in database});
 
-        # FIXME also support drug_name here as an option?
+        # Also support drug_name here as an option.
         my $start_rs = $c->model('DB::ControlledVocab')
-                         ->search({ 'me.category' => 'DrugType',
+                         ->search({ 'me.category' => [ 'DrugType', 'DrugName' ],
                                     'me.value'    => $drug_type });
 
         # Recursion here.
@@ -547,16 +558,16 @@ sub _find_all_isa_children : Private {
 
     return [] unless $start_rs->count() > 0;
 
+    my %wanted;
+    while ( my $cv = $start_rs->next() ) {
+        $wanted{ $cv->id() }++;
+    }
+
     my $rs = $start_rs->search_related('related_vocab_target_ids',
                                        { 'related_vocab_target_ids.relationship_id'
                                              => $isa_query })
                       ->search_related('controlled_vocab_id');
     
-    my %wanted;
-    while ( my $cv = $rs->next() ) {
-        $wanted{ $cv->id() }++;
-    }
-
     my $sub = $self->_find_all_isa_children( $rs, $isa_query );
 
     foreach my $s ( @$sub ) { $wanted{ $s }++ }
