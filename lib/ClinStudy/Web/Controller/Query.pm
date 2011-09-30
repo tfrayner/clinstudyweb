@@ -370,6 +370,7 @@ sub dump_sample_entity : Private {
         visit_date     => $visit->date(),
         material_type  => $sample->material_type_id()->value(),
         cell_type      => $sample->cell_type_id()->value(),
+        cell_purity    => $sample->cell_purity(),
         studies        => join(', ', map { $_->type_id()->value() } $patient->studies() ),
     );
 

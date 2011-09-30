@@ -84,6 +84,12 @@ __PACKAGE__->table("sample");
   is_nullable: 1
   size: [12,5]
 
+=head2 cell_purity
+
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+
 =head2 quality_score_id
 
   data_type: 'integer'
@@ -124,6 +130,8 @@ __PACKAGE__->add_columns(
   "concentration",
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "purity",
+  { data_type => "decimal", is_nullable => 1, size => [12, 5] },
+  "cell_purity",
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "quality_score_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -205,8 +213,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-04-21 13:55:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wHIUNiC5wF9D8tIsDWiXuw
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-09-30 10:56:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gaTxXv/ajoYYdapcnI+17w
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

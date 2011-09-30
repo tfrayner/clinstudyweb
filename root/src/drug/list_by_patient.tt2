@@ -1,6 +1,6 @@
 [% META title = 'All Drug Treatments' %]
 
-<h3>[% container.trial_id | html %]</h3>
+<h3>Patient [% container.trial_id | html %] drug treatment listing</h3>
 
 <fieldset class="data_view">
 <legend>Drugs</legend>
