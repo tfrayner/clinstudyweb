@@ -1,6 +1,6 @@
 [% META title = 'Sample Details' %]
 
-<h3>[% object.visit_id.patient_id.trial_id | html %]; visit date: [% object.visit_id.date %]</h3>
+<h3>Patient [% object.visit_id.patient_id.trial_id | html %] on visit date [% object.visit_id.date %]</h3>
 
 [% IF object.has_expired %]<h4><font color="red">Warning:</font> Sample is marked as expired or otherwise unavailable.</h4>[% END %]
 
@@ -12,8 +12,10 @@
          <td>[% object.name | html %]</td></tr>
      <tr><th>Cell Type:</th>
          <td>[% object.cell_type_id.value | html %]</td></tr>
-     <tr><th>Sample Expired/Unavailable:</th>
-         <td>[% IF object.has_expired %]<font color="red">YES</font>[% ELSE %]No[% END %]</td></tr>
+     <tr><th>Cell Purity (%):</th>
+         <td>[% object.cell_purity | format("%.02f") | html %]</td></tr>
+     <tr><th>Sample Available:</th>
+         <td>[% IF object.has_expired %]<font color="red">NO</font>[% ELSE %]Yes[% END %]</td></tr>
      <tr><th>Material Type:</th>
          <td>[% object.material_type_id.value | html %]</td></tr>
      <tr><th>Freezer Location:</th>
@@ -24,9 +26,9 @@
          <td>[% object.box_slot | html %]</td></tr>
      <tr><th>Number of aliquots:</th>
          <td>[% object.num_aliquots | html %]</td></tr>
-     <tr><th>Concentration:</th>
+     <tr><th>RNA Concentration:</th>
          <td>[% object.concentration | format("%.02f") | html %]</td></tr>
-     <tr><th>Purity:</th>
+     <tr><th>RNA Purity (260/280nm ratio):</th>
          <td>[% object.purity | format("%.02f") | html %]</td></tr>
      <tr><th>Quality Score:</th>
          <td>[% IF object.quality_score_id -%]

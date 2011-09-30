@@ -103,3 +103,9 @@ ALTER TABLE comorbidity ADD UNIQUE KEY (`patient_id`, `condition_name`, `date`);
 --
 ALTER TABLE assay_batch ADD COLUMN (notes text);
 ALTER TABLE assay_batch_audit_history ADD COLUMN (notes text);
+
+--
+-- Adding cell_purity to sample.
+--
+ALTER TABLE sample ADD COLUMN (cell_purity decimal(12,5) default NULL);
+ALTER TABLE sample_audit_history ADD COLUMN (cell_purity decimal(12,5));
