@@ -54,6 +54,7 @@ requires 'XML::LibXML'                                    => '1.7.0';
 requires 'Catalyst::View::TT'                             => '0.34';
 requires 'Catalyst::View::JSON'                           => '0.30';
 requires 'JSON::Any'                                      => '1.22';
+requires 'DateTime'                                       => '0.66';
 
 # REST currently serialises via XML::Simple
 requires 'XML::Simple'                                    => '2.18';

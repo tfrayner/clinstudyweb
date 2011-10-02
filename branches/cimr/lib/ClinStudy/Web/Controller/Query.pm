@@ -25,6 +25,8 @@ use namespace::autoclean;
 
 use List::Util qw(first);
 require JSON::Any;
+require DateTime;
+require DateTime::Format::Mysql;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -238,6 +240,46 @@ sub sample_dump : Local {
     return;
 }
 
+=head2 assay_drugs
+
+=cut
+
+sub assay_drugs : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    my $rs = $c->model('DB::Assay');
+
+    my ( $assay, $id );
+    if ( defined ( $id = $query->{filename} ) ) {
+        $assay = $rs->find({ filename => $id });
+    }
+    elsif ( defined ( $id = $query->{identifier} ) ) {
+        $assay = $rs->find({ identifier => $id });
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: JSON parameters must include either filename or identifier.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    if ( $assay ) {
+        $c->stash->{ 'success' } = JSON::Any->true();
+        $c->stash->{ 'data' } = $self->dump_assay_drugs($c, $assay, $query);
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: Assay "$id" not found in database.};
+    }
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
 ###################
 # Private methods #
 ###################
@@ -328,6 +370,7 @@ sub dump_sample_entity : Private {
         visit_date     => $visit->date(),
         material_type  => $sample->material_type_id()->value(),
         cell_type      => $sample->cell_type_id()->value(),
+        cell_purity    => $sample->cell_purity(),
         studies        => join(', ', map { $_->type_id()->value() } $patient->studies() ),
     );
 
@@ -378,6 +421,196 @@ sub dump_sample_entity : Private {
     $dump{test_result} = \%tests;
 
     return \%dump;
+}
+
+sub dump_assay_drugs : Private {
+
+    my ( $self, $c, $assay, $query ) = @_;
+
+    my %dump;
+    my @channels = $assay->channels();
+
+    my @chdata;
+    foreach my $ch ( @channels ) {
+        push @chdata, {
+            label   => $ch->label_id()->value(),
+            sample  => $ch->sample_id()->name(),
+            drugs   => $self->dump_sample_drugs( $c, $ch->sample_id(), $query ),
+        };
+    }
+    $dump{channels} = \@chdata;
+
+    return \%dump;
+}
+
+sub dump_sample_drugs : Private {
+
+    my ( $self, $c, $sample, $query ) = @_;
+
+    my @dump;
+
+    # $query keys may contain months_prior, prior_treatment_type,
+    # drug_type. Note that drug_type can be used to filter both
+    # DrugType and DrugName CVs. Both that filter and any synonym_of
+    # or part_of pointers must be resolved recursively (with a check
+    # on cycles FIXME).
+
+    my $curr_visit = $sample->visit_id();
+    my $patient    = $curr_visit->patient_id();
+
+    my $synonym_of = $c->model('DB::ControlledVocab')->find({
+        category => 'CVRelationshipType',
+        value    => 'synonym_of',
+    }) or die("Error: synonym_of CV is not present in database.");
+    my $has_part   = $c->model('DB::ControlledVocab')->find({
+        category => 'CVRelationshipType',
+        value    => 'has_part',
+    }) or die("Error: has_part CV is not present in database.");
+
+    my $drug_rs;
+    if ( my $prior_type = $query->{'prior_treatment_type'} ) {
+
+        # Undated prior drug treatments, categorised.
+        my $pt_cv = $c->model('DB::ControlledVocab')->find({category => 'TreatmentType',
+                                                            value    => $prior_type});
+
+        unless ( $pt_cv ) {
+            $c->stash->{ 'success' } = JSON::Any->false();
+            $c->stash->{ 'errorMessage' }
+                = qq{PriorTreatmentType "$prior_type" not found in database.};
+            $c->detach( $c->view( 'JSON' ) );
+        }
+        $drug_rs = $patient->search_related('prior_treatments', { type_id => $pt_cv->id() })
+                           ->search_related('drugs')
+                           ->search_related('name_id');
+    }
+    else {
+
+        # Drug treatments related to documented clinical visits.
+        my $vdate        = $curr_visit->date();
+        my @date_query   = ( 'date' => { '<' => $vdate } );
+
+        # Limit query to N months prior.
+        my $months_prior = $query->{'months_prior'};
+        if ( defined $months_prior ) {
+
+            ## Calculate the prior date and add it to @date_query.
+            my ( $y, $m, $d ) = ( $vdate =~ m/(\d{4})-(\d{2})-(\d{2})/ );
+            my $dt = DateTime->new( year => $y, month => $m, day => $d );
+            my $pt = $dt->subtract( months => $months_prior );
+            my $prior_date = DateTime::Format::MySQL->format_datetime( $pt );
+
+            push @date_query, ( 'date' => { '>' => $prior_date } );
+            @date_query = ( '-and' => [ @date_query ] );
+        }
+        
+        $drug_rs = $patient->search_related('visits', { @date_query })
+                           ->search_related('drugs')
+                           ->search_related('name_id');
+    }
+
+    # Resolve synonym_of and has_part relationships.
+    my @drug_cvs;
+
+    my $leaves  = $self->_find_all_related_leaves( $c, $drug_rs, [ $synonym_of->id(), $has_part->id() ] );
+    my $leaf_rs = $c->model('DB::ControlledVocab')->search( { id => { 'in' => $leaves } } );
+    
+    while ( my $cv = $leaf_rs->next() ) { push @drug_cvs, $cv }
+
+    # This is recursive as well; there might be multiple levels of
+    # is_a relationships.
+    if ( my $drug_type = $query->{'drug_type'} ) {
+
+        # Examine @drug_cvs to find things which match drug_type.
+        my $isa = $c->model('DB::ControlledVocab')
+                    ->find({ category => 'CVRelationshipType',
+                             value    => 'is_a' })
+                        or die(qq{Error: is_a CV is not present in database});
+
+        # Also support drug_name here as an option.
+        my $start_rs = $c->model('DB::ControlledVocab')
+                         ->search({ 'me.category' => [ 'DrugType', 'DrugName' ],
+                                    'me.value'    => $drug_type });
+
+        # Recursion here.
+        my %wanted = map { $_ => 1 } @{ $self->_find_all_isa_children( $start_rs, $isa->id() ) };
+
+        foreach my $cv ( @drug_cvs ) {
+            push @dump, $cv->value() if $wanted{ $cv->id() };
+        }
+    }
+    else {
+
+        # Dump everything.
+        @dump = map { $_->value() } @drug_cvs;
+    }
+
+    return \@dump;
+}
+
+sub _find_all_isa_children : Private {
+
+    ## Recursive function to take a CV ResultSet, the is_a
+    ## relationship CV term, and find all linked is_a terms. Typically
+    ## called with the output of $c->model()->search();
+
+    ## FIXME this is currently vulnerable to cycles in the ontology.
+    my ( $self, $start_rs, $isa_query ) = @_;
+
+    return [] unless $start_rs->count() > 0;
+
+    my %wanted;
+    while ( my $cv = $start_rs->next() ) {
+        $wanted{ $cv->id() }++;
+    }
+
+    my $rs = $start_rs->search_related('related_vocab_target_ids',
+                                       { 'related_vocab_target_ids.relationship_id'
+                                             => $isa_query })
+                      ->search_related('controlled_vocab_id');
+    
+    my $sub = $self->_find_all_isa_children( $rs, $isa_query );
+
+    foreach my $s ( @$sub ) { $wanted{ $s }++ }
+
+    return [ keys %wanted ];
+}
+
+sub _find_all_related_leaves : Private {
+
+    ## Basically this is an almost complementary method to
+    ## _find_all_isa_children, scanning up through the ontology DAG
+    ## instead of down. It differs, however, in only including leaf
+    ## terms in the results. FIXME the same caveats apply, especially
+    ## regarding cycles.
+    my ( $self, $c, $start_rs, $related_query ) = @_;
+
+    return [] unless $start_rs->count() > 0;
+
+    ## We need to process the records in $start_rs to include them as leaves.
+    my %wanted;
+    while ( my $cv = $start_rs->next() ) {
+
+        ## Only take leaf terms.
+        my $num_targets = $c->model('DB::RelatedVocab')->search({
+            controlled_vocab_id => $cv->id(),
+            relationship_id     => $related_query
+        })->count();
+        if ( $num_targets == 0 ) {
+            $wanted{ $cv->id() }++;
+        }
+    }
+
+    my $rs = $start_rs->search_related('related_vocab_controlled_vocab_ids',
+                                       { 'related_vocab_controlled_vocab_ids.relationship_id'
+                                             => $related_query })
+                      ->search_related('target_id');
+    
+    my $sub = $self->_find_all_related_leaves( $c, $rs, $related_query );
+
+    foreach my $s ( @$sub ) { $wanted{ $s }++ }
+
+    return [ keys %wanted ];
 }
 
 sub _get_test_value : Private {
