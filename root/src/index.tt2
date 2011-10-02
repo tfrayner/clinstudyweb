@@ -1,4 +1,4 @@
-<div >
+<div>
 <p>From here, you can: </p>
 <ul>
   <li>
@@ -57,14 +57,7 @@
 [% END %]
 
 </ul>
-<ul>
-</ul> 
 </div> 
-
-<div class="linklist">
-<ul>
-</ul>
-</div>
 
 <div class="security_seal">
   <a href="http://www.instantssl.com">
@@ -74,4 +67,4 @@
          style="border: 0px;"/><br/>
      <span style="font-weight:bold; font-size:7pt">Instant SSL Certificate Secured</span>
   </a><br/>
-</div>
+</div>=======
