@@ -26,7 +26,7 @@ use namespace::autoclean;
 use List::Util qw(first);
 require JSON::Any;
 require DateTime;
-require DateTime::Format::Mysql;
+require DateTime::Format::MySQL;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
