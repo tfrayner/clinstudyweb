@@ -135,6 +135,9 @@
   </xs:complexType>
 
   <xs:complexType name="sampleType">
+    <xs:sequence>
+      <xs:element name="SampleDataFiles" type="sampleDataFileGroup" minOccurs="0"/>
+    </xs:sequence>
     <xs:attribute name="name" type="varcharType" use="required"/>
     <xs:attribute name="cell_type" type="varcharType" use="required"/>
     <xs:attribute name="material_type" type="varcharType" use="required"/>
@@ -147,6 +150,12 @@
     <xs:attribute name="cell_purity" type="decimalType"/>
     <xs:attribute name="quality_score" type="varcharType"/>
     <xs:attribute name="has_expired" type="tinyintType"/>
+    <xs:attribute name="notes" type="textType"/>
+  </xs:complexType>
+
+  <xs:complexType name="sampleDataFileType">
+    <xs:attribute name="filename" type="varcharType" use="required"/>
+    <xs:attribute name="type" type="varcharType" use="required"/>
     <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
@@ -430,6 +439,12 @@
   <xs:complexType name="sampleGroup">
     <xs:sequence>
       <xs:element name="Sample" type="sampleType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="sampleDataFileGroup">
+    <xs:sequence>
+      <xs:element name="SampleDataFile" type="sampleDataFileType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 

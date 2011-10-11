@@ -108,6 +108,9 @@ my %external_value_map = (
                 material_type_id     => 'MaterialType',
                 quality_score_id     => 'QualityScore',
             },
+            SampleDataFile => {
+                type_id              => 'SampleDataType',
+            },
             SystemInvolvement => {
                 type_id              => 'SystemInvolvement',
             },
