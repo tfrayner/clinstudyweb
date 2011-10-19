@@ -728,9 +728,24 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 visit_data_files
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-10-11 11:27:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mTFQH4agh9W5cyTKcVt2cg
+Type: has_many
+
+Related object: L<ClinStudy::ORM::VisitDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
+  {},
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-10-19 11:56:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:b0D3S84iLWS3cRrptdFlOw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -928,6 +943,12 @@ __PACKAGE__->has_many(
   "visits",
   "ClinStudy::ORM::Visit",
   { "foreign.disease_activity_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(

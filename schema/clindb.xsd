@@ -203,6 +203,7 @@
       <xs:element name="EmergentGroups" type="emergentGroupGroup" minOccurs="0"/>
       <xs:element name="Samples" type="sampleGroup" minOccurs="0"/>
       <xs:element name="TestResults" type="testResultGroup" minOccurs="0"/>
+      <xs:element name="VisitDataFiles" type="visitDataFileGroup" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="date" type="dateType" use="required"/>
     <xs:attribute name="notes" type="textType"/>
@@ -210,6 +211,12 @@
     <xs:attribute name="nominal_timepoint" type="varcharType"/>
     <xs:attribute name="treatment_escalation" type="tinyintType"/>
     <xs:attribute name="has_infection" type="tinyintType"/>
+  </xs:complexType>
+
+  <xs:complexType name="visitDataFileType">
+    <xs:attribute name="filename" type="varcharType" use="required"/>
+    <xs:attribute name="type" type="varcharType" use="required"/>
+    <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
   <xs:complexType name="graftFailureType">
@@ -448,6 +455,12 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="visitDataFileGroup">
+    <xs:sequence>
+      <xs:element name="VisitDataFile" type="visitDataFileType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="assayBatchGroup">
     <xs:sequence>
       <xs:element name="AssayBatch" type="assayBatchType" minOccurs="0" maxOccurs="unbounded"/>
@@ -501,6 +514,14 @@
     <xs:key name="sampleNameKey">
       <xs:selector xpath=".//Sample"/>
       <xs:field xpath="@name"/>
+    </xs:key>
+    <xs:key name="sampleDataFileKey">
+      <xs:selector xpath=".//SampleDataFile"/>
+      <xs:field xpath="@filename"/>
+    </xs:key>
+    <xs:key name="visitDataFileKey">
+      <xs:selector xpath=".//VisitDataFile"/>
+      <xs:field xpath="@filename"/>
     </xs:key>
     <xs:key name="assayBatchNameKey">
       <xs:selector xpath=".//AssayBatch"/>
