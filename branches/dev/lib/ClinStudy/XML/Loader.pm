@@ -133,6 +133,9 @@ my %external_value_map = (
                 disease_activity_id  => 'DiseaseActivity',
                 nominal_timepoint_id => 'NominalTimepoint',
             },
+            VisitDataFile => {
+                type_id              => 'VisitDataType',
+            },
         },
     },
 );

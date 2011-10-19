@@ -240,6 +240,12 @@ __PACKAGE__->has_many(
   { "foreign.sample_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.sample_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
 
 __PACKAGE__->many_to_many(
     "assays" => "channels", "assay_id"
