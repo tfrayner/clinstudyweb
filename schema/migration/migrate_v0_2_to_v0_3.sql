@@ -109,3 +109,128 @@ ALTER TABLE assay_batch_audit_history ADD COLUMN (notes text);
 --
 ALTER TABLE sample ADD COLUMN (cell_purity decimal(12,5) default NULL);
 ALTER TABLE sample_audit_history ADD COLUMN (cell_purity decimal(12,5));
+
+--
+-- Table structure for table `sample_data_file`
+--
+
+DROP TABLE IF EXISTS `sample_data_file`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `sample_data_file` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sample_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `filename` (`filename`),
+  KEY `sample_id` (`sample_id`),
+  KEY `type_id` (`type_id`),
+  CONSTRAINT `sample_data_file_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`),
+  CONSTRAINT `sample_data_file_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `sample_data_file_audit_history`
+--
+
+DROP TABLE IF EXISTS `sample_data_file_audit_history`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `sample_data_file_audit_history` (
+  `audit_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `audit_change_id` int(11) NOT NULL,
+  `id` int(11) DEFAULT NULL,
+  `sample_id` int(11) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `notes` text,
+  PRIMARY KEY (`audit_history_id`),
+  KEY `sample_data_file_audit_history_idx_audit_change_id` (`audit_change_id`),
+  CONSTRAINT `sample_data_file_audit_history_fk_audit_change_id` FOREIGN KEY (`audit_change_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `sample_data_file_audit_log`
+--
+
+DROP TABLE IF EXISTS `sample_data_file_audit_log`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `sample_data_file_audit_log` (
+  `create_id` int(11) NOT NULL,
+  `delete_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `sample_data_file_audit_log_idx_create_id` (`create_id`),
+  KEY `sample_data_file_audit_log_idx_delete_id` (`delete_id`),
+  CONSTRAINT `sample_data_file_audit_log_fk_create_id` FOREIGN KEY (`create_id`) REFERENCES `changelog` (`ID`),
+  CONSTRAINT `sample_data_file_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `visit_data_file`
+--
+
+DROP TABLE IF EXISTS `visit_data_file`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `visit_data_file` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `visit_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `filename` (`filename`),
+  KEY `visit_id` (`visit_id`),
+  KEY `type_id` (`type_id`),
+  CONSTRAINT `visit_data_file_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
+  CONSTRAINT `visit_data_file_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `visit_data_file_audit_history`
+--
+
+DROP TABLE IF EXISTS `visit_data_file_audit_history`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `visit_data_file_audit_history` (
+  `audit_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `audit_change_id` int(11) NOT NULL,
+  `id` int(11) DEFAULT NULL,
+  `visit_id` int(11) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `notes` text,
+  PRIMARY KEY (`audit_history_id`),
+  KEY `visit_data_file_audit_history_idx_audit_change_id` (`audit_change_id`),
+  CONSTRAINT `visit_data_file_audit_history_fk_audit_change_id` FOREIGN KEY (`audit_change_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `visit_data_file_audit_log`
+--
+
+DROP TABLE IF EXISTS `visit_data_file_audit_log`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `visit_data_file_audit_log` (
+  `create_id` int(11) NOT NULL,
+  `delete_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `visit_data_file_audit_log_idx_create_id` (`create_id`),
+  KEY `visit_data_file_audit_log_idx_delete_id` (`delete_id`),
+  CONSTRAINT `visit_data_file_audit_log_fk_create_id` FOREIGN KEY (`create_id`) REFERENCES `changelog` (`ID`),
+  CONSTRAINT `visit_data_file_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+

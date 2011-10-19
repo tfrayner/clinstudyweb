@@ -212,9 +212,24 @@ __PACKAGE__->belongs_to(
   { id => "quality_score_id" },
 );
 
+=head2 sample_data_files
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-09-30 10:56:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gaTxXv/ajoYYdapcnI+17w
+Type: has_many
+
+Related object: L<ClinStudy::ORM::SampleDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.sample_id" => "self.id" },
+  {},
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-10-11 11:27:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kS06drAzlFQj2fjU2eud6Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -222,6 +237,12 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->has_many(
   "channels",
   "ClinStudy::ORM::Channel",
+  { "foreign.sample_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
   { "foreign.sample_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );

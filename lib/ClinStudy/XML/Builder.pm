@@ -131,11 +131,13 @@ my %local_key_field = (
     PriorTreatment    => [ qw(type) ],
     RiskFactor        => [ qw(type) ],
     Sample            => [ qw(name) ],
+    SampleDataFile    => [ qw(filename) ],
     Study             => [ qw(type) ],
     SystemInvolvement => [ qw(type) ],
     TestResult        => [ qw(test date) ],
     Transplant        => [ qw(organ_type) ],  # Date is taken care of by Hospitalisation.
     Visit             => [ qw(date) ],
+    VisitDataFile     => [ qw(filename) ],
 );
 
 # Note that this is identical to that in ClinStudy::XML::Dumper;
@@ -169,7 +171,7 @@ sub update_or_create_element {
 
     my $groupname = $irregular_plurals{$class} || $class . 's';
 
-    my @keyfields = @{ $local_key_field{ $class || [] } };
+    my @keyfields = @{ $local_key_field{ $class } || [] };
     unless ( scalar @keyfields ) {
         confess("Error: Unrecognised class $class has no key fields.");
     }
