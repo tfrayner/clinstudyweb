@@ -31,11 +31,12 @@ use File::Copy;
 
 sub parse_args {
 
-    my ( $mapfile, $want_help, $targetdir );
+    my ( $mapfile, $want_help, $targetdir, $dryrun );
 
     GetOptions(
         "m|mapfile=s"   => \$mapfile,
         "d|targetdir=s" => \$targetdir,
+        "dry-run"       => \$dryrun,
         "h|help"        => \$want_help,
     );
 
@@ -56,7 +57,7 @@ sub parse_args {
         );
     }
 
-    return( $mapfile, $targetdir, \@ARGV );
+    return( $mapfile, $targetdir, \@ARGV, $dryrun );
 }
 
 sub parse_mapfile {
@@ -132,35 +133,69 @@ sub md5_file_digest {
     return $md5->hexdigest();
 }
 
+sub make_filename {
+
+    my ( $vhash, $ctype_cv, $file_type, $md5 ) = @_;
+
+    my $filename = join("_", $vhash->{'triad'}, $vhash->{'vdate'});
+    $filename =~ s/[^[:alnum:]_]//g;
+    $filename .= "_" . $ctype_cv if ( $ctype_cv ne q{} );
+    $filename .= "_" . join("_", $file_type, $md5) . ".fcs";
+
+    return $filename;
+}
+
 sub process_file {
 
     my ( $file, $vhash ) = @_;
 
-    my ( $ctype_cv, $file_type ) = ( $file =~ /^(\w+) ([^.]+)/ );
-
-    unless ( $ctype_cv && $file_type ) {
-        die("Unable to parse cell and file type from filename: $file\n");
+    my ( $ctype_cv, $file_type );
+    if ( $file =~ /^unstained\b/i ) {
+        $file_type = 'Unstained';
+        $ctype_cv  = q{};
     }
+    else {
+        ( $ctype_cv, $file_type ) = ( $file =~ /^(\w+) +([^.]+)/ );
+        unless ( defined $ctype_cv && defined $file_type ) {
+            die("Unable to parse cell and file type from filename: $file\n");
+        }
+        unless ( $ctype_cv =~ /^CD\d+(?:[ABCD])?$/i || $ctype_cv eq q{} ) {
+            die("Unusual cell type found: $ctype_cv");
+        }
+        $file_type = lc $file_type;
+    }
+
+    $ctype_cv = uc($ctype_cv);
 
     my $ftype_cv;
     if ( $file_type eq 'pre' ) {
         $ftype_cv = 'FACS pre';
     }
-    elsif ( $file_type eq '+ve' ) {
+    elsif ( $file_type eq '+ve' || $file_type eq 'pos' ) {
         $ftype_cv = 'FACS positive';
     }
-    else {
+    elsif ( $file_type eq 'Unstained' ) {
+        $ftype_cv = 'FACS unstained';
+    }
+    elsif ( $file_type eq 'flow' || $file_type eq 'neg' ) {
         return;
+    }
+    else {
+        die("Unrecognised file type: $file_type\n");
     }
 
     my $md5 = md5_file_digest( $file );
 
-    return( "${md5}.fcs", $ctype_cv, $ftype_cv );
+    my $newfile = make_filename( $vhash, $ctype_cv, $file_type, $md5 );
+
+    return( $newfile, $ctype_cv, $ftype_cv );
 }
 
 sub process_directory {
 
-    my ( $dir, $targetdir, $vhash ) = @_;
+    my ( $dir, $targetdir, $vhash, $dryrun ) = @_;
+
+    # N.B. $targetdir must be an absolute path.
 
     opendir( my $dh, $dir )
         or die("Cannot open directory $dir: $!\n");
@@ -168,33 +203,68 @@ sub process_directory {
     my @files = grep { /^[^.]/ && -f "$dir/$_" } readdir($dh);
     closedir $dh;
 
+    warn("Entering directory $dir...\n");
+
+    chdir($dir) or die("Cannot change directory to $dir:$!\n");
+
     FILE:
     foreach my $file ( @files ) {
-        next FILE if $file =~ /^Unstained/;
+
+        # Allow for junk directories.
+        next FILE if ( $file eq 'junk' && -d $file );
+
         my ( $md5file, $celltype, $filetype )
-            = process_file( File::Spec->catfile( $dir, $file ), $vhash );
+            = process_file( $file, $vhash );
 
         # Copy the $file to $md5file in a target directory.
-        copy( $file, File::Spec->catfile( $targetdir, $md5file ) )
-            or die("Unable to copy FACS data file $file to target directory: $!");
+        if ( defined $md5file ) {
+            warn("Copying file to $md5file...\n");
 
-        print STDOUT (join("\t",
-                           $md5file,
-                           $filetype,
-                           $celltype,
-                           'RNA',
-                           $vhash->{'triad'},
-                           $vhash->{'vdate'}), "\n")
+            unless ( $dryrun ) {
+                copy( $file, File::Spec->catfile( $targetdir, $md5file ) )
+                    or die("Unable to copy FACS data file $file to target directory: $!");
+            }
+
+            if ( $filetype eq 'FACS unstained' ) {
+                print STDOUT (join("\t",
+                                   q{}, q{},
+                                   $celltype,
+                                   q{},
+                                   $vhash->{'triad'},
+                                   $md5file,
+                                   $filetype,
+                                   $vhash->{'vdate'}), "\n")
+            }
+            else {
+                print STDOUT (join("\t",
+                                   $md5file,
+                                   $filetype,
+                                   $celltype,
+                                   'RNA',
+                                   $vhash->{'triad'},
+                                   q{}, q{},
+                                   $vhash->{'vdate'}), "\n")
+            }
+        }
     }
+
+    chdir('..') or die("Cannot exit directory $dir:$!\n");
+
 }
 
 ########
 # MAIN #
 ########
 
-my ( $mapfile, $targetdir, $dirs ) = parse_args();
+my ( $mapfile, $targetdir, $dirs, $dryrun ) = parse_args();
 
 my $map = parse_mapfile( $mapfile );
+
+$targetdir = File::Spec->rel2abs( $targetdir );
+
+unless ( -d $targetdir || $dryrun ) {
+    mkdir $targetdir;
+}
 
 # Quick pre-check that all the directories on the command line can be
 # mapped to patient visits.
@@ -208,15 +278,17 @@ if ( scalar grep { defined $_ } values %not_found ) {
 }
 
 print STDOUT (join("\t",
-                   'SampleData|filename',
-                   'SampleData|type',
+                   'SampleDataFile|filename',
+                   'SampleDataFile|type',
                    'Sample|cell_type',
                    'Sample|material_type',
                    'Patient|trial_id',
+                   'VisitDataFile|filename',
+                   'VisitDataFile|type',
                    'Visit|date'), "\n");
 
 foreach my $dir ( @$dirs ) {
-    process_directory( $dir, $targetdir, $map->{ $dir } );
+    process_directory( $dir, $targetdir, $map->{ $dir }, $dryrun );
 }
 
 __END__
@@ -275,6 +347,10 @@ The name of the mapping file.
 =head2 -h
 
 Prints this help text.
+
+=head2 --dry-run
+
+Make no changes to the filesystem.
 
 =head1 AUTHOR
 
