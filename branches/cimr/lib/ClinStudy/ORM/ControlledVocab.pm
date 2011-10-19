@@ -563,6 +563,21 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 sample_data_files
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::SampleDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.type_id" => "self.id" },
+  {},
+);
+
 =head2 studies
 
 Type: has_many
@@ -713,9 +728,24 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 visit_data_files
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-04-21 13:55:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7jXYF4c+1E7X2z6NL1NnyQ
+Type: has_many
+
+Related object: L<ClinStudy::ORM::VisitDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
+  {},
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-10-19 11:56:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:b0D3S84iLWS3cRrptdFlOw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -832,6 +862,12 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.type_id" => "self.id" },
+  { "cascade_delete"  => 0 },
+);
+__PACKAGE__->has_many(
   "studies",
   "ClinStudy::ORM::Study",
   { "foreign.type_id" => "self.id" },
@@ -907,6 +943,12 @@ __PACKAGE__->has_many(
   "visits",
   "ClinStudy::ORM::Visit",
   { "foreign.disease_activity_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(

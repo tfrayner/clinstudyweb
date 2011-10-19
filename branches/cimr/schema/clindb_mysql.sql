@@ -725,6 +725,68 @@ LOCK TABLES `sample` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `sample_data_file`
+--
+
+DROP TABLE IF EXISTS `sample_data_file`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `sample_data_file` (
+  `id` int(11) NOT NULL auto_increment,
+  `sample_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `notes` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`filename`),
+  KEY (`sample_id`),
+  KEY (`type_id`),
+  CONSTRAINT `sample_data_file_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`),
+  CONSTRAINT `sample_data_file_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `sample_data_file`
+--
+
+LOCK TABLES `sample_data_file` WRITE;
+/*!40000 ALTER TABLE `sample_data_file` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sample_data_file` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `visit_data_file`
+--
+
+DROP TABLE IF EXISTS `visit_data_file`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `visit_data_file` (
+  `id` int(11) NOT NULL auto_increment,
+  `visit_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `notes` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`filename`),
+  KEY (`visit_id`),
+  KEY (`type_id`),
+  CONSTRAINT `visit_data_file_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
+  CONSTRAINT `visit_data_file_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `visit_data_file`
+--
+
+LOCK TABLES `visit_data_file` WRITE;
+/*!40000 ALTER TABLE `visit_data_file` DISABLE KEYS */;
+/*!40000 ALTER TABLE `visit_data_file` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `assay_batch`
 --
 

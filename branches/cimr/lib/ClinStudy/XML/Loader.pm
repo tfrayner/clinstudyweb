@@ -108,6 +108,9 @@ my %external_value_map = (
                 material_type_id     => 'MaterialType',
                 quality_score_id     => 'QualityScore',
             },
+            SampleDataFile => {
+                type_id              => 'SampleDataType',
+            },
             SystemInvolvement => {
                 type_id              => 'SystemInvolvement',
             },
@@ -129,6 +132,9 @@ my %external_value_map = (
             Visit => {
                 disease_activity_id  => 'DiseaseActivity',
                 nominal_timepoint_id => 'NominalTimepoint',
+            },
+            VisitDataFile => {
+                type_id              => 'VisitDataType',
             },
         },
     },
