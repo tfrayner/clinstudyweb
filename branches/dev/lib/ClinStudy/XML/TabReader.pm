@@ -79,11 +79,13 @@ sub read {
         'PriorTreatment'    => 'Patient',
         'RiskFactor'        => 'Patient',
         'Sample'            => 'Visit',
+        'SampleDataFile'    => 'Sample',
         'Study'             => 'Patient',
         'SystemInvolvement' => 'Patient',
         'TestResult'        => $drug_parent,  # FIXME if this is PriorTreatment we may be screwed.
         'Transplant'        => 'Hospitalisation',
         'Visit'             => 'Patient',
+        'VisitDataFile'     => 'Visit',
     );
     my ( $parsetree, $rootname ) = $self->_to_tree( \%parent_map );
 

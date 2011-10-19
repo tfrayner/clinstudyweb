@@ -133,15 +133,6 @@ CREATE TABLE `sample_data_file` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Dumping data for table `sample_data_file`
---
-
-LOCK TABLES `sample_data_file` WRITE;
-/*!40000 ALTER TABLE `sample_data_file` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sample_data_file` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `sample_data_file_audit_history`
 --
 
@@ -163,15 +154,6 @@ CREATE TABLE `sample_data_file_audit_history` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Dumping data for table `sample_data_file_audit_history`
---
-
-LOCK TABLES `sample_data_file_audit_history` WRITE;
-/*!40000 ALTER TABLE `sample_data_file_audit_history` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sample_data_file_audit_history` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `sample_data_file_audit_log`
 --
 
@@ -189,15 +171,6 @@ CREATE TABLE `sample_data_file_audit_log` (
   CONSTRAINT `sample_data_file_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-
---
--- Dumping data for table `sample_data_file_audit_log`
---
-
-LOCK TABLES `sample_data_file_audit_log` WRITE;
-/*!40000 ALTER TABLE `sample_data_file_audit_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sample_data_file_audit_log` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `visit_data_file`
@@ -222,15 +195,6 @@ CREATE TABLE `visit_data_file` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Dumping data for table `visit_data_file`
---
-
-LOCK TABLES `visit_data_file` WRITE;
-/*!40000 ALTER TABLE `visit_data_file` DISABLE KEYS */;
-/*!40000 ALTER TABLE `visit_data_file` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `visit_data_file_audit_history`
 --
 
@@ -252,15 +216,6 @@ CREATE TABLE `visit_data_file_audit_history` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Dumping data for table `visit_data_file_audit_history`
---
-
-LOCK TABLES `visit_data_file_audit_history` WRITE;
-/*!40000 ALTER TABLE `visit_data_file_audit_history` DISABLE KEYS */;
-/*!40000 ALTER TABLE `visit_data_file_audit_history` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `visit_data_file_audit_log`
 --
 
@@ -278,13 +233,4 @@ CREATE TABLE `visit_data_file_audit_log` (
   CONSTRAINT `visit_data_file_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-
---
--- Dumping data for table `visit_data_file_audit_log`
---
-
-LOCK TABLES `visit_data_file_audit_log` WRITE;
-/*!40000 ALTER TABLE `visit_data_file_audit_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `visit_data_file_audit_log` ENABLE KEYS */;
-UNLOCK TABLES;
 
