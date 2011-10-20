@@ -74,3 +74,12 @@
 [% INCLUDE app/test_result_list.tt2 %]
 </fieldset>
 
+<fieldset>
+<legend>Data Files</legend>
+[% IF object.visit_data_files.blessed %]
+  [% SET objects = [ object.visit_data_files ] %]
+[% ELSE %]
+  [% SET objects = object.visit_data_files.list %]
+[% END %]
+[% INCLUDE 'app/visit_data_files_list.tt2' %]
+</fieldset>
