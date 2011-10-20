@@ -1,0 +1,4 @@
+[% SET download_path = '/static/datafiles/sample' %]
+[% SET view_path     = '/sampledatafile/view'     %]
+[% SET edit_path     = '/sampledatafile/edit'     %]
+[% INCLUDE 'app/data_files_list.tt2' %]

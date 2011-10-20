@@ -1,0 +1,40 @@
+[% IF objects && objects.size > 0 %]
+    <div>
+      <table id='fileList'>
+      <thead>
+        <tr>
+          <td>File Name</td>
+          <td>Type</td>
+          <td>Notes</td>
+          <td>Download Link</td>
+          <td>&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH file = objects %]
+        <tr>
+          <td>[% file.filename | html %]</td>
+          <td>[% file.type_id.value | html  %]</td>
+          <td>[% file.notes | truncate(70) | html %] &nbsp; </td>
+          <td><a href="[% c.uri_for("$download_path/$file.filename") | html %]">Download</a></td>
+          <td><a href="[% c.uri_for("$view_path/$file.id") | html %]">View Record</a>
+              <a href="[% c.uri_for("$edit_path/$file.id") | html %]">Edit</a></td>
+        </tr>
+      [% END %] 
+      </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+        DHTMLSuite.include("tableWidget"); 
+    </script>
+    <script type="text/javascript">
+        var tableWidgetObj = new DHTMLSuite.tableWidget();
+        tableWidgetObj.setTableId('fileList');
+        tableWidgetObj.setTableHeight('80');
+        tableWidgetObj.setColumnSort(Array('S','S',false,false));
+        tableWidgetObj.init();
+        tableWidgetObj.sortTableByColumn(1); // Initially sort the table by the second column
+    </script>
+[% ELSE %] 
+    <p>None</p> 
+[% END %] 
