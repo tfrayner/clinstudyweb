@@ -57,3 +57,13 @@
 [% END %]
 
 </fieldset>
+
+<fieldset>
+<legend>Data Files</legend>
+[% IF object.sample_data_files.blessed %]
+  [% SET objects = [ object.sample_data_files ] %]
+[% ELSE %]
+  [% SET objects = object.sample_data_files.list %]
+[% END %]
+[% INCLUDE 'app/sample_data_files_list.tt2' %]
+</fieldset>
