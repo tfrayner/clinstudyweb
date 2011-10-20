@@ -1,0 +1,21 @@
+[% META title = 'Sample Data File Details' %]
+
+<h3>Patient [% object.sample_id.visit_id.patient_id.trial_id | html %] on visit date [% object.sample_id.visit_id.date %]: [% object.type_id.value %] data file</h3>
+
+<fieldset class="data_view">
+<legend>Data File <span><a href="[% c.uri_for("/sampledatafile/edit", object.id) | html %]">Edit</a></span></legend>
+<table class="horizontal">
+
+<tr><th>File Name:</th>
+    <td>[% object.filename | html -%]</td></tr>
+
+<tr><th>File Type:</th>
+    <td>[% object.type_id.value | html -%]</td></tr>
+
+<tr><th>Download link:</th>
+    <td><a href="[% c.uri_for("/static/datafiles/sample/$object.filename") | html %]">Download</a></td></tr>
+
+<tr><th>Notes:</th>
+    <td>[% object.notes | html | html_line_break %]</td></tr></table>
+
+</fieldset>
