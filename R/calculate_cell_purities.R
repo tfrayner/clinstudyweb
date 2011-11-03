@@ -1,4 +1,4 @@
-## Copyright 2010 Tim Rayner, University of Cambridge
+## Copyright 2011 Tim Rayner, University of Cambridge
 ## 
 ## This file is part of ClinStudy::Web.
 ## 
@@ -17,14 +17,58 @@
 ##
 ## $Id$
 
-calculateCellPurities <- function(uri) {
+calculateCellPurities <- function(uri, .opts=list(), cred) {
 
-    ## FIXME connect to the clinical database; pull down a list of
+    require('RCurl')
+
+    .retrieveFileInfo <- function(sample_id, type, uri, .opts, cred) {
+        file <- csJSONQuery(resultSet='SampleDataFile',
+                            condition=list('sample_id'=sample_id,
+                                           'type_id.value'=type),
+                            attributes=list('join'='type_id'),
+                            uri=uri,
+                            .opts=.opts,
+                            cred=cred)
+
+        if ( length(file) < 1 ) {
+            warning("File not found: ", type, " file for sample ", sample_id, ". Skipping.")
+            return() 
+        } else if (length(file) > 1) {
+            warning("Multiple files found: ", type, " file for sample ", sample_id, ". Skipping.")
+            return()
+        }
+
+        return(file$filename) ## FIXME better to allow file download uri here. ORM fix?
+    }
+
+    ## Connect to the clinical database; pull down a list of
     ## samples lacking cell purities but having the files required to
     ## attempt a calculation.
+    cond    <- list('cell_purity'=NULL,  ## FIXME this will probably be changed to auto_cell_purity.
+                    'type_id.value'='FACS positive')
+    attrs   <- list(join=list('sample_data_files'='type_id'))
+    samples <- csJSONQuery(resultSet='Sample',
+                           condition=cond,
+                           attributes=attrs,
+                           uri=uri,
+                           .opts=.opts,
+                           cred=cred)
 
-    ## Attempt said calculation.
-    
+    ## Loop over the samples, pull down the two files required
+    ## (recheck that they're both present).
+    for ( samp in samples ) {
+        pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
+        pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, cred)
+
+        if ( any(is.null(c(pre, pos)) ) )
+            next
+
+        ## FIXME download both files to a temporary location.
+
+        ## FIXME Attempt cell purity calculation.
+    }
+
+    return()
 }
 
 outputCSV <- function(res, file) {
