@@ -33,7 +33,7 @@ csDrugQuery <- function(filename=NULL, identifier=NULL, drug.type=NULL,
     return( res )
 }
 
-csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
+csDrugList <- function(files, output.column=NULL, cred=NULL, ...) {
 
     if ( is.null(output.column) )
         output.column <- 'drug_treatments'
@@ -52,7 +52,7 @@ csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
             paste( ch$drugs, collapse=';' )
         } )
         names(f) <- unlist(lapply(dat, function(ch) {
-            paste( 'drug_treatments', ch$sample, ch$label, sep='.' )
+            paste( output.column, ch$sample, ch$label, sep='.' )
         }))
         return(f)
     } )
@@ -83,11 +83,11 @@ csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
     return(res)
 }
 
-.drugInfoEset <- function( data, output.column, uri, .opts=list(), cred=NULL ) {
+.drugInfoEset <- function( data, output.column, uri, .opts=list(), cred=NULL, ... ) {
 
     ## ExpressionSet or AffyBatch.
     files <- as.character(sampleNames(data))
-    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred)
+    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred, ...)
     stopifnot(all(rownames(p) == files))
 
     pData(data)[, output.column] <- p
@@ -95,11 +95,11 @@ csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
     return(data)
 }
 
-.drugInfoMAList <- function( data, output.column, uri, .opts=list(), cred=NULL ) {
+.drugInfoMAList <- function( data, output.column, uri, .opts=list(), cred=NULL, ... ) {
 
     ## ExpressionSet or AffyBatch.
     files <- as.character(data$targets$FileName)
-    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred)
+    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred, ...)
     stopifnot(all(rownames(p) == files))
 
     data$targets[, output.column] <- p
@@ -108,7 +108,7 @@ csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
 }
 
 ## Define a series of functions for various object signatures.
-setGeneric('csWebDrugInfo', def=function(data, output.column, uri, .opts=list(), cred=NULL)
+setGeneric('csWebDrugInfo', def=function(data, output.column, uri, .opts=list(), cred=NULL, ...)
            standardGeneric('csWebDrugInfo'))
 
 setMethod('csWebDrugInfo', signature(data='ExpressionSet'), .drugInfoEset)
