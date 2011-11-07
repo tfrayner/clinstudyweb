@@ -172,7 +172,7 @@ __PACKAGE__->allow_access_if( '/query', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/query' );
 
 # These are currently admin-only.
-__PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( admin ) ] );
+__PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( user ) ] );
 __PACKAGE__->deny_access( '/controlledvocab' );
 
 __PACKAGE__->allow_access_if( '/relatedvocab',   [ qw( admin ) ] );
