@@ -20,9 +20,17 @@
 csDrugQuery <- function(filename=NULL, identifier=NULL, drug.type=NULL,
                         months.prior=NULL, prior.treatment.type=NULL,
                         uri, .opts=list(), cred=NULL ) {
-    return( .csJSONGeneric(list(filename=filename, identifier=identifier, drug_type=drug.type,
-                                months_prior=months.prior, prior_treatment_type=prior.treatment.type),
-                           'query/assay_drugs', uri, .opts, cred ) )
+
+    stopifnot( any( ! is.null( c(filename, identifier) ) ) )
+
+    res <- .csJSONGeneric(list(filename=filename, identifier=identifier, drug_type=drug.type,
+                               months_prior=months.prior, prior_treatment_type=prior.treatment.type),
+                          'query/assay_drugs', uri, .opts, cred )
+
+    res <- res$channels
+    names(res) <- lapply(res, function(x) { x$label } )
+    
+    return( res )
 }
 
 csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
@@ -40,10 +48,10 @@ csDrugList <- function(files, cred=NULL, output.column=NULL, ...) {
     ## a user-friendly data frame. Reduce into a single column if possible.
     dlist <- lapply(files, csDrugQuery, cred=cred, ...)
     dlist <- lapply(dlist, function(dat) {
-        f <- lapply(dat$channels, function(ch) {
+        f <- lapply(dat, function(ch) {
             paste( ch$drugs, collapse=';' )
         } )
-        names(f) <- unlist(lapply(dat$channels, function(ch) {
+        names(f) <- unlist(lapply(dat, function(ch) {
             paste( 'drug_treatments', ch$sample, ch$label, sep='.' )
         }))
         return(f)

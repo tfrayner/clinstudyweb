@@ -40,7 +40,7 @@ importClassesFrom(limma, MAList, RGList)
 
 importFrom(affy, ReadAffy)
 importFrom(oligo, read.celfiles)
-importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-')
+importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-', varMetadata, 'varMetadata<-')
 importFrom(limma, read.maimages)
 
 importFrom(RCurl, getURLContent, curlEscape)
