@@ -18,6 +18,11 @@
 ## $Id$
 
 csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=list(), cred=NULL ) {
+    return( .csJSONGeneric(list(resultSet=resultSet, condition=condition, attributes=attributes),
+                           'query', uri, .opts, cred ) )
+}
+
+.csJSONGeneric <- function( query, action, uri, .opts=list(), cred=NULL ) {
 
     ## Strip the trailing slash; we will be concatenating actions later.
     uri <- sub( '/+$', '', uri )
@@ -32,11 +37,10 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
     curl <- .csGetAuthenticatedHandle( uri, cred$username, cred$password, .opts )
 
     ## Run the query.
-    query  <- list(resultSet=resultSet, condition=condition, attributes=attributes)
     query  <- rjson::toJSON(query)
     query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
-    res    <- RCurl::curlPerform(url=paste(uri, 'query', sep='/'),
+    res    <- RCurl::curlPerform(url=paste(uri, action, sep='/'),
                                  postfields=paste('data', query, sep='='),
                                  .opts=.opts,
                                  curl=curl,

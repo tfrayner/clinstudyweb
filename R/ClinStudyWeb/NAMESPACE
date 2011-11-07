@@ -49,10 +49,13 @@ export(
        getCredentials,
        csWebQuery,
        csWebReannotate,
+       csWebDrugInfo,
        csWebAffyBatch,
        csWebGeneFeatureSet,
        csWebRGList,
        csJSONQuery,
+       csDrugQuery,
+       csDrugList,
        csFindAssays
        )
 
