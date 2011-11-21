@@ -1,17 +1,21 @@
+use utf8;
 package CIMR::BloodDB::CtOthertests;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CIMR::BloodDB::CtOthertests
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-CIMR::BloodDB::CtOthertests
+=head1 TABLE: C<ct_othertests>
 
 =cut
 
@@ -69,11 +73,22 @@ __PACKAGE__->add_columns(
   "resvalue",
   { data_type => "char", is_nullable => 1, size => 150 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</table_id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2010-09-03 14:22:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YeBFxI9AHRd4BesvfKZqOA
+# Created by DBIx::Class::Schema::Loader v0.07014 @ 2011-11-21 13:48:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:APaxniZdr5LqBO6mc4yhXQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
