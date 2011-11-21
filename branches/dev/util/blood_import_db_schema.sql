@@ -92,6 +92,7 @@ CREATE TABLE exp_ct_biochem_concat (
   GFR char(510),
   Glucose char(510),
   GrowthHormone char(510),
+  GST char(510),
   HbA1c char(510),
   HDL_cholesterol char(510),
   IgF char(510),

@@ -189,6 +189,12 @@ __PACKAGE__->table("exp_ct_biochem_concat");
   is_nullable: 1
   size: 510
 
+=head2 gst
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
 =head2 hba1c
 
   data_type: 'char'
@@ -494,6 +500,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 510 },
   "growthhormone",
   { data_type => "char", is_nullable => 1, size => 510 },
+  "gst",
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hba1c",
   { data_type => "char", is_nullable => 1, size => 510 },
   "hdl_cholesterol",
@@ -591,8 +599,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07014 @ 2011-11-21 13:51:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t/ic7QeFjmpm90vXcLMt9Q
+# Created by DBIx::Class::Schema::Loader v0.07014 @ 2011-11-21 14:32:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ckFCjWiuTu7SG0pT6Sg9+A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
