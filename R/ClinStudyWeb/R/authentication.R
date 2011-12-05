@@ -22,6 +22,9 @@
 ## and modified.
 getCredentials <- function(title='Database Authentication', entryWidth=30, returnValOnCancel=NA) {
 
+    if ( ! capabilities()['X11'] )
+        stop("Error: X11 device is not available.")
+
     dlg <- tktoplevel()
     tkwm.deiconify(dlg)
     tkgrab.set(dlg)
