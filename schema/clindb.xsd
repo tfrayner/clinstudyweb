@@ -201,6 +201,7 @@
     <xs:sequence>
       <xs:element name="Drugs" type="drugGroup" minOccurs="0"/>
       <xs:element name="EmergentGroups" type="emergentGroupGroup" minOccurs="0"/>
+      <xs:element name="PhenotypeQuantities" type="phenotypeQuantityGroup" minOccurs="0"/>
       <xs:element name="Samples" type="sampleGroup" minOccurs="0"/>
       <xs:element name="TestResults" type="testResultGroup" minOccurs="0"/>
       <xs:element name="VisitDataFiles" type="visitDataFileGroup" minOccurs="0"/>
@@ -217,6 +218,11 @@
     <xs:attribute name="filename" type="varcharType" use="required"/>
     <xs:attribute name="type" type="varcharType" use="required"/>
     <xs:attribute name="notes" type="textType"/>
+  </xs:complexType>
+
+  <xs:complexType name="phenotypeQuantityType">
+    <xs:attribute name="type" type="varcharType" use="required"/>
+    <xs:attribute name="value" type="decimalType" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="graftFailureType">
@@ -458,6 +464,12 @@
   <xs:complexType name="visitDataFileGroup">
     <xs:sequence>
       <xs:element name="VisitDataFile" type="visitDataFileType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="phenotypeQuantityGroup">
+    <xs:sequence>
+      <xs:element name="PhenotypeQuantity" type="phenotypeQuantityType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 

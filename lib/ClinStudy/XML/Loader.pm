@@ -92,6 +92,9 @@ my %external_value_map = (
                 ethnicity_id         => 'Ethnicity',
                 home_centre_id       => 'HomeCentre',
             },
+            PhenotypeQuantity => {
+                type_id              => 'PhenotypeQuantityType',
+            },
             PriorObservation => {
                 type_id              => 'ObservationType',
             },

@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::RelatedVocab;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::RelatedVocab
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::RelatedVocab
+=head1 TABLE: C<related_vocab>
 
 =cut
 
@@ -55,7 +59,35 @@ __PACKAGE__->add_columns(
   "relationship_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<controlled_vocab_id>
+
+=over 4
+
+=item * L</controlled_vocab_id>
+
+=item * L</target_id>
+
+=item * L</relationship_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint(
   "controlled_vocab_id",
   ["controlled_vocab_id", "target_id", "relationship_id"],
@@ -77,20 +109,6 @@ __PACKAGE__->belongs_to(
   { id => "controlled_vocab_id" },
 );
 
-=head2 target_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "target_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "target_id" },
-);
-
 =head2 relationship_id
 
 Type: belongs_to
@@ -105,9 +123,23 @@ __PACKAGE__->belongs_to(
   { id => "relationship_id" },
 );
 
+=head2 target_id
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/TnzKSMQN39QIqgt2x4QAQ
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "target_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "target_id" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4AljLqD1KHHQd2xSo+ZYVw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::PatientPriorGroup;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::PatientPriorGroup
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::PatientPriorGroup
+=head1 TABLE: C<patient_prior_group>
 
 =cut
 
@@ -47,7 +51,33 @@ __PACKAGE__->add_columns(
   "prior_group_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</prior_group_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "prior_group_id"]);
 
 =head1 RELATIONS
@@ -81,8 +111,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jAv6fcUnb0J8PEcKe7+6tw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rpqD2h+9SKD4ClXw5/J+uQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

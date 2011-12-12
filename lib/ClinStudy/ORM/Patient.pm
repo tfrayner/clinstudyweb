@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Patient;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Patient
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Patient
+=head1 TABLE: C<patient>
 
 =cut
 
@@ -84,7 +88,31 @@ __PACKAGE__->add_columns(
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<trial_id>
+
+=over 4
+
+=item * L</trial_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("trial_id", ["trial_id"]);
 
 =head1 RELATIONS
@@ -164,21 +192,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 hospitalisations
-
-Type: has_many
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->has_many(
-  "hospitalisations",
-  "ClinStudy::ORM::Hospitalisation",
-  { "foreign.patient_id" => "self.id" },
-  {},
-);
-
 =head2 ethnicity_id
 
 Type: belongs_to
@@ -205,6 +218,21 @@ __PACKAGE__->belongs_to(
   "home_centre_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "home_centre_id" },
+);
+
+=head2 hospitalisations
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Hospitalisation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "hospitalisations",
+  "ClinStudy::ORM::Hospitalisation",
+  { "foreign.patient_id" => "self.id" },
+  {},
 );
 
 =head2 patient_prior_groups
@@ -313,8 +341,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MiUPBgKEpZpmeS+6IWcbcw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sldVR9SlIY3IJVdSMTUBMQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
