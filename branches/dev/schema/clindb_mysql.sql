@@ -787,6 +787,36 @@ LOCK TABLES `visit_data_file` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `phenotype_quantity`
+--
+
+DROP TABLE IF EXISTS `phenotype_quantity`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `phenotype_quantity` (
+  `id` int(11) NOT NULL auto_increment,
+  `visit_id` int(11) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `value` decimal(12,5) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`visit_id`,`type_id`),
+  KEY (`visit_id`),
+  KEY (`type_id`),
+  CONSTRAINT `phenotype_quantity_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
+  CONSTRAINT `phenotype_quantity_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `phenotype_quantity`
+--
+
+LOCK TABLES `phenotype_quantity` WRITE;
+/*!40000 ALTER TABLE `phenotype_quantity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `phenotype_quantity` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `assay_batch`
 --
 

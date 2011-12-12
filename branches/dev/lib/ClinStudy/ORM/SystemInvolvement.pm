@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::SystemInvolvement;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::SystemInvolvement
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::SystemInvolvement
+=head1 TABLE: C<system_involvement>
 
 =cut
 
@@ -47,7 +51,33 @@ __PACKAGE__->add_columns(
   "type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</type_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "type_id"]);
 
 =head1 RELATIONS
@@ -81,8 +111,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+DaUhFJiNKEdnUgEzaAtHw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BgXyF7ilAJwJFat3O2qSsw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

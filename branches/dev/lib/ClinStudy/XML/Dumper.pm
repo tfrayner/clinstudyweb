@@ -59,10 +59,11 @@ sub BUILD {
     });
 
     $self->irregular_plurals({
-        AssayBatch  => 'AssayBatches',
-        Comorbidity => 'Comorbidities',
-        Diagnosis   => 'Diagnoses',
-        Study       => 'Studies',
+        AssayBatch        => 'AssayBatches',
+        Comorbidity       => 'Comorbidities',
+        Diagnosis         => 'Diagnoses',
+        PhenotypeQuantity => 'PhenotypeQuantities',
+        Study             => 'Studies',
     });
 
     return;

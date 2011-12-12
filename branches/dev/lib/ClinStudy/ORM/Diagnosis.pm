@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Diagnosis;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Diagnosis
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Diagnosis
+=head1 TABLE: C<diagnosis>
 
 =cut
 
@@ -101,24 +105,36 @@ __PACKAGE__->add_columns(
   "disease_extent_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
-__PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "condition_name_id"]);
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 patient_id
+=over 4
 
-Type: belongs_to
+=item * L</id>
 
-Related object: L<ClinStudy::ORM::Patient>
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "patient_id",
-  "ClinStudy::ORM::Patient",
-  { id => "patient_id" },
-);
+__PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</condition_name_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "condition_name_id"]);
+
+=head1 RELATIONS
 
 =head2 condition_name_id
 
@@ -148,7 +164,7 @@ __PACKAGE__->belongs_to(
   { id => "confidence_id" },
 );
 
-=head2 previous_course_id
+=head2 disease_extent_id
 
 Type: belongs_to
 
@@ -157,9 +173,9 @@ Related object: L<ClinStudy::ORM::ControlledVocab>
 =cut
 
 __PACKAGE__->belongs_to(
-  "previous_course_id",
+  "disease_extent_id",
   "ClinStudy::ORM::ControlledVocab",
-  { id => "previous_course_id" },
+  { id => "disease_extent_id" },
 );
 
 =head2 disease_staging_id
@@ -176,7 +192,21 @@ __PACKAGE__->belongs_to(
   { id => "disease_staging_id" },
 );
 
-=head2 disease_extent_id
+=head2 patient_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Patient>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "patient_id",
+  "ClinStudy::ORM::Patient",
+  { id => "patient_id" },
+);
+
+=head2 previous_course_id
 
 Type: belongs_to
 
@@ -185,14 +215,14 @@ Related object: L<ClinStudy::ORM::ControlledVocab>
 =cut
 
 __PACKAGE__->belongs_to(
-  "disease_extent_id",
+  "previous_course_id",
   "ClinStudy::ORM::ControlledVocab",
-  { id => "disease_extent_id" },
+  { id => "previous_course_id" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-05-05 13:28:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:59IUbQVyE+v74PSka9Cesg
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FAM2zrNkyfIXQntrjgqkuA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

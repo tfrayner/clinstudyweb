@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::PriorTreatment;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::PriorTreatment
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::PriorTreatment
+=head1 TABLE: C<prior_treatment>
 
 =cut
 
@@ -62,7 +66,33 @@ __PACKAGE__->add_columns(
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</type_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "type_id"]);
 
 =head1 RELATIONS
@@ -82,20 +112,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 type_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "type_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "type_id" },
-);
-
 =head2 patient_id
 
 Type: belongs_to
@@ -110,9 +126,23 @@ __PACKAGE__->belongs_to(
   { id => "patient_id" },
 );
 
+=head2 type_id
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EOnLwCw3dDJVExCEt/MVow
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "type_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "type_id" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UYwUAR0zOP21miyYXRr0uA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

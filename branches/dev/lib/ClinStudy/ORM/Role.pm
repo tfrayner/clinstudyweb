@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Role;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Role
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Role
+=head1 TABLE: C<role>
 
 =cut
 
@@ -39,7 +43,31 @@ __PACKAGE__->add_columns(
   "rolename",
   { data_type => "varchar", is_nullable => 0, size => 255 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<rolename>
+
+=over 4
+
+=item * L</rolename>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("rolename", ["rolename"]);
 
 =head1 RELATIONS
@@ -60,8 +88,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hfOwSJvoCaK5WM99j2g3lQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mn+eN5HnTyEIFXj0sTsKlA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

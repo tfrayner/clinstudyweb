@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Transplant;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Transplant
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Transplant
+=head1 TABLE: C<transplant>
 
 =cut
 
@@ -143,9 +147,34 @@ __PACKAGE__->add_columns(
   "donor_cmv",
   { data_type => "tinyint", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 donor_type_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "donor_type_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "donor_type_id" },
+);
 
 =head2 graft_failures
 
@@ -176,20 +205,6 @@ __PACKAGE__->belongs_to(
   { id => "hospitalisation_id" },
 );
 
-=head2 sensitisation_status_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sensitisation_status_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "sensitisation_status_id" },
-);
-
 =head2 organ_type_id
 
 Type: belongs_to
@@ -218,7 +233,7 @@ __PACKAGE__->belongs_to(
   { id => "reperfusion_quality_id" },
 );
 
-=head2 donor_type_id
+=head2 sensitisation_status_id
 
 Type: belongs_to
 
@@ -227,14 +242,14 @@ Related object: L<ClinStudy::ORM::ControlledVocab>
 =cut
 
 __PACKAGE__->belongs_to(
-  "donor_type_id",
+  "sensitisation_status_id",
   "ClinStudy::ORM::ControlledVocab",
-  { id => "donor_type_id" },
+  { id => "sensitisation_status_id" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QP2w8UHSCkm4LB9sdCGdLw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UfFoFSpEttEq0/rEyriGrQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

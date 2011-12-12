@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::RiskFactor;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::RiskFactor
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::RiskFactor
+=head1 TABLE: C<risk_factor>
 
 =cut
 
@@ -54,6 +58,17 @@ __PACKAGE__->add_columns(
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -87,8 +102,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fWAVx9SO1MO3+oXSlsTsLw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xD0TAvnb066TyTL3x3kvBA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
