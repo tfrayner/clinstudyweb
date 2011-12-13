@@ -280,6 +280,74 @@ sub assay_drugs : Local {
     return;
 }
 
+sub list_tests : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query;
+    $query = $self->_decode_json( $c ) if defined $c->request->param( 'data' );
+
+    my $rs = $c->model('DB::Test');
+
+    my ( $pattern, $tests );
+
+    # We allow a query pattern to be used as a filter, but for the
+    # most part this will just dump all test names.
+    if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ tr(*?)(%_);
+        $tests   = $rs->search({ name => { -like => $pattern }});
+    }
+    else {
+        $tests   = $rs;
+    }
+
+    my $result = {};
+    while ( my $test = $tests->next() ) {
+        $result->{ $test->name() } = $test->id();
+    }
+
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = $result;
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
+sub list_phenotypes : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query;
+    $query = $self->_decode_json( $c ) if defined $c->request->param( 'data' );
+
+    my $rs = $c->model('DB::PhenotypeQuantity');
+
+    my ( $pattern, $pheno );
+
+    # We allow a query pattern to be used as a filter, but for the
+    # most part this will just dump all phenotype names.
+    if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ tr(*?)(%_);
+        $pheno   = $rs->search_related('type_id', { 'type_id.value' => { -like => $pattern }}, { distinct => 1 } );
+    }
+    else {
+        $pheno   = $rs->search_related('type_id', undef, { distinct => 1 });
+    }
+
+    my $result = {};
+    while ( my $ph = $pheno->next() ) {
+        $result->{ $ph->value() } = $ph->id();
+    }
+
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = $result;
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
 ###################
 # Private methods #
 ###################
