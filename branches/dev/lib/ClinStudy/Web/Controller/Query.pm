@@ -280,6 +280,9 @@ sub assay_drugs : Local {
     return;
 }
 
+## Note that the next few actions could all be implemented via the
+## index query action, but at a cost of greater complexity in the
+## client. Since these are core use cases we make them easier to use.
 sub list_tests : Local {
 
     my ( $self, $c ) = @_;
@@ -343,6 +346,87 @@ sub list_phenotypes : Local {
     $c->stash->{ 'success' } = JSON::Any->true();
     $c->stash->{ 'data' }    = $result;
 
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
+sub patient_entry_date : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    my $rs = $c->model('DB::Patient');
+
+    my ( $patient, $id );
+    if ( defined ( $id = $query->{trial_id} ) ) {
+        $patient = $rs->find({ trial_id => $id });
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: JSON parameters must include trial_id.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    if ( $patient ) {
+        $c->stash->{ 'success' } = JSON::Any->true();
+        $c->stash->{ 'data' }    = $patient->entry_date();  ## Does this work FIXME?
+    }
+    else {
+        $c->stash->{ 'success' }      = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: Patient "$id" not found in database.};
+    }
+
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
+sub visit_dates : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    my $rs = $c->model('DB::Visit');
+
+    my $patient;
+    my $trial_id  = $query->{trial_id};
+    if ( defined $trial_id ) {
+        $patient = $c->model('DB::Patient')->find({ trial_id => $trial_id });
+    }
+    else {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: JSON parameters must include trial_id.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    unless ( $patient ) {
+        $c->stash->{ 'success' }      = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error: Patient "$trial_id" not found in database.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    my $timepoint = $query->{timepoint};
+
+    my @visits;
+    if ( defined $timepoint ) {
+        @visits = $patient->search_related('visits',
+                                           { 'nominal_timepoint_id.value' => $timepoint },
+                                           { join => 'nominal_timepoint_id' })
+    }
+    else {
+        @visits = $patient->visits();
+    }
+
+    # Dates may be an empty list. Beware bad timepoint CVs.
+    my @dates = map { $_->date() } @visits;
+
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = \@dates;  # FIXME does this work?
     $c->detach( $c->view( 'JSON' ) );
 
     return;
