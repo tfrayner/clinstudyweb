@@ -49,6 +49,8 @@ sub BUILD {
 
     my ( $self, $params ) = @_;
 
+    warn("Deprecated class; please consider using ClinStudy::XML::Spreadsheet.");
+
     my $sheet = $self->sheet();
 
     my ( $minRow, $maxRow ) = $sheet->RowRange();
@@ -123,6 +125,9 @@ CIMR::SheetIterator - Simple iterator class for Excel spreadsheets
 
 =head1 DESCRIPTION
 
+NOTE that this class is now deprecated; the recommended way to parse
+spreadsheets is now using ClinStudy::XML::Spreadsheet.
+
 This is a fairly simple iterator class designed to make reading data
 from an Excel spreadsheet just that little bit more pleasurable. The
 constructor code assumes that the first line in the sheet is a header
@@ -144,7 +149,7 @@ the column headings found in the first line of the sheet.
 
 =head1 SEE ALSO
 
-Spreadsheet::ParseExcel
+ClinStudy::XML::Spreadsheet
 
 =head1 AUTHOR
 
