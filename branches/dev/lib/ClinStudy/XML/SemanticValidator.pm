@@ -219,19 +219,63 @@ ClinStudy::XML::SemanticValidator - Report on potential problems with a ClinStud
 =head1 SYNOPSIS
 
  use ClinStudy::XML::SemanticValidator;
- blah blah blah
+ my $validator = ClinStudy::XML::SemanticValidator->new(
+     database    => $schema,
+     schema_file => $xsd,
+ );
+ $validator->check_semantics( $xml );
+ 
+ if ( $validator->failure_flag() ) {
+     die("Semantic validation failed: \n\n" . $validator->report());
+ }
 
 =head1 DESCRIPTION
 
-Stub documentation for ClinStudy::XML::SemanticValidator, 
-created by template.el.
+This is a lightweight ClinStudyML validation module which checks the
+content of a document against a ClinStudyWeb database instance,
+reporting on any irregularities it finds.
 
-It looks like the author of the extension was negligent
-enough to leave the stub unedited.
+=head1 ATTRIBUTES
 
-=head2 EXPORT
+=head2 failure_flag
 
-None by default.
+Boolean flag indicating whether validation failed (TRUE=failure). If
+this is set then typically an subsequent database loading will
+fail. Given that failed loads should automatically roll back this is
+little more than a time-saver.
+
+=head2 warning_flag
+
+Boolean flag indicating whether validation generated any warnings
+(TRUE=warnings were generated). If this is set then subsequent loading
+may alter the database in ways you didn't want. This flag is therefore
+far more important than the failure_flag.
+
+=head2 report
+
+A string holding the validation report; this should give reasons for
+the above flags being set, so that the document can be inspected and
+modified if necessary.
+
+=head1 METHODS
+
+=head2 check_semantics
+
+The core method used to check the document contents. Takes as its
+argument the same XML::LibXML::Document object as is required by the
+Loader->load method.
+
+=head2 load_object
+
+Overridden loader method used to prevent any update or insert into the database.
+
+=head2 load_element
+
+Overridden loader method which contains much of the validation code.
+
+=head2 load_element_message
+
+Overridden loader method generating a user-friendly message.
 
 =head1 COPYRIGHT AND LICENSE
 
