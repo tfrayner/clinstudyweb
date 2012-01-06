@@ -28,6 +28,7 @@ use Config::YAML;
 use ClinStudy::ORM;
 use ClinStudy::XML::Loader;
 use ClinStudy::XML::AdminLoader;
+use ClinStudy::XML::SemanticValidator;
 
 sub parse_args {
 
@@ -73,6 +74,15 @@ my $root = $xml->getDocumentElement();
 my $loader_class = $root->nodeName() eq 'ClinStudyML'      ? 'ClinStudy::XML::Loader'
                  : $root->nodeName() eq 'ClinStudyAdminML' ? 'ClinStudy::XML::AdminLoader'
                  : die("Error: Unrecognised XML format.\n");
+
+if ( $loader_class eq 'ClinStudy::XML::Loader' ) {
+    my $validator = ClinStudy::XML::SemanticValidator->new(
+        database    => $schema,
+        schema_file => $xsd,
+    );
+    $validator->check_semantics( $xml )
+        or die("Semantic validation failed: \n\n" . $validator->report());
+}
 
 my $loader = $loader_class->new(
     database    => $schema,
