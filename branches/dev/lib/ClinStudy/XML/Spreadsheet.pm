@@ -42,7 +42,7 @@ has '_data'     => ( is       => 'rw',
                      required => 1,
                      default  => sub { [[]] } );
 
-has '_header'   => ( is       => 'rw',
+has 'header'   => ( is       => 'rw',
                      isa      => 'ArrayRef',
                      required => 1,
                      default  => sub { [[]] } );
@@ -75,11 +75,11 @@ sub BUILD {
     while ( my $row = shift @rows ) {
         my $hstr = join(q{}, map { defined $_ ? $_ : q{} } @$row);
         next HEADERROW if $hstr =~ /\A \s* \#/xms;
-        $self->_header( $row );
+        $self->header( $row );
         last HEADERROW;
     }
 
-    unless( scalar @{ $self->_header() } > 0 ) {
+    unless( scalar @{ $self->header() } > 0 ) {
         die("Error: Unable to find header row in file.");
     }
 
@@ -105,7 +105,7 @@ sub next_row {
     }
 
     my %row;
-    @row{ @{ $self->_header() } } = @{ $self->_data()->[ $num ] };
+    @row{ @{ $self->header() } } = @{ $self->_data()->[ $num ] };
 
     $self->_rownum($num + 1);
 
@@ -146,6 +146,15 @@ the comment character ("#") are ignored.
 
 The spreadsheet file to read. This can be in any format supported by
 the CPAN Spreadsheet::Read module (CSV, Excel, OpenOffice etc.).
+
+=head2 delimiter
+
+The delimiter to use for CSV-style formats.
+
+=head2 header
+
+An arrayref giving the file column headings (this can be used to check
+for e.g. file types).
 
 =head1 METHODS
 
