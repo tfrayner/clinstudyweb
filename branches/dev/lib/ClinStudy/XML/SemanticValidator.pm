@@ -61,6 +61,7 @@ sub load_object {
 
     my $obj = $rs->find( $hashref );
 
+    # These are never elements in their own right, so must be checked here.
     if ( $class eq 'ControlledVocab' ) {
         unless ( $obj ) {
             push @{ $BAD_CV{$hashref->{'category'}} }, $hashref->{'value'};
@@ -79,29 +80,10 @@ sub load_element {
     my $obj = $self->next::method( $element, $parent_ref );
     
     if ( $class eq 'Visit' ) {
-
-        # Check for pre-existing visits for this nominal timepoint, warn if present.
-        my $pid   = $parent_ref->{patient_id};
-        my $nt_cv = $element->getAttribute('nominal_timepoint');
-        if ( defined $pid && defined $nt_cv ) {
-
-            # This should never fail; $pid has only just been
-            # retrieved from the database by load_object().
-            my $patient = $self->database()->resultset('Patient')->find($pid)
-                or confess("Unable to retrieve patient with ID $pid");
-
-            my @visit_ids = map { $_->id() }
-                $patient->search_related('visits',
-                                         { 'nominal_timepoint_id.value' => $nt_cv },
-                                         { join => 'nominal_timepoint_id' });
-            
-            if ( scalar @visit_ids
-                     && ! ( defined $obj->id()
-                                && first { $_ == $obj->id() } @visit_ids ) ) {
-                warn("Warning: New visit for patient $pid duplicates"
-                         . " pre-existing nominal timepoint.\n")
-            }
-        }
+        $self->_apply_visit_checks( $element, $parent_ref, $obj );
+    }
+    elsif ( $class eq 'Sample' ) {
+        $self->_apply_sample_checks( $element, $parent_ref, $obj );
     }
 
     return $obj;
@@ -120,6 +102,66 @@ sub load_element_message {
         warn("Checking data for assay batch " . $element->getAttribute('name') . "...\n");
     }
     
+    return;
+}
+
+sub _apply_visit_checks {
+
+    my ( $self, $element, $parent_ref, $obj ) = @_;
+
+    # Check for pre-existing visits for this nominal timepoint, warn if present.
+    my $pid   = $parent_ref->{patient_id};
+    my $nt_cv = $element->getAttribute('nominal_timepoint');
+    if ( defined $pid && defined $nt_cv ) {
+
+        # This should never fail; $pid has only just been
+        # retrieved from the database by load_object().
+        my $patient = $self->database()->resultset('Patient')->find($pid)
+            or confess("Unable to retrieve patient with ID $pid");
+
+        my @visit_ids = map { $_->id() }
+            $patient->search_related('visits',
+                                     { 'nominal_timepoint_id.value' => $nt_cv },
+                                     { join => 'nominal_timepoint_id' });
+            
+        if ( scalar @visit_ids
+                 && ! ( defined $obj->id()
+                            && first { $_ == $obj->id() } @visit_ids ) ) {
+            warn("Warning: New visit for patient $pid duplicates"
+                     . " pre-existing nominal timepoint.\n")
+        }
+    }
+
+    return;
+}
+
+sub _apply_sample_checks {
+
+    my ( $self, $element, $parent_ref, $obj ) = @_;
+
+    # Check for pre-existing samples for this cell type, warn if present.
+    my $vid   = $parent_ref->{visit_id};
+    my $ct_cv = $element->getAttribute('cell_type');
+    if ( defined $vid && defined $ct_cv ) {
+
+        # This should never fail; $vid has only just been
+        # retrieved from the database by load_object().
+        my $visit = $self->database()->resultset('Visit')->find($vid)
+            or confess("Unable to retrieve visit with ID $vid");
+
+        my @sample_ids = map { $_->id() }
+            $visit->search_related('samples',
+                                   { 'cell_type_id.value' => $ct_cv },
+                                   { join => 'cell_type_id' });
+            
+        if ( scalar @sample_ids
+                 && ! ( defined $obj->id()
+                            && first { $_ == $obj->id() } @sample_ids ) ) {
+            warn("Warning: New sample for visit $vid duplicates"
+                     . " pre-existing cell type.\n")
+        }
+    }
+
     return;
 }
 
