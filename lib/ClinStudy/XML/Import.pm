@@ -467,6 +467,11 @@ values to update_or_create and a DBIx::Class::ResultSet. This method is split
 out like this so we can easily subclass and override the loading
 behaviour, e.g. for ControlledVocab.
 
+=head2 load_element_message
+
+Simple user-friendly message function; overridden in subclasses which
+might be doing something quite different (see e.g. SemanticValidator).
+
 =head1 EXPORT
 
 None by default.
