@@ -42,6 +42,23 @@ use Moose;
 
 extends 'ClinStudy::XML::Loader';
 
+has 'warning_flag' => ( is       => 'rw',
+                        isa      => 'Bool',
+                        required => 1,
+                        default  => 0, );
+
+has 'failure_flag' => ( is       => 'rw',
+                        isa      => 'Bool',
+                        required => 1,
+                        default  => 0, );
+
+has 'report'       => ( is       => 'rw',
+                        isa      => 'Str',
+                        required => 1,
+                        default  => q{} );
+
+{
+    
 my %BAD_CV;
 
 sub check_semantics {
@@ -50,7 +67,20 @@ sub check_semantics {
 
     $self->load($doc);
 
-    return ! scalar grep { defined $_ } values %BAD_CV;
+    if ( scalar grep { defined $_ } values %BAD_CV ) {
+        $self->_append_report("\nInvalid ControlledVocab terms found:\n\n");
+        foreach my $category (sort keys %BAD_CV) {
+            $self->_append_report("  $category:\n");
+            foreach my $value ( @{$BAD_CV{$category}} ) {
+                $self->_append_report("    $value\n");
+            }
+        }
+    }
+    else {
+        $self->_append_report("\nNo invalid ControlledVocab terms found.\n");
+    }
+
+    return ! $self->failure_flag;
 }
 
 sub load_object {
@@ -65,11 +95,14 @@ sub load_object {
     if ( $class eq 'ControlledVocab' ) {
         unless ( $obj ) {
             push @{ $BAD_CV{$hashref->{'category'}} }, $hashref->{'value'};
+            $self->failure_flag(1);
         }
     }
 
     return ClinStudy::XML::DummyObject->new( id => $obj ? $obj->id() : undef );
 }
+
+} # End of BAD_CV scope.
 
 sub load_element {
 
@@ -127,8 +160,9 @@ sub _apply_visit_checks {
         if ( scalar @visit_ids
                  && ! ( defined $obj->id()
                             && first { $_ == $obj->id() } @visit_ids ) ) {
-            warn("Warning: New visit for patient $pid duplicates"
-                     . " pre-existing nominal timepoint.\n")
+            $self->_append_report("Warning: New visit for patient $pid duplicates"
+                                      . " pre-existing nominal timepoint.\n");
+            $self->warning_flag(1);
         }
     }
 
@@ -157,33 +191,22 @@ sub _apply_sample_checks {
         if ( scalar @sample_ids
                  && ! ( defined $obj->id()
                             && first { $_ == $obj->id() } @sample_ids ) ) {
-            warn("Warning: New sample for visit $vid duplicates"
-                     . " pre-existing cell type.\n")
+            $self->_append_report("Warning: New sample for visit $vid duplicates"
+                                      . " pre-existing cell type.\n");
+            $self->warning_flag(1);
         }
     }
 
     return;
 }
 
-sub report {
+sub _append_report {
 
-    my ( $self ) = @_;
+    my ( $self, $str ) = @_;
 
-    my $report = q{};
-    if ( scalar grep { defined $_ } values %BAD_CV ) {
-        $report .= "Invalid ControlledVocab terms found:\n\n";
-        foreach my $category (sort keys %BAD_CV) {
-            $report .= "  $category:\n";
-            foreach my $value ( @{$BAD_CV{$category}} ) {
-                $report .= "    $value\n";
-            }
-        }
-    }
-    else {
-        $report .= "No invalid ControlledVocab terms found.\n";
-    }
+    $self->report( $self->report() . $str );
 
-    return $report;
+    return;
 }
 
 1;
