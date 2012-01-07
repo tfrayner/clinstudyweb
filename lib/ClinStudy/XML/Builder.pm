@@ -142,10 +142,11 @@ my %local_key_field = (
 
 # Note that this is identical to that in ClinStudy::XML::Dumper;
 my %irregular_plurals = (
-    AssayBatch  => 'AssayBatches',
-    Comorbidity => 'Comorbidities',
-    Diagnosis   => 'Diagnoses',
-    Study       => 'Studies',
+    AssayBatch        => 'AssayBatches',
+    Comorbidity       => 'Comorbidities',
+    Diagnosis         => 'Diagnoses',
+    PhenotypeQuantity => 'PhenotypeQuantities',
+    Study             => 'Studies',
 );
 
 sub _xml_escape {
