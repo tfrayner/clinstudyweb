@@ -45,8 +45,10 @@ sub read {
 
     my $ss = $self->spreadsheet();
 
+    my $pat_group = $self->find_or_create_group( 'Patients', $self->root() );
+
     while ( my $row = $ss->next_row() ) {
-        
+        $self->update_or_create_element('Patient', FIXME, $pat_group);
     }
 }
 
