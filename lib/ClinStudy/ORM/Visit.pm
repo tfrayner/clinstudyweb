@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Visit;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Visit
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Visit
+=head1 TABLE: C<visit>
 
 =cut
 
@@ -83,10 +87,50 @@ __PACKAGE__->add_columns(
   "has_infection",
   { data_type => "tinyint", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</date>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "date"]);
 
 =head1 RELATIONS
+
+=head2 disease_activity_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "disease_activity_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "disease_activity_id" },
+);
 
 =head2 drugs
 
@@ -99,6 +143,49 @@ Related object: L<ClinStudy::ORM::Drug>
 __PACKAGE__->has_many(
   "drugs",
   "ClinStudy::ORM::Drug",
+  { "foreign.visit_id" => "self.id" },
+  {},
+);
+
+=head2 nominal_timepoint_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "nominal_timepoint_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "nominal_timepoint_id" },
+);
+
+=head2 patient_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Patient>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "patient_id",
+  "ClinStudy::ORM::Patient",
+  { id => "patient_id" },
+);
+
+=head2 phenotype_quantities
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::PhenotypeQuantity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "phenotype_quantities",
+  "ClinStudy::ORM::PhenotypeQuantity",
   { "foreign.visit_id" => "self.id" },
   {},
 );
@@ -133,48 +220,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 patient_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Patient>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "patient_id",
-  "ClinStudy::ORM::Patient",
-  { id => "patient_id" },
-);
-
-=head2 disease_activity_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "disease_activity_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "disease_activity_id" },
-);
-
-=head2 nominal_timepoint_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "nominal_timepoint_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "nominal_timepoint_id" },
-);
-
 =head2 visit_data_files
 
 Type: has_many
@@ -206,8 +251,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2011-10-19 11:56:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7o6sR+ftjsJ5kI7w4/pO8w
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5OpCreiTOfL6K9ji1rHv3w
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
