@@ -126,6 +126,7 @@ my %local_key_field = (
     GraftFailure      => [ qw(date) ],
     Hospitalisation   => [ qw(date) ],
     Patient           => [ qw(trial_id) ],
+    PhenotypeQuantity => [ qw(type) ],
     PriorGroup        => [ qw(name type) ],
     PriorObservation  => [ qw(type value date) ],
     PriorTreatment    => [ qw(type) ],

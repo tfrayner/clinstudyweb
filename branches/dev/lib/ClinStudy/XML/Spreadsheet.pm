@@ -42,7 +42,7 @@ has '_data'     => ( is       => 'rw',
                      required => 1,
                      default  => sub { [[]] } );
 
-has 'header'   => ( is       => 'rw',
+has 'header'    => ( is       => 'rw',
                      isa      => 'ArrayRef',
                      required => 1,
                      default  => sub { [[]] } );
