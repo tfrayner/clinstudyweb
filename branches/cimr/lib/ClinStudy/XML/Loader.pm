@@ -92,6 +92,9 @@ my %external_value_map = (
                 ethnicity_id         => 'Ethnicity',
                 home_centre_id       => 'HomeCentre',
             },
+            PhenotypeQuantity => {
+                type_id              => 'PhenotypeQuantityType',
+            },
             PriorObservation => {
                 type_id              => 'ObservationType',
             },
@@ -194,9 +197,9 @@ sub _update_testresult_attrs {
     return;
 }
 
-sub load_element {
+sub load_element_message {
 
-    my  ( $self, $element, $parent_ref ) = @_;
+    my ( $self, $element ) = @_;
 
     my $class = $element->nodeName();
 
@@ -206,6 +209,17 @@ sub load_element {
     elsif ( $class eq 'AssayBatch' ) {
         warn("Importing data for assay batch " . $element->getAttribute('name') . "...\n");
     }
+    
+    return;
+}
+
+sub load_element {
+
+    my  ( $self, $element, $parent_ref ) = @_;
+
+    my $class = $element->nodeName();
+
+    $self->load_element_message( $element );
 
     my $rs = $self->database()->resultset($class)
         or die("Error: Unable to find a ResultSet for $class elements.");

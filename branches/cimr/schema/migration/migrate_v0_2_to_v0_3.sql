@@ -234,3 +234,57 @@ CREATE TABLE `visit_data_file_audit_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
+--
+-- Table structure for table `phenotype_quantity`
+--
+
+DROP TABLE IF EXISTS `phenotype_quantity`;
+CREATE TABLE `phenotype_quantity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `visit_id` int(11) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `value` decimal(12,5) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `visit_id` (`visit_id`,`type_id`),
+  KEY `visit_id_2` (`visit_id`),
+  KEY `type_id` (`type_id`),
+  CONSTRAINT `phenotype_quantity_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
+  CONSTRAINT `phenotype_quantity_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `controlled_vocab` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `phenotype_quantity_audit_history`
+--
+
+DROP TABLE IF EXISTS `phenotype_quantity_audit_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phenotype_quantity_audit_history` (
+  `audit_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `audit_change_id` int(11) NOT NULL,
+  `id` int(11) DEFAULT NULL,
+  `visit_id` int(11) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `value` decimal(12,5) DEFAULT NULL,
+  PRIMARY KEY (`audit_history_id`),
+  KEY `phenotype_quantity_audit_history_idx_audit_change_id` (`audit_change_id`),
+  CONSTRAINT `phenotype_quantity_audit_history_fk_audit_change_id` FOREIGN KEY (`audit_change_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `phenotype_quantity_audit_log`
+--
+
+DROP TABLE IF EXISTS `phenotype_quantity_audit_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phenotype_quantity_audit_log` (
+  `create_id` int(11) NOT NULL,
+  `delete_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `phenotype_quantity_audit_log_idx_create_id` (`create_id`),
+  KEY `phenotype_quantity_audit_log_idx_delete_id` (`delete_id`),
+  CONSTRAINT `phenotype_quantity_audit_log_fk_create_id` FOREIGN KEY (`create_id`) REFERENCES `changelog` (`ID`),
+  CONSTRAINT `phenotype_quantity_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

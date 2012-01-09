@@ -126,6 +126,7 @@ my %local_key_field = (
     GraftFailure      => [ qw(date) ],
     Hospitalisation   => [ qw(date) ],
     Patient           => [ qw(trial_id) ],
+    PhenotypeQuantity => [ qw(type) ],
     PriorGroup        => [ qw(name type) ],
     PriorObservation  => [ qw(type value date) ],
     PriorTreatment    => [ qw(type) ],
@@ -142,10 +143,11 @@ my %local_key_field = (
 
 # Note that this is identical to that in ClinStudy::XML::Dumper;
 my %irregular_plurals = (
-    AssayBatch  => 'AssayBatches',
-    Comorbidity => 'Comorbidities',
-    Diagnosis   => 'Diagnoses',
-    Study       => 'Studies',
+    AssayBatch        => 'AssayBatches',
+    Comorbidity       => 'Comorbidities',
+    Diagnosis         => 'Diagnoses',
+    PhenotypeQuantity => 'PhenotypeQuantities',
+    Study             => 'Studies',
 );
 
 sub _xml_escape {

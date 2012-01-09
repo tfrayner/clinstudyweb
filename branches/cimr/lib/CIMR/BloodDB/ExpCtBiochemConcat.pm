@@ -1,17 +1,21 @@
+use utf8;
 package CIMR::BloodDB::ExpCtBiochemConcat;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CIMR::BloodDB::ExpCtBiochemConcat
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-CIMR::BloodDB::ExpCtBiochemConcat
+=head1 TABLE: C<exp_ct_biochem_concat>
 
 =cut
 
@@ -180,6 +184,12 @@ __PACKAGE__->table("exp_ct_biochem_concat");
   size: 510
 
 =head2 growthhormone
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 510
+
+=head2 gst
 
   data_type: 'char'
   is_nullable: 1
@@ -490,6 +500,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 510 },
   "growthhormone",
   { data_type => "char", is_nullable => 1, size => 510 },
+  "gst",
+  { data_type => "char", is_nullable => 1, size => 510 },
   "hba1c",
   { data_type => "char", is_nullable => 1, size => 510 },
   "hdl_cholesterol",
@@ -573,12 +585,23 @@ __PACKAGE__->add_columns(
   "table_id",
   { data_type => "integer", is_nullable => 0, size => 20 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</table_id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2010-09-03 14:22:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cdGHjT1lR3TjXX8OqXf/xQ
+# Created by DBIx::Class::Schema::Loader v0.07014 @ 2011-11-21 14:32:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ckFCjWiuTu7SG0pT6Sg9+A
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

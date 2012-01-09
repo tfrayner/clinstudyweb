@@ -1,12 +1,12 @@
 use utf8;
-package ClinStudy::ORM::PriorObservation;
+package ClinStudy::ORM::PhenotypeQuantity;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-ClinStudy::ORM::PriorObservation
+ClinStudy::ORM::PhenotypeQuantity
 
 =cut
 
@@ -15,11 +15,11 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-=head1 TABLE: C<prior_observation>
+=head1 TABLE: C<phenotype_quantity>
 
 =cut
 
-__PACKAGE__->table("prior_observation");
+__PACKAGE__->table("phenotype_quantity");
 
 =head1 ACCESSORS
 
@@ -29,7 +29,7 @@ __PACKAGE__->table("prior_observation");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 patient_id
+=head2 visit_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -43,28 +43,21 @@ __PACKAGE__->table("prior_observation");
 
 =head2 value
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
-
-=head2 date
-
-  data_type: 'date'
-  is_nullable: 1
+  data_type: 'decimal'
+  is_nullable: 0
+  size: [12,5]
 
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "patient_id",
+  "visit_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "value",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-  "date",
-  { data_type => "date", is_nullable => 1 },
+  { data_type => "decimal", is_nullable => 0, size => [12, 5] },
 );
 
 =head1 PRIMARY KEY
@@ -79,21 +72,23 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
+=head1 UNIQUE CONSTRAINTS
 
-=head2 patient_id
+=head2 C<visit_id>
 
-Type: belongs_to
+=over 4
 
-Related object: L<ClinStudy::ORM::Patient>
+=item * L</visit_id>
+
+=item * L</type_id>
+
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "patient_id",
-  "ClinStudy::ORM::Patient",
-  { id => "patient_id" },
-);
+__PACKAGE__->add_unique_constraint("visit_id", ["visit_id", "type_id"]);
+
+=head1 RELATIONS
 
 =head2 type_id
 
@@ -109,10 +104,20 @@ __PACKAGE__->belongs_to(
   { id => "type_id" },
 );
 
+=head2 visit_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Visit>
+
+=cut
+
+__PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
+
 
 # Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:02gyHn5/IRVxPp6iP7Vawg
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RofJvrGTbWpeoyaCsuzjaw
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

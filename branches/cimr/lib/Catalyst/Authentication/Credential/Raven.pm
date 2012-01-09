@@ -207,7 +207,7 @@ sub authenticate {
     my $rstash = $c->stash->{raven_ticket} ||= {};
     $rstash->{complete} = $complete;
     if ($complete) {
-	for my $m qw(status success msg issue expire id auth sso url) {
+	for my $m ( qw(status success msg issue expire id auth sso url) ) {
 	    $rstash->{$m} = $aa->$m();
 	}
 	if ($aa->success) {

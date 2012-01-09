@@ -23,6 +23,14 @@ CREATE TABLE ct_biochemistry (
   ResName char(100),
   ResValue char(150)
 );
+CREATE TABLE ct_bloodbank (
+  Table_ID integer(20) not null primary key,
+  HospNo char(24),
+  ResDate timestamp,
+  ResTime timestamp,
+  ResName char(100),
+  ResValue char(150)
+);
 CREATE TABLE ct_haematology (
   Table_ID integer(20) not null primary key,
   HospNo char(24),
@@ -84,6 +92,7 @@ CREATE TABLE exp_ct_biochem_concat (
   GFR char(510),
   Glucose char(510),
   GrowthHormone char(510),
+  GST char(510),
   HbA1c char(510),
   HDL_cholesterol char(510),
   IgF char(510),
@@ -124,6 +133,49 @@ CREATE TABLE exp_ct_biochem_concat (
   UrineSodium char(510),
   UrineVMA char(510),
   VitaminB12 char(510),
+  Table_ID integer(20) not null primary key
+);
+CREATE TABLE exp_ct_bloodbank_concat (
+  HospNo char(24),
+  ResDate timestamp,
+  ResTime timestamp,
+  AntibodySpecificities1 char(510),
+  AntibodySpecificities2 char(510),
+  BloodGroup char(510),
+  BloodTransfusions char(510),
+  DeletedYN char(510),
+  DiseaseCodes char(510),
+  ElisaI char(510),
+  ElisaII char(510),
+  EthnicOrigin char(510),
+  Events char(510),
+  HLAA1 char(510),
+  HLAA2 char(510),
+  HLAB1 char(510),
+  HLAB2 char(510),
+  HLABw char(510),
+  HLAC1 char(510),
+  HLAC2 char(510),
+  HLADQ1 char(510),
+  HLADQ2 char(510),
+  HLADR1 char(510),
+  HLADR2 char(510),
+  LabCodeID char(510),
+  ListDate char(510),
+  LuminexI char(510),
+  LuminexII char(510),
+  PercentCLL char(510),
+  PercentCLLIgG char(510),
+  PercentCLLIgGstrong char(510),
+  PercentCLLstrong char(510),
+  PercentPBL char(510),
+  PercentPBLIgG char(510),
+  PercentPBLIgGstrong char(510),
+  PercentPBLstrong char(510),
+  Pregnancies char(510),
+  RowInsertDateTime char(510),
+  SpecimenID char(510),
+  UKTnumber char(510),
   Table_ID integer(20) not null primary key
 );
 CREATE TABLE exp_ct_haematol_concat (

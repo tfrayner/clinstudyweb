@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Assay;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Assay
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Assay
+=head1 TABLE: C<assay>
 
 =cut
 
@@ -62,9 +66,44 @@ __PACKAGE__->add_columns(
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("identifier", ["identifier"]);
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<filename>
+
+=over 4
+
+=item * L</filename>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("filename", ["filename"]);
+
+=head2 C<identifier>
+
+=over 4
+
+=item * L</identifier>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("identifier", ["identifier"]);
 
 =head1 RELATIONS
 
@@ -113,8 +152,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KNHov0fiE+xIl68LrG8eYQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ITL2s9+JzjzgBbjYNnUtFA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

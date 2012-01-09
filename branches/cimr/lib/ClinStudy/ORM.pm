@@ -1,3 +1,4 @@
+use utf8;
 package ClinStudy::ORM;
 
 # Created by DBIx::Class::Schema::Loader
@@ -11,8 +12,8 @@ use base 'DBIx::Class::Schema';
 __PACKAGE__->load_classes;
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:liMGy5aUIjW0p6MU46BPRg
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iz6r0t51vjbdKYOtgVi4aA
 
 __PACKAGE__->load_components("Schema::Journal");
 __PACKAGE__->journal_user( [ 'ClinStudy::ORM::User', {'foreign.id' => 'self.user_id'} ] );

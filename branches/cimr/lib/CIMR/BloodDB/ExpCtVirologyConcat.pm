@@ -1,17 +1,21 @@
+use utf8;
 package CIMR::BloodDB::ExpCtVirologyConcat;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CIMR::BloodDB::ExpCtVirologyConcat
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-CIMR::BloodDB::ExpCtVirologyConcat
+=head1 TABLE: C<exp_ct_virology_concat>
 
 =cut
 
@@ -173,11 +177,22 @@ __PACKAGE__->add_columns(
   "table_id",
   { data_type => "integer", is_nullable => 0, size => 20 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</table_id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("table_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07001 @ 2010-09-03 14:22:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rwxmzBUL1rdoL6iOp9Hjlg
+# Created by DBIx::Class::Schema::Loader v0.07014 @ 2011-11-21 13:51:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2i9l3bkonyTIvlZMyfOFhA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

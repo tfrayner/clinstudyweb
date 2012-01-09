@@ -58,11 +58,13 @@ sub BUILD {
         Sample          => 'name',
     });
 
+    # When updating, also fix the version in ClinStudy::XML::Builder.
     $self->irregular_plurals({
-        AssayBatch  => 'AssayBatches',
-        Comorbidity => 'Comorbidities',
-        Diagnosis   => 'Diagnoses',
-        Study       => 'Studies',
+        AssayBatch        => 'AssayBatches',
+        Comorbidity       => 'Comorbidities',
+        Diagnosis         => 'Diagnoses',
+        PhenotypeQuantity => 'PhenotypeQuantities',
+        Study             => 'Studies',
     });
 
     return;

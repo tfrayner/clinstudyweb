@@ -1,3 +1,4 @@
+use utf8;
 package CIMR::BloodDB;
 
 # Created by DBIx::Class::Schema::Loader
@@ -11,8 +12,8 @@ use base 'DBIx::Class::Schema';
 __PACKAGE__->load_classes;
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2010-09-03 13:57:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9TZW+IFbl097Y43EMgm/pQ
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2011-11-21 13:48:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WK1lQzpEaXk3HfzIzbX/hg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
