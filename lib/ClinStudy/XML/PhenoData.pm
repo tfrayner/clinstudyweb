@@ -26,6 +26,9 @@ package ClinStudy::XML::PhenoData;
 
 use Moose;
 
+use List::Util qw(first);
+use Carp;
+
 extends 'ClinStudy::XML::Builder';
 
 has 'spreadsheet' => ( is       => 'ro',
@@ -36,7 +39,17 @@ sub BUILD {
 
     my ( $self, $params ) = @_;
 
-    # Check the spreadsheet to make sure it has the required columns FIXME.
+    my @required = qw(Patient|trial_id Patient|entry_date Visit|date);
+
+    # Check the spreadsheet to make sure it has the required columns.
+    my @header = @{ $params->{'spreadsheet'}->header() };
+    foreach my $term ( @required ) {
+        unless ( first { $_ eq $term } @header ) {
+            croak(qq{Error: required heading "$term" not found in input spreadsheet.\n});
+        }
+    }
+
+    return;
 }
 
 sub read {
@@ -45,11 +58,26 @@ sub read {
 
     my $ss = $self->spreadsheet();
 
-    my $pat_group = $self->find_or_create_group( 'Patients', $self->root() );
-
     while ( my $row = $ss->next_row() ) {
-        $self->update_or_create_element('Patient', FIXME, $pat_group);
+        my $phash   = { trial_id   => delete $row->{'Patient|trial_id'},
+                        entry_date => delete $row->{'Patient|entry_date'} };
+        my $vhash   = { date       => delete $row->{'Visit|date'} };
+        my $patient = $self->update_or_create_element('Patient', $phash, $self->root());
+        my $visit   = $self->update_or_create_element('Visit', $vhash, $patient);
+
+        # Iterate over the rest of the data and create PhenotypeQuantities.
+        while ( my ( $name, $value ) = each %$row ) {
+            if ( $value && $value !~ /\A \s* \z/xms ) { # FIXME detect N/A etc.
+                $name  =~ s/\A \s* (.*?) \s* \z/$1/xms;
+                $value =~ s/\A \s* (.*?) \s* \z/$1/xms;
+                $self->update_or_create_element( 'PhenotypeQuantity',
+                                                 { type => $name, value => $value },
+                                                 $visit );
+            }
+        }
     }
+
+    return;
 }
 
 1;
