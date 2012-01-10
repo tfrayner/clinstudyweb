@@ -74,6 +74,16 @@
 [% INCLUDE app/test_result_list.tt2 %]
 </fieldset>
 
+<fieldset class="data_view">
+<legend>Phenotypes <span><a href="[% c.uri_for("/phenotypequantity/add_to_visit", object.id) | html %]">Add</a></span></legend>
+[% IF object.phenotype_quantities.blessed %]
+  [% SET objects = [ object.phenotype_quantities ] %]
+[% ELSE %]
+  [% SET objects = object.phenotype_quantities.list %]
+[% END %]
+[% INCLUDE app/phenotype_quantity_list.tt2 %]
+</fieldset>
+
 <fieldset>
 <legend>Data Files</legend>
 [% IF object.visit_data_files.blessed %]

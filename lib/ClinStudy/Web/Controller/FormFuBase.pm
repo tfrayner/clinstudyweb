@@ -519,6 +519,19 @@ sub _my_error_redirect {
     }
 }
 
+sub _derive_nametag {
+
+    my ( $self ) = @_;
+
+    my $name = $self->my_model_class()
+        or confess("Error: CIMR database class not set in PatientLinkedObject controller " . ref $self);
+    $name =~ s/\A DB:://xms;
+    $name =~ s/([a-z])([A-Z])/$1 $2/g;
+    $name = lc( $name );
+
+    return $name;
+}
+
 # These are just some sensible generic defaults which will often be
 # overridden in the subclasses.
 sub _set_my_editing_message {

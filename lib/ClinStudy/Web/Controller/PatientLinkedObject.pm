@@ -52,19 +52,6 @@ sub BUILD {
 # PRIVATE METHODS #
 ###################
 
-sub _derive_nametag {
-
-    my ( $self ) = @_;
-
-    my $name = $self->my_model_class()
-        or confess("Error: CIMR database class not set in PatientLinkedObject controller " . ref $self);
-    $name =~ s/\A DB:://xms;
-    $name =~ s/([a-z])([A-Z])/$1 $2/g;
-    $name = lc( $name );
-
-    return $name;
-}
-
 sub _set_my_updated_message {
 
     my ( $self, $c, $object, $object_id ) = @_;

@@ -1,0 +1,17 @@
+[% META title = 'Phenotype Quantity Details' %]
+
+<h3>Patient [% object.visit_id.patient_id.trial_id | html %] on visit date [% object.visit_id.date %]
+
+<fieldset class="data_view">
+<legend>Phenotype Quantity <span><a href="[% c.uri_for("/phenotypequantity/edit", object.id) | html %]">Edit</a></span></legend>
+<table class="horizontal">
+
+<tr><th>Quantity Type:</th>
+    <td>[% object.type_id.value | html %]</td></tr>
+
+<tr><th>Quantity Value:</th>
+    <td>[% object.value | html %]</td></tr>
+
+</table>
+
+</fieldset>
