@@ -107,6 +107,58 @@ sub _set_my_breadcrumbs {
     return \@fixed;
 }
 
+sub _set_my_updated_message {
+
+    my ( $self, $c, $object, $object_id ) = @_;
+
+    my $name = $self->_derive_nametag();
+
+    $c->flash->{message}
+        = sprintf("%s %s for %s on %s",
+                  ( $object_id && $object_id > 0 ? 'Updated ' : 'Added new '),
+                  $name,
+                  $object->visit_id->patient_id->trial_id,
+                  $object->visit_id->date);
+}
+
+sub _set_my_updating_message {
+
+    my ( $self, $c, $object, $object_id ) = @_;
+
+    my $name = $self->_derive_nametag();
+
+    $c->stash->{message}    # I think we do mean to use the stash here, rather than flash.
+        = sprintf("%s %s for %s on %s",
+                  ( $object_id && $object_id > 0 ? 'Updating a ' : 'Adding a new '),
+                  $name,
+                  $object->visit_id->patient_id->trial_id,
+                  $object->visit_id->date);
+}
+
+sub _set_my_deleted_message {
+
+    my ( $self, $c, $object ) = @_;
+
+    my $name = $self->_derive_nametag();
+    my $sort_field = $self->my_sort_field();
+
+    if ( defined $sort_field ) {
+        $c->flash->{message}
+            = sprintf("Deleted %s %s for %s on %s",
+                      $object->$sort_field,
+                      $name,
+                      $object->visit_id->patient_id->trial_id,
+                      $object->visit_id->date);
+    }
+    else {
+        $c->flash->{message}
+            = sprintf("Deleted %s for %s on %s",
+                      $name,
+                      $object->visit_id->patient_id->trial_id,
+                      $object->visit_id->date);
+    }
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>
