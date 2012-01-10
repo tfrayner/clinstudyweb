@@ -17,7 +17,7 @@
         <tr> 
         <td> [% assay.assay_batch_id.date | html %]</td>
         <td> [% assay.filename | html %] &nbsp; </td>
-        [% IF assay.channels.blessed %]
+        [% IF assay.channels_rs.count == 1 %]
           [% SET channels = [ assay.channels ] %]
         [% ELSE %]
           [% SET channels = assay.channels.list %]
