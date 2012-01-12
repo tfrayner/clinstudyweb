@@ -20,52 +20,30 @@
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
 csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
-                        uri, username, password, .opts=list(), curl=NULL ) {
+                        uri, username=NULL, password=NULL, .opts=list(), curl=NULL ) {
 
     require(rjson)
 
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
 
-    if ( missing(uri) || missing(username) || missing(password) )
-        stop("Error: uri, username and password are required")
+    if ( missing(uri) )
+        stop("Error: uri is required")
 
     if ( ! is.list(.opts) )
         stop("Error: .opts must be a list object")
 
-    needs.logout <- 0
-    if ( is.null(curl) ) {
-        curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
-        needs.logout <- 1
-    }
-
-    ## Strip off trailing /
-    uri <- gsub( '/+$', '', uri )
     if ( ! is.null(sample.name) )
-        quri <- paste(uri, '/query/sample_dump', sep='')            
+        action <- 'query/sample_dump'
     else
-        quri <- paste(uri, '/query/assay_dump', sep='')
+        action <- 'query/assay_dump'
 
     ## Undef (NULL) in queries is acceptable.
     query  <- list(filename=assay.file,
                    identifier=assay.barcode,
                    name=sample.name)
-    query  <- rjson::toJSON(query)
-    query  <- RCurl::curlEscape(query)
-    status <- RCurl::basicTextGatherer()
-    res    <- RCurl::curlPerform(url=quri,
-                                 postfields=paste('data', query, sep='='),
-                                 .opts=.opts,
-                                 curl=curl,
-                                 writefunction=status$update)
 
-    status  <- rjson::fromJSON(status$value())
-    if ( ! isTRUE(status$success) )
-        stop(status$errorMessage)
-
-    if ( needs.logout == 1 ) {
-        .csLogOutAuthenticatedHandle( uri, curl, .opts )
-    }
+    status <- .csWebExecuteQuery( query, uri, action, username, password, .opts, curl )
 
     .extractAttrs <- function(x) { class(x)!='list' }
 
@@ -118,5 +96,52 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     }
 
     return(attrs)
+}
+
+.csWebExecuteQuery <- function(query, uri, action,
+                               username=NULL, password=NULL, .opts=list(), curl=NULL ) {
+
+    # Assumes that all JSON query actions in the web server behave
+    # roughly the same; i.e. they consume JSON with a 'data' attribute
+    # containing the payload, and return JSON with a 'success' flag
+    # attribute, an 'errorMessage' attribute where necessary, and the
+    # actual returned data in a 'data' attribute. Returns the whole of
+    # that returned JSON-encoded list.
+
+    if ( is.null(username) ) { # Theoretically possible to connect without a password?
+        cred <- getCredentials()
+        if ( any(is.na(cred)) )
+            stop('User cancelled database connection.')
+        username <- cred$username
+        password <- cred$password
+    }
+
+    needs.logout <- 0
+    if ( is.null(curl) ) {
+        curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
+        needs.logout <- 1
+    }
+
+    uri  <- gsub( '/+$', '', uri )
+    quri <- paste(uri, action, sep='/')
+
+    query  <- rjson::toJSON(query)
+    query  <- RCurl::curlEscape(query)
+    status <- RCurl::basicTextGatherer()
+    res    <- RCurl::curlPerform(url=quri,
+                                 postfields=paste('data', query, sep='='),
+                                 .opts=.opts,
+                                 curl=curl,
+                                 writefunction=status$update)
+        
+    status  <- rjson::fromJSON(status$value())
+    if ( ! isTRUE(status$success) )
+        stop(status$errorMessage)
+
+    if ( needs.logout == 1 ) {
+        .csLogOutAuthenticatedHandle( uri, curl, .opts )
+    }
+
+    return(status)
 }
 
