@@ -305,7 +305,15 @@ sub list_tests : Local {
     }
 
     my $result = {};
+    TEST:
     while ( my $test = $tests->next() ) {
+
+        # Skip tests which are children of other tests (unless specifically requested).
+        unless ( $query->{retrieve_all} ) {
+            next TEST if $test->search_related('test_results')
+                              ->search_related('test_aggregation_test_result_ids')->count();
+        }
+
         $result->{ $test->name() } = $test->id();
     }
 
