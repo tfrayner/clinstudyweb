@@ -39,3 +39,22 @@ csWebTestNames <- function (uri, username=NULL, password=NULL, pattern=NULL,
     status$data
 }
 
+csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
+                             .opts=list(), curl=NULL ) {
+
+    require(rjson)
+
+    if ( missing(uri) )
+        stop("Error: uri is required")
+
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
+
+    query  <- list( pattern=pattern )
+
+    status <- .csWebExecuteQuery( query, uri, 'query/list_phenotypes', username, password, .opts, curl )
+
+    ## FIXME do something with this.
+    status$data
+}
+
