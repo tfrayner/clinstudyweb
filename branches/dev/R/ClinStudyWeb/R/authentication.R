@@ -25,6 +25,8 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     if ( ! capabilities()['X11'] )
         stop("Error: X11 device is not available.")
 
+    require(tcltk)
+
     username <- returnValOnCancel
     password <- returnValOnCancel
 
@@ -75,7 +77,7 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     tkpack(f.entries, side='top')
     tkpack(f.buttons, anchor='se')
     
-    tkfocus(dlg)
+    tkfocus(e.user)
     tkbind(dlg, "<Destroy>", function() tkgrab.release(dlg))
     tkbind(e.user, "<Return>", onOK)
     tkbind(e.pass, "<Return>", onOK)
