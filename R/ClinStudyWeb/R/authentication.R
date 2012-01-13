@@ -20,7 +20,7 @@
 ## Code copied from
 ## http://bioinf.wehi.edu.au/~wettenhall/RTclTkExamples/modalDialog.html
 ## and modified.
-getCredentials <- function(title='Database Authentication', entryWidth=30, returnValOnCancel=NA) {
+getCredentials <- function(title='ClinStudyWeb Authentication', entryWidth=30, returnValOnCancel=NA) {
 
     if ( ! capabilities()['X11'] )
         stop("Error: X11 device is not available.")
@@ -46,6 +46,7 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
 
     dlg <- tktoplevel()
 
+    tkwm.geometry(dlg, .calcTkWmGeometry(350,130))
     tkwm.deiconify(dlg)
     tkgrab.set(dlg)
     tkfocus(dlg)
@@ -128,3 +129,10 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return()
 }
 
+.calcTkWmGeometry <- function( width, height ) {
+
+    px <- as.numeric(tkwinfo('screenwidth', '.'))
+    py <- as.numeric(tkwinfo('screenheight', '.'))
+
+    sprintf('%dx%d+%d+%d', width, height, (px/2)-(width/2), (py/2)-(height/2))
+}
