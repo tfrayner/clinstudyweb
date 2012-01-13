@@ -598,21 +598,22 @@ sub dump_test_results : Private {
 
     my ( $self, $c, $visit, $query ) = @_;
 
-    my ( $ids, @test_results );
-    if ( $ids = $query->{'test_ids'} ) {
+    my ( $q, @test_results );
+    if ( $q = $query->{'test_ids'} ) {
         @test_results = $visit->search_related('test_results', {
-            test_id => { -in => $ids },
+            test_id => { -in => $q },
         });
     }
-    elsif ( $ids = $query->{'test_names'} ) {        
+    elsif ( $q = $query->{'test_names'} ) {        
         @test_results = $visit->search_related('test_results', {
-            'test_id.name' => { -in => $ids },
+            'test_id.name' => { -in => $q },
         }, { join => 'test_id' });
     }
-    elsif ( $ids = $query->{'test_pattern'} ) {
-        $ids =~ tr/*?/%_/;
+    elsif ( $q = $query->{'test_pattern'} ) {
+        $q =~ s/([_%])/\\$1/g;
+        $q =~ tr/*?/%_/;
         @test_results = $visit->search_related('test_results', {
-            'test_id.name' => { -like => $ids },
+            'test_id.name' => { -like => $q },
         }, { join => 'test_id' });
     }
 
@@ -623,21 +624,22 @@ sub dump_phenotype_quantities : Private {
 
     my ( $self, $c, $visit, $query ) = @_;
 
-    my ( $ids, @phenotypes );
-    if ( $ids = $query->{'phenotype_ids'} ) {
+    my ( $q, @phenotypes );
+    if ( $q = $query->{'phenotype_ids'} ) {
         @phenotypes = $visit->search_related('phenotype_quantities', {
-            type_id => { -in => $ids },
+            type_id => { -in => $q },
         });
     }
-    elsif ( $ids = $query->{'phenotype_names'} ) {        
+    elsif ( $q = $query->{'phenotype_names'} ) {        
         @phenotypes = $visit->search_related('phenotype_quantities', {
-            'type_id.value' => { -in => $ids },
+            'type_id.value' => { -in => $q },
         }, { join => 'type_id' });
     }
-    elsif ( $ids = $query->{'phenotype_pattern'} ) {
-        $ids =~ tr/*?/%_/;
+    elsif ( $q = $query->{'phenotype_pattern'} ) {
+        $q =~ s/([_%])/\\$1/g;
+        $q =~ tr/*?/%_/;
         @phenotypes = $visit->search_related('phenotype_quantities', {
-            'type_id.value' => { -like => $ids },
+            'type_id.value' => { -like => $q },
         }, { join => 'type_id' });
     }
 
