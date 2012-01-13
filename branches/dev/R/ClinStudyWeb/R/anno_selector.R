@@ -58,26 +58,30 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list()) {
 
     require(tcltk)
 
-    testnames <- testnames[ order(names(testnames)) ]
+    testnames  <- testnames[ order(names(testnames)) ]
+    phenotypes <- phenotypes[ order(names(phenotypes)) ]
 
     dlg <- tktoplevel()
+
+    tkwm.geometry(dlg, .calcTkWmGeometry(550, 410))
+    tktitle(dlg) <- 'ClinStudyWeb Annotation Selection'
 
     f.listbox <- tkframe(dlg, borderwidth=10)
     scr.tests <- tkscrollbar(f.listbox, repeatinterval=5,
                              command=function(...) tkyview(tl.tests, ...))
-    tl.tests  <- tklistbox(f.listbox, height=10, selectmode="extended", exportselection=0,
+    tl.tests  <- tklistbox(f.listbox, height=20, width=30, selectmode="extended", exportselection=0,
                            yscrollcommand=function(...) tkset(scr.tests, ...), background="white")
 
     scr.pheno <- tkscrollbar(f.listbox, repeatinterval=5,
                              command=function(...) tkyview(tl.pheno, ...))
-    tl.pheno  <- tklistbox(f.listbox, height=10, selectmode="extended", exportselection=0,
+    tl.pheno  <- tklistbox(f.listbox, height=20, width=30, selectmode="extended", exportselection=0,
                            yscrollcommand=function(...) tkset(scr.pheno, ...), background="white")
 
-    tkgrid(tklabel(f.listbox, text="Select Tests to retrieve:"), tklabel(f.listbox, text=""),
-           tklabel(f.listbox, text="Select Phenotypes to retrieve:"))
+    tkgrid(tklabel(f.listbox, text="Tests to retrieve:"), tklabel(f.listbox, text=""),
+           tklabel(f.listbox, text="Phenotypes to retrieve:"))
     tkgrid(tl.tests, scr.tests, tl.pheno, scr.pheno)
-    tkgrid.configure(scr.tests, rowspan=10, sticky='nsw')
-    tkgrid.configure(scr.pheno, rowspan=10, sticky='nsw')
+    tkgrid.configure(scr.tests, rowspan=20, sticky='nsw')
+    tkgrid.configure(scr.pheno, rowspan=20, sticky='nsw')
 
     for ( n in 1:length(testnames))
         tkinsert(tl.tests, 'end', names(testnames)[n])
