@@ -23,8 +23,6 @@
 csWebTestNames <- function (uri, username=NULL, password=NULL, pattern=NULL,
                             retrieve.all=FALSE, .opts=list(), curl=NULL ) {
 
-    require(rjson)
-
     if ( missing(uri) )
         stop("Error: uri is required")
 
@@ -42,8 +40,6 @@ csWebTestNames <- function (uri, username=NULL, password=NULL, pattern=NULL,
 csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
                              .opts=list(), curl=NULL ) {
 
-    require(rjson)
-
     if ( missing(uri) )
         stop("Error: uri is required")
 
@@ -58,3 +54,39 @@ csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
     status$data
 }
 
+csAnnoPicker <- function (testnames, phenotypes) {
+
+    require(tcltk)
+
+    testnames <- testnames[ order(names(testnames)) ]
+
+    dlg <- tktoplevel()
+
+    scr <- tkscrollbar(dlg, repeatinterval=5,
+                       command=function(...) tkyview(tl, ...))
+
+    tl <- tklistbox(dlg, height=10, selectmode="extended",
+                    yscrollcommand=function(...) tkset(scr, ...), background="white")
+
+    tkgrid(tklabel(dlg, text="Select Tests to retrieve."))
+    tkgrid(tl, scr)
+    tkgrid.configure(scr, rowspan=10, sticky='nsw')
+    for ( n in 1:length(testnames))
+        tkinsert(tl, 'end', names(testnames)[n])
+
+    testChoice  <- list()
+    phenoChoice <- list()
+
+    OnOK <- function() {
+        testChoice <<- testnames[ as.numeric(tkcurselection(tl))+1 ]
+        tkdestroy(dlg)
+    }
+
+    b.OK <- tkbutton(dlg, text="    OK    ", command=OnOK)
+    tkgrid(b.OK)
+    tkfocus(dlg)
+
+    tkwait.window(dlg)
+
+    return(list(tests=testChoice, phenotypes=phenoChoice))
+}
