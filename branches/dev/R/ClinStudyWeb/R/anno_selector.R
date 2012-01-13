@@ -54,7 +54,7 @@ csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
     status$data
 }
 
-csAnnoPicker <- function (testnames, phenotypes) {
+csAnnoPicker <- function (testnames=list(), phenotypes=list()) {
 
     require(tcltk)
 
@@ -62,28 +62,42 @@ csAnnoPicker <- function (testnames, phenotypes) {
 
     dlg <- tktoplevel()
 
-    scr <- tkscrollbar(dlg, repeatinterval=5,
-                       command=function(...) tkyview(tl, ...))
+    f.listbox <- tkframe(dlg, borderwidth=10)
+    scr.tests <- tkscrollbar(f.listbox, repeatinterval=5,
+                             command=function(...) tkyview(tl.tests, ...))
+    tl.tests  <- tklistbox(f.listbox, height=10, selectmode="extended", exportselection=0,
+                           yscrollcommand=function(...) tkset(scr.tests, ...), background="white")
 
-    tl <- tklistbox(dlg, height=10, selectmode="extended",
-                    yscrollcommand=function(...) tkset(scr, ...), background="white")
+    scr.pheno <- tkscrollbar(f.listbox, repeatinterval=5,
+                             command=function(...) tkyview(tl.pheno, ...))
+    tl.pheno  <- tklistbox(f.listbox, height=10, selectmode="extended", exportselection=0,
+                           yscrollcommand=function(...) tkset(scr.pheno, ...), background="white")
 
-    tkgrid(tklabel(dlg, text="Select Tests to retrieve."))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=10, sticky='nsw')
+    tkgrid(tklabel(f.listbox, text="Select Tests to retrieve:"), tklabel(f.listbox, text=""),
+           tklabel(f.listbox, text="Select Phenotypes to retrieve:"))
+    tkgrid(tl.tests, scr.tests, tl.pheno, scr.pheno)
+    tkgrid.configure(scr.tests, rowspan=10, sticky='nsw')
+    tkgrid.configure(scr.pheno, rowspan=10, sticky='nsw')
+
     for ( n in 1:length(testnames))
-        tkinsert(tl, 'end', names(testnames)[n])
+        tkinsert(tl.tests, 'end', names(testnames)[n])
+    for ( n in 1:length(phenotypes))
+        tkinsert(tl.pheno, 'end', names(phenotypes)[n])
 
     testChoice  <- list()
     phenoChoice <- list()
 
     OnOK <- function() {
-        testChoice <<- testnames[ as.numeric(tkcurselection(tl))+1 ]
+        testChoice  <<- testnames[ as.numeric(tkcurselection(tl.tests))+1 ]
+        phenoChoice <<- phenotypes[ as.numeric(tkcurselection(tl.pheno))+1 ]
         tkdestroy(dlg)
     }
 
-    b.OK <- tkbutton(dlg, text="    OK    ", command=OnOK)
-    tkgrid(b.OK)
+    f.button <- tkframe(dlg, borderwidth=10)
+    b.OK  <- tkbutton(f.button, text="    OK    ", command=OnOK)
+    tkpack(b.OK, side='bottom')
+    tkpack(f.listbox, side='top')
+    tkpack(f.button, side='bottom')
     tkfocus(dlg)
 
     tkwait.window(dlg)
