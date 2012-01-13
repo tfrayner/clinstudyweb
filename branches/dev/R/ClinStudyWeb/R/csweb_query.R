@@ -84,12 +84,20 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         }
     }
 
-    ## We handle TestResults in much the same way.
+    ## We handle TestResults and PhenotypeQuantities in much the same way.
     tr <- sample$test_result
     if ( !is.null(tr) & length(tr) ) {
         for ( n in 1:length(tr) ) {
             attrname <- paste('test', names(tr)[n], sep='.')
             attrs[[attrname]]<-as.character(tr[n])
+        }
+    }
+
+    ph <- sample$phenotype
+    if ( !is.null(ph) & length(ph) ) {
+        for ( n in 1:length(ph) ) {
+            attrname <- paste('pheno', names(ph)[n], sep='.')
+            attrs[[attrname]]<-as.numeric(ph[n]) # All phenotypes are currently numeric.
         }
     }
 
