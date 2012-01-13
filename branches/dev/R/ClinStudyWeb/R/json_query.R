@@ -22,6 +22,7 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, uri, .opts=
                            'query', uri, .opts, cred ) )
 }
 
+## FIXME merge this and .csWebExecuteQuery
 .csJSONGeneric <- function( query, action, uri, .opts=list(), cred=NULL ) {
 
     ## Strip the trailing slash; we will be concatenating actions later.

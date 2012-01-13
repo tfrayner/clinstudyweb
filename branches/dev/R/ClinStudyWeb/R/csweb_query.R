@@ -22,8 +22,6 @@
 csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
                         uri, username=NULL, password=NULL, .opts=list(), curl=NULL ) {
 
-    require(rjson)
-
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
 
@@ -98,6 +96,7 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     return(attrs)
 }
 
+## FIXME merge this and csJSONGeneric
 .csWebExecuteQuery <- function(query, uri, action,
                                username=NULL, password=NULL, .opts=list(), curl=NULL ) {
 
@@ -107,6 +106,8 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     # attribute, an 'errorMessage' attribute where necessary, and the
     # actual returned data in a 'data' attribute. Returns the whole of
     # that returned JSON-encoded list.
+
+    require(rjson)
 
     if ( is.null(username) ) { # Theoretically possible to connect without a password?
         cred <- getCredentials()
