@@ -64,6 +64,8 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list()) {
     dlg <- tktoplevel()
 
     tkwm.geometry(dlg, .calcTkWmGeometry(550, 410))
+    tkwm.geometry(dlg, '') # Shrink back to default size
+
     tktitle(dlg) <- 'ClinStudyWeb Annotation Selection'
 
     f.listbox <- tkframe(dlg, borderwidth=10)

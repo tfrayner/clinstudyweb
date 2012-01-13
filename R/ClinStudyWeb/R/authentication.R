@@ -47,6 +47,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication', entryWidth=30, r
     dlg <- tktoplevel()
 
     tkwm.geometry(dlg, .calcTkWmGeometry(350,130))
+    tkwm.geometry(dlg, '') # Shrink back to default size
     tkwm.deiconify(dlg)
     tkgrab.set(dlg)
     tkfocus(dlg)
