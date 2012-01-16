@@ -20,7 +20,7 @@
 ## Also public, this method is non-interactive and just returns the
 ## annotation for a given file or barcode.
 csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
-                        uri, username=NULL, password=NULL, .opts=list(), curl=NULL ) {
+                        uri, username=NULL, password=NULL, .opts=list(), curl=NULL, query=list() ) {
 
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
@@ -37,9 +37,9 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         action <- 'query/assay_dump'
 
     ## Undef (NULL) in queries is acceptable.
-    query  <- list(filename=assay.file,
-                   identifier=assay.barcode,
-                   name=sample.name)
+    query$filename=assay.file
+    query$identifier=assay.barcode
+    query$name=sample.name
 
     status <- .csWebExecuteQuery( query, uri, action, username, password, .opts, curl )
 
@@ -117,16 +117,17 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
 
     require(rjson)
 
-    if ( is.null(username) ) { # Theoretically possible to connect without a password?
-        cred <- getCredentials()
-        if ( any(is.na(cred)) )
-            stop('User cancelled database connection.')
-        username <- cred$username
-        password <- cred$password
-    }
-
     needs.logout <- 0
     if ( is.null(curl) ) {
+
+        if ( is.null(username) ) { # Theoretically possible to connect without a password?
+            cred <- getCredentials()
+            if ( any(is.na(cred)) )
+                stop('User cancelled database connection.')
+            username <- cred$username
+            password <- cred$password
+        }
+
         curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
         needs.logout <- 1
     }

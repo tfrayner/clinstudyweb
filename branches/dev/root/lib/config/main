@@ -13,7 +13,7 @@
    # define a data structure to hold sitewide data
    site = {
      title     => 'Welcome to ClinStudyWeb',
-     copyright => '2009-2010 Tim F. Rayner, University of Cambridge',
+     copyright => '2009-2012 Tim F. Rayner, University of Cambridge',
    };
 
    # load up any other configuration items 

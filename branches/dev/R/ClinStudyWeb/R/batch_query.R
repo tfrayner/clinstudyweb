@@ -18,23 +18,28 @@
 ## $Id$
 
 ## Classic AffyBatch-based workflow.
-csWebAffyBatch <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
-    return( .csWebEset( affy::ReadAffy, files, uri, .opts, cred, ... ) )
+csWebAffyBatch <- function (files, uri, .opts=list(), cred=NULL,
+                            pattern=NULL, categories=NULL, ... ) {
+    return( .csWebEset(affy::ReadAffy, files, uri, .opts, cred,
+                       pattern=pattern, categories=categories, ... ) )
 }
 
 ## Newer, recommended Oligo-based workflow.
-csWebGeneFeatureSet <- function( files, uri, .opts=list(), cred=NULL, ... ) {
-    return( .csWebEset( oligo::read.celfiles, files, uri, .opts, cred, ... ) )
+csWebGeneFeatureSet <- function(files, uri, .opts=list(), cred=NULL,
+                                pattern=NULL, categories=NULL, ... ) {
+    return( .csWebEset(oligo::read.celfiles, files, uri, .opts, cred,
+                       pattern=pattern, categories=categories, ... ) )
 }
 
-.csWebEset <- function ( read.fun, files, uri, .opts=list(), cred=NULL, ... ) {
+.csWebEset <- function (read.fun, files, uri, .opts=list(), cred=NULL,
+                        pattern=NULL, categories=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
 
     files <- as.character(files)
 
-    p <- .filenamesToPData( files, uri, .opts, cred )
+    p <- .filenamesToPData( files, uri, .opts, cred, pattern=pattern, categories=categories )
 
     ## Merge the lists into a data frame, and create the phenoData object.
     message("Reading CEL files...")
@@ -45,14 +50,15 @@ csWebGeneFeatureSet <- function( files, uri, .opts=list(), cred=NULL, ... ) {
     return(cels)
 }
 
-csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
+csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
+                         pattern=NULL, categories=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
 
     files <- as.character(files)
 
-    targets <- .filenamesToTargets( files, uri, .opts, cred )
+    targets <- .filenamesToTargets( files, uri, .opts, cred, pattern=pattern, categories=categories )
     message("Reading data files...")
 
     RG <- read.maimages(targets, ...)
@@ -202,7 +208,49 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(p)
 }
 
-.batchDBQuery <- function( files, samples=NULL, uri, .opts=list(), cred, curl=NULL ) {
+.collateAnnotationRequest <- function( pattern, categories, uri, .opts=list(), curl ) {
+
+    ## We're pretty much assuming that the curl object exists and is
+    ## authenticated by this point; hence we're not bothering with username and password.
+    
+    if ( ! ( missing(pattern) | is.null(pattern) ) ) {
+        qry <- list()
+        qry$test_ids <- csWebTestNames(uri=uri, pattern=pattern,
+                                       .opts=.opts, curl=curl)
+        qry$phenotype_ids <- csWebPhenotypes(uri=uri, pattern=pattern,
+                                             .opts=.opts, curl=curl)
+        qry <- lapply(qry, unlist)
+    }
+    else {
+        db.tests <- csWebTestNames(uri=uri, .opts=.opts, curl=curl)
+        db.pheno <- csWebPhenotypes(uri=uri, .opts=.opts, curl=curl)
+
+        if ( missing(categories) | is.null(categories) ) {
+            qry <- lapply(lapply(csAnnoPicker(db.tests, db.pheno), unlist), as.integer)
+            names(qry) <- sub('s$', '_ids', names(qry))
+        }
+        else {
+            avail <- c( names(db.tests), names(db.pheno) )
+            w <- ! categories %in% avail
+            if ( any( w ) ) {
+                stop(sprintf("Error: Requested annotation not found in database:\n %s\n\nPlease select from this list:\n\n%s\n"), paste(categories[w], sep="\n"), paste(avail, sep="\n"))
+            }
+
+            qry <- list()
+            qry$test_ids <- unlist(db.tests)[ names(db.tests) %in% categories]
+            qry$phenotype_ids <- unlist(db.pheno)[ names(db.pheno) %in% categories]
+        }
+    }
+
+    ## Make sure we only have the IDs here; rjson::toJSON does funny things with named vectors.
+    qry <- lapply(qry, as.integer)
+
+    return(qry)
+}        
+
+.batchDBQuery <- function(files, samples=NULL,
+                          categories=NULL, pattern=NULL,
+                          uri, .opts=list(), cred, curl=NULL ) {
 
     ## We use tcltk to generate a nice echo-free password entry field.
     if ( is.null(cred) ) {
@@ -211,16 +259,20 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
             stop('User cancelled database connection.')
     }
 
+    ## Quick check to ensure our credentials look okay.
+    stopifnot( is.list(cred) )
+    stopifnot( all( c('username', 'password') %in% names(cred) ) )
+    stopifnot( ! any(is.na(cred)) )
+
     needs.logout <- 0
     if ( is.null(curl) ) {
         curl <- .csGetAuthenticatedHandle( uri, cred$username, cred$password, .opts )
         needs.logout <- 1
     }
 
-    ## Quick check to ensure our credentials look okay.
-    stopifnot( is.list(cred) )
-    stopifnot( all( c('username', 'password') %in% names(cred) ) )
-    stopifnot( ! any(is.na(cred)) )
+    ## Unless specified otherwise, retrieve the desired annotation terms.
+    anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories,
+                                          uri=uri, .opts=.opts, curl=curl)
 
     ## Strip out file paths which won't have been stored in the database.
     files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
@@ -231,11 +283,11 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     if ( is.null(samples) )
         p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL, sample.name=NULL,
                     uri=uri, username=cred$username, password=cred$password,
-                    .opts=.opts, curl=curl)
+                    .opts=.opts, curl=curl, query=anno.qry)
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL, assay.barcode=NULL,
                     uri=uri, username=cred$username, password=cred$password,
-                    .opts=.opts, curl=curl)
+                    .opts=.opts, curl=curl, query=anno.qry)
 
     if ( needs.logout == 1 ) {
         .csLogOutAuthenticatedHandle( uri, curl, .opts )
@@ -244,18 +296,18 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(p)
 }
 
-.reannotateEset <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL ) {
+.reannotateEset <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL, ... ) {
 
     ## ExpressionSet or AffyBatch.
     if ( is.null(sample.column) ) {
         files <- as.character(sampleNames(data))
-        p <- .filenamesToPData(files, uri, .opts, cred)
+        p <- .filenamesToPData(files, uri, .opts, cred, ...)
         stopifnot(all(as.character(p$filename) == as.character(files)))
     } else {
         stopifnot( sample.column %in% varLabels(data) )
         samples <- as.character(pData(data)[ , sample.column ])
         stopifnot( all( ! is.na(samples) ) )
-        p <- .samplesToPData(samples, uri, .opts, cred)
+        p <- .samplesToPData(samples, uri, .opts, cred, ...)
         stopifnot(all(as.character(p$sample_name) == as.character(samples)))
         rownames(p) <- sampleNames(data)
     }
@@ -265,19 +317,19 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
     return(data)
 }
 
-.reannotateMAList <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL ) {
+.reannotateMAList <- function( data, sample.column=NULL, uri, .opts=list(), cred=NULL, ... ) {
 
     ## MAList or RGList, both have similar targets structure.
     if ( is.null(sample.column) ) {
         files <- as.character(data$targets$FileName)
         stopifnot( all( ! is.na(files) ) )
-        p <- .filenamesToTargets(files, uri, .opts, cred)
+        p <- .filenamesToTargets(files, uri, .opts, cred, ...)
         stopifnot(all(as.character(p$FileName) == files))
     } else {
         stopifnot( sample.column %in% colnames(data$targets) )
         samples <- as.character(data$targets[, sample.column ])
         stopifnot( all( ! is.na(samples) ) )
-        p <- .samplesToTargets(samples, uri, .opts, cred)
+        p <- .samplesToTargets(samples, uri, .opts, cred, ...)
         stopifnot(all(as.character(p$sample_name) == samples))
         rownames(p) <- rownames(data$targets)
     }
@@ -288,7 +340,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL, ... ) {
 }
 
 ## Define a series of functions for various object signatures.
-setGeneric('csWebReannotate', def=function(data, sample.column=NULL, uri, .opts=list(), cred=NULL)
+setGeneric('csWebReannotate', def=function(data, sample.column=NULL, uri, .opts=list(), cred=NULL, ...)
            standardGeneric('csWebReannotate'))
 
 setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
