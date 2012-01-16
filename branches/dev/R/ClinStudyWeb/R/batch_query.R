@@ -66,12 +66,12 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
     return(RG)
 }
 
-.filenamesToPData <- function( files, ... ) {
+.filenamesToPData <- function( files, uri, .opts=list(), cred=NULL, ... ) {
 
     if ( ! length(files) > 1 )
         stop("No filenames provided to function.")
     
-    p <- .batchDBQuery( files=files, samples=NULL, ... )
+    p <- .batchDBQuery( files=files, samples=NULL, uri=uri, .opts=.opts, cred=cred, ... )
     p <- .conformLists(p)
     p <- lapply(p, unlist)
 
@@ -94,12 +94,12 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
     return(p)
 }
 
-.samplesToPData <- function( samples, ... ) {
+.samplesToPData <- function( samples, uri, .opts=list(), cred=NULL, ... ) {
 
     if ( ! length(samples) > 1 )
         stop("No sample names provided to function.")
 
-    p <- .batchDBQuery( samples=samples, files=NULL, ... )
+    p <- .batchDBQuery( samples=samples, files=NULL, uri=uri, .opts=.opts, cred=cred, ... )
     p <- .conformLists(p)
     p <- lapply(p, unlist)
     p <- data.frame(do.call('rbind', p))
@@ -131,12 +131,12 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
     return(x)
 }
 
-.filenamesToTargets <- function( files, ... ) {
+.filenamesToTargets <- function( files, uri, .opts=list(), cred=NULL, ... ) {
 
     if ( ! length(files) > 1 )
         stop("No filenames provided to function.")
     
-    p <- .batchDBQuery( files=files, samples=NULL, ... )
+    p <- .batchDBQuery( files=files, samples=NULL, uri=uri, .opts=.opts, cred=cred, ... )
 
     p <- lapply(p, .annotateTargetLabels)
     p <- .conformLists(p)
@@ -165,14 +165,14 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
     return(p)
 }
 
-.samplesToTargets <- function( samples, ... ) {
+.samplesToTargets <- function( samples, uri, .opts=list(), cred=NULL, ... ) {
 
     if ( ! length(samples) > 1 )
         stop("No sample names provided to function.")
 
     warning("Reannotation of MAList objects at the sample level does not preserve channel information.")
 
-    p <- .batchDBQuery( samples=samples, files=NULL, ... )
+    p <- .batchDBQuery( samples=samples, files=NULL, uri=uri, .opts=.opts, cred=cred, ... )
 
     p <- .conformLists(p)
 
@@ -250,7 +250,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
 
 .batchDBQuery <- function(files, samples=NULL,
                           categories=NULL, pattern=NULL,
-                          uri, .opts=list(), cred, curl=NULL ) {
+                          uri, .opts=list(), cred=NULL, curl=NULL ) {
 
     ## We use tcltk to generate a nice echo-free password entry field.
     if ( is.null(cred) ) {

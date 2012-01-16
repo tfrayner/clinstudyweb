@@ -297,6 +297,7 @@ sub list_tests : Local {
     # We allow a query pattern to be used as a filter, but for the
     # most part this will just dump all test names.
     if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ s/([_%])/\\$1/g;
         $pattern =~ tr(*?)(%_);
         $tests   = $rs->search({ name => { -like => $pattern }});
     }
@@ -339,6 +340,7 @@ sub list_phenotypes : Local {
     # We allow a query pattern to be used as a filter, but for the
     # most part this will just dump all phenotype names.
     if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ s/([_%])/\\$1/g;
         $pattern =~ tr(*?)(%_);
         $pheno   = $rs->search_related('type_id', { 'type_id.value' => { -like => $pattern }}, { distinct => 1 } );
     }
