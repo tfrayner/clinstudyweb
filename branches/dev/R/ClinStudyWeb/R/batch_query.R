@@ -213,7 +213,7 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
     ## We're pretty much assuming that the curl object exists and is
     ## authenticated by this point; hence we're not bothering with username and password.
     
-    if ( ! ( missing(pattern) | is.null(pattern) ) ) {
+    if ( ! ( missing(pattern) | is.null(pattern) ) ) { ## FIXME consider passing the pattern directly to the assay_dump query URL.
         qry <- list()
         qry$test_ids <- csWebTestNames(uri=uri, pattern=pattern,
                                        .opts=.opts, curl=curl)
@@ -233,7 +233,8 @@ csWebRGList <- function ( files, uri, .opts=list(), cred=NULL,
             avail <- c( names(db.tests), names(db.pheno) )
             w <- ! categories %in% avail
             if ( any( w ) ) {
-                stop(sprintf("Error: Requested annotation not found in database:\n %s\n\nPlease select from this list:\n\n%s\n"), paste(categories[w], sep="\n"), paste(avail, sep="\n"))
+                message(sprintf("Requested annotation not found in database:\n\n %s\n\nPlease select from this list:\n\n %s\n", paste(sort(categories[w]), collapse="\n "), paste(sort(avail), collapse="\n ")))
+                stop("Error retrieving requested annotation; please see error message above.")
             }
 
             qry <- list()
