@@ -20,7 +20,8 @@
 ## Code copied from
 ## http://bioinf.wehi.edu.au/~wettenhall/RTclTkExamples/modalDialog.html
 ## and modified.
-getCredentials <- function(title='ClinStudyWeb Authentication', entryWidth=30, returnValOnCancel=NA) {
+getCredentials <- function(title='ClinStudyWeb Authentication',
+                           entryWidth=30, returnValOnCancel=NA, parent) {
 
     if ( ! capabilities()['X11'] )
         stop("Error: X11 device is not available.")
@@ -44,14 +45,20 @@ getCredentials <- function(title='ClinStudyWeb Authentication', entryWidth=30, r
         tkdestroy(dlg)
     }
 
-    dlg <- tktoplevel()
+    if ( missing(parent) ) {
+        dlg <- tktoplevel()
 
-    tkwm.geometry(dlg, .calcTkWmGeometry(350,130))
-    tkwm.geometry(dlg, '') # Shrink back to default size
-    tkwm.deiconify(dlg)
-    tkgrab.set(dlg)
-    tkfocus(dlg)
-    tkwm.title(dlg,title)
+        tkwm.geometry(dlg, .calcTkWmGeometry(350,130))
+        tkwm.geometry(dlg, '') # Shrink back to default size
+        tkwm.deiconify(dlg)
+        tkgrab.set(dlg)
+        tkfocus(dlg)
+        tkwm.title(dlg,title)
+    }
+    else {
+        dlg <- tkframe(tt)
+        tkpack(dlg, expand=TRUE)
+    }
 
     # Put our buttons into a frame.
     f.buttons <- tkframe(dlg, borderwidth=15)
