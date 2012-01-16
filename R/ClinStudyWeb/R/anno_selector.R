@@ -33,7 +33,6 @@ csWebTestNames <- function (uri, username=NULL, password=NULL, pattern=NULL,
 
     status <- .csWebExecuteQuery( query, uri, 'query/list_tests', username, password, .opts, curl )
 
-    ## FIXME do something with this.
     status$data
 }
 
@@ -50,23 +49,26 @@ csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
 
     status <- .csWebExecuteQuery( query, uri, 'query/list_phenotypes', username, password, .opts, curl )
 
-    ## FIXME do something with this.
     status$data
 }
 
-csAnnoPicker <- function (testnames=list(), phenotypes=list()) {
+csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
 
     require(tcltk)
 
     testnames  <- testnames[ order(names(testnames)) ]
     phenotypes <- phenotypes[ order(names(phenotypes)) ]
 
-    dlg <- tktoplevel()
-
-    tkwm.geometry(dlg, .calcTkWmGeometry(550, 410))
-    tkwm.geometry(dlg, '') # Shrink back to default size
-
-    tktitle(dlg) <- 'ClinStudyWeb Annotation Selection'
+    if ( missing(parent) ) {
+        dlg <- tktoplevel()
+        tkwm.geometry(dlg, .calcTkWmGeometry(550, 410))
+        tkwm.geometry(dlg, '') # Shrink back to default size
+        tktitle(dlg) <- 'ClinStudyWeb Annotation Selection'
+    }
+    else {
+        dlg <- tkframe(tt)
+        tkpack(dlg, expand=TRUE)
+    }
 
     f.listbox <- tkframe(dlg, borderwidth=10)
     scr.tests <- tkscrollbar(f.listbox, repeatinterval=5,
