@@ -18,14 +18,13 @@
 ## $Id$
 
 csDrugQuery <- function(filename=NULL, identifier=NULL, drug.type=NULL,
-                        months.prior=NULL, prior.treatment.type=NULL,
-                        uri, .opts=list(), cred=NULL ) {
+                        months.prior=NULL, prior.treatment.type=NULL, ... ) {
 
     stopifnot( any( ! is.null( c(filename, identifier) ) ) )
 
-    res <- .csJSONGeneric(list(filename=filename, identifier=identifier, drug_type=drug.type,
+    res <- .csJSONGeneric(query=list(filename=filename, identifier=identifier, drug_type=drug.type,
                                months_prior=months.prior, prior_treatment_type=prior.treatment.type),
-                          'query/assay_drugs', uri, .opts, cred )
+                          action='query/assay_drugs', ... )
 
     res <- res$channels
     names(res) <- lapply(res, function(x) { x$label } )
@@ -33,20 +32,14 @@ csDrugQuery <- function(filename=NULL, identifier=NULL, drug.type=NULL,
     return( res )
 }
 
-csDrugList <- function(files, output.column=NULL, cred=NULL, ...) {
+csDrugList <- function(files, output.column=NULL, ...) {
 
     if ( is.null(output.column) )
         output.column <- 'drug_treatments'
 
-    if ( is.null(cred) ) {
-        cred <- getCredentials()
-        if ( any(is.na(cred)) )
-            stop('User cancelled database connection.')
-    }
-
     ## Reprocess the output from csDrugQuery, which is quite raw, into
     ## a user-friendly data frame. Reduce into a single column if possible.
-    dlist <- lapply(files, csDrugQuery, cred=cred, ...)
+    dlist <- lapply(files, csDrugQuery, ...)
     dlist <- lapply(dlist, function(dat) {
         f <- lapply(dat, function(ch) {
             paste( ch$drugs, collapse=';' )
@@ -83,11 +76,11 @@ csDrugList <- function(files, output.column=NULL, cred=NULL, ...) {
     return(res)
 }
 
-.drugInfoEset <- function( data, output.column, uri, .opts=list(), cred=NULL, ... ) {
+.drugInfoEset <- function( data, output.column, ... ) {
 
     ## ExpressionSet or AffyBatch.
     files <- as.character(sampleNames(data))
-    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred, ...)
+    p <- csDrugList(files=files, output.column=output.column, ...)
     stopifnot(all(rownames(p) == files))
 
     pData(data)[, output.column] <- p
@@ -95,11 +88,11 @@ csDrugList <- function(files, output.column=NULL, cred=NULL, ...) {
     return(data)
 }
 
-.drugInfoMAList <- function( data, output.column, uri, .opts=list(), cred=NULL, ... ) {
+.drugInfoMAList <- function( data, output.column, ... ) {
 
     ## ExpressionSet or AffyBatch.
     files <- as.character(data$targets$FileName)
-    p <- csDrugList(files=files, output.column=output.column, uri=uri, .opts=.opts, cred=cred, ...)
+    p <- csDrugList(files=files, output.column=output.column, ...)
     stopifnot(all(rownames(p) == files))
 
     data$targets[, output.column] <- p
@@ -108,7 +101,7 @@ csDrugList <- function(files, output.column=NULL, cred=NULL, ...) {
 }
 
 ## Define a series of functions for various object signatures.
-setGeneric('csWebDrugInfo', def=function(data, output.column, uri, .opts=list(), cred=NULL, ...)
+setGeneric('csWebDrugInfo', def=function(data, output.column, ...)
            standardGeneric('csWebDrugInfo'))
 
 setMethod('csWebDrugInfo', signature(data='ExpressionSet'), .drugInfoEset)

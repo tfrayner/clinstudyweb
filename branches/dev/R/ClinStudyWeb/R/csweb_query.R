@@ -18,18 +18,12 @@
 ## $Id$
 
 ## Also public, this method is non-interactive and just returns the
-## annotation for a given file or barcode.
-csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
-                        uri, username=NULL, password=NULL, .opts=list(), curl=NULL, query=list() ) {
+## annotation for a given file or barcode. The query argument is used
+## to pass through upstream query constraints (e.g. test_ids, phenotype_ids).
+csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL, query=list(), ... ) {
 
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
-
-    if ( missing(uri) )
-        stop("Error: uri is required")
-
-    if ( ! is.list(.opts) )
-        stop("Error: .opts must be a list object")
 
     if ( ! is.null(sample.name) )
         action <- 'query/sample_dump'
@@ -41,23 +35,23 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     query$identifier=assay.barcode
     query$name=sample.name
 
-    status <- .csWebExecuteQuery( query, uri, action, username, password, .opts, curl )
+    response <- .csJSONGeneric( query, action, ... )
 
     .extractAttrs <- function(x) { class(x)!='list' }
 
     if ( ! is.null(sample.name) ) {
-        attrs  <- Filter( .extractAttrs, status$data )
-        sample <- status$data
+        attrs  <- Filter( .extractAttrs, response )
+        sample <- response
     } else {
 
         ## N.B. this all assumes a single channel only (FIXME)
-        attrs <- as.list(c(Filter( .extractAttrs, status$data),
-                           lapply(status$data$channels,
+        attrs <- as.list(c(Filter( .extractAttrs, response),
+                           lapply(response$channels,
                                   function(x) { Filter(.extractAttrs, x) } )[[1]],
-                           lapply(status$data$channels,
+                           lapply(response$channels,
                                   function(x) { Filter(.extractAttrs, x$sample) } )[[1]],
-                           Filter( .extractAttrs, status$data$qc)))
-        sample <- status$data$channels[[1]]$sample
+                           Filter( .extractAttrs, response$qc)))
+        sample <- response$channels[[1]]$sample
     }
 
     ## EmergentGroups and PriorGroups are a bit trickier, since they're 0..n
@@ -102,56 +96,5 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
     }
 
     return(attrs)
-}
-
-## FIXME merge this and csJSONGeneric
-.csWebExecuteQuery <- function(query, uri, action,
-                               username=NULL, password=NULL, .opts=list(), curl=NULL ) {
-
-    # Assumes that all JSON query actions in the web server behave
-    # roughly the same; i.e. they consume JSON with a 'data' attribute
-    # containing the payload, and return JSON with a 'success' flag
-    # attribute, an 'errorMessage' attribute where necessary, and the
-    # actual returned data in a 'data' attribute. Returns the whole of
-    # that returned JSON-encoded list.
-
-    require(rjson)
-
-    needs.logout <- 0
-    if ( is.null(curl) ) {
-
-        if ( is.null(username) ) { # Theoretically possible to connect without a password?
-            cred <- getCredentials()
-            if ( any(is.na(cred)) )
-                stop('User cancelled database connection.')
-            username <- cred$username
-            password <- cred$password
-        }
-
-        curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
-        needs.logout <- 1
-    }
-
-    uri  <- gsub( '/+$', '', uri )
-    quri <- paste(uri, action, sep='/')
-
-    query  <- rjson::toJSON(query)
-    query  <- RCurl::curlEscape(query)
-    status <- RCurl::basicTextGatherer()
-    res    <- RCurl::curlPerform(url=quri,
-                                 postfields=paste('data', query, sep='='),
-                                 .opts=.opts,
-                                 curl=curl,
-                                 writefunction=status$update)
-        
-    status  <- rjson::fromJSON(status$value())
-    if ( ! isTRUE(status$success) )
-        stop(status$errorMessage)
-
-    if ( needs.logout == 1 ) {
-        .csLogOutAuthenticatedHandle( uri, curl, .opts )
-    }
-
-    return(status)
 }
 
