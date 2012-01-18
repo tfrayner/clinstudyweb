@@ -20,36 +20,22 @@
 ## Code used to pull down lists of annotation classes (tests,
 ## phenotype quantities) and allow the user to choose the items to
 ## retrieve.
-csWebTestNames <- function (uri, username=NULL, password=NULL, pattern=NULL,
-                            retrieve.all=FALSE, .opts=list(), curl=NULL ) {
-
-    if ( missing(uri) )
-        stop("Error: uri is required")
-
-    if ( ! is.list(.opts) )
-        stop("Error: .opts must be a list object")
+csWebTestNames <- function (pattern=NULL, retrieve.all=FALSE, ...) {
 
     query  <- list( pattern=pattern, retrieve_all=retrieve.all )
 
-    status <- .csWebExecuteQuery( query, uri, 'query/list_tests', username, password, .opts, curl )
+    status <- .csJSONGeneric( query, 'query/list_tests', ... )
 
-    status$data
+    return(status)
 }
 
-csWebPhenotypes <- function (uri, username=NULL, password=NULL, pattern=NULL,
-                             .opts=list(), curl=NULL ) {
-
-    if ( missing(uri) )
-        stop("Error: uri is required")
-
-    if ( ! is.list(.opts) )
-        stop("Error: .opts must be a list object")
+csWebPhenotypes <- function (pattern=NULL, ... ) {
 
     query  <- list( pattern=pattern )
 
-    status <- .csWebExecuteQuery( query, uri, 'query/list_phenotypes', username, password, .opts, curl )
+    status <- .csJSONGeneric( query, 'query/list_phenotypes', ... )
 
-    status$data
+    return(status)
 }
 
 csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
@@ -66,7 +52,7 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
         tktitle(dlg) <- 'ClinStudyWeb Annotation Selection'
     }
     else {
-        dlg <- tkframe(tt)
+        dlg <- tkframe(parent)
         tkpack(dlg, expand=TRUE)
     }
 

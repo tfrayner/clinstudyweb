@@ -56,7 +56,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
         tkwm.title(dlg,title)
     }
     else {
-        dlg <- tkframe(tt)
+        dlg <- tkframe(parent)
         tkpack(dlg, expand=TRUE)
     }
 
@@ -95,7 +95,22 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(list(username=username, password=password))
 }
 
-.csGetAuthenticatedHandle <- function( uri, username, password, .opts=list() ) {
+.csGetAuthenticatedHandle <- function( uri=NULL, auth, .opts=list() ) {
+
+    if ( is.null(uri) )
+        stop('Error: uri argument must be provided.')
+
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
+
+    ## It's entirely possible to get here with just a uri.
+    if ( missing(auth) )
+        auth <- NULL
+    if ( is.null(auth) ) {
+        auth <- getCredentials()
+        if ( any( is.na(auth) ) )
+            stop('User cancelled database connection.')
+    }
 
     ## Set up our session and authenticate.
     curl    <- RCurl::getCurlHandle()
@@ -103,7 +118,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     RCurl::curlSetOpt(cookiefile=cookies, curl=curl)
 
     ## We need to detect login failures here.
-    query  <- list(username=username, password=password)
+    query  <- list(username=auth$username, password=auth$password)
     query  <- rjson::toJSON(query)
     query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
@@ -121,12 +136,20 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(curl)
 }
 
-.csLogOutAuthenticatedHandle <- function( uri, curl, .opts=list() ) {
+.csLogOutAuthenticatedHandle <- function( auth, .opts=list() ) {
+
+    if ( ! inherits(auth, 'CURLHandle') )
+        stop("Must pass in a CURLHandle object.")
+
+    uri    <- .csUriFromCurlHandle(auth)
+
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
 
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'json_logout', sep='/'),
                                  .opts=.opts,
-                                 curl=curl,
+                                 curl=auth,
                                  writefunction=status$update)
 
     ## Check the response for errors.

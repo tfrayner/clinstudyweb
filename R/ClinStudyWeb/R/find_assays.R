@@ -18,9 +18,7 @@
 ## $Id$
 
 csFindAssays <- function(cell.type, platform, batch.name, study,
-                         diagnosis, timepoint, trial.id, uri, .opts=list(), cred=NULL ) {
-
-    stopifnot( ! missing(uri) )
+                         diagnosis, timepoint, trial.id, ... ) {
 
     cond  <- list()
     attrs <- list(join=c())
@@ -74,10 +72,7 @@ csFindAssays <- function(cell.type, platform, batch.name, study,
 
     assays <- csJSONQuery(resultSet='Assay',
                           condition=cond,
-                          attributes=attrs,
-                          uri=uri,
-                          .opts=.opts,
-                          cred=cred)
+                          attributes=attrs, ...)
 
     return(assays)
 }

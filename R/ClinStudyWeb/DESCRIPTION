@@ -5,7 +5,7 @@ Title: Annotate assay data by querying the ClinStudy database.
 Description: This package allows R to query the REST API provided by the ClinStudyWeb interface, retrieving sample annotation based on array filenames or barcodes and generating annotated data objects from the result.
 Author: Tim F. Rayner
 Maintainer: Tim F. Rayner <tfrayner@gmail.com>
-Depends: R (>= 2.10.0), rjson
+Depends: R (>= 2.10.0), rjson, tcltk
 Imports: Biobase, limma, affy, RCurl, methods, oligo
 Suggests: 
 License: GPL (>= 2)
