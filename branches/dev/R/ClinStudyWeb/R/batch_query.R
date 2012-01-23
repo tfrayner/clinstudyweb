@@ -246,10 +246,17 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
 }        
 
 .batchDBQuery <- function(files, samples=NULL,
-                          categories=NULL, pattern=NULL, ... ) {
+                          categories=NULL, pattern=NULL, auth=NULL, ... ) {
+
+    ## Since this is a batch query function it's convenient to catch
+    ## missing authentication credentials at this point. Generally we
+    ## just let .csGetAuthenticatedHandle catch this for any given
+    ## query, but that can lead to an awful lot of password prompts here.
+    if ( is.null(auth) )
+        auth <- .csGetAuthenticatedHandle( auth=auth, ... )
 
     ## Unless specified otherwise, retrieve the desired annotation terms.
-    anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, ...)
+    anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, auth=auth, ...)
 
     ## Strip out file paths which won't have been stored in the database.
     files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
@@ -259,10 +266,10 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
     message("Querying the database for annotation...")
     if ( is.null(samples) )
         p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL,
-                    sample.name=NULL, query=anno.qry, ...)
+                    sample.name=NULL, query=anno.qry, auth=auth, ...)
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL,
-                    assay.barcode=NULL, query=anno.qry, ...)
+                    assay.barcode=NULL, query=anno.qry, auth=auth, ...)
 
     return(p)
 }
