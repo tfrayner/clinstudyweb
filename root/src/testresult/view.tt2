@@ -20,7 +20,7 @@
              [% END %]</td></tr>
      <tr><th>Sub-test results</br>
      <span><a href="[% c.uri_for("/testresult/add_to_test_result", object.id) %]">Add</a></span></th>
-         <td>[% IF object.child_test_results.blessed %]
+         <td>[% IF object.child_test_results_rs.count == 1 %]
                [% SET objects = [ object.child_test_results ] %]
              [% ELSE %]
                [% SET objects = object.child_test_results.list %]
