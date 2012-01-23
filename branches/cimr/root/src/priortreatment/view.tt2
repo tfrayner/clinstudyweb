@@ -22,7 +22,7 @@
 
 <fieldset class="data_view">
 <legend>Drugs Prescribed or Administered <span><a href="[% c.uri_for("/drug/add_to_priortreatment", object.id) | html %]">Add</a></span></legend>
-[% IF object.drugs.blessed %]
+[% IF object.drugs_rs.count == 1 %]
   [% SET objects = [ object.drugs ] %]
 [% ELSE %]
   [% SET objects = object.drugs.list %]

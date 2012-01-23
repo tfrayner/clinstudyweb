@@ -138,6 +138,44 @@ sub load_element_message {
     return;
 }
 
+sub find_reference {
+
+    my ( $self, $class, $value ) = @_;
+
+    my $rs = $self->database()->resultset($class)
+        or die("Error: Unable to find a ResultSet for $class elements.");
+
+    # Attempt to retrieve the referenced object using the configured
+    # id column. If the referenced object is not in the database,
+    # return a dummy object. This 
+    my $rel_obj;
+    if ( my $field = $self->external_id_map()->{$class} ) {
+        my @rel_objs = $rs->search({ $field => $value });
+        unless ( scalar @rel_objs ) {
+            croak("Unable to find a $class with $field = $value.");
+        }
+        $rel_obj = $rel_objs[0];
+    }
+    else {
+        croak("Unrecognised class $class in find_reference().");
+    }
+
+    return($rel_obj);
+}
+
+# Missing referent objects will throw an error unless we silently
+# ignore them. In order for the XML to be syntactically valid the
+# referents must be present, it's just they're not in the database
+# yet. Note that if we ever make referent objects part of a given
+# object's "identifier" set of attributes (which is unlikely) then
+# this is probably going to cause problems.
+sub handle_missing_referent {
+
+    my ( $self, $class, $field, $value ) = @_;
+
+    return ClinStudy::XML::DummyObject->new( id => undef );
+}
+
 sub _apply_visit_checks {
 
     my ( $self, $element, $parent_ref, $obj ) = @_;

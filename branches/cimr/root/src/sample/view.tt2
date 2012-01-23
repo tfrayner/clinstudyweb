@@ -44,7 +44,7 @@
 
 <fieldset>
 <legend>Assays</legend>
-[% IF object.channels.blessed %]
+[% IF object.channels_rs.count == 1 %]
   [% SET objects = [ object.channels ] %]
 [% ELSE %]
   [% SET objects = object.channels.list %]
@@ -60,7 +60,7 @@
 
 <fieldset>
 <legend>Data Files</legend>
-[% IF object.sample_data_files.blessed %]
+[% IF object.sample_data_files_rs.count == 1 %]
   [% SET objects = [ object.sample_data_files ] %]
 [% ELSE %]
   [% SET objects = object.sample_data_files.list %]

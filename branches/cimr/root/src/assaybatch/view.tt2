@@ -20,7 +20,7 @@
 
 <fieldset class="data_view">
 <legend>Assays</legend>
-[% IF object.assays.blessed %]
+[% IF object.assays_rs.count == 1 %]
   [% SET objects = [ object.assays ] %]
 [% ELSE %]
   [% SET objects = object.assays.list %]

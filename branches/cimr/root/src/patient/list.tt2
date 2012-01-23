@@ -26,7 +26,7 @@
         <tr> 
         <td> [% patient.trial_id | html %] </td>
         <td> [% patient.entry_date | html %] </td>
-[% IF patient.studies.blessed %]
+[% IF patient.studies_rs.count == 1 %]
   [% SET studies = [ patient.studies ] %]
 [% ELSE %]
   [% SET studies = patient.studies.list %]
@@ -37,7 +37,7 @@
              [% END %]
              [% studylist.sort.join(', ') %]&nbsp;
         </td>
-[% IF patient.diagnoses.blessed %]
+[% IF patient.diagnoses_rs.count == 1 %]
   [% SET diagnoses = [ patient.diagnoses ] %]
 [% ELSE %]
   [% SET diagnoses = patient.diagnoses.list %]

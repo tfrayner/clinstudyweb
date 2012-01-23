@@ -20,7 +20,7 @@
 
 <fieldset class="data_view">
 <legend>Transplants <span><a href="[% c.uri_for("/transplant/add_to_hospitalisation", object.id) | html %]">Add</a></span></legend>
-[% IF object.transplants.blessed %]
+[% IF object.transplants_rs.count == 1 %]
   [% SET objects = [ object.transplants ] %]
 [% ELSE %]
   [% SET objects = object.transplants.list %]
@@ -30,7 +30,7 @@
 
 <fieldset class="data_view">
 <legend>Drug Treatments <span><a href="[% c.uri_for("/drug/add_to_hospitalisation", object.id) | html %]">Add</a></span></legend>
-[% IF object.drugs.blessed %]
+[% IF object.drugs_rs.count == 1 %]
   [% SET objects = [ object.drugs ] %]
 [% ELSE %]
   [% SET objects = object.drugs.list %]
@@ -40,7 +40,7 @@
 
 <fieldset class="data_view">
 <legend>Test Results <span><a href="[% c.uri_for("/testresult/add_to_hospitalisation", object.id) | html %]">Add</a></span></legend>
-[% IF object.test_results.blessed %]
+[% IF object.test_results_rs.count == 1 %]
   [% SET allobjects = [ object.test_results ] %]
 [% ELSE %]
   [% SET allobjects = object.test_results.list %]
