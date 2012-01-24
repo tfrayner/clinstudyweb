@@ -95,7 +95,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(list(username=username, password=password))
 }
 
-.csGetAuthenticatedHandle <- function( uri=NULL, auth, .opts=list() ) {
+getCSWebHandle <- function( uri=NULL, auth, .opts=list() ) {
 
     if ( is.null(uri) )
         stop('Error: uri argument must be provided.')
@@ -136,7 +136,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(curl)
 }
 
-.csLogOutAuthenticatedHandle <- function( auth, .opts=list() ) {
+logoutCSWebHandle <- function( auth, .opts=list() ) {
 
     if ( ! inherits(auth, 'CURLHandle') )
         stop("Must pass in a CURLHandle object.")
