@@ -47,6 +47,8 @@ importFrom(RCurl, getURLContent, curlEscape)
 
 export(
        getCredentials,
+       getCSWebHandle,
+       logoutCSWebHandle,
        csWebQuery,
        csWebReannotate,
        csWebDrugInfo,

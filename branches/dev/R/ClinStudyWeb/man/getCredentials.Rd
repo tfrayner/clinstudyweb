@@ -7,7 +7,8 @@
   password, returning these values in a form suitable for use with \code{studyAffyBatch}.
 }
 \usage{
-getCredentials ( title='Database Authentication', entryWidth=30, returnValOnCancel=NA )
+getCredentials ( title='ClinStudyWeb Authentication', entryWidth=30,
+returnValOnCancel=NA, parent )
 }
 \arguments{
 
@@ -18,11 +19,17 @@ getCredentials ( title='Database Authentication', entryWidth=30, returnValOnCanc
   \item{returnValOnCancel}{The username/password value to return if the
     user cancels the operation.}
 
+  \item{parent}{An optional Tk widget to use as the parent for the
+    displayed login dialog box.}
 }
 \details{
 
   This function uses the Tk windowing system to query the user for login
-  and password, without echoing the latter to the screen.
+  and password, without echoing the latter to the screen. The returned
+  list can be used as the 'auth' argument to any of the JSON query
+  functions, in which case a separate 'uri' argument specifying the base
+  URI of the ClinStudyWeb database web site is required (see also
+  \code{getCSWebHandle}).
 
 }
 \value{
@@ -37,6 +44,7 @@ getCredentials ( title='Database Authentication', entryWidth=30, returnValOnCanc
   \code{\link{csWebQuery}}
   \code{\link{csWebAffyBatch}}
   \code{\link{csWebRGList}}
+  \code{\link{getCSWebHandle}}
 }
 \examples{
   \dontrun{getCredentials()}

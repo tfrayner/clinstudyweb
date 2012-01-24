@@ -6,8 +6,8 @@
   Retrieves sample annotation for a given array barcode or filename.
 }
 \usage{
-csWebQuery ( assay.file=NULL, assay.barcode=NULL, sample.name=NULL, uri, username,
-password, .opts=list(), curl=NULL )
+csWebQuery ( assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
+                 query=list(), ... )
 }
 \arguments{
 
@@ -18,17 +18,13 @@ password, .opts=list(), curl=NULL )
   \item{sample.name}{The identifier of the sample of interest. If used,
     this argument causes the database query to ignore all assay information.}
 
-  \item{uri}{The top-level URI for the clinical database web site.}
+  \item{query}{An optional list of JSON query parameters to be passed
+    through to the web server. Examples include test_ids, phenotype_pattern.}
 
-  \item{username}{A username authorised to use the REST API.}
-
-  \item{password}{The corresponding password.}
-
-  \item{.opts}{A list of CURLOptions passed to
-    \code{getURLContent}. This can be used, for example, to deactivate SSL
-    certificate checking using \code{list(ssl.verifypeer=FALSE)}. }
-
-  \item{curl}{An optional CURL handle, used in authenticated session management.}
+  \item{...}{Further arguments passed to the internal JSON query
+    function. Examples are "auth" (see \code{getCredentials} and
+    \code{getCSWebHandle}) and "uri".}
+  
 }
 \details{
 
@@ -52,7 +48,7 @@ password, .opts=list(), curl=NULL )
 \examples{
   \dontrun{csWebQuery( assay.file='T234 CD4.CEL',
                        uri='http://my.webhost.com/',
-                       username='johndoe',
-                       password='mylongandnowincrediblyinsecurepassword' )}
+                       auth=list(username='johndoe',
+                                 password='mylongandnowincrediblyinsecurepassword') )}
 }
 

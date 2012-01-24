@@ -47,8 +47,12 @@ csWebGeneFeatureSet <- function(files, pattern=NULL, categories=NULL, ... ) {
     return(cels)
 }
 
-csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
-                         pattern=NULL, categories=NULL, ... ) {
+csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
+  .csWebRGList(files=files, pattern=pattern, categories=categories, ...)
+}
+
+.csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
+                          pattern=NULL, categories=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
@@ -250,10 +254,13 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
 
     ## Since this is a batch query function it's convenient to catch
     ## missing authentication credentials at this point. Generally we
-    ## just let .csGetAuthenticatedHandle catch this for any given
+    ## just let getCSWebHandle catch this for any given
     ## query, but that can lead to an awful lot of password prompts here.
-    if ( is.null(auth) )
-        auth <- .csGetAuthenticatedHandle( auth=auth, ... )
+    needs.logout <- 0
+    if ( is.null(auth) ) {
+        auth <- getCSWebHandle( auth=auth, ... )
+        needs.logout <- 1
+    }
 
     ## Unless specified otherwise, retrieve the desired annotation terms.
     anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, auth=auth, ...)
@@ -270,6 +277,9 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL,
                     assay.barcode=NULL, query=anno.qry, auth=auth, ...)
+
+    if ( needs.logout == 1 )
+        logoutCSWebHandle( auth, ... )
 
     return(p)
 }

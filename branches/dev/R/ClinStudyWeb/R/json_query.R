@@ -25,12 +25,12 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, ... ) {
 ## auth==list(username, password) or auth==NULL; uri is required in either case.
 .csJSONGenericCred <- function( query, action, auth=NULL, .opts=list(), uri, ... ) {
 
-    curl <- .csGetAuthenticatedHandle( uri=uri, auth=auth, .opts=.opts )
+    curl <- getCSWebHandle( uri=uri, auth=auth, .opts=.opts )
 
     response <- .csJSONGeneric( query, action, auth=curl, .opts=.opts, ... )
 
     ## Log out for the sake of completeness (check for failure and warn).
-    .csLogOutAuthenticatedHandle( curl, .opts )
+    logoutCSWebHandle( curl, .opts )
 
     return(response)
 }
