@@ -66,14 +66,20 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B)
     K      <- .findBestBIC(ld.res)
 
-    ## FIXME generate a plot at this juncture.
+    ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
+    ld.gated <- filter(ld, ld.gate)
 
-    
-    ld.gate <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
+    ## This gives a plot indicating which population was chosen as live cells.
+    plot(ld.gated, data=ld)
+    ## Alternatively (seems to be identical):
+    plot(ld.res[[K]], data=ld)
 
     ## FIXME we need some heuristics here to correctly identify live vs. dead populations.
-    ld.gated <- filter(ld, ld.gate)
     ld.pops  <- split(ld, ld.gated, population=list(live=2, dead=1)) ## these numbers may well be wrong.
+
+    ## For illustration only; this would ideally also indicate the
+    ## location of the gate we're ultimately constructing here.
+    plot(ld.pops$live, c('FL1-H','FL2-H'))
 
     ## FIXME the channels in use need to be determined by cell type.
     ct.res <- flowClust(ld.pops$live, varNames=c('FL1-H','FL2-H'), K=K.start, B=B)
@@ -81,13 +87,26 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ct.testgate  <- tmixFilter('CD4', c('FL1-H','FL2-H'), K=K, B=B, level=0.8)
     ct.testgated <- filter(ld.pops$live, ct.testgate)
-    ct.testpops  <- split(ld.pops$live, ct.testgated, population=list(a=1, b=2, c=3)) ## again we need some heuristics FIXME.
+    ct.testpops  <- split(ld.pops$live, ct.testgated, population=list(a=1, b=2, c=3)) ## again we need some heuristics FIXME (the number of populations depends entirely on K and we don't know which order they're assigned in).
+
+    ## This now has the initial clustering illustrated.
+    plot(ct.testgated, data=ld.pops$live)
 
     ## FIXME figure out which our target cluster is and expand the
     ## ranges to include everything except for the other identified
     ## clusters.
     range(exprs(ct.testpops$c[,'FL1-H']))
     range(exprs(ct.testpops$c[,'FL2-H']))
+
+    ## Rough outline of the algorithm:
+    ## a. find the target cluster (this needs the ct.maplist heuristic).
+    ## b. for each non-target cluster, sort into locations relative to the
+    ##      target (left/right/above/below). This will be based on the direction
+    ##      of the largest distance between target and non-target clusters.
+    ## c. find the nearest point to the target in the combined clusters from each location
+    ## d. for any NULL clusters, take the distance equal to that for the clusters located
+    ##      in the opposite direction. If there are no such clusters, maybe take the mean
+    ##      of all the remaining distances (e.g. above distance = mean of right and left distances).
 
     ## FIXME make this a rectangleGate instead, using the ranges identified in the previous step.
 
