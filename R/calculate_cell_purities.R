@@ -50,11 +50,11 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## this will work. FIXME needs values filled in for all five cell
     ## types. Note that we're assuming elsewhere that the ordering
     ## here is consistent with an X, Y interpretation in plots.
-    ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2),
-                       CD8=list(`FL2-H`=, `FL4-H`=),
-                       CD14=list(`FL2-H`=, `FL4-H`=),
-                       CD16=list(`FL2-H`=, `FL4-H`=),
-                       CD19=list(`FL2-H`=, `FL4-H`=))
+    ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2))#,
+#                       CD8=list(`FL2-H`=, `FL4-H`=),
+#                       CD14=list(`FL2-H`=, `FL4-H`=),
+#                       CD16=list(`FL2-H`=, `FL4-H`=),
+#                       CD19=list(`FL2-H`=, `FL4-H`=))
 
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
@@ -126,7 +126,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
               stop("Either zero or multiple gated populations match our target heuristic.")
     }
 
-    w <- .findTarget( ct.testpops, ct.maplist )
+    w <- .findTarget( ct.testpops, ct.map )
     tgt <- ct.testpops[w][[1]]
     oth <- ct.testpops[!w]
 
