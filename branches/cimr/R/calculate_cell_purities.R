@@ -87,7 +87,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ct.testgate  <- tmixFilter('CD4', c('FL1-H','FL2-H'), K=K, B=B, level=0.8)
     ct.testgated <- filter(ld.pops$live, ct.testgate)
-    ct.testpops  <- split(ld.pops$live, ct.testgated, population=list(a=1, b=2, c=3)) ## again we need some heuristics FIXME (the number of populations depends entirely on K and we don't know which order they're assigned in).
+    ct.testpops  <- split(ld.pops$live, ct.testgated)
 
     ## This now has the initial clustering illustrated.
     plot(ct.testgated, data=ld.pops$live)
@@ -95,8 +95,6 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## FIXME figure out which our target cluster is and expand the
     ## ranges to include everything except for the other identified
     ## clusters.
-    range(exprs(ct.testpops$c[,'FL1-H']))
-    range(exprs(ct.testpops$c[,'FL2-H']))
 
     ## Rough outline of the algorithm:
     ## a. find the target cluster (this needs the ct.maplist heuristic).
@@ -104,9 +102,97 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ##      target (left/right/above/below). This will be based on the direction
     ##      of the largest distance between target and non-target clusters.
     ## c. find the nearest point to the target in the combined clusters from each location
-    ## d. for any NULL clusters, take the distance equal to that for the clusters located
+    ## d. for any NULL directions, take the distance equal to that for the clusters located
     ##      in the opposite direction. If there are no such clusters, maybe take the mean
     ##      of all the remaining distances (e.g. above distance = mean of right and left distances).
+
+    ## Step a: find the target cluster.
+    .findTarget <- function( ct.testpops, ct.map ) {
+
+        w <- sapply(ct.testpops, function(pop) {
+            all(sapply(names(ct.map), function(ch) {
+                xr <- range(exprs(pop[, ch]))
+                x <- ct.map[[ch]]
+                return(x > xr[1] & x < xr[2])
+            }))
+        })
+
+        if ( sum(w) == 1 )
+            return(w)
+          else
+              stop("Either zero or multiple gated populations match our target heuristic.")
+    }
+
+    w <- .findTarget( ct.testpops, ct.maplist )
+    tgt <- ct.testpops[w][[1]]
+    oth <- ct.testpops[!w]
+
+    ## Step b: sort non-target clusters into locations relative to the target.
+    .locateCluster <- function( cl, tgt, xch, ych ) {
+        xtr <- range(exprs(tgt[, xch]))
+        ytr <- range(exprs(tgt[, ych]))
+
+        xcr <- range(exprs(cl[, xch]))
+        ycr <- range(exprs(cl[, ych]))
+
+        sc <- c(left  = xtr[1]-xcr[2],
+                down  = ytr[1]-ycr[2],
+                right = xcr[1]-xtr[2],
+                up    = ycr[1]-ytr[2])
+        which.max(sc)
+    }
+
+    locs <- sapply(oth, .locateCluster, tgt, names(ct.map)[1], names(ct.map)[2])
+
+    ## Step c: combine the clusters and find the nearest point to the
+    ## target in each available direction.
+    .findNearestPoints <- function( oth, locs, xch, ych ) {
+        up <- sapply(oth[locs[names(locs) == 'up']], function(cl) min(exprs(cl)[, ych]) )
+        dn <- sapply(oth[locs[names(locs) == 'down']], function(cl) max(exprs(cl)[, ych]) )
+        rt <- sapply(oth[locs[names(locs) == 'right']], function(cl) min(exprs(cl)[, xch]) )
+        lf <- sapply(oth[locs[names(locs) == 'left']], function(cl) max(exprs(cl)[, xch]) )
+
+        up <- ifelse( length(up) > 0, min(up), NA)
+        dn <- ifelse( length(dn) > 0, max(dn), NA)
+        rt <- ifelse( length(rt) > 0, min(rt), NA)
+        lf <- ifelse( length(lf) > 0, max(lf), NA)
+
+        return(list(up=up, down=dn, right=rt, left=lf))
+    }
+
+    nrst <- .findNearestPoints(oth, locs, names(ct.map)[1], names(ct.map)[2])
+
+    ## Step d: handle the directions missing any data.
+    .fillInNAPoints <- function(nrst, tgt, xch, ych) {
+        xtr <- range(exprs(tgt[, xch]))
+        ytr <- range(exprs(tgt[, ych]))
+
+        dist <- list(down  = ytr[1] - nrst$down,
+                     up    = nrst$up - ytr[2],
+                     left  = xtr[1] - nrst$left,
+                     right = nrst$right - xtr[2])
+
+        ## First, use a balanced distance from the opposing direction
+        ## if available.  If there are still any NAs, find the non-NA
+        ## mean of the distances and use that.
+        m <- mean(unlist(dist), na.rm=TRUE)
+        if ( is.na(nrst$up) )
+            nrst$up    <- ytr[2] + ifelse(is.na(dist$down), m, dist$down)
+        if ( is.na(nrst$down) )
+            nrst$down  <- ytr[1] - ifelse(is.na(dist$up), m, dist$up)
+        if ( is.na(nrst$right) )
+            nrst$right <- xtr[2] + ifelse(is.na(dist$left), m, dist$left)
+        if ( is.na(nrst$left) )
+            nrst$left  <- xtr[1] - ifelse(is.na(dist$right), m, dist$right)
+
+        return(nrst)
+    }
+
+    nrst <- .fillInNAPoints(nrst, tgt, names(ct.map)[1], names(ct.map)[2])
+    if ( any( is.na( unlist(nrst) ) ) )
+        stop("Error: cannot determine rectangle gate; no outlier clusters?")
+
+    ## FIXME check for negative distances, i.e. overlapping clusters.
 
     ## FIXME make this a rectangleGate instead, using the ranges identified in the previous step.
 
