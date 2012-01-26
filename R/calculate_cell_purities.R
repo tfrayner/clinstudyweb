@@ -47,7 +47,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ## This map lists points near the centre of the target
     ## cluster. One hopes that these are sufficiently consistent that
-    ## this will work. FIXME needs values filled in for all five cell types.
+    ## this will work. FIXME needs values filled in for all five cell
+    ## types. Note that we're assuming elsewhere that the ordering
+    ## here is consistent with an X, Y interpretation in plots.
     ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2),
                        CD8=list(`FL2-H`=, `FL4-H`=),
                        CD14=list(`FL2-H`=, `FL4-H`=),
@@ -57,6 +59,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
         stop('Unrecognised cell type.')
+
+    xch <- names(ct.map)[1]
+    ych <- names(ct.map)[2]
 
     ## First read in the pre data and log10 transform.
     ld <- .readAndLog(pre)
@@ -79,23 +84,21 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ## For illustration only; this would ideally also indicate the
     ## location of the gate we're ultimately constructing here.
-    plot(ld.pops$live, c('FL1-H','FL2-H'))
+    plot(ld.pops$live, c(xch, ych))
 
-    ## FIXME the channels in use need to be determined by cell type.
-    ct.res <- flowClust(ld.pops$live, varNames=c('FL1-H','FL2-H'), K=K.start, B=B)
+    ct.res <- flowClust(ld.pops$live, varNames=c(xch, ych), K=K.start, B=B)
     K      <- .findBestBIC(ct.res)
 
-    ct.testgate  <- tmixFilter('CD4', c('FL1-H','FL2-H'), K=K, B=B, level=0.8)
+    ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.8)
     ct.testgated <- filter(ld.pops$live, ct.testgate)
     ct.testpops  <- split(ld.pops$live, ct.testgated)
 
     ## This now has the initial clustering illustrated.
     plot(ct.testgated, data=ld.pops$live)
 
-    ## FIXME figure out which our target cluster is and expand the
-    ## ranges to include everything except for the other identified
-    ## clusters.
-
+    ## Figure out which our target cluster is and expand the ranges to
+    ## include everything except for the other identified clusters.
+    ##
     ## Rough outline of the algorithm:
     ## a. find the target cluster (this needs the ct.maplist heuristic).
     ## b. for each non-target cluster, sort into locations relative to the
@@ -142,7 +145,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
         which.max(sc)
     }
 
-    locs <- sapply(oth, .locateCluster, tgt, names(ct.map)[1], names(ct.map)[2])
+    locs <- sapply(oth, .locateCluster, tgt, xch, ych)
 
     ## Step c: combine the clusters and find the nearest point to the
     ## target in each available direction.
@@ -160,7 +163,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
         return(list(up=up, down=dn, right=rt, left=lf))
     }
 
-    nrst <- .findNearestPoints(oth, locs, names(ct.map)[1], names(ct.map)[2])
+    nrst <- .findNearestPoints(oth, locs, xch, ych)
 
     ## Step d: handle the directions missing any data.
     .fillInNAPoints <- function(nrst, tgt, xch, ych) {
@@ -188,23 +191,29 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
         return(nrst)
     }
 
-    nrst <- .fillInNAPoints(nrst, tgt, names(ct.map)[1], names(ct.map)[2])
+    nrst <- .fillInNAPoints(nrst, tgt, xch, ych)
     if ( any( is.na( unlist(nrst) ) ) )
         stop("Error: cannot determine rectangle gate; no outlier clusters?")
 
     ## FIXME check for negative distances, i.e. overlapping clusters.
 
-    ## FIXME make this a rectangleGate instead, using the ranges identified in the previous step.
+    ## Show the derived rectangle gate on the plot.
+    rect(nrst$left, nrst$down, nrst$right, nrst$up)
 
-    ## FIXME also generate a plot here, overlaying the plot of ct.res[[K]] with the new rect gate.
-    ct.gate  <- quadGate(`FL1-H`=65, `FL2-H`=270)  ## Obviously these numbers are wrong FIXME.
+    ## Construct the rectangle gate.
+    x <- list( c( nrst$left, nrst$right), c(nrst$down, nrst$up) )
+    names(x) <- c(xch, ych)
+    ct.gate  <- do.call('rectangleGate', x)
 
     ct       <- .readAndLog(pos)
     ct.gated <- filter(ct, ct.gate)
 
-#    plot(split(y, z)[[1]], c('FL1-H','FL2-H'))
+    ## Plot the impurities.
+    plot(split(ct, ct.gated)[[2]], c(xch, ych))
 
-    summary(ct.gated) ## Should spit out the purity value.
+    x <- summary(ct.gated) ## Should spit out the purity value.
+
+    return(x$p)
 }
 
 calculateCellPurities <- function(uri, .opts=list(), cred) {
