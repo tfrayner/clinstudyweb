@@ -50,10 +50,11 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## this will work. FIXME needs values filled in for all five cell
     ## types. Note that we're assuming elsewhere that the ordering
     ## here is consistent with an X, Y interpretation in plots.
-    ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2))#,
+    ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2),
+                       CD16=list(`FL1-H`=2.5, `FL2-H`=3),
+                       CD14=list(`FL1-H`=1.5,`FL2-H`=3.5))#,
 #                       CD8=list(`FL2-H`=, `FL4-H`=),
 #                       CD14=list(`FL2-H`=, `FL4-H`=),
-#                       CD16=list(`FL2-H`=, `FL4-H`=),
 #                       CD19=list(`FL2-H`=, `FL4-H`=))
 
     ct.map <- ct.maplist[[ cell.type ]]
@@ -68,10 +69,10 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ## Find clusters. FIXME the B=100 probably needs fixing and the
     ## whole function made parallelizable.
-    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B)
+    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B) # FIXME K.start is pointless here.
     K      <- .findBestBIC(ld.res)
 
-    ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
+    ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=2, B=B, level=0.8)
     ld.gated <- filter(ld, ld.gate)
 
     ## This gives a plot indicating which population was chosen as live cells.
@@ -80,21 +81,24 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     plot(ld.res[[K]], data=ld)
 
     ## FIXME we need some heuristics here to correctly identify live vs. dead populations.
-    ld.pops  <- split(ld, ld.gated, population=list(live=2, dead=1)) ## these numbers may well be wrong.
+    ld.pops  <- split(ld, ld.gated)
+
+    ## Take the population with the largest median FSC.
+    w <- which.max(sapply(ld.pops, function(cl) median(exprs(cl[, 'FSC-H']))))
 
     ## For illustration only; this would ideally also indicate the
     ## location of the gate we're ultimately constructing here.
-    plot(ld.pops$live, c(xch, ych))
+    plot(ld.pops[[w]], c(xch, ych))
 
-    ct.res <- flowClust(ld.pops$live, varNames=c(xch, ych), K=K.start, B=B)
+    ct.res <- flowClust(ld.pops[[w]], varNames=c(xch, ych), K=K.start, B=B)
     K      <- .findBestBIC(ct.res)
 
     ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.8)
-    ct.testgated <- filter(ld.pops$live, ct.testgate)
-    ct.testpops  <- split(ld.pops$live, ct.testgated)
+    ct.testgated <- filter(ld.pops[[w]], ct.testgate)
+    ct.testpops  <- split(ld.pops[[w]], ct.testgated)
 
     ## This now has the initial clustering illustrated.
-    plot(ct.testgated, data=ld.pops$live)
+    plot(ct.testgated, data=ld.pops[[w]])
 
     ## Figure out which our target cluster is and expand the ranges to
     ## include everything except for the other identified clusters.
@@ -150,15 +154,15 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## Step c: combine the clusters and find the nearest point to the
     ## target in each available direction.
     .findNearestPoints <- function( oth, locs, xch, ych ) {
-        up <- sapply(oth[locs[names(locs) == 'up']], function(cl) min(exprs(cl)[, ych]) )
-        dn <- sapply(oth[locs[names(locs) == 'down']], function(cl) max(exprs(cl)[, ych]) )
-        rt <- sapply(oth[locs[names(locs) == 'right']], function(cl) min(exprs(cl)[, xch]) )
-        lf <- sapply(oth[locs[names(locs) == 'left']], function(cl) max(exprs(cl)[, xch]) )
+        up <- sapply(oth[names(locs) == 'up'], function(cl) min(exprs(cl)[, ych]) )
+        dn <- sapply(oth[names(locs) == 'down'], function(cl) max(exprs(cl)[, ych]) )
+        rt <- sapply(oth[names(locs) == 'right'], function(cl) min(exprs(cl)[, xch]) )
+        lf <- sapply(oth[names(locs) == 'left'], function(cl) max(exprs(cl)[, xch]) )
 
-        up <- ifelse( length(up) > 0, min(up), NA)
-        dn <- ifelse( length(dn) > 0, max(dn), NA)
-        rt <- ifelse( length(rt) > 0, min(rt), NA)
-        lf <- ifelse( length(lf) > 0, max(lf), NA)
+        up <- ifelse( length(up) > 0, min(up), NA )
+        dn <- ifelse( length(dn) > 0, max(dn), NA )
+        rt <- ifelse( length(rt) > 0, min(rt), NA )
+        lf <- ifelse( length(lf) > 0, max(lf), NA )
 
         return(list(up=up, down=dn, right=rt, left=lf))
     }
@@ -198,7 +202,8 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## FIXME check for negative distances, i.e. overlapping clusters.
 
     ## Show the derived rectangle gate on the plot.
-    rect(nrst$left, nrst$down, nrst$right, nrst$up)
+    bc <- c(nrst$left, nrst$down, nrst$right, nrst$up)
+    do.call('rect', as.list(bc))
 
     ## Construct the rectangle gate.
     x <- list( c( nrst$left, nrst$right), c(nrst$down, nrst$up) )
@@ -209,7 +214,8 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ct.gated <- filter(ct, ct.gate)
 
     ## Plot the impurities.
-    plot(split(ct, ct.gated)[[2]], c(xch, ych))
+    plot(ct, c(xch, ych))
+    do.call('rect', as.list(bc))
 
     x <- summary(ct.gated) ## Should spit out the purity value.
 
