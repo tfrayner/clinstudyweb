@@ -250,9 +250,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     return(x$p)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), cred) {
+calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
 
-    require('RCurl')
+    require(RCurl)
 
     .retrieveFileInfo <- function(sample_id, type, uri, .opts, cred) {
 
@@ -305,7 +305,11 @@ calculateCellPurities <- function(uri, .opts=list(), cred) {
 
     ## Loop over the samples, pull down the two files required
     ## (recheck that they're both present).
-    for ( samp in samples ) {
+    results <- vector(mode='list', length=length(samples))
+    for ( n in 1:length(samples) ) {
+
+        samp <- samples[[n]]
+
         pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
         pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, cred)
 
@@ -326,17 +330,27 @@ calculateCellPurities <- function(uri, .opts=list(), cred) {
                           auth=cred)
 
         ## FIXME Attempt cell purity calculation.
-        facsCellPurity( fn.pre, fn.pos, ct$value )
+        pur <- facsCellPurity( fn.pre, fn.pos, ct$value )
+
+        results[[n]] <- c(sample=samp$name, purity=pur)
     }
 
-    return()
+    ## Beware large lists in this call FIXME.
+    results <- do.call('rbind', results)
+
+    return(results)
 }
 
 outputCSV <- function(res, file) {
 
-    ## FIXME output results in tabular format to file, suitable for
+    ## Output results in tabular format to file, suitable for
     ## use with tab2clinstudy.pl.
 
+    colnames(results) <- c('Sample|name','Sample|auto_purity')
+
+    write.csv(results, file=file, sep="\t", row.names=FALSE)
+
+    return()
 }
 
 ## USAGE: Rscript $0 uri outfile
