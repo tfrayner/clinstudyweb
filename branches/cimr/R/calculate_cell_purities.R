@@ -78,7 +78,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ## Find clusters. FIXME the B=100 probably needs fixing and the
     ## whole function made parallelizable. Note that we fix K at 2
-    ## because we expect only live and dead cell populations here.
+    ## because we expect only live and dead cell populations
+    ## here. (FIXME a large granulocyte population would throw this
+    ## off though).
     ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=2, B=B)
 
     ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=2, B=B, level=0.8)
