@@ -18,6 +18,16 @@
 ## $Id$
 
 
+## Current status:
+##
+## - CD4, CD8 and CD14 will probably work with just a little tweaking.
+##
+## - CD16 is just too pure in the pre fractions! Clustering probably
+##   needs to know about this; special case for this cell type.
+##
+## - CD19 is to be quite honest a bit of a mess. Not sure at all how
+##   to deal with this cell type.
+
 facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     require(flowCore)
@@ -52,10 +62,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## here is consistent with an X, Y interpretation in plots.
     ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2),
                        CD16=list(`FL1-H`=2.5, `FL2-H`=3),
-                       CD14=list(`FL1-H`=1.5,`FL2-H`=3.5))#,
-#                       CD8=list(`FL2-H`=, `FL4-H`=),
-#                       CD14=list(`FL2-H`=, `FL4-H`=),
-#                       CD19=list(`FL2-H`=, `FL4-H`=))
+                       CD14=list(`FL1-H`=1.5,`FL2-H`=3.5),
+                       CD8=list(`FL2-H`=3.2, `FL4-H`=2.9),
+                       CD19=list(`FL1-H`=2.4, `FL2-H`=2.2))
 
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
@@ -68,9 +77,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ld <- .readAndLog(pre)
 
     ## Find clusters. FIXME the B=100 probably needs fixing and the
-    ## whole function made parallelizable.
-    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B) # FIXME K.start is pointless here.
-    K      <- .findBestBIC(ld.res)
+    ## whole function made parallelizable. Note that we fix K at 2
+    ## because we expect only live and dead cell populations here.
+    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=2, B=B)
 
     ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=2, B=B, level=0.8)
     ld.gated <- filter(ld, ld.gate)
@@ -78,12 +87,10 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## This gives a plot indicating which population was chosen as live cells.
     plot(ld.gated, data=ld)
     ## Alternatively (seems to be identical):
-    plot(ld.res[[K]], data=ld)
+    plot(ld.res, data=ld)
 
-    ## FIXME we need some heuristics here to correctly identify live vs. dead populations.
+    ## Take the population with the largest median FSC and assume it's the live cell population.
     ld.pops  <- split(ld, ld.gated)
-
-    ## Take the population with the largest median FSC.
     w <- which.max(sapply(ld.pops, function(cl) median(exprs(cl[, 'FSC-H']))))
 
     ## For illustration only; this would ideally also indicate the
@@ -198,6 +205,25 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     nrst <- .fillInNAPoints(nrst, tgt, xch, ych)
     if ( any( is.na( unlist(nrst) ) ) )
         stop("Error: cannot determine rectangle gate; no outlier clusters?")
+
+    ## The gates we're getting currently seem to be a bit on the large
+    ## side; here we shrink them down to size a bit.
+    .shrinkRectGate <- function(nrst, tgt, xch, ych) {
+
+        ## Initial try: reduce the distance between the gate and the
+        ## tgt ranges by a fraction (e.g. 0.6).
+        xtr <- range(exprs(tgt[, xch]))
+        ytr <- range(exprs(tgt[, ych]))
+
+        nrst$up    <- ytr[2] + ((nrst$up - ytr[2]) * 0.6)
+        nrst$down  <- ytr[1] - ((ytr[1] - nrst$down) * 0.6)
+        nrst$right <- xtr[2] + ((nrst$right - xtr[2]) * 0.6)
+        nrst$left  <- xtr[1] - ((xtr[1] - nrst$left) * 0.6)
+
+        return(nrst)
+    }
+
+    nrst <- .shrinkRectGate(nrst, tgt, xch, ych)
 
     ## FIXME check for negative distances, i.e. overlapping clusters.
 
