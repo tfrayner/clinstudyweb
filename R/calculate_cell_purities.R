@@ -264,7 +264,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred) {
                             attributes=list('join'='type_id'),
                             uri=uri,
                             .opts=.opts,
-                            cred=cred)
+                            auth=cred)
 
         if ( length(file) < 1 ) {
             warning("File not found: ", type, " file for sample ", sample_id, ". Skipping.")
@@ -301,7 +301,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred) {
                            attributes=attrs,
                            uri=uri,
                            .opts=.opts,
-                           cred=cred)
+                           auth=cred)
 
     ## Loop over the samples, pull down the two files required
     ## (recheck that they're both present).
@@ -323,7 +323,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred) {
                           condition=list(id=samp$cell_type_id),
                           uri=uri,
                           .opts=.opts,
-                          cred=cred)
+                          auth=cred)
 
         ## FIXME Attempt cell purity calculation.
         facsCellPurity( fn.pre, fn.pos, ct$value )
