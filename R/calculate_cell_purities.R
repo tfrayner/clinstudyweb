@@ -253,6 +253,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
 
     require(RCurl)
+    require(ClinStudyWeb)
 
     .retrieveFileInfo <- function(sample_id, type, uri, .opts, cred) {
 
@@ -276,7 +277,9 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
 
         ## FIXME better to centralise this redirection somewhere. ORM
         ## fix to automate file uri attribute?
-        file.uri <- paste(uri, 'static/datafiles/sample', file$filename, sep='/')
+        file.uri <- NULL
+        if ( ! is.null(file) )
+            file.uri <- paste(uri, 'static/datafiles/sample', file[[1]]$filename, sep='/')
 
         return(file.uri)
     }
@@ -330,7 +333,10 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
                           auth=cred)
 
         ## FIXME Attempt cell purity calculation.
-        pur <- facsCellPurity( fn.pre, fn.pos, ct$value )
+        rc <- try(pur <- facsCellPurity( fn.pre, fn.pos, ct[[1]]$value ))
+
+        if ( inherits(rc, 'try-error') )
+            next
 
         results[[n]] <- c(sample=samp$name, purity=pur)
     }
@@ -341,14 +347,14 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
     return(results)
 }
 
-outputCSV <- function(res, file) {
+outputCSV <- function(results, file) {
 
     ## Output results in tabular format to file, suitable for
     ## use with tab2clinstudy.pl.
 
     colnames(results) <- c('Sample|name','Sample|auto_purity')
 
-    write.csv(results, file=file, sep="\t", row.names=FALSE)
+    write.table(results, file=file, sep="\t", row.names=FALSE)
 
     return()
 }
