@@ -7,13 +7,16 @@
   web site.
 }
 \usage{
-logoutCSWebHandle ( auth, .opts=list() )
+logoutCSWebHandle ( auth, .opts=list(), ... )
 }
 \arguments{
 
   \item{auth}{An authenticated CURLHandle object as returned by \code{getCSWebHandle}.}
 
   \item{.opts}{A list of CURLOptions passed to \code{RCurl::getURLContent}.}
+
+  \item{...}{Unused arguments; included to allow upstream functions to
+    pass arguments in uninspected.}
 }
 \details{
   Use of this function is recommended for security purposes.
