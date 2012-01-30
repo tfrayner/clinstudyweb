@@ -66,7 +66,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
                        CD8  = list(`FL2-H`=3.2, `FL4-H`=2.9),
                        CD19 = list(`FL1-H`=2.4, `FL2-H`=2.2))
 
-    livegate <- list(up=2.5, down=1, left=2.5, right=3.5)
+    livegate <- list(up=2.5, down=1, left=2.3, right=3.5)
 
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
