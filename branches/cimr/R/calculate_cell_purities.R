@@ -57,14 +57,16 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     ## This map lists points near the centre of the target
     ## cluster. One hopes that these are sufficiently consistent that
-    ## this will work. FIXME needs values filled in for all five cell
-    ## types. Note that we're assuming elsewhere that the ordering
-    ## here is consistent with an X, Y interpretation in plots.
-    ct.maplist <- list(CD4=list(`FL1-H`=2.2, `FL2-H`=3.2),
-                       CD16=list(`FL1-H`=2.5, `FL2-H`=3),
-                       CD14=list(`FL1-H`=1.5,`FL2-H`=3.5),
-                       CD8=list(`FL2-H`=3.2, `FL4-H`=2.9),
-                       CD19=list(`FL1-H`=2.4, `FL2-H`=2.2))
+    ## this will work. Note that we're assuming elsewhere that the
+    ## ordering here is consistent with an X, Y interpretation in
+    ## plots.
+    ct.maplist <- list(CD4  = list(`FL1-H`=2.2, `FL2-H`=3.2),
+                       CD16 = list(`FL1-H`=2.5, `FL2-H`=3),
+                       CD14 = list(`FL1-H`=1.5, `FL2-H`=3.5),
+                       CD8  = list(`FL2-H`=3.2, `FL4-H`=2.9),
+                       CD19 = list(`FL1-H`=2.4, `FL2-H`=2.2))
+
+    livegate <- list(up=2.5, down=1, left=2.5, right=3.5)
 
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
@@ -77,37 +79,56 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ld <- .readAndLog(pre)
 
     ## Find clusters. FIXME the B=100 probably needs fixing and the
-    ## whole function made parallelizable. Note that we fix K at 2
-    ## because we expect only live and dead cell populations
-    ## here. (FIXME a large granulocyte population would throw this
-    ## off though).
-    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=2, B=B)
+    ## whole function made parallelizable. Fixing K at 2 here tends to
+    ## give spurious results so we have to be a bit smart about
+    ## identifying live cell populations.
+    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B)
+    K      <- .findBestBIC(ct.res)
 
-    ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=2, B=B, level=0.8)
+    ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
     ld.gated <- filter(ld, ld.gate)
 
     ## This gives a plot indicating which population was chosen as live cells.
     plot(ld.gated, data=ld)
-    ## Alternatively (seems to be identical):
-    plot(ld.res, data=ld)
+    bc <- c(livegate$left, livegate$down, livegate$right, livegate$up)
+    do.call('rect', as.list(bc))
 
-    ## Take the population with the largest median FSC and assume it's the live cell population.
-    ld.pops  <- split(ld, ld.gated)
-    w <- which.max(sapply(ld.pops, function(cl) median(exprs(cl[, 'FSC-H']))))
+    ## Find the live populations
+    .findLivePops <- function( ld.pops, livegate ) {
 
-    ## For illustration only; this would ideally also indicate the
-    ## location of the gate we're ultimately constructing here.
-    plot(ld.pops[[w]], c(xch, ych))
+        w <- sapply(ld.pops, function(pop) {
+            xr <- range(exprs(pop[, 'FSC-H']))
+            yr <- range(exprs(pop[, 'SSC-H']))
+            xw <- xr[1] > livegate$left & xr[2] < livegate$right
+            yw <- yr[1] > livegate$down & yr[2] < livegate$up
+            return( xw & yw )
+        })
 
-    ct.res <- flowClust(ld.pops[[w]], varNames=c(xch, ych), K=K.start, B=B)
+        if ( sum(w) == 0 )
+            stop("Zero gated populations fall entirely within our live-cell gate.")
+
+        return(w)
+    }
+
+    ## Take the populations which fall entirely within the livegate
+    ## rectangle as the live cell population. FIXME
+    ld.pops <- split(ld, ld.gated)
+    w <- .findLivePops(ld.pops, livegate)
+    ld.pops <- as(ld.pops[w], 'flowSet')
+    ld.pops <- as(ld.pops, 'flowFrame')
+
+    ## Identify the 'best' number of clusters to fit.
+    ct.res <- flowClust(ld.pops, varNames=c(xch, ych), K=K.start, B=B)
     K      <- .findBestBIC(ct.res)
 
+    ## Filter the live cell population based on that value of K.
     ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.8)
-    ct.testgated <- filter(ld.pops[[w]], ct.testgate)
-    ct.testpops  <- split(ld.pops[[w]], ct.testgated)
+    ct.testgated <- filter(ld.pops, ct.testgate)
+    ct.testpops  <- split(ld.pops, ct.testgated)
 
-    ## This now has the initial clustering illustrated.
-    plot(ct.testgated, data=ld.pops[[w]])
+    ## This now has the initial clustering illustrated. See below for
+    ## an overlay of the final rectangleGate.
+    plot(ct.testgated, data=ld.pops)
 
     ## Figure out which our target cluster is and expand the ranges to
     ## include everything except for the other identified clusters.
