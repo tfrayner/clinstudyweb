@@ -154,14 +154,15 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
             }))
         })
 
-        if ( sum(w) == 1 )
+        if ( sum(w) == 0 )
+            stop("Zero populations match our target heuristic.")
+        else
             return(w)
-          else
-              stop("Either zero or multiple gated populations match our target heuristic.")
     }
 
     w <- .findTarget( ct.testpops, ct.map )
-    tgt <- ct.testpops[w][[1]]
+    tgt <- as(ct.testpops[w], 'flowSet')
+    tgt <- as(tgt, 'flowFrame')
     oth <- ct.testpops[!w]
 
     ## Step b: sort non-target clusters into locations relative to the target.
@@ -330,6 +331,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
     ## Loop over the samples, pull down the two files required
     ## (recheck that they're both present).
     results <- vector(mode='list', length=length(samples))
+
     for ( n in 1:length(samples) ) {
 
         samp <- samples[[n]]
@@ -337,7 +339,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
         pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
         pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, cred)
 
-        if ( any(is.null(c(pre, pos)) ) )
+        if ( any(sapply(list(pre, pos), is.null) ) )
             next
 
         ## Download both files to a temporary location.
