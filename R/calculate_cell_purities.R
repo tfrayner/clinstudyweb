@@ -94,8 +94,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
 
     ## This gives a plot indicating which population was chosen as live cells.
     plot(ld.gated, data=ld)
-    bc <- c(livegate$left, livegate$down, livegate$right, livegate$up)
-    do.call('rect', as.list(bc))
+    bc <- list(livegate$left, livegate$down, livegate$right, livegate$up)
+    bc$lty <- 2
+    do.call('rect', bc)
 
     ## Find the live populations
     .findLivePops <- function( ld.pops, livegate ) {
@@ -127,7 +128,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     K      <- .findBestBIC(ct.res)
 
     ## Filter the live cell population based on that value of K.
-    ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.6)
+    ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.8)
     suppressMessages(ct.testgated <- filter(ld.pops, ct.testgate))
     ct.testpops  <- split(ld.pops, ct.testgated)
 
@@ -248,6 +249,19 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         if ( is.na(nrst$left) )
             nrst$left  <- xtr[1] - ifelse(is.na(dist$right), m, dist$right)
 
+        ## Another fall-back option: just expand the distances by some
+        ## fraction of the widths of the target population. Most useful for CD16.
+        xwd <- abs(xtr[2] - xtr[1])
+        ywd <- abs(ytr[2] - ytr[1])
+        if ( is.na(nrst$up) )
+            nrst$up    <- ytr[2] + ywd
+        if ( is.na(nrst$down) )
+            nrst$down  <- ytr[1] - ywd
+        if ( is.na(nrst$right) )
+            nrst$right <- xtr[2] + xwd
+        if ( is.na(nrst$left) )
+            nrst$left  <- xtr[1] - xwd
+
         return(nrst)
     }
 
@@ -283,6 +297,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     ## Construct the rectangle gate.
     x <- list( c( nrst$left, nrst$right), c(nrst$down, nrst$up) )
     names(x) <- c(xch, ych)
+    x$filterId <- sprintf("Live%sGate", cell.type)
     ct.gate  <- do.call('rectangleGate', x)
 
     ct       <- .readAndLog(pos)
