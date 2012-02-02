@@ -28,7 +28,7 @@
 ## - CD19 is to be quite honest a bit of a mess. Not sure at all how
 ##   to deal with this cell type.
 
-facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
+facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FALSE ) {
 
     require(flowCore)
     require(flowClust)
@@ -72,6 +72,9 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     if ( is.null(ct.map) )
         stop('Unrecognised cell type.')
 
+    if (verbose)
+        message(sprintf("Processing %s data (params: %s).", cell.type, deparse(ct.map, control=c())))
+
     xch <- names(ct.map)[1]
     ych <- names(ct.map)[2]
 
@@ -82,11 +85,12 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## whole function made parallelizable. Fixing K at 2 here tends to
     ## give spurious results so we have to be a bit smart about
     ## identifying live cell populations.
-    ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B)
+    if (verbose) message("Identifying live-cell population...")
+    suppressMessages(ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B))
     K      <- .findBestBIC(ct.res)
 
     ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
-    ld.gated <- filter(ld, ld.gate)
+    suppressMessages(ld.gated <- filter(ld, ld.gate))
 
     ## This gives a plot indicating which population was chosen as live cells.
     plot(ld.gated, data=ld)
@@ -118,13 +122,16 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ld.pops <- as(ld.pops, 'flowFrame')
 
     ## Identify the 'best' number of clusters to fit.
-    ct.res <- flowClust(ld.pops, varNames=c(xch, ych), K=K.start, B=B)
+    if (verbose) message(sprintf("Identifying %s population...", cell.type))
+    suppressMessages(ct.res <- flowClust(ld.pops, varNames=c(xch, ych), K=K.start, B=B))
     K      <- .findBestBIC(ct.res)
 
     ## Filter the live cell population based on that value of K.
-    ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.8)
-    ct.testgated <- filter(ld.pops, ct.testgate)
+    ct.testgate  <- tmixFilter('CD4', c(xch, ych), K=K, B=B, level=0.6)
+    suppressMessages(ct.testgated <- filter(ld.pops, ct.testgate))
     ct.testpops  <- split(ld.pops, ct.testgated)
+
+    ## FIXME discard the ct.testpops with only a handful of events in them?
 
     ## This now has the initial clustering illustrated. See below for
     ## an overlay of the final rectangleGate.
@@ -146,18 +153,36 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
     ## Step a: find the target cluster.
     .findTarget <- function( ct.testpops, ct.map ) {
 
-        w <- sapply(ct.testpops, function(pop) {
-            all(sapply(names(ct.map), function(ch) {
+        ## First, identify the nearest cluster.
+        dists <- sapply(ct.testpops, function(pop) {
+            ch.dist <- sapply(names(ct.map), function(ch) {
                 xr <- range(exprs(pop[, ch]))
-                x <- ct.map[[ch]]
-                return(x > xr[1] & x < xr[2])
-            }))
+                m  <- mean(xr)
+                return(ct.map[[ch]]-m)
+            })
+            return(sqrt(sum(ch.dist^2)))
         })
+
+        w <- dists == min(dists) & dists < 1 # No further than one log-unit away.
 
         if ( sum(w) == 0 )
             stop("Zero populations match our target heuristic.")
-        else
-            return(w)
+
+        init <- ct.testpops[w][[1]]
+
+        ## Now expand out to cover clusters which overlap the midpoint
+        ## of the initial cluster.
+        w <- sapply(ct.testpops, function(pop) {
+            all(sapply(names(ct.map), function(ch) {
+                xr <- range(exprs(pop[, ch]))
+                tm <- mean(range(exprs(init[, ch])))
+                return(tm > xr[1] & tm < xr[2])
+            }))
+        })
+
+        w <- w & dists < 1  # You wouldn't think this would be a problem, but it is.
+
+        return(w)
     }
 
     w <- .findTarget( ct.testpops, ct.map )
@@ -269,10 +294,13 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6 ) {
 
     x <- summary(ct.gated) ## Should spit out the purity value.
 
+    if (verbose)
+        print(x)
+
     return(x$p)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
+calculateCellPurities <- function(uri, .opts=list(), cred, outfile, verbose=FALSE) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -356,7 +384,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile) {
                           auth=cred)
 
         ## FIXME Attempt cell purity calculation.
-        rc <- try(pur <- facsCellPurity( fn.pre, fn.pos, ct[[1]]$value ))
+        rc <- try(pur <- facsCellPurity( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose ))
 
         if ( inherits(rc, 'try-error') )
             next
