@@ -1082,6 +1082,7 @@ CREATE TABLE `transplant` (
   `donor_cause_of_death` varchar(255) default NULL,
   `donor_cmv` tinyint(1) default NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY (`hospitalisation_id`, `date`),
   KEY (`hospitalisation_id`),
   KEY (`sensitisation_status_id`),
   KEY (`organ_type_id`),
