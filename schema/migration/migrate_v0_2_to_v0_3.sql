@@ -290,6 +290,119 @@ CREATE TABLE `phenotype_quantity_audit_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- This constraint is useful for preventing duplicate transplant rows.
+-- This constraint is useful for preventing duplicate transplant
+-- rows. Note that this was a temporary measure later dissolved when
+-- we deleted the entire hospitalisation table (see below).
 --
 alter table transplant add unique key (`hospitalisation_id`,`date`);
+
+
+--
+-- Now for some fireworks; extended testing in a production
+-- environment has indicated precisely zero demand for the
+-- hospitalisation table, and so we would prefer to move transplant
+-- directly under patient.
+--
+-- First, fix up the transplant table.
+alter table transplant add column patient_id int(11);
+update transplant, hospitalisation set transplant.patient_id=hospitalisation.patient_id where transplant.hospitalisation_id=hospitalisation.id;
+alter table transplant add constraint `transplant_ibfk_1b` foreign key (`patient_id`) references `patient` (`id`);
+alter table transplant drop foreign key `transplant_ibfk_1`;
+alter table transplant add unique key (`patient_id`, `date`);
+alter table transplant drop key `hospitalisation_id_2`;
+alter table transplant drop column `hospitalisation_id`;
+
+-- Drop links to Drug.
+alter table drug drop key `drug_hospitalisation_id`;
+alter table drug drop foreign key `drug_ibfk_7`;
+alter table drug drop column `hospitalisation_id`;
+
+-- Drop links to TestResult
+alter table test_result drop key `test_result_hospitalisation_id`;
+alter table test_result drop foreign key `test_result_ibfk_3`;
+alter table test_result drop column `hospitalisation_id`;
+alter table test_result modify column `visit_id` int(11) not null;
+
+-- Fix the audit history tables FIXME
+alter table drug_audit_history drop column `hospitalisation_id`;
+alter table test_result_audit_history drop column `hospitalisation_id`;
+alter table transplant_audit_history add column patient_id int(11);
+update transplant_audit_history t, hospitalisation h set t.patient_id=h.patient_id where t.hospitalisation_id=h.id;
+alter table transplant_audit_history drop column `hospitalisation_id`;
+
+-- Drop the actual hospitalisation table(s).
+drop table hospitalisation;
+drop table hospitalisation_audit_log;
+drop table hospitalisation_audit_history;
+
+-- Fix the triggers.
+delimiter //
+
+-- These are identical to the original but without references to the hospitalisation table.
+drop trigger if exists `drug_update_trigger`//
+create trigger `drug_update_trigger`
+    before update on drug
+for each row
+begin
+    if ( (new.visit_id is not null)
+       + (new.prior_treatment_id is not null) != 1) then
+        call ERROR_DRUG_UPDATE_TRIGGER();
+    end if;
+end;
+//
+
+drop trigger if exists `drug_insert_trigger`//
+create trigger `drug_insert_trigger`
+    before insert on drug
+for each row
+begin
+    if ( (new.visit_id is not null)
+       + (new.prior_treatment_id is not null) != 1) then
+        call ERROR_DRUG_INSERT_TRIGGER();
+    end if;
+end;
+//
+
+drop trigger if exists `test_result_value_insert_trigger`//
+create trigger `test_result_value_insert_trigger`
+    before insert on test_result
+for each row
+begin
+    if ( new.value is not null
+       and (select count(possible_value_id)
+            from test_possible_value
+            where test_id=new.test_id) != 0 ) then
+        call ERROR_TEST_RESULT_VALUE_INSERT_TRIGGER();
+    end if;
+    if ( new.controlled_value_id is not null
+       and (select count(possible_value_id)
+            from test_possible_value
+            where test_id=new.test_id
+            and possible_value_id=new.controlled_value_id) = 0 ) then
+        call ERROR_TEST_RESULT_CONTROLLED_VALUE_INSERT_TRIGGER();
+    end if;
+end;
+//
+
+drop trigger if exists `test_result_value_update_trigger`//
+create trigger `test_result_value_update_trigger`
+    before update on test_result
+for each row
+begin
+    if ( new.value is not null
+        and (select count(possible_value_id)
+             from test_possible_value
+             where test_id=new.test_id) != 0 ) then
+        call ERROR_TEST_RESULT_VALUE_UPDATE_TRIGGER();
+    end if;
+    if ( new.controlled_value_id is not null
+        and (select count(possible_value_id)
+             from test_possible_value where
+             test_id=new.test_id
+             and possible_value_id=new.controlled_value_id) = 0 ) then
+        call ERROR_TEST_RESULT_CONTROLLED_VALUE_UPDATE_TRIGGER();
+    end if;
+end;
+//
+
+delimiter ;

@@ -51,7 +51,7 @@ sub read {
 
     my $drug_parent = $self->drug_parent();
 
-    unless ( first { $drug_parent eq $_ } qw( Visit Hospitalisation PriorTreatment ) ) {
+    unless ( first { $drug_parent eq $_ } qw( Visit PriorTreatment ) ) {
         die("Error: Unsuitable Drug/TestResult parent class specified ($drug_parent).\n");
     }
 
@@ -72,7 +72,6 @@ sub read {
         'Drug'              => $drug_parent,
         'EmergentGroup'     => 'Visit',
         'GraftFailure'      => 'Transplant',
-        'Hospitalisation'   => 'Patient',
         'Patient'           => 'ClinStudyML',
         'PriorGroup'        => 'Patient',
         'PriorObservation'  => 'Patient',
@@ -83,7 +82,7 @@ sub read {
         'Study'             => 'Patient',
         'SystemInvolvement' => 'Patient',
         'TestResult'        => $drug_parent,  # FIXME if this is PriorTreatment we may be screwed.
-        'Transplant'        => 'Hospitalisation',
+        'Transplant'        => 'Patient',
         'Visit'             => 'Patient',
         'VisitDataFile'     => 'Visit',
     );
@@ -308,8 +307,7 @@ object instantiation.
 
 =head2 drug_parent
 
-Optional. Drugs and TestResults can in principle be attached to either Visit or
-Hospitalisation, and Drugs can further be attached to
+Optional. Drugs can in principle be attached to either Visit or
 PriorTreatment. Only one parent class can be supported per run of this
 script. By default we attempt to attach everything to Visit, but this
 attribute allows the user to redirect the attachment if necessary.
