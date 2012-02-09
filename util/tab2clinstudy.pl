@@ -133,8 +133,7 @@ well-formed).
 
 =item -p
 
-Drugs and TestResults can in principle be attached to either Visit or
-Hospitalisation, and Drugs can further be attached to
+Drugs can in principle be attached to either Visit or
 PriorTreatment. Only one parent class can be supported per run of this
 script. By default we attempt to attach everything to Visit, but this
 option allows the user to redirect the attachment if necessary.

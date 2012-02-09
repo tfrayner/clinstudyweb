@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::AssayQcValue</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__assay_qc_value">TABLE: <code>assay_qc_value</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -27,6 +28,13 @@
                 <li><a href="#value">value</a></li>
                 <li><a href="#type">type</a></li>
                 <li><a href="#assay_id">assay_id</a></li>
+        </ul>
+
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#name"><code>name</code></a></li>
         </ul>
 
         <li><a href="#relations">RELATIONS</a></li>
@@ -41,6 +49,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::AssayQcValue</p>
+<hr />
+<h1><a name="table__assay_qc_value">TABLE:
+<code>assay_qc_value</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -73,6 +84,21 @@
   is_foreign_key: 1
   is_nullable: 0
 </pre>
+<hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id4" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="name"></a><a href="#name"><code>name</code></a></h2>
+<ul>
+<li><strong><a name="name2" class="item"></a><a href=
+"#name">name</a></strong></li>
+<li><strong><a name="assay_id" class="item"></a><a href=
+"#assay_id">assay_id</a></strong></li>
+</ul>
 <hr />
 <h1><a name="relations">RELATIONS</a></h1>
 <h2><a name="assay_id">assay_id</a></h2>

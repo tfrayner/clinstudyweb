@@ -13,9 +13,6 @@ elements:
   - type: Hidden
     name: visit_id
 
-  - type: Hidden
-    name: hospitalisation_id
-
   - type: Select
     name: test_id
     label: Test Name
@@ -27,10 +24,9 @@ elements:
       - type:    DBIC::Unique
         resultset:   TestResult
         self_stash_key:  object
-        message: A result for this test has already been given for this visit or hospitalisation.
+        message: A result for this test has already been given for this visit.
         others:
           - visit_id
-          - hospitalisation_id
     model_config:
       resultset: Test
       label_column: name

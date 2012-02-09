@@ -4,6 +4,3 @@
 [% IF object.visit_id.defined %]
   <p><a href="[% c.uri_for("/visit/view", object.visit_id.id) | html %]">Return to visit view...</a></p>
 [% END %]
-[% IF object.hospitalisation_id.defined %]
-  <p><a href="[% c.uri_for("/hospitalisation/view", object.hospitalisation_id.id) | html %]">Return to hospitalisation view...</a></p>
-[% END %]

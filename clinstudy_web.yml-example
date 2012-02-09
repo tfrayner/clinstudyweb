@@ -53,10 +53,10 @@ Model::DB:
 # to automatically aggregate tests into a derived score. The modules
 # are located in the lib/CIMR/ClinWeb/TestCalc directory, and must
 # implement suitable new() and calculate() methods. The calculate
-# method is passed either a Visit or Hospitalisation object and is
-# expected to calculate scores and enter them into the database
-# (linking parent and child test results) itself. This gives the
-# implementer of these modules full control over the outcome.
+# method is passed a Visit object and is expected to calculate scores
+# and enter them into the database (linking parent and child test
+# results) itself. This gives the implementer of these modules full
+# control over the outcome.
 
 # At some point we may modify this so that each study type can
 # have many test calculators. It's not needed yet, however.
