@@ -18,70 +18,40 @@
 ## $Id$
 
 ## Also public, this method is non-interactive and just returns the
-## annotation for a given file or barcode.
-csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
-                        uri, username, password, .opts=list(), curl=NULL ) {
-
-    require(rjson)
+## annotation for a given file or barcode. The query argument is used
+## to pass through upstream query constraints (e.g. test_ids, phenotype_ids).
+csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL, query=list(), ... ) {
 
     if ( is.null(assay.file) && is.null(assay.barcode) && is.null(sample.name) )
         stop("Error: Either assay.file, assay.barcode or sample.name must be specified")
 
-    if ( missing(uri) || missing(username) || missing(password) )
-        stop("Error: uri, username and password are required")
-
-    if ( ! is.list(.opts) )
-        stop("Error: .opts must be a list object")
-
-    needs.logout <- 0
-    if ( is.null(curl) ) {
-        curl <- .csGetAuthenticatedHandle( uri, username, password, .opts )
-        needs.logout <- 1
-    }
-
-    ## Strip off trailing /
-    uri <- gsub( '/+$', '', uri )
     if ( ! is.null(sample.name) )
-        quri <- paste(uri, '/query/sample_dump', sep='')            
+        action <- 'query/sample_dump'
     else
-        quri <- paste(uri, '/query/assay_dump', sep='')
+        action <- 'query/assay_dump'
 
     ## Undef (NULL) in queries is acceptable.
-    query  <- list(filename=assay.file,
-                   identifier=assay.barcode,
-                   name=sample.name)
-    query  <- rjson::toJSON(query)
-    query  <- RCurl::curlEscape(query)
-    status <- RCurl::basicTextGatherer()
-    res    <- RCurl::curlPerform(url=quri,
-                                 postfields=paste('data', query, sep='='),
-                                 .opts=.opts,
-                                 curl=curl,
-                                 writefunction=status$update)
+    query$filename=assay.file
+    query$identifier=assay.barcode
+    query$name=sample.name
 
-    status  <- rjson::fromJSON(status$value())
-    if ( ! isTRUE(status$success) )
-        stop(status$errorMessage)
-
-    if ( needs.logout == 1 ) {
-        .csLogOutAuthenticatedHandle( uri, curl, .opts )
-    }
+    response <- .csJSONGeneric( query, action, ... )
 
     .extractAttrs <- function(x) { class(x)!='list' }
 
     if ( ! is.null(sample.name) ) {
-        attrs  <- Filter( .extractAttrs, status$data )
-        sample <- status$data
+        attrs  <- Filter( .extractAttrs, response )
+        sample <- response
     } else {
 
         ## N.B. this all assumes a single channel only (FIXME)
-        attrs <- as.list(c(Filter( .extractAttrs, status$data),
-                           lapply(status$data$channels,
+        attrs <- as.list(c(Filter( .extractAttrs, response),
+                           lapply(response$channels,
                                   function(x) { Filter(.extractAttrs, x) } )[[1]],
-                           lapply(status$data$channels,
+                           lapply(response$channels,
                                   function(x) { Filter(.extractAttrs, x$sample) } )[[1]],
-                           Filter( .extractAttrs, status$data$qc)))
-        sample <- status$data$channels[[1]]$sample
+                           Filter( .extractAttrs, response$qc)))
+        sample <- response$channels[[1]]$sample
     }
 
     ## EmergentGroups and PriorGroups are a bit trickier, since they're 0..n
@@ -108,12 +78,20 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL,
         }
     }
 
-    ## We handle TestResults in much the same way.
+    ## We handle TestResults and PhenotypeQuantities in much the same way.
     tr <- sample$test_result
     if ( !is.null(tr) & length(tr) ) {
         for ( n in 1:length(tr) ) {
             attrname <- paste('test', names(tr)[n], sep='.')
             attrs[[attrname]]<-as.character(tr[n])
+        }
+    }
+
+    ph <- sample$phenotype
+    if ( !is.null(ph) & length(ph) ) {
+        for ( n in 1:length(ph) ) {
+            attrname <- paste('pheno', names(ph)[n], sep='.')
+            attrs[[attrname]]<-as.numeric(ph[n]) # All phenotypes are currently numeric.
         }
     }
 
