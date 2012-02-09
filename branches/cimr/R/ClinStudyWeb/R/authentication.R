@@ -30,20 +30,8 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
 
     username <- returnValOnCancel
     password <- returnValOnCancel
-
-    onOK <- function() {
-        username <<- tclvalue(username.tcl)
-        password <<- tclvalue(password.tcl)
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-    }
-
-    onCancel <- function() {
-        username <<- returnValOnCancel
-        password <<- returnValOnCancel
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-    }
+    username.tcl <- tclVar('')
+    password.tcl <- tclVar('')
 
     if ( missing(parent) ) {
         dlg <- tktoplevel()
@@ -60,6 +48,20 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
         tkpack(dlg, expand=TRUE)
     }
 
+    onOK <- function() {
+        username <<- tclvalue(username.tcl)
+        password <<- tclvalue(password.tcl)
+        tkgrab.release(dlg)
+        tkdestroy(dlg)
+    }
+
+    onCancel <- function() {
+        username <<- returnValOnCancel
+        password <<- returnValOnCancel
+        tkgrab.release(dlg)
+        tkdestroy(dlg)
+    }
+
     # Put our buttons into a frame.
     f.buttons <- tkframe(dlg, borderwidth=15)
     b.OK     <- tkbutton(f.buttons, text="   OK   ", command=onOK)
@@ -69,10 +71,8 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     # Text entry fields belong in a grid inside a frame.
     f.entries <- tkframe(dlg, borderwidth=15)
 
-    username.tcl <- tclVar('')
     e.user       <- tkentry(f.entries, width=paste(entryWidth), textvariable=username.tcl)
     l.user       <- tklabel(f.entries, text='Username: ')
-    password.tcl <- tclVar('')
     e.pass       <- tkentry(f.entries, width=paste(entryWidth), textvariable=password.tcl, show='*')
     l.pass       <- tklabel(f.entries, text='Password: ')
     
@@ -95,7 +95,7 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(list(username=username, password=password))
 }
 
-.csGetAuthenticatedHandle <- function( uri=NULL, auth, .opts=list() ) {
+getCSWebHandle <- function( uri=NULL, auth, .opts=list() ) {
 
     if ( is.null(uri) )
         stop('Error: uri argument must be provided.')
@@ -136,7 +136,9 @@ getCredentials <- function(title='ClinStudyWeb Authentication',
     return(curl)
 }
 
-.csLogOutAuthenticatedHandle <- function( auth, .opts=list() ) {
+logoutCSWebHandle <- function( auth, .opts=list(), ... ) {
+
+    ## N.B. ... argument included to allow generous use of ... in upstream functions.
 
     if ( ! inherits(auth, 'CURLHandle') )
         stop("Must pass in a CURLHandle object.")

@@ -10,7 +10,7 @@
 
 }
 \usage{
-csWebReannotate ( data, sample.column=NULL, uri, .opts=list(), cred=NULL )
+csWebReannotate ( data, sample.column=NULL, ... )
 }
 \arguments{
 
@@ -23,14 +23,12 @@ csWebReannotate ( data, sample.column=NULL, uri, .opts=list(), cred=NULL )
     assay file names. As a result no assay annotation will be included
     in the output.}
 
-  \item{uri}{The URI for the clinical database web site.}
-
-  \item{.opts}{A list of CURLOptions passed to \code{getURLContent}.}
-
-  \item{cred}{An optional list of login credentials, as returned by the
-    \code{getCredentials} function. This list should contain
-    just two character entries, named ``username'' and ``password''.}
-
+  \item{...}{Additional arguments passed in to the internal JSON query
+    functions. These may either be arguments such as "pattern" or
+    "categories" which allow specification of the annotation to be
+    retrieved, or authentication details. Examples of the latter are
+    "auth" (see \code{getCredentials} and \code{getCSWebHandle}) and "uri".}
+  
 }
 \details{
 

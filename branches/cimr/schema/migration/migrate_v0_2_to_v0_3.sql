@@ -288,3 +288,8 @@ CREATE TABLE `phenotype_quantity_audit_log` (
   CONSTRAINT `phenotype_quantity_audit_log_fk_create_id` FOREIGN KEY (`create_id`) REFERENCES `changelog` (`ID`),
   CONSTRAINT `phenotype_quantity_audit_log_fk_delete_id` FOREIGN KEY (`delete_id`) REFERENCES `changelog` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- This constraint is useful for preventing duplicate transplant rows.
+--
+alter table transplant add unique key (`hospitalisation_id`,`date`);
