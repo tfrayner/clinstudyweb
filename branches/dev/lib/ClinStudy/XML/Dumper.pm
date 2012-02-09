@@ -167,7 +167,7 @@ sub row_to_element {
 
         # Check that we're not trying to attach a test aggregation
         # child, to its ultimate container class
-        # (visit/hospitalisation/prior_treatment).
+        # (visit).
         my @parents = $row->parent_test_results();
         return if ( scalar @parents
                         && $parent_class ne 'TestResult' );
