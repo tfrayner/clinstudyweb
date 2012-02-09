@@ -20,54 +20,97 @@
 ## Code copied from
 ## http://bioinf.wehi.edu.au/~wettenhall/RTclTkExamples/modalDialog.html
 ## and modified.
-getCredentials <- function(title='Database Authentication', entryWidth=30, returnValOnCancel=NA) {
+getCredentials <- function(title='ClinStudyWeb Authentication',
+                           entryWidth=30, returnValOnCancel=NA, parent) {
 
     if ( ! capabilities()['X11'] )
         stop("Error: X11 device is not available.")
 
-    dlg <- tktoplevel()
-    tkwm.deiconify(dlg)
-    tkgrab.set(dlg)
-    tkfocus(dlg)
-    tkwm.title(dlg,title)
-    userEntryVarTcl <- tclVar('')
-    userEntryWidget <- tkentry(dlg, width=paste(entryWidth), textvariable=userEntryVarTcl)
-    passEntryVarTcl <- tclVar('')
-    passEntryWidget <- tkentry(dlg, width=paste(entryWidth), textvariable=passEntryVarTcl, show='*')
-    tkgrid(tklabel(dlg, text="       "))
-    tkgrid(tklabel(dlg, text='Username: '), userEntryWidget)
-    tkgrid(tklabel(dlg, text='Password: '), passEntryWidget)
-    tkgrid(tklabel(dlg, text="       "))
-    userReturnVal <- returnValOnCancel
-    passReturnVal <- returnValOnCancel
-    onOK <- function() {
-        userReturnVal <<- tclvalue(userEntryVarTcl)
-        passReturnVal <<- tclvalue(passEntryVarTcl)
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-    }
-    onCancel <- function() {
-        userReturnVal <<- returnValOnCancel
-        passReturnVal <<- returnValOnCancel
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-    }
-    ## FIXME the layout needs a tweak here.
-    OK.but     <- tkbutton(dlg, text="   OK   ", command=onOK)
-    Cancel.but <- tkbutton(dlg, text=" Cancel ", command=onCancel)
-    tkgrid(OK.but, Cancel.but)
-    tkgrid(tklabel(dlg, text="    "))
+    require(tcltk)
 
-    tkfocus(dlg)
-    tkbind(dlg, "<Destroy>", function() {tkgrab.release(dlg)})
-    tkbind(userEntryWidget, "<Return>", onOK)
-    tkbind(passEntryWidget, "<Return>", onOK)
+    username <- returnValOnCancel
+    password <- returnValOnCancel
+
+    onOK <- function() {
+        username <<- tclvalue(username.tcl)
+        password <<- tclvalue(password.tcl)
+        tkgrab.release(dlg)
+        tkdestroy(dlg)
+    }
+
+    onCancel <- function() {
+        username <<- returnValOnCancel
+        password <<- returnValOnCancel
+        tkgrab.release(dlg)
+        tkdestroy(dlg)
+    }
+
+    if ( missing(parent) ) {
+        dlg <- tktoplevel()
+
+        tkwm.geometry(dlg, .calcTkWmGeometry(350,130))
+        tkwm.geometry(dlg, '') # Shrink back to default size
+        tkwm.deiconify(dlg)
+        tkgrab.set(dlg)
+        tkfocus(dlg)
+        tkwm.title(dlg,title)
+    }
+    else {
+        dlg <- tkframe(parent)
+        tkpack(dlg, expand=TRUE)
+    }
+
+    # Put our buttons into a frame.
+    f.buttons <- tkframe(dlg, borderwidth=15)
+    b.OK     <- tkbutton(f.buttons, text="   OK   ", command=onOK)
+    b.cancel <- tkbutton(f.buttons, text=" Cancel ", command=onCancel)
+    tkpack(b.OK, b.cancel, side='right')
+
+    # Text entry fields belong in a grid inside a frame.
+    f.entries <- tkframe(dlg, borderwidth=15)
+
+    username.tcl <- tclVar('')
+    e.user       <- tkentry(f.entries, width=paste(entryWidth), textvariable=username.tcl)
+    l.user       <- tklabel(f.entries, text='Username: ')
+    password.tcl <- tclVar('')
+    e.pass       <- tkentry(f.entries, width=paste(entryWidth), textvariable=password.tcl, show='*')
+    l.pass       <- tklabel(f.entries, text='Password: ')
+    
+    tkgrid(l.user, e.user)
+    tkgrid(l.pass, e.pass)
+
+    # Line the fields and labels up in the middle.
+    tkgrid.configure(e.user, e.pass, sticky='w')
+    tkgrid.configure(l.user, l.pass, sticky='e')
+
+    tkpack(f.entries, side='top')
+    tkpack(f.buttons, anchor='se')
+    
+    tkfocus(e.user)
+    tkbind(dlg, "<Destroy>", function() tkgrab.release(dlg))
+    tkbind(e.user, "<Return>", onOK)
+    tkbind(e.pass, "<Return>", onOK)
     tkwait.window(dlg)
 
-    return(list(username=userReturnVal, password=passReturnVal))
+    return(list(username=username, password=password))
 }
 
-.csGetAuthenticatedHandle <- function( uri, username, password, .opts=list() ) {
+.csGetAuthenticatedHandle <- function( uri=NULL, auth, .opts=list() ) {
+
+    if ( is.null(uri) )
+        stop('Error: uri argument must be provided.')
+
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
+
+    ## It's entirely possible to get here with just a uri.
+    if ( missing(auth) )
+        auth <- NULL
+    if ( is.null(auth) ) {
+        auth <- getCredentials()
+        if ( any( is.na(auth) ) )
+            stop('User cancelled database connection.')
+    }
 
     ## Set up our session and authenticate.
     curl    <- RCurl::getCurlHandle()
@@ -75,7 +118,7 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     RCurl::curlSetOpt(cookiefile=cookies, curl=curl)
 
     ## We need to detect login failures here.
-    query  <- list(username=username, password=password)
+    query  <- list(username=auth$username, password=auth$password)
     query  <- rjson::toJSON(query)
     query  <- RCurl::curlEscape(query)
     status <- RCurl::basicTextGatherer()
@@ -93,12 +136,20 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return(curl)
 }
 
-.csLogOutAuthenticatedHandle <- function( uri, curl, .opts=list() ) {
+.csLogOutAuthenticatedHandle <- function( auth, .opts=list() ) {
+
+    if ( ! inherits(auth, 'CURLHandle') )
+        stop("Must pass in a CURLHandle object.")
+
+    uri    <- .csUriFromCurlHandle(auth)
+
+    if ( ! is.list(.opts) )
+        stop("Error: .opts must be a list object")
 
     status <- RCurl::basicTextGatherer()
     res    <- RCurl::curlPerform(url=paste(uri, 'json_logout', sep='/'),
                                  .opts=.opts,
-                                 curl=curl,
+                                 curl=auth,
                                  writefunction=status$update)
 
     ## Check the response for errors.
@@ -109,3 +160,10 @@ getCredentials <- function(title='Database Authentication', entryWidth=30, retur
     return()
 }
 
+.calcTkWmGeometry <- function( width, height ) {
+
+    px <- as.numeric(tkwinfo('screenwidth', '.'))
+    py <- as.numeric(tkwinfo('screenheight', '.'))
+
+    sprintf('%dx%d+%d+%d', width, height, (px/2)-(width/2), (py/2)-(height/2))
+}

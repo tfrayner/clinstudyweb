@@ -192,7 +192,7 @@ sub assay_dump : Local {
 
     if ( $assay ) {
         $c->stash->{ 'success' } = JSON::Any->true();
-        $c->stash->{ 'data' } = $self->dump_assay_entity($c, $assay);
+        $c->stash->{ 'data' } = $self->dump_assay_entity($c, $assay, $query);
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
@@ -228,7 +228,7 @@ sub sample_dump : Local {
 
     if ( $sample ) {
         $c->stash->{ 'success' } = JSON::Any->true();
-        $c->stash->{ 'data' } = $self->dump_sample_entity($c, $sample);
+        $c->stash->{ 'data' } = $self->dump_sample_entity($c, $sample, $query);
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
@@ -297,6 +297,7 @@ sub list_tests : Local {
     # We allow a query pattern to be used as a filter, but for the
     # most part this will just dump all test names.
     if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ s/([_%])/\\$1/g;
         $pattern =~ tr(*?)(%_);
         $tests   = $rs->search({ name => { -like => $pattern }});
     }
@@ -305,7 +306,15 @@ sub list_tests : Local {
     }
 
     my $result = {};
+    TEST:
     while ( my $test = $tests->next() ) {
+
+        # Skip tests which are children of other tests (unless specifically requested).
+        unless ( $query->{retrieve_all} ) {
+            next TEST if $test->search_related('test_results')
+                              ->search_related('test_aggregation_test_result_ids')->count();
+        }
+
         $result->{ $test->name() } = $test->id();
     }
 
@@ -331,6 +340,7 @@ sub list_phenotypes : Local {
     # We allow a query pattern to be used as a filter, but for the
     # most part this will just dump all phenotype names.
     if ( defined ( $pattern = $query->{pattern} ) ) {
+        $pattern =~ s/([_%])/\\$1/g;
         $pattern =~ tr(*?)(%_);
         $pheno   = $rs->search_related('type_id', { 'type_id.value' => { -like => $pattern }}, { distinct => 1 } );
     }
@@ -463,7 +473,9 @@ for passing back to the user (Private method).
 
 sub dump_assay_entity : Private {
 
-    my ( $self, $c, $assay ) = @_;
+    my ( $self, $c, $assay, $query ) = @_;
+
+    $query ||= {};
 
     my $batch = $assay->assay_batch_id();
 
@@ -482,7 +494,7 @@ sub dump_assay_entity : Private {
     foreach my $ch ( @channels ) {
         push @chdata, {
             label   => $ch->label_id()->value(),
-            sample  => $self->dump_sample_entity( $c, $ch->sample_id() ),
+            sample  => $self->dump_sample_entity( $c, $ch->sample_id(), $query ),
         };
     }
     $dump{channels} = \@chdata;
@@ -509,7 +521,9 @@ for passing back to the user (Private method).
 
 sub dump_sample_entity : Private {
 
-    my ( $self, $c, $sample ) = @_;
+    my ( $self, $c, $sample, $query ) = @_;
+
+    $query ||= {};
 
     my $visit   = $sample->visit_id();
     my $patient = $visit->patient_id();
@@ -565,14 +579,73 @@ sub dump_sample_entity : Private {
 
     $dump{has_infection} = $visit->has_infection();
 
+    ## Test results; default is now to dump nothing.
+    my $test_results = $self->dump_test_results( $c, $visit, $query );
+
     # We only want those TestResults which have no parents. FIXME is
     # there a better way via SQL::Abstract?
     my %tests = map { $_->test_id->name() => _get_test_value($_) }
                 grep { $_->parent_test_results()->count() == 0 }
-                $visit->test_results();
+                @$test_results;
     $dump{test_result} = \%tests;
 
+    my $phenotypes = $self->dump_phenotype_quantities( $c, $visit, $query );
+
+    $dump{phenotype} = { map { $_->type_id()->value() => $_->value() } @$phenotypes };
+
     return \%dump;
+}
+
+sub dump_test_results : Private {
+
+    my ( $self, $c, $visit, $query ) = @_;
+
+    my ( $q, @test_results );
+    if ( $q = $query->{'test_ids'} ) {
+        @test_results = $visit->search_related('test_results', {
+            test_id => { -in => $q },
+        });
+    }
+    elsif ( $q = $query->{'test_names'} ) {        
+        @test_results = $visit->search_related('test_results', {
+            'test_id.name' => { -in => $q },
+        }, { join => 'test_id' });
+    }
+    elsif ( $q = $query->{'test_pattern'} ) {
+        $q =~ s/([_%])/\\$1/g;
+        $q =~ tr/*?/%_/;
+        @test_results = $visit->search_related('test_results', {
+            'test_id.name' => { -like => $q },
+        }, { join => 'test_id' });
+    }
+
+    return \@test_results;
+}
+
+sub dump_phenotype_quantities : Private {
+
+    my ( $self, $c, $visit, $query ) = @_;
+
+    my ( $q, @phenotypes );
+    if ( $q = $query->{'phenotype_ids'} ) {
+        @phenotypes = $visit->search_related('phenotype_quantities', {
+            type_id => { -in => $q },
+        });
+    }
+    elsif ( $q = $query->{'phenotype_names'} ) {        
+        @phenotypes = $visit->search_related('phenotype_quantities', {
+            'type_id.value' => { -in => $q },
+        }, { join => 'type_id' });
+    }
+    elsif ( $q = $query->{'phenotype_pattern'} ) {
+        $q =~ s/([_%])/\\$1/g;
+        $q =~ tr/*?/%_/;
+        @phenotypes = $visit->search_related('phenotype_quantities', {
+            'type_id.value' => { -like => $q },
+        }, { join => 'type_id' });
+    }
+
+    return \@phenotypes;
 }
 
 sub dump_assay_drugs : Private {
