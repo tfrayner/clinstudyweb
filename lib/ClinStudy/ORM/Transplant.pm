@@ -160,6 +160,22 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<hospitalisation_id>
+
+=over 4
+
+=item * L</hospitalisation_id>
+
+=item * L</date>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("hospitalisation_id", ["hospitalisation_id", "date"]);
+
 =head1 RELATIONS
 
 =head2 donor_type_id
@@ -248,8 +264,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UfFoFSpEttEq0/rEyriGrQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-07 15:53:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ij09a7hF8qey6WkzaSPTbg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

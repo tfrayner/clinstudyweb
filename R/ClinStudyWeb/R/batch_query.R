@@ -47,8 +47,12 @@ csWebGeneFeatureSet <- function(files, pattern=NULL, categories=NULL, ... ) {
     return(cels)
 }
 
-csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
-                         pattern=NULL, categories=NULL, ... ) {
+csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
+  .csWebRGList(files=files, pattern=pattern, categories=categories, ...)
+}
+
+.csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
+                          pattern=NULL, categories=NULL, ... ) {
 
     stopifnot( ! missing(files) )
     stopifnot( ! missing(uri) )
@@ -246,10 +250,20 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
 }        
 
 .batchDBQuery <- function(files, samples=NULL,
-                          categories=NULL, pattern=NULL, ... ) {
+                          categories=NULL, pattern=NULL, auth=NULL, ... ) {
+
+    ## Since this is a batch query function it's convenient to catch
+    ## missing authentication credentials at this point. Generally we
+    ## just let getCSWebHandle catch this for any given
+    ## query, but that can lead to an awful lot of password prompts here.
+    needs.logout <- 0
+    if ( is.null(auth) ) {
+        auth <- getCSWebHandle( auth=auth, ... )
+        needs.logout <- 1
+    }
 
     ## Unless specified otherwise, retrieve the desired annotation terms.
-    anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, ...)
+    anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, auth=auth, ...)
 
     ## Strip out file paths which won't have been stored in the database.
     files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
@@ -259,10 +273,13 @@ csWebRGList <- function (files, uri, .opts=list(), auth=NULL,
     message("Querying the database for annotation...")
     if ( is.null(samples) )
         p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL,
-                    sample.name=NULL, query=anno.qry, ...)
+                    sample.name=NULL, query=anno.qry, auth=auth, ...)
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL,
-                    assay.barcode=NULL, query=anno.qry, ...)
+                    assay.barcode=NULL, query=anno.qry, auth=auth, ...)
+
+    if ( needs.logout == 1 )
+        logoutCSWebHandle( auth, ... )
 
     return(p)
 }

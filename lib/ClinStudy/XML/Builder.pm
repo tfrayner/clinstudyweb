@@ -225,8 +225,13 @@ sub update_or_create_element {
 
     # This is update_or_create, so we'd better update non-key attributes.
     while ( my ( $key, $val ) = each %$attrhash ) {
-        $obj->setAttribute($key, $val)
-            if ( defined $val && $val !~ $is_undef );
+        if ( defined $val && $val !~ $is_undef ) {
+            my $pre = $obj->getAttribute($key);
+            if ( defined $pre && $pre ne $val ) {
+                warn(qq{Warning: Modifying $class $key attribute from "$pre" to "$val".\n});
+            } 
+            $obj->setAttribute($key, $val)
+        }
     }
 
     return $obj;
