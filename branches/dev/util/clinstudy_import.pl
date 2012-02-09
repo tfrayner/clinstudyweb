@@ -32,7 +32,7 @@ use ClinStudy::XML::SemanticValidator;
 
 sub parse_args {
 
-    my ( $conffile, $xml, $xsd, $relaxed, $skip_warnings, $want_help );
+    my ( $conffile, $xml, $xsd, $relaxed, $skip_warnings, $validate_only, $want_help );
 
     GetOptions(
         "c|config=s"        => \$conffile,
@@ -40,6 +40,7 @@ sub parse_args {
         "d|schema=s"        => \$xsd,
         "r|relaxed"         => \$relaxed,
         "w|skip-warnings"   => \$skip_warnings,
+        "v|validate-only"   => \$validate_only,
         "h|help"            => \$want_help,
     );
 
@@ -64,10 +65,10 @@ sub parse_args {
     my $parser = XML::LibXML->new();
     my $doc    = $parser->parse_file($xml);
 
-    return( $config->{'Model::DB'}->{connect_info}, $xsd, $doc, $relaxed, $xml, $skip_warnings );
+    return( $config->{'Model::DB'}->{connect_info}, $xsd, $doc, $relaxed, $xml, $skip_warnings, $validate_only );
 }
 
-my ( $conn_params, $xsd, $xml, $relaxed, $xmlfile, $skip_warnings ) = parse_args();
+my ( $conn_params, $xsd, $xml, $relaxed, $xmlfile, $skip_warnings, $validate_only ) = parse_args();
 
 my $schema = ClinStudy::ORM->connect( @$conn_params );
 
@@ -88,14 +89,16 @@ if ( $loader_class eq 'ClinStudy::XML::Loader' ) {
     }
 }
 
-my $loader = $loader_class->new(
-    database    => $schema,
-    schema_file => $xsd,
-    is_strict   => ! $relaxed,
-);
+unless ( $validate_only ) {
+    my $loader = $loader_class->new(
+        database    => $schema,
+        schema_file => $xsd,
+        is_strict   => ! $relaxed,
+    );
 
-$schema->changeset_session( $xmlfile );
-$schema->txn_do( sub { $loader->load( $xml ); } );
+    $schema->changeset_session( $xmlfile );
+    $schema->txn_do( sub { $loader->load( $xml ); } );
+}
 
 __END__
 
@@ -145,6 +148,11 @@ unless you really, really know what you're doing. Loading invalid
 ClinStudyML into the database may result in partial or broken database
 loads which are likely to be time-consuming to clean up. You have been
 warned.
+
+=item -v
+
+Validate only. This option will tell the script not to alter the
+database. Syntactic and semantic validation will be carried out.
 
 =back
 
