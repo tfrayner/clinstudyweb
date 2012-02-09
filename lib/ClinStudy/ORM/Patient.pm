@@ -220,21 +220,6 @@ __PACKAGE__->belongs_to(
   { id => "home_centre_id" },
 );
 
-=head2 hospitalisations
-
-Type: has_many
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->has_many(
-  "hospitalisations",
-  "ClinStudy::ORM::Hospitalisation",
-  { "foreign.patient_id" => "self.id" },
-  {},
-);
-
 =head2 patient_prior_groups
 
 Type: has_many
@@ -325,6 +310,21 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 transplants
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Transplant>
+
+=cut
+
+__PACKAGE__->has_many(
+  "transplants",
+  "ClinStudy::ORM::Transplant",
+  { "foreign.patient_id" => "self.id" },
+  {},
+);
+
 =head2 visits
 
 Type: has_many
@@ -341,8 +341,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sldVR9SlIY3IJVdSMTUBMQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U4VeZDbr0rBAtWvSJEVHbA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -361,12 +361,6 @@ __PACKAGE__->has_many(
 __PACKAGE__->has_many(
   "visits",
   "ClinStudy::ORM::Visit",
-  { "foreign.patient_id" => "self.id" },
-  { "cascade_delete"     => 0 },
-);
-__PACKAGE__->has_many(
-  "hospitalisations",
-  "ClinStudy::ORM::Hospitalisation",
   { "foreign.patient_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
@@ -409,6 +403,12 @@ __PACKAGE__->has_many(
 __PACKAGE__->has_many(
   "studies",
   "ClinStudy::ORM::Study",
+  { "foreign.patient_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "transplants",
+  "ClinStudy::ORM::Transplant",
   { "foreign.patient_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
