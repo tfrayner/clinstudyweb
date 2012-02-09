@@ -49,7 +49,7 @@ sub BUILD {
 =head2 list_by_patient
 
 List all the drug treatments for a given patient, traversing the
-Visit, Hospitalisation and PriorTreatment tables to do so.
+Visit and PriorTreatment tables to do so.
 
 =cut
 
@@ -68,10 +68,6 @@ sub list_by_patient : Local {
         foreach my $visit ( $patient->visits() ) {
             my @drugs = $visit->drugs();
             push @{ $drugs_by_date{ $visit->date() } }, @drugs if scalar @drugs;
-        }
-        foreach my $hospitalisation ( $patient->hospitalisations() ) {
-            my @drugs = $hospitalisation->drugs();
-            push @{ $drugs_by_date{ $hospitalisation->date() } }, @drugs if scalar @drugs;
         }
         foreach my $prior_treatment ( $patient->prior_treatments() ) {
             my @drugs = $prior_treatment->drugs();
@@ -131,26 +127,6 @@ sub add_to_visit : Local {
     $c->forward('edit', [undef, $visit]);
 }
 
-=head2 add_to_hospitalisation
-
-Add a drug to a given hospitalisation.
-
-=cut
-
-sub add_to_hospitalisation : Local {
-    my ( $self, $c, $hospitalisation_id ) = @_;
-    $c->stash->{template} = 'drug/edit.tt2';
-
-    # Add a new drug to $hospitalisation. Check that the hospitalisation exists:
-    my $hospitalisation = $c->model('DB::Hospitalisation')->find({id => $hospitalisation_id});
-    if ( ! $hospitalisation ) {
-        $c->flash->{error} = 'No such hospitalisation!';
-        $c->res->redirect( $c->uri_for('/patient') );
-        $c->detach();
-    }
-    $c->forward('edit', [undef, $hospitalisation]);
-}
-
 =head2 edit
 
 Edit or add a given drug object; expects a drug container object in
@@ -162,7 +138,7 @@ sub edit : Local {
     my ( $self, $c, $drug_id, $drugholder ) = @_;
 
     # This runmode will handles a generic "drug-associated" object:
-    # PriorTreatment, Visit or Hospitalisation. We pass in the
+    # PriorTreatment or Visit. We pass in the
     # object rather than its id.
 
     if ( ! $c->check_any_user_role('editor') ) {
@@ -308,7 +284,6 @@ sub _set_my_breadcrumbs {
     }
     elsif ( $object ) {
         my $container = $object->visit_id()
-            || $object->hospitalisation_id()
             || $object->prior_treatment_id()
             || confess("Database error: drug treatment orphaned!");
 

@@ -124,7 +124,6 @@ my %local_key_field = (
     Drug              => [ qw(name) ],
     EmergentGroup     => [ qw(name basis type) ],
     GraftFailure      => [ qw(date) ],
-    Hospitalisation   => [ qw(date) ],
     Patient           => [ qw(trial_id) ],
     PhenotypeQuantity => [ qw(type) ],
     PriorGroup        => [ qw(name type) ],
@@ -136,7 +135,7 @@ my %local_key_field = (
     Study             => [ qw(type) ],
     SystemInvolvement => [ qw(type) ],
     TestResult        => [ qw(test date) ],
-    Transplant        => [ qw(organ_type) ],  # Date is taken care of by Hospitalisation.
+    Transplant        => [ qw(date) ],
     Visit             => [ qw(date) ],
     VisitDataFile     => [ qw(filename) ],
 );

@@ -3,7 +3,7 @@
 <head>
 <meta name="generator" content=
 "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
-<title>ClinStudy::ORM::UserRole</title>
+<title>ClinStudy::ORM::VisitDataFile</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
 <meta http-equiv="content-type" content=
@@ -19,27 +19,29 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
-        <li><a href="#table__user_role">TABLE: <code>user_role</code></a></li>
+        <li><a href="#table__visit_data_file">TABLE: <code>visit_data_file</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
                 <li><a href="#id">id</a></li>
-                <li><a href="#user_id">user_id</a></li>
-                <li><a href="#role_id">role_id</a></li>
+                <li><a href="#visit_id">visit_id</a></li>
+                <li><a href="#filename">filename</a></li>
+                <li><a href="#type_id">type_id</a></li>
+                <li><a href="#notes">notes</a></li>
         </ul>
 
         <li><a href="#primary_key">PRIMARY KEY</a></li>
         <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
         <ul>
 
-                <li><a href="#user_id"><code>user_id</code></a></li>
+                <li><a href="#filename"><code>filename</code></a></li>
         </ul>
 
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#role_id">role_id</a></li>
-                <li><a href="#user_id">user_id</a></li>
+                <li><a href="#type_id">type_id</a></li>
+                <li><a href="#visit_id">visit_id</a></li>
         </ul>
 
 </ul>
@@ -47,10 +49,10 @@
 --></div>
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
-<p>ClinStudy::ORM::UserRole</p>
+<p>ClinStudy::ORM::VisitDataFile</p>
 <hr />
-<h1><a name="table__user_role">TABLE:
-<code>user_role</code></a></h1>
+<h1><a name="table__visit_data_file">TABLE:
+<code>visit_data_file</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -59,45 +61,54 @@
   is_auto_increment: 1
   is_nullable: 0
 </pre>
-<h2><a name="user_id">user_id</a></h2>
+<h2><a name="visit_id">visit_id</a></h2>
 <pre>
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
 </pre>
-<h2><a name="role_id">role_id</a></h2>
+<h2><a name="filename">filename</a></h2>
+<pre>
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 255
+</pre>
+<h2><a name="type_id">type_id</a></h2>
 <pre>
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+</pre>
+<h2><a name="notes">notes</a></h2>
+<pre>
+  data_type: 'text'
+  is_nullable: 1
 </pre>
 <hr />
 <h1><a name="primary_key">PRIMARY KEY</a></h1>
 <ul>
-<li><strong><a name="id34" class="item"></a><a href=
+<li><strong><a name="id36" class="item"></a><a href=
 "#id">id</a></strong></li>
 </ul>
 <hr />
 <h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
-<h2><a name="user_id"></a><a href=
-"#user_id"><code>user_id</code></a></h2>
+<h2><a name="filename"></a><a href=
+"#filename"><code>filename</code></a></h2>
 <ul>
-<li><strong><a name="user_id" class="item"></a><a href=
-"#user_id">user_id</a></strong></li>
-<li><strong><a name="role_id" class="item"></a><a href=
-"#role_id">role_id</a></strong></li>
+<li><strong><a name="filename3" class="item"></a><a href=
+"#filename">filename</a></strong></li>
 </ul>
 <hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name="role_id">role_id</a></h2>
+<h2><a name="type_id">type_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Role.html">the
-ClinStudy::ORM::Role manpage</a></p>
-<h2><a name="user_id">user_id</a></h2>
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="visit_id">visit_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/User.html">the
-ClinStudy::ORM::User manpage</a></p>
+"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
+ClinStudy::ORM::Visit manpage</a></p>
 </body>
 </html>

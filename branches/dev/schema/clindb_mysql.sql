@@ -1201,7 +1201,7 @@ UNLOCK TABLES;
 delimiter //
 
 /* Triggers to make sure that Drugs are always attached to one only of
-   Visit, Hospitalisation or PriorTreatment */
+   Visit or PriorTreatment */
 drop trigger if exists `drug_update_trigger`//
 create trigger `drug_update_trigger`
     before update on drug

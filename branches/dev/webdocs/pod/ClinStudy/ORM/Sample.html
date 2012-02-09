@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::Sample</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__sample">TABLE: <code>sample</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -33,18 +34,28 @@
                 <li><a href="#box_slot">box_slot</a></li>
                 <li><a href="#concentration">concentration</a></li>
                 <li><a href="#purity">purity</a></li>
+                <li><a href="#cell_purity">cell_purity</a></li>
                 <li><a href="#quality_score_id">quality_score_id</a></li>
+                <li><a href="#has_expired">has_expired</a></li>
                 <li><a href="#notes">notes</a></li>
+        </ul>
+
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#name"><code>name</code></a></li>
         </ul>
 
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#channels">channels</a></li>
-                <li><a href="#visit_id">visit_id</a></li>
                 <li><a href="#cell_type_id">cell_type_id</a></li>
+                <li><a href="#channels">channels</a></li>
                 <li><a href="#material_type_id">material_type_id</a></li>
                 <li><a href="#quality_score_id">quality_score_id</a></li>
+                <li><a href="#sample_data_files">sample_data_files</a></li>
+                <li><a href="#visit_id">visit_id</a></li>
         </ul>
 
 </ul>
@@ -53,6 +64,8 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::Sample</p>
+<hr />
+<h1><a name="table__sample">TABLE: <code>sample</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -120,10 +133,21 @@
   is_nullable: 1
   size: [12,5]
 </pre>
+<h2><a name="cell_purity">cell_purity</a></h2>
+<pre>
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+</pre>
 <h2><a name="quality_score_id">quality_score_id</a></h2>
 <pre>
   data_type: 'integer'
   is_foreign_key: 1
+  is_nullable: 1
+</pre>
+<h2><a name="has_expired">has_expired</a></h2>
+<pre>
+  data_type: 'tinyint'
   is_nullable: 1
 </pre>
 <h2><a name="notes">notes</a></h2>
@@ -132,22 +156,30 @@
   is_nullable: 1
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id23" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="name"></a><a href="#name"><code>name</code></a></h2>
+<ul>
+<li><strong><a name="name5" class="item"></a><a href=
+"#name">name</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name="channels">channels</a></h2>
-<p>Type: has_many</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Channel.html">the
-ClinStudy::ORM::Channel manpage</a></p>
-<h2><a name="visit_id">visit_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
-ClinStudy::ORM::Visit manpage</a></p>
 <h2><a name="cell_type_id">cell_type_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="channels">channels</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Channel.html">the
+ClinStudy::ORM::Channel manpage</a></p>
 <h2><a name="material_type_id">material_type_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
@@ -158,5 +190,15 @@ ClinStudy::ORM::ControlledVocab manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
+<h2><a name="sample_data_files">sample_data_files</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/SampleDataFile.html">the
+ClinStudy::ORM::SampleDataFile manpage</a></p>
+<h2><a name="visit_id">visit_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
+ClinStudy::ORM::Visit manpage</a></p>
 </body>
 </html>

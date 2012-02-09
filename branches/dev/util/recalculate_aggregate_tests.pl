@@ -38,7 +38,7 @@ sub recalculate {
     # Load all the test calculator classes.
     my @testcalcs = usesub ClinStudy::Web::TestCalc;
 
-    foreach my $cont_class ( qw( Visit Hospitalisation ) ) {
+    foreach my $cont_class ( qw( Visit ) ) {
         my $rs = $schema->resultset($cont_class)->search();
 
         while ( my $container = $rs->next() ) {

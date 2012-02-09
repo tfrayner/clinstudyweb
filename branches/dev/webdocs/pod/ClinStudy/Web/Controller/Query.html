@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::Web::Controller::Query</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -23,9 +23,12 @@
         <li><a href="#methods">METHODS</a></li>
         <ul>
 
+                <li><a href="#json_login">json_login</a></li>
+                <li><a href="#json_logout">json_logout</a></li>
                 <li><a href="#index">index</a></li>
                 <li><a href="#assay_dump">assay_dump</a></li>
                 <li><a href="#sample_dump">sample_dump</a></li>
+                <li><a href="#assay_drugs">assay_drugs</a></li>
                 <li><a href="#dump_assay_entity">dump_assay_entity</a></li>
                 <li><a href="#dump_sample_entity">dump_sample_entity</a></li>
         </ul>
@@ -43,12 +46,24 @@
 <p>Catalyst Controller.</p>
 <hr />
 <h1><a name="methods">METHODS</a></h1>
+<h2><a name="json_login">json_login</a></h2>
+<p>This is the primary authentication method which is to be used
+prior to any other queries in order to obtain an authenticated
+connection. See e.g. the curl documentation for details on how this
+may be used (RCurl example available in the associated ClinStudyWeb
+R package). Success or failure is denoted by a boolean "success"
+flag in the returned object.</p>
+<h2><a name="json_logout">json_logout</a></h2>
+<p>A method which simply deauthenticates the user.</p>
 <h2><a name="index">index</a></h2>
 <p>This is the core of the generic JSON query API. JSON parameters
 are as follows: resultSet, condition, attributes. These parameters
-are passed in as a hashref named "data".</p>
+are passed in as a hashref named "data". Return values are
+similarly passed under a "data" key. Success or failure is denoted
+by a boolean "success" flag in the returned object.</p>
 <h2><a name="assay_dump">assay_dump</a></h2>
 <h2><a name="sample_dump">sample_dump</a></h2>
+<h2><a name="assay_drugs">assay_drugs</a></h2>
 <h2><a name="dump_assay_entity">dump_assay_entity</a></h2>
 <p>Given an Assay object from the database, construct a hashref
 suitable for passing back to the user (Private method).</p>

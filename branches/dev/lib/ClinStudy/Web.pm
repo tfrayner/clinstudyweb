@@ -127,9 +127,6 @@ __PACKAGE__->deny_access( '/diseaseevent' );
 __PACKAGE__->allow_access_if( '/visit',   [ qw( user ) ] );
 __PACKAGE__->deny_access( '/visit' );
 
-__PACKAGE__->allow_access_if( '/hospitalisation', [ qw( user ) ] );
-__PACKAGE__->deny_access( '/hospitalisation' );
-
 __PACKAGE__->allow_access_if( '/testresult', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/testresult' );
 
@@ -206,7 +203,6 @@ __PACKAGE__->deny_access( '/user' );
 # These should never be accessed directly.
 __PACKAGE__->deny_access( '/formfubase' );
 __PACKAGE__->deny_access( '/patientlinkedobject' );
-__PACKAGE__->deny_access( '/hospitalisationlinkedobject' );
 __PACKAGE__->deny_access( '/visitlinkedobject' );
 
 # Areas to which access is always granted.
@@ -260,8 +256,6 @@ sub check_model_relationships {
                                'redirect'  => '/priortreatment/view', },
         'Visit'           => { 'id_method' => 'visit_id',
                                'redirect'  => '/visit/view', },
-        'Hospitalisation' => { 'id_method' => 'hospitalisation_id',
-                               'redirect'  => '/hospitalisation/view', },
     );
 
     # Quick rejig of the dispatch table.
@@ -464,7 +458,7 @@ Returns current date and time in MySQL-friendly format, i.e. "YYYY-MM-DD HH:MM:S
 
 =head2 recalculate_aggregates
 
-Given a database container object (Visit or Hospitalisation) and a
+Given a database Visit object and a
 study type CV, runs any applicable test calculator modules according
 to the configuration file.
 

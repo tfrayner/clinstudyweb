@@ -3,7 +3,7 @@
 <head>
 <meta name="generator" content=
 "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
-<title>ClinStudy::XML::TabReannotator</title>
+<title>ClinStudy::XML::PhenoData</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
 <meta http-equiv="content-type" content=
@@ -24,13 +24,14 @@
         <li><a href="#attributes">ATTRIBUTES</a></li>
         <ul>
 
-                <li><a href="#database">database</a></li>
+                <li><a href="#spreadsheet">spreadsheet</a></li>
         </ul>
 
         <li><a href="#methods">METHODS</a></li>
         <ul>
 
                 <li><a href="#read">read</a></li>
+                <li><a href="#dump">dump</a></li>
         </ul>
 
         <li><a href="#see_also">SEE ALSO</a></li>
@@ -41,50 +42,59 @@
 --></div>
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
-<p>ClinStudy::XML::TabReannotator - Reannotation of tab-delimited
-files.</p>
+<p>ClinStudy::XML::PhenoData - XML generation from
+immunophenotyping spreadsheets.</p>
 <hr />
 <h1><a name="synopsis">SYNOPSIS</a></h1>
 <pre>
- use ClinStudy::XML::TabReannotator;
- my $builder = ClinStudy::XML::TabReannotator-&gt;new({
-     tabfile =&gt; 'filename.txt',
+ use ClinStudy::XML::PhenoData;
+ use ClinStudy::XML::Spreadsheet;
+ my $reader = ClinStudy::XML::Spreadsheet-&gt;new({
+     file =&gt; 'filename.txt',
  });
- my $root    = $builder-&gt;root();
-</pre>
-<pre>
- # Writes to STDOUT.
- $builder-&gt;read();
+ my $builder = ClinStudy::XML::PhenoData-&gt;new({
+     spreadsheet =&gt; $reader,
+     schema      =&gt; $xsd,
+ });
 </pre>
 <hr />
 <h1><a name="description">DESCRIPTION</a></h1>
-<p>A module used to connect to a ClinStudy database and pull out
-missing attributes to fill in a partially completed tab-delimited
-data file.</p>
+<p>Simple conversion of a spreadsheet containing many columns of
+immunophenotyping data into ClinStudyML. Currently the database
+requires that all values be expressed as real numbers. Three
+further columns are required:</p>
+<pre>
+ Patient|trial_id
+ Visit|date
+ Patient|entry_date
+</pre>
+<p>Note that if you have the first two columns one can use the
+TabReannotator class to retrieve the third, although you may need
+to convert to plain tab-delimited text format to do so.</p>
 <hr />
 <h1><a name="attributes">ATTRIBUTES</a></h1>
-<p>Note that XML TabReader attributes are handled by the
-<code>ClinStudy::XML::TabReader</code> superclass.</p>
-<h2><a name="database">database</a></h2>
-<p>The ClinStudy::ORM object to use for database queries.</p>
+<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Builder.html">the
+ClinStudy::XML::Builder manpage</a> for superclass attributes, some
+of which are required.</p>
+<h2><a name="spreadsheet">spreadsheet</a></h2>
+<p>A ClinStudy::XML::Spreadsheet object to use to read in the
+data.</p>
 <hr />
 <h1><a name="methods">METHODS</a></h1>
 <h2><a name="read">read</a></h2>
-<p>Quick wrapper method which just reads in the header row and
-spits it out in the appropriate column order (i.e. alphabetically
-sorted). The method then hands off control to the read method in
-the superclass (see <a href=
-"/trunk/webdocs/pod/ClinStudy/XML/TabReader.html">the
-ClinStudy::XML::TabReader manpage</a>).</p>
+<p>Read in the data, and create an XML tree in memory.</p>
+<h2><a name="dump">dump</a></h2>
+<p>Write out the XML to disk (see the ClinStudy::XML::Builder
+superclass for details).</p>
 <hr />
 <h1><a name="see_also">SEE ALSO</a></h1>
-<p><a href="/trunk/webdocs/pod/ClinStudy/XML/Builder.html">the
-ClinStudy::XML::Builder manpage</a>, <a href=
-"/trunk/webdocs/pod/ClinStudy/XML/TabReader.html">the
-ClinStudy::XML::TabReader manpage</a></p>
+<p><a href="/trunk/webdocs/pod/ClinStudy/XML/Spreadsheet.html">the
+ClinStudy::XML::Spreadsheet manpage</a>, <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Builder.html">the
+ClinStudy::XML::Builder manpage</a></p>
 <hr />
 <h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
-<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>Copyright (C) 2011 by Tim F. Rayner, University of Cambridge</p>
 <p>This library is released under version 2 of the GNU General
 Public License (GPL).</p>
 <hr />

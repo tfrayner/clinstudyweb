@@ -161,15 +161,6 @@ sub _date_map_containers {
             warn("Warning: Visit found without a date.\n");
         }
     }
-    my %hospitalisation;
-    foreach my $h ( $patient->findnodes('./Hospitalisations/Hospitalisation') ) {
-        if ( my $date = $h->getAttribute('date') ) {
-            $hospitalisation{ $date } = $h;
-        }
-        else {
-            warn("Warning: Hospitalisation found without a date.\n");
-        }
-    }
     my %prior;
     foreach my $p ( $patient->findnodes('./PriorTreatments/PriorTreatment') ) {
         if ( my $date = $p->getAttribute('date') ) {
@@ -180,7 +171,7 @@ sub _date_map_containers {
     }
 
     # This defines the priority order for rehoming nodes.
-    return ( \%visit, \%hospitalisation, \%prior );
+    return ( \%visit, \%prior );
 }
 
 sub _unbind_empty_testresult {
