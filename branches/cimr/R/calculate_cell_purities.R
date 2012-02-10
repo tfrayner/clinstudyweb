@@ -34,7 +34,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     require(flowClust)
     require(flowViz)
 
-    .readAndLog <- function(f, ...) {
+    .readAndLogTransform <- function(f, ...) {
         x <- read.FCS(f, ...)
         x <- transform(x,
                        `FL1-H`=log10(`FL1-H`),
@@ -79,7 +79,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     ych <- names(ct.map)[2]
 
     ## First read in the pre data and log10 transform.
-    ld <- .readAndLog(pre)
+    ld <- .readAndLogTransform(pre)
 
     ## Find clusters. FIXME the B=100 probably needs fixing and the
     ## whole function made parallelizable. Fixing K at 2 here tends to
@@ -87,7 +87,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     ## identifying live cell populations.
     if (verbose) message("Identifying live-cell population...")
     suppressMessages(ld.res <- flowClust(ld, varNames=c('FSC-H','SSC-H'), K=K.start, B=B))
-    K      <- .findBestBIC(ct.res)
+    K      <- .findBestBIC(ld.res)
 
     ld.gate  <- tmixFilter('live_cells', c('FSC-H','SSC-H'), K=K, B=B, level=0.8)
     suppressMessages(ld.gated <- filter(ld, ld.gate))
@@ -300,7 +300,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     x$filterId <- sprintf("Live%sGate", cell.type)
     ct.gate  <- do.call('rectangleGate', x)
 
-    ct       <- .readAndLog(pos)
+    ct       <- .readAndLogTransform(pos)
     ct.gated <- filter(ct, ct.gate)
 
     ## Plot the impurities.
@@ -315,10 +315,30 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     return(x$p)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), cred, outfile, verbose=FALSE) {
+calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, logfile=NULL) {
 
     require(RCurl)
     require(ClinStudyWeb)
+
+    if ( ! is.null(logfile) )
+        logconn <- file( logfile, open='at' )
+    else
+        logconn <- null
+
+    if ( is.null(cred) )
+        cred <- ClinStudyWeb::getCredentials()
+
+    writeLog <- function(x) {
+        if ( ! is.null(logconn) ) {
+            writeLines(paste(date(), x, sep="   "), con=logconn)
+            flush(logconn)
+        }
+        if ( verbose )
+            message(x)
+        return()
+    }
+
+    writeLog("\n** Starting Cell Purity Calculation Pipeline...")
 
     .retrieveFileInfo <- function(sample_id, type, uri, .opts, cred) {
 
@@ -379,13 +399,18 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile, verbose=FALS
 
         samp <- samples[[n]]
 
+        writeLog(sprintf("Commencing analysis for sample %s...", samp$name))
+
         pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
         pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, cred)
 
-        if ( any(sapply(list(pre, pos), is.null) ) )
+        if ( any(sapply(list(pre, pos), is.null) ) ) {
+            writeLog("Either pre or pos files not found.")
             next
+        }
 
         ## Download both files to a temporary location.
+        writeLog("Downloading files...")
         fn.pre <- tempfile()
         fn.pos <- tempfile()
         .downloadFile(pre, fn.pre, .opts)
@@ -398,11 +423,16 @@ calculateCellPurities <- function(uri, .opts=list(), cred, outfile, verbose=FALS
                           .opts=.opts,
                           auth=cred)
 
-        ## FIXME Attempt cell purity calculation.
+        ## Attempt cell purity calculation.
+        writeLog(sprintf("Calculating purity (%s)...", ct[[1]]$value))
         rc <- try(pur <- facsCellPurity( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose ))
 
-        if ( inherits(rc, 'try-error') )
+        if ( inherits(rc, 'try-error') ) {
+            writeLog(sprintf("Error encountered: %s", rc))
             next
+        }
+
+        writeLog(sprintf("Results: %s=%f", samp$name, pur))
 
         results[[n]] <- c(sample=samp$name, purity=pur)
     }
