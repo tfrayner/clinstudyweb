@@ -111,6 +111,11 @@ __PACKAGE__->table("transplant");
   data_type: 'tinyint'
   is_nullable: 1
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -146,6 +151,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "donor_cmv",
   { data_type => "tinyint", is_nullable => 1 },
+  "notes",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -264,8 +271,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Png9g0bt6xjjfqQPnPfjNQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-13 12:52:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jYFM7jRTkZjzAlGN/O5RXQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

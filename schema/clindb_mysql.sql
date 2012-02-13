@@ -1043,6 +1043,7 @@ CREATE TABLE `transplant` (
   `donor_age` int(3) default NULL,
   `donor_cause_of_death` varchar(255) default NULL,
   `donor_cmv` tinyint(1) default NULL,
+  `notes` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`patient_id`, `date`),
   KEY (`patient_id`),

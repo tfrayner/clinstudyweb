@@ -406,3 +406,8 @@ end;
 //
 
 delimiter ;
+
+--
+-- Add a much-needed transplant notes field.
+--
+alter table transplant add column notes text;

@@ -249,6 +249,7 @@
     <xs:attribute name="donor_age" type="intType"/>
     <xs:attribute name="donor_cause_of_death" type="varcharType"/>
     <xs:attribute name="donor_cmv" type="tinyintType"/>
+    <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
   <xs:complexType name="priorObservationType">
