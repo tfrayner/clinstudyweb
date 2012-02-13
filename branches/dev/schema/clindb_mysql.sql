@@ -664,6 +664,7 @@ CREATE TABLE `sample` (
   `concentration` decimal(12,5) default NULL,
   `purity` decimal(12,5) default NULL,
   `cell_purity` decimal(12,5) default NULL,
+  `auto_cell_purity` decimal(12,5) default NULL,
   `quality_score_id` int(11) default NULL,
   `has_expired` tinyint(1) default NULL,
   `notes` text,

@@ -148,6 +148,7 @@
     <xs:attribute name="concentration" type="decimalType"/>
     <xs:attribute name="purity" type="decimalType"/>
     <xs:attribute name="cell_purity" type="decimalType"/>
+    <xs:attribute name="auto_cell_purity" type="decimalType"/>
     <xs:attribute name="quality_score" type="varcharType"/>
     <xs:attribute name="has_expired" type="tinyintType"/>
     <xs:attribute name="notes" type="textType"/>
