@@ -70,7 +70,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
 
     ct.map <- ct.maplist[[ cell.type ]]
     if ( is.null(ct.map) )
-        stop('Unrecognised cell type.')
+        stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
     if (verbose)
         message(sprintf("Processing %s data (params: %s).", cell.type, deparse(ct.map, control=c())))
@@ -110,7 +110,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         })
 
         if ( sum(w) == 0 )
-            stop("Zero gated populations fall entirely within our live-cell gate.")
+            stop("Zero gated populations fall entirely within our live-cell gate.", call.=FALSE)
 
         return(w)
     }
@@ -167,7 +167,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         w <- dists == min(dists) & dists < 1 # No further than one log-unit away.
 
         if ( sum(w) == 0 )
-            stop("Zero populations match our target heuristic.")
+            stop("Zero populations match our target heuristic.", call.=FALSE)
 
         init <- ct.testpops[w][[1]]
 
@@ -271,7 +271,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
 
     nrst <- .fillInNAPoints(nrst, tgt, xch, ych)
     if ( any( is.na( unlist(nrst) ) ) )
-        stop("Error: cannot determine rectangle gate; no outlier clusters?")
+        stop("Error: cannot determine rectangle gate; no outlier clusters?", call.=FALSE)
 
     ## The gates we're getting currently seem to be a bit on the large
     ## side; here we shrink them down to size a bit.
