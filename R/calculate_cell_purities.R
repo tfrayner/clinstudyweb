@@ -174,11 +174,15 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         ## Now expand out to cover clusters which overlap the midpoint
         ## of the initial cluster.
         w <- sapply(ct.testpops, function(pop) {
-            all(sapply(names(ct.map), function(ch) {
-                xr <- range(exprs(pop[, ch]))
+            dst <- sapply(names(ct.map), function(ch) {
+                xm <- mean(range(exprs(pop[, ch])))
                 tm <- mean(range(exprs(init[, ch])))
-                return(tm > xr[1] & tm < xr[2])
-            }))
+                return(xm-tm)
+            })
+            # This is probably too relaxed; consider only including
+            # populations within a smaller distance of our initial
+            # target (0.5 is too small for CD16 though).
+            return(sqrt(sum(dst^2)) < 1) 
         })
 
         w <- w & dists < 1  # You wouldn't think this would be a problem, but it is.
@@ -271,17 +275,17 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
 
     ## The gates we're getting currently seem to be a bit on the large
     ## side; here we shrink them down to size a bit.
-    .shrinkRectGate <- function(nrst, tgt, xch, ych) {
+    .shrinkRectGate <- function(nrst, tgt, xch, ych, f=0.6) {
 
         ## Initial try: reduce the distance between the gate and the
         ## tgt ranges by a fraction (e.g. 0.6).
         xtr <- range(exprs(tgt[, xch]))
         ytr <- range(exprs(tgt[, ych]))
 
-        nrst$up    <- ytr[2] + ((nrst$up - ytr[2]) * 0.6)
-        nrst$down  <- ytr[1] - ((ytr[1] - nrst$down) * 0.6)
-        nrst$right <- xtr[2] + ((nrst$right - xtr[2]) * 0.6)
-        nrst$left  <- xtr[1] - ((xtr[1] - nrst$left) * 0.6)
+        nrst$up    <- ytr[2] + ((nrst$up - ytr[2]) * f)
+        nrst$down  <- ytr[1] - ((ytr[1] - nrst$down) * f)
+        nrst$right <- xtr[2] + ((nrst$right - xtr[2]) * f)
+        nrst$left  <- xtr[1] - ((xtr[1] - nrst$left) * f)
 
         return(nrst)
     }
@@ -323,7 +327,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
     if ( ! is.null(logfile) )
         logconn <- file( logfile, open='at' )
     else
-        logconn <- null
+        logconn <- NULL
 
     if ( is.null(cred) )
         cred <- ClinStudyWeb::getCredentials()
