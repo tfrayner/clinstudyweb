@@ -95,6 +95,15 @@ csWebQuery <- function (assay.file=NULL, assay.barcode=NULL, sample.name=NULL, q
         }
     }
 
+    ## Also transplant data.
+    tx <- sample$transplant
+    if ( !is.null(tx) & length(tx) ) {
+        for ( n in 1:length(tx) ) {
+            attrname <- paste('tx', names(tx)[n], sep='.')
+            attrs[[attrname]]<-as.character(tx[n])
+        }
+    }
+
     return(attrs)
 }
 
