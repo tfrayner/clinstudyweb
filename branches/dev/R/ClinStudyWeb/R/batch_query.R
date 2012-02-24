@@ -227,7 +227,6 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
 
         if ( missing(categories) | is.null(categories) ) {
             qry <- lapply(lapply(csAnnoPicker(db.tests, db.pheno), unlist), as.integer)
-            names(qry) <- sub('s$', '_ids', names(qry))
         }
         else {
             avail <- c( names(db.tests), names(db.pheno) )
