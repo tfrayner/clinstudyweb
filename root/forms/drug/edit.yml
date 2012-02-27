@@ -14,9 +14,6 @@ elements:
     name: visit_id
 
   - type: Hidden
-    name: hospitalization_id
-
-  - type: Hidden
     name: prior_treatment_id
 
   - type: Select
@@ -32,7 +29,6 @@ elements:
         self_stash_key: object
         others:
           - visit_id
-          - hospitalisation_id
           - prior_treatment_id
         message: This drug has already been entered for this visit.
     model_config:

@@ -22,7 +22,7 @@ package ClinStudy::Web::Controller::Transplant;
 use Moose;
 use namespace::autoclean;
 
-BEGIN {extends 'ClinStudy::Web::Controller::HospitalisationLinkedObject'; }
+BEGIN {extends 'ClinStudy::Web::Controller::PatientLinkedObject'; }
 
 =head1 NAME
 

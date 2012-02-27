@@ -244,7 +244,7 @@ sub load_element {
                 or croak("Error: Unable to find parent TestResult ($parent_id).");
 
             # Link the child to the same container as the parents.
-            foreach my $col ( qw(visit_id hospitalisation_id) ) {
+            foreach my $col ( qw(visit_id) ) {
                 $parent_ref->{$col} = $parent->$col;
             }
 

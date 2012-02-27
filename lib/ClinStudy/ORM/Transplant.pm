@@ -29,7 +29,7 @@ __PACKAGE__->table("transplant");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 hospitalisation_id
+=head2 patient_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -111,12 +111,17 @@ __PACKAGE__->table("transplant");
   data_type: 'tinyint'
   is_nullable: 1
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "hospitalisation_id",
+  "patient_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "date",
   { data_type => "date", is_nullable => 1 },
@@ -146,6 +151,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "donor_cmv",
   { data_type => "tinyint", is_nullable => 1 },
+  "notes",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -162,11 +169,11 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<hospitalisation_id>
+=head2 C<patient_id>
 
 =over 4
 
-=item * L</hospitalisation_id>
+=item * L</patient_id>
 
 =item * L</date>
 
@@ -174,7 +181,7 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("hospitalisation_id", ["hospitalisation_id", "date"]);
+__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "date"]);
 
 =head1 RELATIONS
 
@@ -207,20 +214,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 hospitalisation_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "hospitalisation_id",
-  "ClinStudy::ORM::Hospitalisation",
-  { id => "hospitalisation_id" },
-);
-
 =head2 organ_type_id
 
 Type: belongs_to
@@ -233,6 +226,20 @@ __PACKAGE__->belongs_to(
   "organ_type_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "organ_type_id" },
+);
+
+=head2 patient_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Patient>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "patient_id",
+  "ClinStudy::ORM::Patient",
+  { id => "patient_id" },
 );
 
 =head2 reperfusion_quality_id
@@ -264,8 +271,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-07 15:53:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ij09a7hF8qey6WkzaSPTbg
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-13 12:52:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jYFM7jRTkZjzAlGN/O5RXQ
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

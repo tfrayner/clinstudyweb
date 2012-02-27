@@ -3,7 +3,7 @@
 <head>
 <meta name="generator" content=
 "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
-<title>ClinStudy::XML::AdminDumper</title>
+<title>ClinStudy::XML::Spreadsheet</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
 <meta http-equiv="content-type" content=
@@ -22,10 +22,17 @@
         <li><a href="#synopsis">SYNOPSIS</a></li>
         <li><a href="#description">DESCRIPTION</a></li>
         <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#file">file</a></li>
+                <li><a href="#delimiter">delimiter</a></li>
+                <li><a href="#header">header</a></li>
+        </ul>
+
         <li><a href="#methods">METHODS</a></li>
         <ul>
 
-                <li><a href="#row_to_element">row_to_element</a></li>
+                <li><a href="#next_row">next_row</a></li>
         </ul>
 
         <li><a href="#see_also">SEE ALSO</a></li>
@@ -36,47 +43,49 @@
 --></div>
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
-<p>ClinStudy::XML::AdminDumper - Export of user/role data from
-ClinStudyDB databases.</p>
+<p>ClinStudy::XML::Spreadsheet - Iterator class used to scan
+through spreadsheets.</p>
 <hr />
 <h1><a name="synopsis">SYNOPSIS</a></h1>
 <pre>
- use ClinStudy::XML::AdminDumper;
- my $dump = ClinStudy::XML::AdminDumper-&gt;new(
-     database =&gt; $db_schema,
- );
-</pre>
-<pre>
- # Export all data.
- my $full = $dump-&gt;xml_all();
+ use ClinStudy::XML::Spreadsheet;
+ my $reader = ClinStudy::XML::Spreadsheet-&gt;new({
+     file =&gt; 'filename.txt',
+ });
+ while ( my $row = $reader-&gt;next_row() ) {
+    # Do something with the $row hashref.
+ }
 </pre>
 <hr />
 <h1><a name="description">DESCRIPTION</a></h1>
-<p>This module provides the ability to export the user/role
-administration metadata from a ClinStudyDB database. This
-authentication data was deliberately omitted from the primary
-ClinStudyML schema since it's a local concern, but we still need a
-way to dump and restore such data.</p>
+<p>This is a utility class used to convert the output of the CPAN
+Spreadsheet::Read module into a simpler form for use with our local
+systems.</p>
+<p>Currently this class requires the input file to contain just one
+worksheet with a single line of column headings. Lines beginning
+with the comment character ("#") are ignored.</p>
 <hr />
 <h1><a name="attributes">ATTRIBUTES</a></h1>
-<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Export.html">the
-ClinStudy::XML::Export manpage</a> for attributes defined in this
-superclass.</p>
+<h2><a name="file">file</a></h2>
+<p>The spreadsheet file to read. This can be in any format
+supported by the CPAN Spreadsheet::Read module (CSV, Excel,
+OpenOffice etc.).</p>
+<h2><a name="delimiter">delimiter</a></h2>
+<p>The delimiter to use for CSV-style formats.</p>
+<h2><a name="header">header</a></h2>
+<p>An arrayref giving the file column headings (this can be used to
+check for e.g. file types).</p>
 <hr />
 <h1><a name="methods">METHODS</a></h1>
-<h2><a name="row_to_element">row_to_element</a></h2>
-<p>Special-cased method handling TestPossibleValue and RelatedVocab
-objects appropriately. See <a href=
-"/trunk/webdocs/pod/ClinStudy/XML/Export.html">the
-ClinStudy::XML::Export manpage</a> for documentation on the generic
-row_to_element method.</p>
+<h2><a name="next_row">next_row</a></h2>
+<p>Return a hashref representing the next spreadsheet row; keys are
+column names, values are from the row itself.</p>
 <hr />
 <h1><a name="see_also">SEE ALSO</a></h1>
-<p>ClinStudy::XML::Export, ClinStudy::XML::Schema,
-ClinStudy::XML::Loader</p>
+<p>Spreadsheet::Read on CPAN</p>
 <hr />
 <h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
-<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>Copyright (C) 2011 by Tim F. Rayner, University of Cambridge</p>
 <p>This library is released under version 2 of the GNU General
 Public License (GPL).</p>
 <hr />

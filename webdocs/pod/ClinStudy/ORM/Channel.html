@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::Channel</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__channel">TABLE: <code>channel</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -28,12 +29,19 @@
                 <li><a href="#assay_id">assay_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#assay_id_2"><code>assay_id_2</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
+                <li><a href="#assay_id">assay_id</a></li>
                 <li><a href="#label_id">label_id</a></li>
                 <li><a href="#sample_id">sample_id</a></li>
-                <li><a href="#assay_id">assay_id</a></li>
         </ul>
 
 </ul>
@@ -42,6 +50,8 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::Channel</p>
+<hr />
+<h1><a name="table__channel">TABLE: <code>channel</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -69,7 +79,27 @@
   is_nullable: 0
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id5" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="assay_id_2"><code>assay_id_2</code></a></h2>
+<ul>
+<li><strong><a name="assay_id2" class="item"></a><a href=
+"#assay_id">assay_id</a></strong></li>
+<li><strong><a name="label_id" class="item"></a><a href=
+"#label_id">label_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
+<h2><a name="assay_id">assay_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Assay.html">the
+ClinStudy::ORM::Assay manpage</a></p>
 <h2><a name="label_id">label_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
@@ -80,10 +110,5 @@ ClinStudy::ORM::ControlledVocab manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Sample.html">the
 ClinStudy::ORM::Sample manpage</a></p>
-<h2><a name="assay_id">assay_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Assay.html">the
-ClinStudy::ORM::Assay manpage</a></p>
 </body>
 </html>

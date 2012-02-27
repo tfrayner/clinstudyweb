@@ -39,13 +39,7 @@ __PACKAGE__->table("test_result");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 1
-
-=head2 hospitalisation_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 value
 
@@ -77,9 +71,7 @@ __PACKAGE__->add_columns(
   "test_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "visit_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "hospitalisation_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "value",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "controlled_value_id",
@@ -120,22 +112,6 @@ __PACKAGE__->set_primary_key("id");
 
 __PACKAGE__->add_unique_constraint("test_id_2", ["test_id", "date", "visit_id"]);
 
-=head2 C<test_id_3>
-
-=over 4
-
-=item * L</test_id>
-
-=item * L</date>
-
-=item * L</hospitalisation_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("test_id_3", ["test_id", "date", "hospitalisation_id"]);
-
 =head1 RELATIONS
 
 =head2 controlled_value_id
@@ -150,20 +126,6 @@ __PACKAGE__->belongs_to(
   "controlled_value_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "controlled_value_id" },
-);
-
-=head2 hospitalisation_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "hospitalisation_id",
-  "ClinStudy::ORM::Hospitalisation",
-  { id => "hospitalisation_id" },
 );
 
 =head2 test_aggregation_aggregate_result_ids
@@ -217,8 +179,8 @@ Related object: L<ClinStudy::ORM::Visit>
 __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:b3wr8jHmKRPfDmWNiBdkSA
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:j/1N3tjUn23rJ4rxOi125w
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

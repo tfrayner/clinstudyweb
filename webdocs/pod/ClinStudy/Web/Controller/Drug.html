@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::Web::Controller::Drug</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -26,7 +26,6 @@
                 <li><a href="#list_by_patient">list_by_patient</a></li>
                 <li><a href="#add_to_priortreatment">add_to_priortreatment</a></li>
                 <li><a href="#add_to_visit">add_to_visit</a></li>
-                <li><a href="#add_to_hospitalisation">add_to_hospitalisation</a></li>
                 <li><a href="#edit">edit</a></li>
                 <li><a href="#delete">delete</a></li>
         </ul>
@@ -46,14 +45,11 @@
 <h1><a name="methods">METHODS</a></h1>
 <h2><a name="list_by_patient">list_by_patient</a></h2>
 <p>List all the drug treatments for a given patient, traversing the
-Visit, Hospitalisation and PriorTreatment tables to do so.</p>
+Visit and PriorTreatment tables to do so.</p>
 <h2><a name="add_to_priortreatment">add_to_priortreatment</a></h2>
 <p>Add a drug to a given prior treatment.</p>
 <h2><a name="add_to_visit">add_to_visit</a></h2>
 <p>Add a drug to a given visit.</p>
-<h2><a name=
-"add_to_hospitalisation">add_to_hospitalisation</a></h2>
-<p>Add a drug to a given hospitalisation.</p>
 <h2><a name="edit">edit</a></h2>
 <p>Edit or add a given drug object; expects a drug container object
 in the latter case.</p>

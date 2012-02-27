@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
+<title>ClinStudy::XML::SemanticValidator</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href="mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#99;&#97;&#108;&#105;&#98;&#97;&#110;&#46;&#108;&#111;&#99;&#97;&#108;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#failure_flag">failure_flag</a></li>
+                <li><a href="#warning_flag">warning_flag</a></li>
+                <li><a href="#report">report</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#check_semantics">check_semantics</a></li>
+                <li><a href="#load_object">load_object</a></li>
+                <li><a href="#load_element">load_element</a></li>
+                <li><a href="#load_element_message">load_element_message</a></li>
+        </ul>
+
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::SemanticValidator - Report on potential problems
+with a ClinStudyML document.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::SemanticValidator;
+ my $validator = ClinStudy::XML::SemanticValidator-&gt;new(
+     database    =&gt; $schema,
+     schema_file =&gt; $xsd,
+ );
+ $validator-&gt;check_semantics( $xml );
+ 
+ if ( $validator-&gt;failure_flag() ) {
+     die("Semantic validation failed: \n\n" . $validator-&gt;report());
+ }
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>This is a lightweight ClinStudyML validation module which checks
+the content of a document against a ClinStudyWeb database instance,
+reporting on any irregularities it finds.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<h2><a name="failure_flag">failure_flag</a></h2>
+<p>Boolean flag indicating whether validation failed
+(TRUE=failure). If this is set then typically an subsequent
+database loading will fail. Given that failed loads should
+automatically roll back this is little more than a time-saver.</p>
+<h2><a name="warning_flag">warning_flag</a></h2>
+<p>Boolean flag indicating whether validation generated any
+warnings (TRUE=warnings were generated). If this is set then
+subsequent loading may alter the database in ways you didn't want.
+This flag is therefore far more important than the
+failure_flag.</p>
+<h2><a name="report">report</a></h2>
+<p>A string holding the validation report; this should give reasons
+for the above flags being set, so that the document can be
+inspected and modified if necessary.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="check_semantics">check_semantics</a></h2>
+<p>The core method used to check the document contents. Takes as
+its argument the same XML::LibXML::Document object as is required
+by the Loader-&gt;load method.</p>
+<h2><a name="load_object">load_object</a></h2>
+<p>Overridden loader method used to prevent any update or insert
+into the database.</p>
+<h2><a name="load_element">load_element</a></h2>
+<p>Overridden loader method which contains much of the validation
+code.</p>
+<h2><a name="load_element_message">load_element_message</a></h2>
+<p>Overridden loader method generating a user-friendly message.</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2010 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

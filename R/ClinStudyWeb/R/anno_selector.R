@@ -78,12 +78,20 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
     for ( n in 1:length(phenotypes))
         tkinsert(tl.pheno, 'end', names(phenotypes)[n])
 
+    txcb.tcl <- tclVar(0)
+    f.txcb <- tkframe(dlg, borderwidth=10)
+    cb.tx <- tkcheckbutton(f.txcb, variable=txcb.tcl)
+    l.tx  <- tklabel(f.txcb, text='Include Transplant data?')
+    tkgrid( l.tx, cb.tx )
+
     testChoice  <- list()
     phenoChoice <- list()
+    txChoice    <- 0
 
     OnOK <- function() {
         testChoice  <<- testnames[ as.numeric(tkcurselection(tl.tests))+1 ]
         phenoChoice <<- phenotypes[ as.numeric(tkcurselection(tl.pheno))+1 ]
+        txChoice    <<- tclvalue(txcb.tcl)
         tkdestroy(dlg)
     }
 
@@ -92,9 +100,14 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
     tkpack(b.OK, side='bottom')
     tkpack(f.listbox, side='top')
     tkpack(f.button, side='bottom')
+    tkpack(f.txcb, side='bottom')
     tkfocus(dlg)
 
     tkwait.window(dlg)
 
-    return(list(tests=testChoice, phenotypes=phenoChoice))
+    ## Names here need to match the JSON query parameters defined in the
+    ## ClinStudy::Web::Controller::Query perl module.
+    return(list(test_ids=testChoice,
+                phenotype_ids=phenoChoice,
+                include_transplant=txChoice))
 }
