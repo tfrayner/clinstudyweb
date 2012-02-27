@@ -24,6 +24,7 @@ use Moose;
 use namespace::autoclean;
 
 use List::Util qw(first);
+use Date::Calc qw(Date_to_Days);
 require JSON::Any;
 require DateTime;
 require DateTime::Format::MySQL;
@@ -593,6 +594,10 @@ sub dump_sample_entity : Private {
 
     $dump{phenotype} = { map { $_->type_id()->value() => $_->value() } @$phenotypes };
 
+    my $transplant = $self->dump_transplant_data( $c, $visit, $query );
+
+    $dump{transplant} = $transplant;
+
     return \%dump;
 }
 
@@ -646,6 +651,70 @@ sub dump_phenotype_quantities : Private {
     }
 
     return \@phenotypes;
+}
+
+sub _date_to_days {
+
+    my ( $self, $date ) = @_;
+
+    my ( $y, $m, $d ) = split /-/, $date;
+    
+    my $days = Date_to_Days( $y, $m, $d );
+
+    return $days;
+}
+
+sub _date_diff : Private {
+
+    my ( $self, $tx, $vdays ) = @_;
+
+    my $d = $self->_date_to_days( $tx->date() );
+
+    return abs( $d - $vdays );
+}
+
+sub _find_closest_transplant : Private {
+
+    my ( $self, $visit ) = @_;
+
+    my @tx = $visit->search_related('patient_id')->search_related('transplants');
+
+    return unless scalar @tx;
+
+    my $vdays = $self->_date_to_days( $visit->date() );
+
+    # Schwartzian transform to find the closest transplant (perhaps
+    # not ideal, but will do for now).
+    my @sorted = map { $_->[0] }
+                 sort { $a->[1] cmp $b->[1] }
+                 map { [ $_, $self->_date_diff( $_, $vdays ) ] } @tx;
+
+    return $sorted[0];
+}
+
+sub dump_transplant_data : Private {
+
+    my ( $self, $c, $visit, $query ) = @_;
+
+    my %transplant;
+    if ( $query->{'include_transplant'} ) {
+        my $tx = $self->_find_closest_transplant( $visit );
+
+        return \%transplant unless ( $tx );
+
+        %transplant = map { $_ => $tx->$_ }
+            qw( number recip_cmv donor_cmv delayed_graft_function days_delayed_function
+                mins_cold_ischaemic hla_mismatch donor_age donor_cause_of_death );
+
+        foreach my $cvkey ( qw( sensitisation_status organ_type donor_type reperfusion_quality ) ) {
+            my $key_id = $cvkey . '_id';
+            $transplant{ $cvkey } = defined $tx->$key_id
+                                  ? $tx->$key_id->value()
+                                  : undef;
+        }
+    }
+
+    return \%transplant;
 }
 
 sub dump_assay_drugs : Private {

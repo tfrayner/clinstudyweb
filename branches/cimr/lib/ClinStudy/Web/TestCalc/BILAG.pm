@@ -106,9 +106,6 @@ sub calculate {
     if ( $contclass =~ / ::Visit \z/xms ) {
         $opts{ visit_id } = $container->id;
     }
-    elsif ( $contclass =~ / ::Hospitalisation \z/xms ) {
-        $opts{ hospitalisation_id } = $container->id;
-    }
     else {
         die("Cannot link test result to $contclass\n");
     }

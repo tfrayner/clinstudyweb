@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::RelatedVocab</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__related_vocab">TABLE: <code>related_vocab</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -28,12 +29,19 @@
                 <li><a href="#relationship_id">relationship_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#controlled_vocab_id"><code>controlled_vocab_id</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
                 <li><a href="#controlled_vocab_id">controlled_vocab_id</a></li>
-                <li><a href="#target_id">target_id</a></li>
                 <li><a href="#relationship_id">relationship_id</a></li>
+                <li><a href="#target_id">target_id</a></li>
         </ul>
 
 </ul>
@@ -42,6 +50,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::RelatedVocab</p>
+<hr />
+<h1><a name="table__related_vocab">TABLE:
+<code>related_vocab</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -69,18 +80,36 @@
   is_nullable: 0
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id20" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="controlled_vocab_id"></a><a href=
+"#controlled_vocab_id"><code>controlled_vocab_id</code></a></h2>
+<ul>
+<li><strong><a name="controlled_vocab_id" class="item"></a><a href=
+"#controlled_vocab_id">controlled_vocab_id</a></strong></li>
+<li><strong><a name="target_id" class="item"></a><a href=
+"#target_id">target_id</a></strong></li>
+<li><strong><a name="relationship_id" class="item"></a><a href=
+"#relationship_id">relationship_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
 <h2><a name="controlled_vocab_id">controlled_vocab_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
-<h2><a name="target_id">target_id</a></h2>
+<h2><a name="relationship_id">relationship_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
-<h2><a name="relationship_id">relationship_id</a></h2>
+<h2><a name="target_id">target_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the

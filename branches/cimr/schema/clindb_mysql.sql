@@ -293,7 +293,6 @@ CREATE TABLE `drug` (
   `locale_id` int(11) default NULL,
   `visit_id` int(11) default NULL,
   `prior_treatment_id` int(11) default NULL,
-  `hospitalisation_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY (`name_id`),
   KEY (`locale_id`),
@@ -302,10 +301,8 @@ CREATE TABLE `drug` (
   KEY (`duration_unit_id`),
   KEY (`visit_id`),
   KEY (`prior_treatment_id`),
-  KEY (`hospitalisation_id`),
   -- Only one instance of a given drug allowed per visit (or whatever).
   UNIQUE KEY (`name_id`, `visit_id`),
-  UNIQUE KEY (`name_id`, `hospitalisation_id`),
   UNIQUE KEY (`name_id`, `prior_treatment_id`),
   CONSTRAINT `drug_ibfk_1` FOREIGN KEY (`dose_unit_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_2` FOREIGN KEY (`dose_freq_id`) REFERENCES `controlled_vocab` (`id`),
@@ -313,7 +310,6 @@ CREATE TABLE `drug` (
   CONSTRAINT `drug_ibfk_4` FOREIGN KEY (`locale_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `drug_ibfk_5` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
   CONSTRAINT `drug_ibfk_6` FOREIGN KEY (`prior_treatment_id`) REFERENCES `prior_treatment` (`id`),
-  CONSTRAINT `drug_ibfk_7` FOREIGN KEY (`hospitalisation_id`) REFERENCES `hospitalisation` (`id`),
   CONSTRAINT `drug_ibfk_8` FOREIGN KEY (`duration_unit_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -469,36 +465,6 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `clinical_feature` WRITE;
 /*!40000 ALTER TABLE `clinical_feature` DISABLE KEYS */;
 /*!40000 ALTER TABLE `clinical_feature` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `hospitalisation`
---
-
-DROP TABLE IF EXISTS `hospitalisation`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `hospitalisation` (
-  `id` int(11) NOT NULL auto_increment,
-  `patient_id` int(11) NOT NULL,
-  `date` date NOT NULL,
-  `days_duration` int(6) default NULL,
-  `postop_days_duration` int(6) default NULL,
-  `reason_for_admission` varchar(255) default NULL,
-  `notes` text,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY (`patient_id`,`date`),    -- only one hosp per patient per date.
-  CONSTRAINT `hospitalisation_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
-
---
--- Dumping data for table `hospitalisation`
---
-
-LOCK TABLES `hospitalisation` WRITE;
-/*!40000 ALTER TABLE `hospitalisation` DISABLE KEYS */;
-/*!40000 ALTER TABLE `hospitalisation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -698,6 +664,7 @@ CREATE TABLE `sample` (
   `concentration` decimal(12,5) default NULL,
   `purity` decimal(12,5) default NULL,
   `cell_purity` decimal(12,5) default NULL,
+  `auto_cell_purity` decimal(12,5) default NULL,
   `quality_score_id` int(11) default NULL,
   `has_expired` tinyint(1) default NULL,
   `notes` text,
@@ -1028,8 +995,7 @@ SET character_set_client = utf8;
 CREATE TABLE `test_result` (
   `id` int(11) NOT NULL auto_increment,
   `test_id` int(11) NOT NULL,
-  `visit_id` int(11) default NULL,
-  `hospitalisation_id` int(11) default NULL,
+  `visit_id` int(11) NOT NULL,
   `value` varchar(255) default NULL,
   `controlled_value_id` int(11) default NULL,
   `date` date NOT NULL,
@@ -1037,13 +1003,10 @@ CREATE TABLE `test_result` (
   PRIMARY KEY  (`id`),
   KEY (`test_id`),
   KEY (`visit_id`),
-  KEY (`hospitalisation_id`),
   KEY (`controlled_value_id`),
   UNIQUE KEY (`test_id`, `date`, `visit_id`),
-  UNIQUE KEY (`test_id`, `date`, `hospitalisation_id`),
   CONSTRAINT `test_result_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `test` (`id`),
   CONSTRAINT `test_result_ibfk_2` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`id`),
-  CONSTRAINT `test_result_ibfk_3` FOREIGN KEY (`hospitalisation_id`) REFERENCES `hospitalisation` (`id`),
   CONSTRAINT `test_result_ibfk_4` FOREIGN KEY (`controlled_value_id`) REFERENCES `controlled_vocab` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -1066,7 +1029,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `transplant` (
   `id` int(11) NOT NULL auto_increment,
-  `hospitalisation_id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
   `date` date default NULL,
   `number` int(6) default NULL,
   `sensitisation_status_id` int(11) default NULL,
@@ -1081,14 +1044,15 @@ CREATE TABLE `transplant` (
   `donor_age` int(3) default NULL,
   `donor_cause_of_death` varchar(255) default NULL,
   `donor_cmv` tinyint(1) default NULL,
+  `notes` text,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY (`hospitalisation_id`, `date`),
-  KEY (`hospitalisation_id`),
+  UNIQUE KEY (`patient_id`, `date`),
+  KEY (`patient_id`),
   KEY (`sensitisation_status_id`),
   KEY (`organ_type_id`),
   KEY (`reperfusion_quality_id`),
   KEY (`donor_type_id`),
-  CONSTRAINT `transplant_ibfk_1` FOREIGN KEY (`hospitalisation_id`) REFERENCES `hospitalisation` (`id`),
+  CONSTRAINT `transplant_ibfk_1b` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`),
   CONSTRAINT `transplant_ibfk_2` FOREIGN KEY (`sensitisation_status_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `transplant_ibfk_3` FOREIGN KEY (`organ_type_id`) REFERENCES `controlled_vocab` (`id`),
   CONSTRAINT `transplant_ibfk_4` FOREIGN KEY (`reperfusion_quality_id`) REFERENCES `controlled_vocab` (`id`),
@@ -1239,14 +1203,13 @@ UNLOCK TABLES;
 delimiter //
 
 /* Triggers to make sure that Drugs are always attached to one only of
-   Visit, Hospitalisation or PriorTreatment */
+   Visit or PriorTreatment */
 drop trigger if exists `drug_update_trigger`//
 create trigger `drug_update_trigger`
     before update on drug
 for each row
 begin
     if ( (new.visit_id is not null)
-       + (new.hospitalisation_id is not null)
        + (new.prior_treatment_id is not null) != 1) then
         call ERROR_DRUG_UPDATE_TRIGGER();
     end if;
@@ -1259,7 +1222,6 @@ create trigger `drug_insert_trigger`
 for each row
 begin
     if ( (new.visit_id is not null)
-       + (new.hospitalisation_id is not null)
        + (new.prior_treatment_id is not null) != 1) then
         call ERROR_DRUG_INSERT_TRIGGER();
     end if;
@@ -1274,10 +1236,6 @@ create trigger `test_result_value_insert_trigger`
     before insert on test_result
 for each row
 begin
-    if ( (new.visit_id is not null)
-       + (new.hospitalisation_id is not null) != 1) then
-        call ERROR_TEST_RESULT_INSERT_TRIGGER();
-    end if;
     if ( new.value is not null
        and (select count(possible_value_id)
             from test_possible_value
@@ -1299,10 +1257,6 @@ create trigger `test_result_value_update_trigger`
     before update on test_result
 for each row
 begin
-    if ( (new.visit_id is not null)
-       + (new.hospitalisation_id is not null) != 1) then
-        call ERROR_TEST_RESULT_UPDATE_TRIGGER();
-    end if;
     if ( new.value is not null
         and (select count(possible_value_id)
              from test_possible_value

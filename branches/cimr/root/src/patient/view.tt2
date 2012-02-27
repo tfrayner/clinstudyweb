@@ -152,13 +152,13 @@
 </fieldset>
 
 <fieldset class="data_view">
-<legend>Hospitalisation Events <span><a href="[% c.uri_for("/hospitalisation/add_to_patient", object.id) %]">Add</a></span></legend>
-[% IF object.hospitalisations_rs.count == 1 %]
-  [% SET objects = [ object.hospitalisations ] %]
+<legend>Transplants <span><a href="[% c.uri_for("/transplant/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.transplants_rs.count == 1 %]
+  [% SET objects = [ object.transplants ] %]
 [% ELSE %]
-  [% SET objects = object.hospitalisations.list %]
+  [% SET objects = object.transplants.list %]
 [% END %]
-[% INCLUDE app/hospitalisation_list.tt2 %]
+[% INCLUDE app/transplants_list.tt2 %]
 </fieldset>
 
 <div class="linklist">

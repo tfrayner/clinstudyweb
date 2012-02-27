@@ -89,12 +89,6 @@ __PACKAGE__->table("drug");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 hospitalisation_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -119,8 +113,6 @@ __PACKAGE__->add_columns(
   "visit_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "prior_treatment_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "hospitalisation_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
@@ -158,27 +150,13 @@ __PACKAGE__->add_unique_constraint("name_id_2", ["name_id", "visit_id"]);
 
 =item * L</name_id>
 
-=item * L</hospitalisation_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("name_id_3", ["name_id", "hospitalisation_id"]);
-
-=head2 C<name_id_4>
-
-=over 4
-
-=item * L</name_id>
-
 =item * L</prior_treatment_id>
 
 =back
 
 =cut
 
-__PACKAGE__->add_unique_constraint("name_id_4", ["name_id", "prior_treatment_id"]);
+__PACKAGE__->add_unique_constraint("name_id_3", ["name_id", "prior_treatment_id"]);
 
 =head1 RELATIONS
 
@@ -222,20 +200,6 @@ __PACKAGE__->belongs_to(
   "duration_unit_id",
   "ClinStudy::ORM::ControlledVocab",
   { id => "duration_unit_id" },
-);
-
-=head2 hospitalisation_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "hospitalisation_id",
-  "ClinStudy::ORM::Hospitalisation",
-  { id => "hospitalisation_id" },
 );
 
 =head2 locale_id
@@ -291,8 +255,8 @@ Related object: L<ClinStudy::ORM::Visit>
 __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JwDjsRZ02j/1RkCyTyxGCA
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:onhep2VHFpnAyAGVg+UW8Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

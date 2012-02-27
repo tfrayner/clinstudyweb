@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::ControlledVocab</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__controlled_vocab">TABLE: <code>controlled_vocab</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -29,50 +30,61 @@
                 <li><a href="#term_source_id">term_source_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#accession"><code>accession</code></a></li>
+                <li><a href="#category"><code>category</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#adverse_event_severity_ids">adverse_event_severity_ids</a></li>
                 <li><a href="#adverse_event_action_ids">adverse_event_action_ids</a></li>
                 <li><a href="#adverse_event_outcome_ids">adverse_event_outcome_ids</a></li>
+                <li><a href="#adverse_event_severity_ids">adverse_event_severity_ids</a></li>
                 <li><a href="#adverse_event_trial_related_ids">adverse_event_trial_related_ids</a></li>
                 <li><a href="#assay_batches">assay_batches</a></li>
                 <li><a href="#channels">channels</a></li>
                 <li><a href="#clinical_features">clinical_features</a></li>
-                <li><a href="#term_source_id">term_source_id</a></li>
                 <li><a href="#diagnosis_condition_name_ids">diagnosis_condition_name_ids</a></li>
                 <li><a href="#diagnosis_confidence_ids">diagnosis_confidence_ids</a></li>
-                <li><a href="#diagnosis_previous_course_ids">diagnosis_previous_course_ids</a></li>
-                <li><a href="#diagnosis_disease_staging_ids">diagnosis_disease_staging_ids</a></li>
                 <li><a href="#diagnosis_disease_extent_ids">diagnosis_disease_extent_ids</a></li>
+                <li><a href="#diagnosis_disease_staging_ids">diagnosis_disease_staging_ids</a></li>
+                <li><a href="#diagnosis_previous_course_ids">diagnosis_previous_course_ids</a></li>
                 <li><a href="#disease_events">disease_events</a></li>
-                <li><a href="#drug_dose_unit_ids">drug_dose_unit_ids</a></li>
                 <li><a href="#drug_dose_freq_ids">drug_dose_freq_ids</a></li>
-                <li><a href="#drug_name_ids">drug_name_ids</a></li>
-                <li><a href="#drug_locale_ids">drug_locale_ids</a></li>
+                <li><a href="#drug_dose_unit_ids">drug_dose_unit_ids</a></li>
                 <li><a href="#drug_duration_unit_ids">drug_duration_unit_ids</a></li>
+                <li><a href="#drug_locale_ids">drug_locale_ids</a></li>
+                <li><a href="#drug_name_ids">drug_name_ids</a></li>
                 <li><a href="#emergent_group_basis_ids">emergent_group_basis_ids</a></li>
                 <li><a href="#emergent_group_type_ids">emergent_group_type_ids</a></li>
                 <li><a href="#patient_ethnicity_ids">patient_ethnicity_ids</a></li>
                 <li><a href="#patient_home_centre_ids">patient_home_centre_ids</a></li>
+                <li><a href="#phenotype_quantities">phenotype_quantities</a></li>
                 <li><a href="#prior_groups">prior_groups</a></li>
                 <li><a href="#prior_observations">prior_observations</a></li>
                 <li><a href="#prior_treatments">prior_treatments</a></li>
                 <li><a href="#related_vocab_controlled_vocab_ids">related_vocab_controlled_vocab_ids</a></li>
-                <li><a href="#related_vocab_target_ids">related_vocab_target_ids</a></li>
                 <li><a href="#related_vocab_relationship_ids">related_vocab_relationship_ids</a></li>
+                <li><a href="#related_vocab_target_ids">related_vocab_target_ids</a></li>
                 <li><a href="#risk_factors">risk_factors</a></li>
                 <li><a href="#sample_cell_type_ids">sample_cell_type_ids</a></li>
+                <li><a href="#sample_data_files">sample_data_files</a></li>
                 <li><a href="#sample_material_type_ids">sample_material_type_ids</a></li>
                 <li><a href="#sample_quality_score_ids">sample_quality_score_ids</a></li>
                 <li><a href="#studies">studies</a></li>
                 <li><a href="#system_involvements">system_involvements</a></li>
+                <li><a href="#term_source_id">term_source_id</a></li>
                 <li><a href="#test_possible_values">test_possible_values</a></li>
                 <li><a href="#test_results">test_results</a></li>
-                <li><a href="#transplant_sensitisation_status_ids">transplant_sensitisation_status_ids</a></li>
+                <li><a href="#transplant_donor_type_ids">transplant_donor_type_ids</a></li>
                 <li><a href="#transplant_organ_type_ids">transplant_organ_type_ids</a></li>
                 <li><a href="#transplant_reperfusion_quality_ids">transplant_reperfusion_quality_ids</a></li>
-                <li><a href="#transplant_donor_type_ids">transplant_donor_type_ids</a></li>
+                <li><a href="#transplant_sensitisation_status_ids">transplant_sensitisation_status_ids</a></li>
+                <li><a href="#visit_data_files">visit_data_files</a></li>
                 <li><a href="#visit_disease_activity_ids">visit_disease_activity_ids</a></li>
                 <li><a href="#visit_nominal_timepoint_ids">visit_nominal_timepoint_ids</a></li>
         </ul>
@@ -83,6 +95,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::ControlledVocab</p>
+<hr />
+<h1><a name="table__controlled_vocab">TABLE:
+<code>controlled_vocab</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -113,16 +128,32 @@
 <pre>
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id8" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="accession"></a><a href=
+"#accession"><code>accession</code></a></h2>
+<ul>
+<li><strong><a name="accession" class="item"></a><a href=
+"#accession">accession</a></strong></li>
+</ul>
+<h2><a name="category"></a><a href=
+"#category"><code>category</code></a></h2>
+<ul>
+<li><strong><a name="category" class="item"></a><a href=
+"#category">category</a></strong></li>
+<li><strong><a name="value" class="item"></a><a href=
+"#value">value</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name=
-"adverse_event_severity_ids">adverse_event_severity_ids</a></h2>
-<p>Type: has_many</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/AdverseEvent.html">the
-ClinStudy::ORM::AdverseEvent manpage</a></p>
 <h2><a name=
 "adverse_event_action_ids">adverse_event_action_ids</a></h2>
 <p>Type: has_many</p>
@@ -131,6 +162,12 @@ ClinStudy::ORM::AdverseEvent manpage</a></p>
 ClinStudy::ORM::AdverseEvent manpage</a></p>
 <h2><a name=
 "adverse_event_outcome_ids">adverse_event_outcome_ids</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/AdverseEvent.html">the
+ClinStudy::ORM::AdverseEvent manpage</a></p>
+<h2><a name=
+"adverse_event_severity_ids">adverse_event_severity_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/AdverseEvent.html">the
@@ -156,11 +193,6 @@ ClinStudy::ORM::Channel manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ClinicalFeature.html">the
 ClinStudy::ORM::ClinicalFeature manpage</a></p>
-<h2><a name="term_source_id">term_source_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/TermSource.html">the
-ClinStudy::ORM::TermSource manpage</a></p>
 <h2><a name=
 "diagnosis_condition_name_ids">diagnosis_condition_name_ids</a></h2>
 <p>Type: has_many</p>
@@ -174,7 +206,7 @@ ClinStudy::ORM::Diagnosis manpage</a></p>
 "/trunk/webdocs/pod/ClinStudy/ORM/Diagnosis.html">the
 ClinStudy::ORM::Diagnosis manpage</a></p>
 <h2><a name=
-"diagnosis_previous_course_ids">diagnosis_previous_course_ids</a></h2>
+"diagnosis_disease_extent_ids">diagnosis_disease_extent_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Diagnosis.html">the
@@ -186,7 +218,7 @@ ClinStudy::ORM::Diagnosis manpage</a></p>
 "/trunk/webdocs/pod/ClinStudy/ORM/Diagnosis.html">the
 ClinStudy::ORM::Diagnosis manpage</a></p>
 <h2><a name=
-"diagnosis_disease_extent_ids">diagnosis_disease_extent_ids</a></h2>
+"diagnosis_previous_course_ids">diagnosis_previous_course_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Diagnosis.html">the
@@ -196,17 +228,18 @@ ClinStudy::ORM::Diagnosis manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/DiseaseEvent.html">the
 ClinStudy::ORM::DiseaseEvent manpage</a></p>
-<h2><a name="drug_dose_unit_ids">drug_dose_unit_ids</a></h2>
-<p>Type: has_many</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
-ClinStudy::ORM::Drug manpage</a></p>
 <h2><a name="drug_dose_freq_ids">drug_dose_freq_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
 ClinStudy::ORM::Drug manpage</a></p>
-<h2><a name="drug_name_ids">drug_name_ids</a></h2>
+<h2><a name="drug_dose_unit_ids">drug_dose_unit_ids</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
+ClinStudy::ORM::Drug manpage</a></p>
+<h2><a name=
+"drug_duration_unit_ids">drug_duration_unit_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
@@ -216,8 +249,7 @@ ClinStudy::ORM::Drug manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
 ClinStudy::ORM::Drug manpage</a></p>
-<h2><a name=
-"drug_duration_unit_ids">drug_duration_unit_ids</a></h2>
+<h2><a name="drug_name_ids">drug_name_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Drug.html">the
@@ -245,6 +277,11 @@ ClinStudy::ORM::Patient manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Patient.html">the
 ClinStudy::ORM::Patient manpage</a></p>
+<h2><a name="phenotype_quantities">phenotype_quantities</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/PhenotypeQuantity.html">the
+ClinStudy::ORM::PhenotypeQuantity manpage</a></p>
 <h2><a name="prior_groups">prior_groups</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
@@ -267,13 +304,13 @@ ClinStudy::ORM::PriorTreatment manpage</a></p>
 "/trunk/webdocs/pod/ClinStudy/ORM/RelatedVocab.html">the
 ClinStudy::ORM::RelatedVocab manpage</a></p>
 <h2><a name=
-"related_vocab_target_ids">related_vocab_target_ids</a></h2>
+"related_vocab_relationship_ids">related_vocab_relationship_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/RelatedVocab.html">the
 ClinStudy::ORM::RelatedVocab manpage</a></p>
 <h2><a name=
-"related_vocab_relationship_ids">related_vocab_relationship_ids</a></h2>
+"related_vocab_target_ids">related_vocab_target_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/RelatedVocab.html">the
@@ -288,6 +325,11 @@ ClinStudy::ORM::RiskFactor manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Sample.html">the
 ClinStudy::ORM::Sample manpage</a></p>
+<h2><a name="sample_data_files">sample_data_files</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/SampleDataFile.html">the
+ClinStudy::ORM::SampleDataFile manpage</a></p>
 <h2><a name=
 "sample_material_type_ids">sample_material_type_ids</a></h2>
 <p>Type: has_many</p>
@@ -310,6 +352,11 @@ ClinStudy::ORM::Study manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/SystemInvolvement.html">the
 ClinStudy::ORM::SystemInvolvement manpage</a></p>
+<h2><a name="term_source_id">term_source_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/TermSource.html">the
+ClinStudy::ORM::TermSource manpage</a></p>
 <h2><a name="test_possible_values">test_possible_values</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
@@ -321,7 +368,7 @@ ClinStudy::ORM::TestPossibleValue manpage</a></p>
 "/trunk/webdocs/pod/ClinStudy/ORM/TestResult.html">the
 ClinStudy::ORM::TestResult manpage</a></p>
 <h2><a name=
-"transplant_sensitisation_status_ids">transplant_sensitisation_status_ids</a></h2>
+"transplant_donor_type_ids">transplant_donor_type_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Transplant.html">the
@@ -339,11 +386,16 @@ ClinStudy::ORM::Transplant manpage</a></p>
 "/trunk/webdocs/pod/ClinStudy/ORM/Transplant.html">the
 ClinStudy::ORM::Transplant manpage</a></p>
 <h2><a name=
-"transplant_donor_type_ids">transplant_donor_type_ids</a></h2>
+"transplant_sensitisation_status_ids">transplant_sensitisation_status_ids</a></h2>
 <p>Type: has_many</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Transplant.html">the
 ClinStudy::ORM::Transplant manpage</a></p>
+<h2><a name="visit_data_files">visit_data_files</a></h2>
+<p>Type: has_many</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/VisitDataFile.html">the
+ClinStudy::ORM::VisitDataFile manpage</a></p>
 <h2><a name=
 "visit_disease_activity_ids">visit_disease_activity_ids</a></h2>
 <p>Type: has_many</p>

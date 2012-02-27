@@ -68,9 +68,8 @@ calculator modules (e.g. BILAG, BVAS etc.).
 =head2 check_result_existence
 
 A convenience method which checks for the existence of a given test
-result attached to a given container object (Visit,
-Hospitalisation). Arguments are the ClinStudy::ORM object, the
-container object and the test name. Return value is the number of
+result attached to a given Visit. Arguments are the ClinStudy::ORM object, the
+Visit object and the test name. Return value is the number of
 specified test results attached to the container object.
 
 =head1 AUTHOR

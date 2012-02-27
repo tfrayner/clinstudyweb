@@ -94,6 +94,12 @@ __PACKAGE__->table("sample");
   is_nullable: 1
   size: [12,5]
 
+=head2 auto_cell_purity
+
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+
 =head2 quality_score_id
 
   data_type: 'integer'
@@ -136,6 +142,8 @@ __PACKAGE__->add_columns(
   "purity",
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "cell_purity",
+  { data_type => "decimal", is_nullable => 1, size => [12, 5] },
+  "auto_cell_purity",
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "quality_score_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -256,8 +264,8 @@ Related object: L<ClinStudy::ORM::Visit>
 __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:r/kFp2GNjeiVTFHwFdE53Q
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-13 14:43:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bsyaKZyWmX6pkLQx5zZgew
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

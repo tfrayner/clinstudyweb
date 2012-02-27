@@ -148,6 +148,7 @@
     <xs:attribute name="concentration" type="decimalType"/>
     <xs:attribute name="purity" type="decimalType"/>
     <xs:attribute name="cell_purity" type="decimalType"/>
+    <xs:attribute name="auto_cell_purity" type="decimalType"/>
     <xs:attribute name="quality_score" type="varcharType"/>
     <xs:attribute name="has_expired" type="tinyintType"/>
     <xs:attribute name="notes" type="textType"/>
@@ -249,18 +250,6 @@
     <xs:attribute name="donor_age" type="intType"/>
     <xs:attribute name="donor_cause_of_death" type="varcharType"/>
     <xs:attribute name="donor_cmv" type="tinyintType"/>
-  </xs:complexType>
-
-  <xs:complexType name="hospitalisationType">
-    <xs:sequence>
-      <xs:element name="Drugs" type="drugGroup" minOccurs="0"/>
-      <xs:element name="TestResults" type="testResultGroup" minOccurs="0"/>
-      <xs:element name="Transplants" type="transplantGroup" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="date" type="dateType" use="required"/>
-    <xs:attribute name="days_duration" type="intType"/>
-    <xs:attribute name="postop_days_duration" type="intType"/>
-    <xs:attribute name="reason_for_admission" type="varcharType"/>
     <xs:attribute name="notes" type="textType"/>
   </xs:complexType>
 
@@ -286,13 +275,13 @@
       <xs:element name="Comorbidities" type="comorbidityGroup" minOccurs="0"/>
       <xs:element name="Diagnoses" type="diagnosisGroup" minOccurs="0"/>
       <xs:element name="DiseaseEvents" type="diseaseEventGroup" minOccurs="0"/>
-      <xs:element name="Hospitalisations" type="hospitalisationGroup" minOccurs="0"/>
       <xs:element name="PriorGroups" type="priorGroupGroup" minOccurs="0"/>
       <xs:element name="PriorObservations" type="priorObservationGroup" minOccurs="0"/>
       <xs:element name="PriorTreatments" type="priorTreatmentGroup" minOccurs="0"/>
       <xs:element name="RiskFactors" type="riskFactorGroup" minOccurs="0"/>
       <xs:element name="Studies" type="studyGroup" minOccurs="0"/>
       <xs:element name="SystemInvolvements" type="systemInvolvementGroup" minOccurs="0"/>
+      <xs:element name="Transplants" type="transplantGroup" minOccurs="0"/>
       <xs:element name="Visits" type="visitGroup" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="year_of_birth" type="yearType"/>
@@ -310,8 +299,8 @@
   <xs:complexType name="patientGroup">
     <xs:sequence>
       <xs:element name="Patient" type="patientType" maxOccurs="unbounded">
-        <xs:key name="hospitalisationDateKey">
-          <xs:selector xpath=".//Hospitalisation"/>
+        <xs:key name="transplantDateKey">
+          <xs:selector xpath=".//Transplant"/>
           <xs:field xpath="@date"/>
         </xs:key>
         <xs:key name="visitDateKey">
@@ -371,17 +360,6 @@
     <xs:sequence>
       <xs:element name="Visit" type="visitType" minOccurs="0" maxOccurs="unbounded">
         <xs:key name="visitDrugNameKey">
-          <xs:selector xpath=".//Drug"/>
-          <xs:field xpath="@name"/>
-        </xs:key>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="hospitalisationGroup">
-    <xs:sequence>
-      <xs:element name="Hospitalisation" type="hospitalisationType" minOccurs="0" maxOccurs="unbounded">
-        <xs:key name="hospitalisationDrugNameKey">
           <xs:selector xpath=".//Drug"/>
           <xs:field xpath="@name"/>
         </xs:key>

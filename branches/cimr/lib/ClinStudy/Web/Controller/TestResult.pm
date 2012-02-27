@@ -53,8 +53,8 @@ sub BUILD {
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    # We only want tests that are habitually attached to Visit or
-    # Hospitalisation. We use raw SQL here for performance.
+    # We only want tests that are only attached to Visit. We use raw
+    # SQL here for performance.
     my @tests = $c->model('DB::TestResult')->search_literal(
         'me.id not in (SELECT test_result_id FROM test_aggregation)'
     )->search_related('test_id', {}, { group_by => 'name, id' });
@@ -131,18 +131,6 @@ sub list_by_patient : Local {
                     join     => 'test_id',
                     prefetch => 'test_id',
                     order_by => 'date',
-                })->all(),
-            $patient->hospitalisations()->search_related(
-                'test_results',
-                {
-                    'test_results.id' => {
-                        'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() },
-                    'test_id.id' => $test_id,
-                },
-                {
-                    join     => 'test_id',
-                    prefetch => 'test_id',
-                    order_by => 'date',
                 })->all();
         
         $c->stash->{objects} = \@test_results;
@@ -152,12 +140,6 @@ sub list_by_patient : Local {
         # Again, only show tests which have results lacking aggregates.
         my @tests =
              $patient->visits()
-                     ->search_related('test_results',{
-                         'test_results.id' => {
-                             'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() }
-                     })
-                     ->search_related('test_id',{},{distinct => 1})->all(),
-             $patient->hospitalisations()
                      ->search_related('test_results',{
                          'test_results.id' => {
                              'NOT IN' => $aggregate_rs->get_column('test_result_id')->as_query() }
@@ -187,24 +169,6 @@ sub add_to_visit : Local {
     $c->forward('edit', [undef, $visit]);
 }
 
-=head2 add_to_hospitalisation
-
-=cut
-
-sub add_to_hospitalisation : Local {
-    my ( $self, $c, $hospitalisation_id ) = @_;
-
-    # Add a new result to $hospitalisation. Check that the hospitalisation exists:
-    my $hospitalisation = $c->model('DB::Hospitalisation')->find({id => $hospitalisation_id});
-    if ( ! $hospitalisation ) {
-        $c->flash->{error} = 'No such hospitalisation event!';
-        $c->res->redirect( $c->uri_for('/patient') );
-        $c->detach();
-    }
-
-    $c->forward('edit', [undef, $hospitalisation]);
-}
-
 =head2 add_to_test_result
 
 =cut
@@ -231,7 +195,7 @@ sub edit : Local {
     my ( $self, $c, $result_id, $resultholder ) = @_;
 
     # This runmode will handles a generic "result-associated" object:
-    # Visit or Hospitalisation. We pass in the object rather than its
+    # currently only Visit. We pass in the object rather than its
     # id.
 
     # We define most of our own form here in the controller for
@@ -257,7 +221,7 @@ sub edit : Local {
         # Add a new result to $resultholder. Create the new result:
         if ( $id_method ) {
 
-            # Straightforward one-to-many; result holder is Visit or Hospitalisation.
+            # Straightforward one-to-many; result holder is Visit.
             $result = $c->model('DB::TestResult')->new({ id         => undef,
                                                          $id_method => $resultholder });
         }
@@ -267,7 +231,6 @@ sub edit : Local {
             $result = $c->model('DB::TestResult')->new({
                 id                 => undef,
                 visit_id           => $resultholder->visit_id(),
-                hospitalisation_id => $resultholder->hospitalisation_id(),
             });
         }
         else {
@@ -329,7 +292,6 @@ sub edit : Local {
         # be futile if it's immediately overwritten by a recalculated
         # result. This is more or less by design.
         my $container = $result->visit_id()
-                     || $result->hospitalisation_id()
                      || confess("Database error: test result orphaned!");
         my @studies = $container->patient_id()->studies();
         foreach my $study_type ( map { $_->type_id() } @studies ) {
@@ -481,7 +443,6 @@ sub _set_my_breadcrumbs {
     }
     elsif ( $object ) {
         my $container = $object->visit_id()
-            || $object->hospitalisation_id()
             || confess("Database error: test result orphaned!");
 
         my $holderclass = blessed $container;

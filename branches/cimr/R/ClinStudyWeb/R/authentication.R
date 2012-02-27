@@ -23,8 +23,11 @@
 getCredentials <- function(title='ClinStudyWeb Authentication',
                            entryWidth=30, returnValOnCancel=NA, parent) {
 
-    if ( ! capabilities()['X11'] )
-        stop("Error: X11 device is not available.")
+    ## Previous versions checked X11 here but that doesn't make sense
+    ## for the MS Windows version of R, which pushes tcltk through the
+    ## internal R graphics device.
+    if ( ! capabilities()['tcltk'] )
+        stop("Error: tcltk windowing system is not available.")
 
     require(tcltk)
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::VisitEmergentGroup</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__visit_emergent_group">TABLE: <code>visit_emergent_group</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -27,11 +28,18 @@
                 <li><a href="#emergent_group_id">emergent_group_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#visit_id"><code>visit_id</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#visit_id">visit_id</a></li>
                 <li><a href="#emergent_group_id">emergent_group_id</a></li>
+                <li><a href="#visit_id">visit_id</a></li>
         </ul>
 
 </ul>
@@ -40,6 +48,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::VisitEmergentGroup</p>
+<hr />
+<h1><a name="table__visit_emergent_group">TABLE:
+<code>visit_emergent_group</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -61,16 +72,32 @@
   is_nullable: 0
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id37" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="visit_id"></a><a href=
+"#visit_id"><code>visit_id</code></a></h2>
+<ul>
+<li><strong><a name="visit_id4" class="item"></a><a href=
+"#visit_id">visit_id</a></strong></li>
+<li><strong><a name="emergent_group_id" class="item"></a><a href=
+"#emergent_group_id">emergent_group_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name="visit_id">visit_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
-ClinStudy::ORM::Visit manpage</a></p>
 <h2><a name="emergent_group_id">emergent_group_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/EmergentGroup.html">the
 ClinStudy::ORM::EmergentGroup manpage</a></p>
+<h2><a name="visit_id">visit_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
+ClinStudy::ORM::Visit manpage</a></p>
 </body>
 </html>
