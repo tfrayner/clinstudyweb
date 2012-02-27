@@ -411,8 +411,10 @@ delimiter ;
 -- Add a much-needed transplant notes field.
 --
 alter table transplant add column notes text;
+alter table transplant_audit_history add column notes text;
 
 --
 -- A column for our automated cell purity assessment counts (this is actually on the CIMR branch).
 --
 alter table sample add column auto_cell_purity decimal(12,5) default NULL;
+alter table sample_audit_history add column auto_cell_purity decimal(12,5) default NULL;
