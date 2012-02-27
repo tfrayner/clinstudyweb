@@ -116,7 +116,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     }
 
     ## Take the populations which fall entirely within the livegate
-    ## rectangle as the live cell population. FIXME
+    ## rectangle as the live cell population.
     ld.pops <- split(ld, ld.gated)
     w <- .findLivePops(ld.pops, livegate)
     ld.pops <- as(ld.pops[w], 'flowSet')
@@ -290,9 +290,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         return(nrst)
     }
 
-    nrst <- .shrinkRectGate(nrst, tgt, xch, ych)
-
-    ## FIXME check for negative distances, i.e. overlapping clusters.
+    nrst <- .shrinkRectGate(nrst, tgt, xch, ych, f=1)
 
     ## Show the derived rectangle gate on the plot.
     bc <- c(nrst$left, nrst$down, nrst$right, nrst$up)
@@ -385,7 +383,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
     ## Connect to the clinical database; pull down a list of
     ## samples lacking cell purities but having the files required to
     ## attempt a calculation.
-    cond    <- list('cell_purity'=NULL,  ## FIXME this will probably be changed to auto_cell_purity.
+    cond    <- list('auto_cell_purity'=NULL,
                     'type_id.value'='FACS positive')
     attrs   <- list(join=list('sample_data_files'='type_id'))
     samples <- csJSONQuery(resultSet='Sample',
@@ -403,6 +401,9 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
 
         samp <- samples[[n]]
 
+        if ( is.null(samp$cell_purity) )
+            next
+
         writeLog(sprintf("Commencing analysis for sample %s...", samp$name))
 
         pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
@@ -413,19 +414,19 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
             next
         }
 
-        ## Download both files to a temporary location.
-        writeLog("Downloading files...")
-        fn.pre <- tempfile()
-        fn.pos <- tempfile()
-        .downloadFile(pre, fn.pre, .opts)
-        .downloadFile(pos, fn.pos, .opts)
-
         ## Retrieve the cell type
         ct <- csJSONQuery(resultSet='ControlledVocab',
                           condition=list(id=samp$cell_type_id),
                           uri=uri,
                           .opts=.opts,
                           auth=cred)
+
+        ## Download both files to a temporary location.
+        writeLog("Downloading files...")
+        fn.pre <- tempfile()
+        fn.pos <- tempfile()
+        .downloadFile(pre, fn.pre, .opts)
+        .downloadFile(pos, fn.pos, .opts)
 
         ## Attempt cell purity calculation.
         writeLog(sprintf("Calculating purity (%s)...", ct[[1]]$value))
@@ -436,9 +437,9 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
             next
         }
 
-        writeLog(sprintf("Results: %s=%f", samp$name, pur))
+        writeLog(sprintf("Results: %s=%f (%s)", samp$name, pur, samp$cell_purity))
 
-        results[[n]] <- c(sample=samp$name, purity=pur)
+        results[[n]] <- c(sample=samp$name, purity=pur, manual=samp$cell_purity)
     }
 
     ## Beware large lists in this call FIXME.

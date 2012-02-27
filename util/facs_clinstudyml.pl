@@ -299,7 +299,7 @@ facs_clinstudyml.pl
 
 =head1 SYNOPSIS
 
- facs_clinstudyml.pl -m <mapfile> <list of FACS directories>
+ facs_clinstudyml.pl -m <mapfile> -d <targetdir> <list of FACS directories>
 
 =head1 DESCRIPTION
 
@@ -343,6 +343,10 @@ The Visit date.
 =head2 -m
 
 The name of the mapping file.
+
+=head2 -d
+
+The name of the target directory into which the renamed FACS files will be copied.
 
 =head2 -h
 
