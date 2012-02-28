@@ -210,7 +210,8 @@ sub process_directory {
     FILE:
     foreach my $file ( @files ) {
 
-        # Allow for junk directories.
+        # Allow for junk directories. This is currently pointless as
+        # we filter on files above.
         next FILE if ( $file eq 'junk' && -d $file );
 
         my ( $md5file, $celltype, $filetype )
