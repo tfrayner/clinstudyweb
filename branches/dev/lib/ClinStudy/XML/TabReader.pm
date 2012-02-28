@@ -126,11 +126,11 @@ sub read {
         @col{@$header} = @$line;
 
         $self->recursive_cols_to_elements( \%col, $parsetree );
+    }
 
-        # A mechanism to warn on unused columns.
-        foreach my $un ( grep { ! $self->_column_used($_) } @$header ) {
-            $unused{ $un }++;
-        }
+    # A mechanism to warn on unused columns.
+    foreach my $un ( grep { ! $self->_column_used($_) } @$header ) {
+        $unused{ $un }++;
     }
 
     # Check that parsing completed successfully.
