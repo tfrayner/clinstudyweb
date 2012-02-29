@@ -240,7 +240,7 @@
     <xs:attribute name="number" type="intType"/>
     <xs:attribute name="sensitisation_status" type="varcharType"/>
     <xs:attribute name="recip_cmv" type="tinyintType"/>
-    <xs:attribute name="delayed_graft_function" type="tinyintType"/>
+    <xs:attribute name="delayed_graft_function" type="varcharType"/>
     <xs:attribute name="days_delayed_function" type="intType"/>
     <xs:attribute name="organ_type" type="varcharType" use="required"/>
     <xs:attribute name="mins_cold_ischaemic" type="intType"/>
