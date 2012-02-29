@@ -694,6 +694,21 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 transplant_delayed_graft_function_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Transplant>
+
+=cut
+
+__PACKAGE__->has_many(
+  "transplant_delayed_graft_function_ids",
+  "ClinStudy::ORM::Transplant",
+  { "foreign.delayed_graft_function_id" => "self.id" },
+  {},
+);
+
 =head2 transplant_donor_type_ids
 
 Type: has_many
@@ -800,8 +815,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uBJQM2Pp4zQ8kFmDdz/29w
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-29 16:21:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4+lV6E8ADnB2mZq17yqf7A
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -993,6 +1008,12 @@ __PACKAGE__->has_many(
   "transplant_reperfusion_quality_ids",
   "ClinStudy::ORM::Transplant",
   { "foreign.reperfusion_quality_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "transplant_delayed_graft_function_ids",
+  "ClinStudy::ORM::Transplant",
+  { "foreign.delayed_graft_function_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(

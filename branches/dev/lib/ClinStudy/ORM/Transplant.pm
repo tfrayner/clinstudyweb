@@ -56,9 +56,10 @@ __PACKAGE__->table("transplant");
   data_type: 'tinyint'
   is_nullable: 1
 
-=head2 delayed_graft_function
+=head2 delayed_graft_function_id
 
-  data_type: 'tinyint'
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =head2 days_delayed_function
@@ -131,8 +132,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "recip_cmv",
   { data_type => "tinyint", is_nullable => 1 },
-  "delayed_graft_function",
-  { data_type => "tinyint", is_nullable => 1 },
+  "delayed_graft_function_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "days_delayed_function",
   { data_type => "integer", is_nullable => 1 },
   "organ_type_id",
@@ -184,6 +185,20 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "date"]);
 
 =head1 RELATIONS
+
+=head2 delayed_graft_function_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "delayed_graft_function_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "delayed_graft_function_id" },
+);
 
 =head2 donor_type_id
 
@@ -271,8 +286,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-13 12:52:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jYFM7jRTkZjzAlGN/O5RXQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-29 16:21:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZFLPsvldYNYxNI73YIaJXg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
