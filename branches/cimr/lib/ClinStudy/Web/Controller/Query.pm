@@ -703,10 +703,11 @@ sub dump_transplant_data : Private {
         return \%transplant unless ( $tx );
 
         %transplant = map { $_ => $tx->$_ }
-            qw( number recip_cmv donor_cmv delayed_graft_function days_delayed_function
+            qw( number recip_cmv donor_cmv days_delayed_function
                 mins_cold_ischaemic hla_mismatch donor_age donor_cause_of_death );
 
-        foreach my $cvkey ( qw( sensitisation_status organ_type donor_type reperfusion_quality ) ) {
+        foreach my $cvkey ( qw( sensitisation_status delayed_graft_function
+                                organ_type donor_type reperfusion_quality ) ) {
             my $key_id = $cvkey . '_id';
             $transplant{ $cvkey } = defined $tx->$key_id
                                   ? $tx->$key_id->value()
