@@ -23,19 +23,22 @@ clinstudy_web_create.pl [options] model|view|controller name [helper] [options]
 
  Examples:
    clinstudy_web_create.pl controller My::Controller
-   clinstudy_web_create.pl -mechanize controller My::Controller
+   clinstudy_web_create.pl --mechanize controller My::Controller
    clinstudy_web_create.pl view My::View
-   clinstudy_web_create.pl view MyView TT
-   clinstudy_web_create.pl view TT TT
+   clinstudy_web_create.pl view HTML TT
    clinstudy_web_create.pl model My::Model
    clinstudy_web_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
    dbi:SQLite:/tmp/my.db
    clinstudy_web_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
-   dbi:Pg:dbname=foo root 4321
+   [Loader opts like db_schema, naming] dbi:Pg:dbname=foo root 4321
+   [connect_info opts like quote_char, name_sep]
 
  See also:
    perldoc Catalyst::Manual
    perldoc Catalyst::Manual::Intro
+   perldoc Catalyst::Helper::Model::DBIC::Schema
+   perldoc Catalyst::Model::DBIC::Schema
+   perldoc Catalyst::View::TT
 
 =head1 DESCRIPTION
 

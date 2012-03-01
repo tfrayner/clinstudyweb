@@ -411,8 +411,22 @@ delimiter ;
 -- Add a much-needed transplant notes field.
 --
 alter table transplant add column notes text;
+alter table transplant_audit_history add column notes text;
 
 --
 -- A column for our automated cell purity assessment counts (this is actually on the CIMR branch).
 --
 alter table sample add column auto_cell_purity decimal(12,5) default NULL;
+alter table sample_audit_history add column auto_cell_purity decimal(12,5) default NULL;
+
+--
+-- Switch delayed graft function from a simple flag to a CV. Note that
+-- we're actually deleting the old values here and will repopulate
+-- them from a fresh import of the source data.
+--
+alter table transplant add column delayed_graft_function_id int(11) default NULL;
+alter table transplant_audit_history add column delayed_graft_function_id int(11) default NULL;
+alter table transplant add key `delayed_graft_function_id` (`delayed_graft_function_id`);
+alter table transplant add constraint `transplant_ibfk_6` foreign key (`delayed_graft_function_id`) references `controlled_vocab` (`id`);
+
+alter table transplant drop column delayed_graft_function;

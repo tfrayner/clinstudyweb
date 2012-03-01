@@ -80,13 +80,20 @@ elements:
         category: ReperfusionQuality
       label_column: value
 
-  - type: Checkbox
-    name: delayed_graft_function
+  - type: Select
+    name: delayed_graft_function_id
     label: Delayed Graft Function
-    default_empty_value: 0
+    empty_first: 1
+    empty_first_label: -select-
+    constraints:
+      - AutoSet
     label_attributes:
-      tooltipText: >-
-        Was graft function delayed following transplant?
+      tooltipText: Was graft function delayed following transplant?
+    model_config:
+      resultset: ControlledVocab
+      condition:
+        category: DelayedGraftFunction
+      label_column: value
 
   - type: Text
     name: days_delayed_function

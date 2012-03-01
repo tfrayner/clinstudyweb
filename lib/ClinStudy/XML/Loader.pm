@@ -128,6 +128,7 @@ my %external_value_map = (
             },
             Transplant => {
                 sensitisation_status_id => 'SensitisationStatus',
+                delayed_graft_function_id => 'DelayedGraftFunction',
                 organ_type_id           => 'OrganType',
                 reperfusion_quality_id  => 'ReperfusionQuality',
                 donor_type_id           => 'DonorType',

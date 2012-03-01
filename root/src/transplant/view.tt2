@@ -20,7 +20,8 @@
          <td>[% IF object.reperfusion_quality_id.defined %]
                [% object.reperfusion_quality_id.value | html %][% ELSE %]Unknown[% END %]</td></tr>
      <tr><th>Delayed Graft Function:</th>
-         <td>[% IF object.delayed_graft_function %] Yes [% ELSE %] No [% END %]</td></tr>
+         <td>[% IF object.delayed_graft_function_id.defined %]
+               [% object.delayed_graft_function_id.value | html %][% ELSE %]Unknown[% END %]</td></tr>
      <tr><th>Delayed Function Duration (days):</th>
          <td>[% IF object.days_delayed_function.defined %]
                [% object.days_delayed_function | html %][% ELSE %]Unknown[% END %]</td></tr>
