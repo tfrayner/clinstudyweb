@@ -437,7 +437,78 @@ sub visit_dates : Local {
     my @dates = map { $_->date() } @visits;
 
     $c->stash->{ 'success' } = JSON::Any->true();
-    $c->stash->{ 'data' }    = \@dates;  # FIXME does this work?
+    $c->stash->{ 'data' }    = \@dates;
+    $c->detach( $c->view( 'JSON' ) );
+
+    return;
+}
+
+# New query API. This is intended as an "optimised" version of the
+# generic JSON query API in that it will allow users to query just
+# Patient, Visit, Sample, Assay and Transplant tables, pulling out all
+# the data for a given entry. The idea is that the R client will
+# aggregate data across table rows and return lists of data frames
+# with useful entries. This could be implemented entirely via the
+# generic JSON API but (a) that would be unnecessarily complex, and
+# (b) I suspect it would be slower, simply because of the network
+# overhead. We only support a defined subset of query terms here, and
+# handle the joining complexity at this level rather than in the
+# client.
+
+sub query_patients : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    
+    foreach my $qterm ( qw(trial_id id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            $cond{$qterm} = $value;
+        }
+    }
+    if ( my $study = $query->{'study'} ) {
+        $cond{ 'type_id.value' } = $study;
+        push @{ $attrs{ 'join' } }, { 'studies' => 'type_id' };
+    }
+    if ( my $diag = $query->{'diagnosis'} ) {
+        $cond{ 'condition_name_id.value' } = $diag;
+        push @{ $attrs{ 'join' } }, { 'diagnoses' => 'condition_name_id' };
+    }
+
+    my @patients;
+
+    my $rs = $c->model('DB::Patient');
+
+    my @results;
+    eval {
+        @results = $rs->search( \%cond, \%attrs );
+    };
+    if ( $@ ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+    }
+    else {
+        foreach my $res ( @results ) {
+            my %patient;
+
+            my $cols = $self->_extract_db_columns( $res );
+            @patient{ keys %$cols } = values %$cols;
+
+            my $cvs  = $self->_extract_db_cvs( $res );
+            @patient{ keys %$cvs  } = values %$cvs;
+
+            ## FIXME various relationships (e.g. Visit, Study, AdverseEvents)
+            
+            push @patients, \%patient;            
+        }
+        
+        $c->stash->{ 'success' } = JSON::Any->true();
+        $c->stash->{ 'data' }    = \@patients;
+    }
+
     $c->detach( $c->view( 'JSON' ) );
 
     return;
@@ -463,6 +534,74 @@ sub _decode_json : Private {
     }
 
     return $query;
+}
+
+sub _extract_db_columns : Private {
+
+    my ( $self, $row, $filter ) = @_;
+
+    $filter ||= [];
+
+    my %cols;
+
+    my $source  = $row->result_source();
+    my @pkeys   = $source->primary_columns();
+
+    COLUMN:
+    foreach my $col ( $source->columns() ) {
+
+        # Skip primary key columns - they are assumed to be outside
+        # the scope of the XML schema.
+        next COLUMN if ( first { $col eq $_ } @pkeys );
+
+        # Skip columns which we've been asked to filter out.
+        next COLUMN if ( first { $col eq $_ } @$filter );
+
+        # Skip relationships - these will be handled elsewhere.
+        next COLUMN if ( $source->has_relationship( $col ) );
+
+        $cols{ $col } = $row->get_column($col);
+    }
+
+    return \%cols;
+}
+
+sub _extract_db_cvs : Private {
+
+    my ( $self, $row, $filter ) = @_;
+
+    $filter ||= [];
+
+    my %cols;
+
+    my $source  = $row->result_source();
+    my @pkeys   = $source->primary_columns();
+
+    COLUMN:
+    foreach my $col ( $source->columns() ) {
+
+        # Skip primary key columns - they are assumed to be outside
+        # the scope of the XML schema.
+        next COLUMN if ( first { $col eq $_ } @pkeys );
+
+        # Skip columns which we've been asked to filter out.
+        next COLUMN if ( first { $col eq $_ } @$filter );
+
+        if ( $source->has_relationship( $col ) ) {
+            my $relsource = $source->related_source( $col );
+            if ( $relsource->source_name() eq 'ControlledVocab' ) {
+                my ( $relname ) = ( $col =~ m/(.*)_id/ );
+                if ( my $cv = $row->$col ) {
+                    $cols{ $relname } = $cv->get_column('value');
+                }
+                else {
+                    $cols{ $relname } = undef;
+                }
+            }
+        }
+    }
+
+    return \%cols;
 }
 
 =head2 dump_assay_entity
