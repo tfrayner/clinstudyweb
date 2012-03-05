@@ -461,6 +461,8 @@ sub query_patients : Local {
 
     my $query = $self->_decode_json( $c );
 
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id study diagnosis) ] );
+
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
     
@@ -497,10 +499,10 @@ sub query_patients : Local {
             my $cols = $self->_extract_db_columns( $res );
             @patient{ keys %$cols } = values %$cols;
 
-            my $cvs  = $self->_extract_db_cvs( $res );
-            @patient{ keys %$cvs  } = values %$cvs;
-
             ## FIXME various relationships (e.g. Visit, Study, AdverseEvents)
+            $patient{ 'visits' } = $self->_summarise_relationships(
+                $res, 'visits', [ qw(id date nominal_timepoint_id) ],
+            );
             
             push @patients, \%patient;            
         }
@@ -536,6 +538,21 @@ sub _decode_json : Private {
     return $query;
 }
 
+sub _check_query_terms : Private {
+
+    my ( $self, $c, $query, $known ) = @_;
+
+    my %okay = map { $_ => 1 } @$known;
+    my @missing = grep { ! defined $okay{$_} } keys %$query;
+    if ( scalar @missing ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Unknown terms in query: } . join(", ", @missing);
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    return;
+}
+
 sub _extract_db_columns : Private {
 
     my ( $self, $row, $filter ) = @_;
@@ -550,58 +567,61 @@ sub _extract_db_columns : Private {
     COLUMN:
     foreach my $col ( $source->columns() ) {
 
-        # Skip primary key columns - they are assumed to be outside
-        # the scope of the XML schema.
+        # Skip primary key columns.
         next COLUMN if ( first { $col eq $_ } @pkeys );
 
         # Skip columns which we've been asked to filter out.
         next COLUMN if ( first { $col eq $_ } @$filter );
 
-        # Skip relationships - these will be handled elsewhere.
-        next COLUMN if ( $source->has_relationship( $col ) );
+        my ( $key, $value ) = $self->_extract_column_value( $row, $col );
 
-        $cols{ $col } = $row->get_column($col);
+        $cols{ $key } = $value;
     }
 
     return \%cols;
 }
 
-sub _extract_db_cvs : Private {
+sub _summarise_relationships : Private {
 
-    my ( $self, $row, $filter ) = @_;
+    my ( $self, $obj, $relationship, $cols ) = @_;
 
-    $filter ||= [];
+    my @related;
+    foreach my $rel ( $obj->$relationship ) {
+        my %relhash;
+        foreach my $col ( @$cols ) {
+            my ( $key, $value ) = $self->_extract_column_value( $rel, $col );
+            $relhash{ $key } = $value;
+        }
+        push @related, \%relhash;
+    }
 
-    my %cols;
+    return \@related;
+}
 
-    my $source  = $row->result_source();
-    my @pkeys   = $source->primary_columns();
+sub _extract_column_value : Private {
 
-    COLUMN:
-    foreach my $col ( $source->columns() ) {
+    my ( $self, $obj, $col ) = @_;
 
-        # Skip primary key columns - they are assumed to be outside
-        # the scope of the XML schema.
-        next COLUMN if ( first { $col eq $_ } @pkeys );
+    my $source  = $obj->result_source();
 
-        # Skip columns which we've been asked to filter out.
-        next COLUMN if ( first { $col eq $_ } @$filter );
+    my ( $key, $value );
+    if ( $source->has_relationship( $col ) ) {
+        my $relsource = $source->related_source( $col );
 
-        if ( $source->has_relationship( $col ) ) {
-            my $relsource = $source->related_source( $col );
-            if ( $relsource->source_name() eq 'ControlledVocab' ) {
-                my ( $relname ) = ( $col =~ m/(.*)_id/ );
-                if ( my $cv = $row->$col ) {
-                    $cols{ $relname } = $cv->get_column('value');
-                }
-                else {
-                    $cols{ $relname } = undef;
-                }
+        # Note that this silently ignores non-CV relationships.
+        if ( $relsource->source_name() eq 'ControlledVocab' ) {
+            ( $key ) = ( $col =~ m/(.*)_id/ );
+            if ( my $cv = $obj->$col ) {
+                $value = $cv->get_column('value');
             }
         }
     }
+    else {
+        $key   = $col;
+        $value = $obj->get_column( $col );
+    }
 
-    return \%cols;
+    return ( $key, $value );
 }
 
 =head2 dump_assay_entity
