@@ -519,6 +519,43 @@ sub query_visits : Local {
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit' );
 }
 
+sub query_samples : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(name id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, { 'visit_id' => 'patient_id' };
+    }
+    if ( my $tpoint = $query->{'cell_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'cell_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'cell_type_id';
+    }
+    if ( my $tpoint = $query->{'material_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'material_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'material_type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample' );
+}
+
 ###################
 # Private methods #
 ###################
@@ -583,6 +620,7 @@ sub _prepare_query_data_and_detach : Private {
     my %methodmap = (
         'Visit'   => '_extract_visit_relationships',
         'Patient' => '_extract_patient_relationships',
+        'Sample'  => '_extract_sample_relationships',
     );
 
     my @objs;
@@ -678,8 +716,8 @@ sub _extract_column_value : Private {
     if ( $source->has_relationship( $col ) ) {
         my $relsource = $source->related_source( $col );
         ( $key ) = ( $col =~ m/(.*)_id/ );
-        
-        # Note that this silently ignores non-CV relationships.
+
+        # Might it be better to set up default stringification methods in the ORM? FIXME.
         if ( $relsource->source_name() eq 'ControlledVocab' ) {
             if ( my $cv = $obj->$col ) {
                 $value = $cv->get_column('value');
@@ -687,17 +725,34 @@ sub _extract_column_value : Private {
         }
         elsif ( $relsource->source_name() eq 'PriorGroup' ) {
             if ( my $pg = $obj->$col ) {
-                $value = $pg->type_id()->get_column('value') . ':' . $pg->get_column('name');
+                $value = $pg->type_id()->get_column('value') . ': ' . $pg->get_column('name');
             }
         }
         elsif ( $relsource->source_name() eq 'EmergentGroup' ) {
             if ( my $eg = $obj->$col ) {
-                $value = $eg->type_id()->get_column('value') . ':' . $eg->get_column('name');
+                $value = $eg->type_id()->get_column('value') . ': ' . $eg->get_column('name');
             }
         }
         elsif ( $relsource->source_name() eq 'Test' ) {
             if ( my $test = $obj->$col ) {
                 $value = $test->get_column('name');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'Patient' ) {
+            $key = 'trial_id';
+            if ( my $test = $obj->$col ) {
+                $value = $test->get_column('trial_id');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'Visit' ) {
+            $key = 'visit_id';
+            if ( my $test = $obj->$col ) {
+                $value = $test->get_column('id');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'AssayBatch' ) {
+            if ( my $ab = $obj->$col ) {
+                $value = $ab->get_column('name') . ' (' . $ab->get_column('date') . ')';
             }
         }
     }
@@ -757,6 +812,22 @@ sub _extract_visit_relationships : Private {
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
         $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_sample_relationships : Private {
+
+    my ( $self, $res, $sample ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        assays                 => [qw(filename identifier assay_batch_id)],
+        sample_data_files      => [qw(filename type_id)], 
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
     }
                                         
     return;
