@@ -556,6 +556,70 @@ sub query_samples : Local {
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample' );
 }
 
+sub query_assays : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id filename identifier date batch) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(filename identifier id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $date = $query->{'date'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $date, 'assay_batch_id.date' ) };
+        push @{ $attrs{ 'join' } }, 'assay_batch_id';
+    }
+    if ( my $batch = $query->{'batch'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $batch, 'assay_batch_id.name' ) };
+        push @{ $attrs{ 'join' } }, 'assay_batch_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay' );
+}
+
+sub query_transplants : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id trial_id date organ_type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(date id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, 'patient_id';
+    }
+    if ( my $tpoint = $query->{'organ_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'organ_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'organ_type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Transplant' );
+}
+
 ###################
 # Private methods #
 ###################
@@ -618,9 +682,13 @@ sub _prepare_query_data_and_detach : Private {
     my ( $self, $c, $cond, $attrs, $class ) = @_;
 
     my %methodmap = (
-        'Visit'   => '_extract_visit_relationships',
-        'Patient' => '_extract_patient_relationships',
-        'Sample'  => '_extract_sample_relationships',
+        'Visit'       => '_extract_visit_relationships',
+        'Patient'     => '_extract_patient_relationships',
+        'Sample'      => '_extract_sample_relationships',
+        'Assay'       => '_extract_assay_relationships',
+
+        # FIXME this will become more important after upcoming additions to the schema.
+#        'Transplant'  => '_extract_transplant_relationships',
     );
 
     my @objs;
@@ -828,6 +896,22 @@ sub _extract_sample_relationships : Private {
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
         $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_assay_relationships : Private {
+
+    my ( $self, $res, $assay ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        samples                 => [qw(id name cell_type_id material_type_id)],
+        assay_qc_values         => [qw(name type value)],
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
     }
                                         
     return;
