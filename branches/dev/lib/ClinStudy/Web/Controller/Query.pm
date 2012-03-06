@@ -484,34 +484,7 @@ sub query_patients : Local {
         push @{ $attrs{ 'join' } }, { 'diagnoses' => 'condition_name_id' };
     }
 
-    my @patients;
-    my $rs = $c->model('DB::Patient');
-
-    my @results;
-    eval {
-        @results = $rs->search( \%cond, \%attrs );
-    };
-    if ( $@ ) {
-        $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
-        $c->detach( $c->view( 'JSON' ) );
-    }
-
-    foreach my $res ( @results ) {
-        my %patient;
-
-        my $cols = $self->_extract_db_columns( $res );
-        @patient{ keys %$cols } = values %$cols;
-
-        # This call updates %patient with 1..n and n..n relationships.
-        $self->_extract_patient_relationships( $res, \%patient );
-
-        push @patients, \%patient;            
-    }
-        
-    $c->stash->{ 'success' } = JSON::Any->true();
-    $c->stash->{ 'data' }    = \@patients;
-    $c->detach( $c->view( 'JSON' ) );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Patient' );
 }
 
 sub query_visits : Local {
@@ -543,34 +516,7 @@ sub query_visits : Local {
         push @{ $attrs{ 'join' } }, 'nominal_timepoint_id';
     }
 
-    my @visits;
-    my $rs = $c->model('DB::Visit');
-
-    my @results;
-    eval {
-        @results = $rs->search( \%cond, \%attrs );
-    };
-    if ( $@ ) {
-        $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
-        $c->detach( $c->view( 'JSON' ) );
-    }
-
-    foreach my $res ( @results ) {
-        my %visit;
-
-        my $cols = $self->_extract_db_columns( $res );
-        @visit{ keys %$cols } = values %$cols;
-
-        # This call updates %visit with 1..n and n..n relationships.
-        $self->_extract_visit_relationships( $res, \%visit );
-
-        push @visits, \%visit;            
-    }
-        
-    $c->stash->{ 'success' } = JSON::Any->true();
-    $c->stash->{ 'data' }    = \@visits;
-    $c->detach( $c->view( 'JSON' ) );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit' );
 }
 
 ###################
@@ -628,6 +574,47 @@ sub _qterm_to_sqlabstract_like_in : Private {
     }
 
     return( [ map { $qterm => { -like => $_ } } @$value ] );
+}
+
+sub _prepare_query_data_and_detach : Private {
+
+    my ( $self, $c, $cond, $attrs, $class ) = @_;
+
+    my %methodmap = (
+        'Visit'   => '_extract_visit_relationships',
+        'Patient' => '_extract_patient_relationships',
+    );
+
+    my @objs;
+    my $rs = $c->model('DB::' . $class);
+
+    my @results;
+    eval {
+        @results = $rs->search( $cond, $attrs );
+    };
+    if ( $@ ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    foreach my $res ( @results ) {
+        my %obj;
+
+        my $cols = $self->_extract_db_columns( $res );
+        @obj{ keys %$cols } = values %$cols;
+
+        # This call updates %obj with 1..n and n..n relationships.
+        if ( my $method = $methodmap{ $class } ) {
+            $self->$method( $res, \%obj );
+        }
+
+        push @objs, \%obj;            
+    }
+        
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = \@objs;
+    $c->detach( $c->view( 'JSON' ) );
 }
 
 sub _extract_db_columns : Private {
