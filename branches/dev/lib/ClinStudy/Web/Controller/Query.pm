@@ -468,20 +468,21 @@ sub query_patients : Local {
     
     foreach my $qterm ( qw(trial_id id) ) {
         if ( my $value = $query->{$qterm} ) {
-            $cond{$qterm} = $value;
+            $cond{-or} = $self->_qterm_to_sqlabstract_like_in( $value, $qterm );
         }
     }
     if ( my $study = $query->{'study'} ) {
-        $cond{ 'type_id.value' } = $study;
+        push @{ $cond{-or} },
+            @{ $self->_qterm_to_sqlabstract_like_in( $study, 'type_id.value' ) };
         push @{ $attrs{ 'join' } }, { 'studies' => 'type_id' };
     }
     if ( my $diag = $query->{'diagnosis'} ) {
-        $cond{ 'condition_name_id.value' } = $diag;
+        push @{ $cond{-or} },
+            @{ $self->_qterm_to_sqlabstract_like_in( $diag, 'condition_name_id.value' ) };
         push @{ $attrs{ 'join' } }, { 'diagnoses' => 'condition_name_id' };
     }
 
     my @patients;
-
     my $rs = $c->model('DB::Patient');
 
     my @results;
@@ -491,29 +492,24 @@ sub query_patients : Local {
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->detach( $c->view( 'JSON' ) );
     }
-    else {
-        foreach my $res ( @results ) {
-            my %patient;
 
-            my $cols = $self->_extract_db_columns( $res );
-            @patient{ keys %$cols } = values %$cols;
+    foreach my $res ( @results ) {
+        my %patient;
 
-            ## FIXME various relationships (e.g. Visit, Study, AdverseEvents)
-            $patient{ 'visits' } = $self->_summarise_relationships(
-                $res, 'visits', [ qw(id date nominal_timepoint_id) ],
-            );
-            
-            push @patients, \%patient;            
-        }
+        my $cols = $self->_extract_db_columns( $res );
+        @patient{ keys %$cols } = values %$cols;
+
+        # This call updates %patient with 1..n and n..n relationships.
+        $self->_extract_patient_relationships( $res, \%patient );
+
+        push @patients, \%patient;            
+    }
         
-        $c->stash->{ 'success' } = JSON::Any->true();
-        $c->stash->{ 'data' }    = \@patients;
-    }
-
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = \@patients;
     $c->detach( $c->view( 'JSON' ) );
-
-    return;
 }
 
 ###################
@@ -546,11 +542,31 @@ sub _check_query_terms : Private {
     my @missing = grep { ! defined $okay{$_} } keys %$query;
     if ( scalar @missing ) {
         $c->stash->{ 'success' } = JSON::Any->false();
-        $c->stash->{ 'errorMessage' } = qq{Unknown terms in query: } . join(", ", @missing);
+        $c->stash->{ 'errorMessage' } = qq{Unknown terms in query: } . join(", ", @missing)
+                                   . qq{. Allowed query terms are: } . join(", ", @$known);
         $c->detach( $c->view( 'JSON' ) );
     }
 
     return;
+}
+
+sub _qterm_to_sqlabstract_like_in : Private {
+
+    # Return value from this function should be used in a '-or' clause
+    # in the main SQL::Abstract hashref.
+    my ( $self, $value, $qterm ) = @_;
+
+    if ( ref $value ne 'ARRAY' ) {
+        $value = [ $value ];
+    }
+
+    # Allow * and ? wildcards, and treat _ and % appropriately.
+    foreach my $v ( @$value ) {
+        $v =~ s/([_%])/\\$1/g;
+        $v =~ tr(*?)(%_);
+    }
+
+    return( [ map { $qterm => { -like => $_ } } @$value ] );
 }
 
 sub _extract_db_columns : Private {
@@ -615,6 +631,12 @@ sub _extract_column_value : Private {
                 $value = $cv->get_column('value');
             }
         }
+        elsif ( $relsource->source_name() eq 'PriorGroup' ) {
+            ( $key ) = ( $col =~ m/(.*)_id/ );
+            if ( my $pg = $obj->$col ) {
+                $value = $pg->type_id()->get_column('value') . ':' . $pg->get_column('name');
+            }
+        }
     }
     else {
         $key   = $col;
@@ -623,6 +645,59 @@ sub _extract_column_value : Private {
 
     return ( $key, $value );
 }
+
+sub _extract_patient_relationships : Private {
+
+    my ( $self, $res, $patient ) = @_;
+
+    # Various relationships (e.g. Visit, Study, AdverseEvents). Note
+    # that ideally anything not covered by a full query_* action would
+    # be dumped in its entirety here (FIXME). In such cases we don't
+    # bother returning the id value. ALSO FIXME consider only
+    # returning a subset of these by default, depending on how well
+    # these queries perform.
+    $patient->{ 'adverse_events' } = $self->_summarise_relationships(
+        $res, 'adverse_events', [ qw(id type start_date) ],
+    );
+    $patient->{ 'clinical_features' } = $self->_summarise_relationships(
+        $res, 'clinical_features', [ qw(type_id) ],
+    );
+    $patient->{ 'comorbidities' } = $self->_summarise_relationships(
+        $res, 'comorbidities', [ qw(condition_name date) ],
+    );
+    $patient->{ 'diagnoses' } = $self->_summarise_relationships(
+        $res, 'diagnoses', [ qw(id date condition_name_id) ],
+    );
+    $patient->{ 'disease_events' } = $self->_summarise_relationships(
+        $res, 'disease_events', [ qw(type_id start_date) ],
+    );
+    $patient->{ 'prior_observations' } = $self->_summarise_relationships(
+        $res, 'prior_observations', [ qw(type_id value date) ],
+    );
+    $patient->{ 'patient_prior_groups' } = $self->_summarise_relationships(
+        $res, 'patient_prior_groups', [ qw(prior_group_id) ],
+    );
+    $patient->{ 'prior_treatments' } = $self->_summarise_relationships(
+        $res, 'prior_treatments', [ qw(id type_id value) ],
+    );
+    $patient->{ 'risk_factors' } = $self->_summarise_relationships(
+        $res, 'risk_factors', [ qw(type_id) ],
+    );
+    $patient->{ 'studies' } = $self->_summarise_relationships(
+        $res, 'studies', [ qw(type_id external_id) ],
+    );
+    $patient->{ 'system_involvements' } = $self->_summarise_relationships(
+        $res, 'system_involvements', [ qw(type_id) ],
+    );
+    $patient->{ 'transplants' } = $self->_summarise_relationships(
+        $res, 'transplants', [ qw(id date organ_type_id) ],
+    );
+    $patient->{ 'visits' } = $self->_summarise_relationships(
+        $res, 'visits', [ qw(id date nominal_timepoint_id) ],
+    );
+                                        
+    return;
+}        
 
 =head2 dump_assay_entity
 
