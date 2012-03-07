@@ -214,7 +214,8 @@ sub _apply_sample_checks {
     # Check for pre-existing samples for this cell type, warn if present.
     my $vid   = $parent_ref->{visit_id};
     my $ct_cv = $element->getAttribute('cell_type');
-    if ( defined $vid && defined $ct_cv ) {
+    my $mt_cv = $element->getAttribute('material_type');
+    if ( defined $vid && defined $ct_cv && defined $mt_cv ) {
 
         # This should never fail; $vid has only just been
         # retrieved from the database by load_object().
@@ -223,8 +224,9 @@ sub _apply_sample_checks {
 
         my @sample_ids = map { $_->id() }
             $visit->search_related('samples',
-                                   { 'cell_type_id.value' => $ct_cv },
-                                   { join => 'cell_type_id' });
+                                   { 'cell_type_id.value'     => $ct_cv,
+                                     'material_type_id.value' => $mt_cv },
+                                   { join => [ 'cell_type_id', 'material_type_id' ] });
             
         if ( scalar @sample_ids
                  && ! ( defined $obj->id()

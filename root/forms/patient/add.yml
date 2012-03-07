@@ -107,7 +107,6 @@ elements:
     empty_first: 1
     empty_first_label: -select-
     constraints:
-      - Required
       - AutoSet
     model_config:
       resultset: ControlledVocab

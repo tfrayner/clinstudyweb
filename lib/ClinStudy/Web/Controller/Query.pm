@@ -31,6 +31,10 @@ require DateTime::Format::MySQL;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
+# Set a query flag which can be used to ask for more detail in
+# returned data.
+my $EXTENDED_FLAG = 'include_relationships';
+
 =head1 NAME
 
 ClinStudy::Web::Controller::Query - Catalyst Controller
@@ -437,10 +441,219 @@ sub visit_dates : Local {
     my @dates = map { $_->date() } @visits;
 
     $c->stash->{ 'success' } = JSON::Any->true();
-    $c->stash->{ 'data' }    = \@dates;  # FIXME does this work?
+    $c->stash->{ 'data' }    = \@dates;
     $c->detach( $c->view( 'JSON' ) );
 
     return;
+}
+
+# New query API. This is intended as an "optimised" version of the
+# generic JSON query API in that it will allow users to query just
+# Patient, Visit, Sample, Assay and Transplant tables, pulling out all
+# the data for a given entry. The idea is that the R client will
+# aggregate data across table rows and return lists of data frames
+# with useful entries. This could be implemented entirely via the
+# generic JSON API but (a) that would be unnecessarily complex, and
+# (b) I suspect it would be slower, simply because of the network
+# overhead. We only support a defined subset of query terms here, and
+# handle the joining complexity at this level rather than in the
+# client.
+
+sub patients : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id study diagnosis) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(trial_id id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $study = $query->{'study'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $study, 'type_id.value' ) };
+        push @{ $attrs{ 'join' } }, { 'studies' => 'type_id' };
+    }
+    if ( my $diag = $query->{'diagnosis'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $diag, 'condition_name_id.value' ) };
+        push @{ $attrs{ 'join' } }, { 'diagnoses' => 'condition_name_id' };
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Patient', $query->{$EXTENDED_FLAG} );
+}
+
+sub visits : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id date nominal_timepoint) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(date id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, 'patient_id';
+    }
+    if ( my $tpoint = $query->{'nominal_timepoint'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'nominal_timepoint_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'nominal_timepoint_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit', $query->{$EXTENDED_FLAG} );
+}
+
+sub samples : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(name id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, { 'visit_id' => 'patient_id' };
+    }
+    if ( my $tpoint = $query->{'cell_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'cell_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'cell_type_id';
+    }
+    if ( my $tpoint = $query->{'material_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'material_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'material_type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample', $query->{$EXTENDED_FLAG} );
+}
+
+sub assays : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id filename identifier date batch) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(filename identifier id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $date = $query->{'date'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $date, 'assay_batch_id.date' ) };
+        push @{ $attrs{ 'join' } }, 'assay_batch_id';
+    }
+    if ( my $batch = $query->{'batch'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $batch, 'assay_batch_id.name' ) };
+        push @{ $attrs{ 'join' } }, 'assay_batch_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay', $query->{$EXTENDED_FLAG} );
+}
+
+sub transplants : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(id trial_id date organ_type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(date id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, 'patient_id';
+    }
+    if ( my $tpoint = $query->{'organ_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'organ_type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'organ_type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Transplant', $query->{$EXTENDED_FLAG} );
+}
+
+sub prior_treatments : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, 'patient_id';
+    }
+    if ( my $tpoint = $query->{'type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'PriorTreatment', $query->{$EXTENDED_FLAG} );
 }
 
 ###################
@@ -464,6 +677,301 @@ sub _decode_json : Private {
 
     return $query;
 }
+
+sub _check_query_terms : Private {
+
+    my ( $self, $c, $query, $known ) = @_;
+
+    my %okay = map { $_ => 1 } ( @$known, $EXTENDED_FLAG );
+    my @missing = grep { ! defined $okay{$_} } keys %$query;
+    if ( scalar @missing ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Unknown terms in query: } . join(", ", @missing)
+                                   . qq{. Allowed query terms are: } . join(", ", @$known)
+                                   . qq{. Allowed flags are: } . $EXTENDED_FLAG;
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    return;
+}
+
+sub _qterm_to_sqlabstract_like_in : Private {
+
+    # Return value from this function should be used in a '-or' clause
+    # in the main SQL::Abstract hashref.
+    my ( $self, $value, $qterm ) = @_;
+
+    if ( ref $value ne 'ARRAY' ) {
+        $value = [ $value ];
+    }
+
+    # Allow * and ? wildcards, and treat _ and % appropriately.
+    foreach my $v ( @$value ) {
+        $v =~ s/([_%])/\\$1/g;
+        $v =~ tr(*?)(%_);
+    }
+
+    return( [ map { $qterm => { -like => $_ } } @$value ] );
+}
+
+sub _prepare_query_data_and_detach : Private {
+
+    my ( $self, $c, $cond, $attrs, $class, $dump_rels ) = @_;
+
+    my %methodmap = (
+        'Visit'          => '_extract_visit_relationships',
+        'Patient'        => '_extract_patient_relationships',
+        'Sample'         => '_extract_sample_relationships',
+        'Assay'          => '_extract_assay_relationships',
+        'PriorTreatment' => '_extract_prior_treatment_relationships',
+
+        # FIXME this will become more important after upcoming additions to the schema.
+#        'Transplant'  => '_extract_transplant_relationships',
+    );
+
+    my @objs;
+    my $rs = $c->model('DB::' . $class);
+
+    my @results;
+    eval {
+        @results = $rs->search( $cond, $attrs );
+    };
+    if ( $@ ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    foreach my $res ( @results ) {
+        my %obj;
+
+        my $cols = $self->_extract_db_columns( $res );
+        @obj{ keys %$cols } = values %$cols;
+
+        # This call updates %obj with 1..n and n..n relationships. We
+        # only do this when specifically requested as it adds a
+        # substantial db query load.
+        my $method = $methodmap{ $class };
+        if ( defined $method && defined $dump_rels ) {
+            $self->$method( $res, \%obj );
+        }
+
+        push @objs, \%obj;            
+    }
+        
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' }    = \@objs;
+    $c->detach( $c->view( 'JSON' ) );
+}
+
+sub _extract_db_columns : Private {
+
+    my ( $self, $row, $filter ) = @_;
+
+    $filter ||= [];
+
+    my %cols;
+
+    my $source  = $row->result_source();
+    my @pkeys   = $source->primary_columns();
+
+    COLUMN:
+    foreach my $col ( $source->columns() ) {
+
+        # Skip primary key columns.
+        next COLUMN if ( first { $col eq $_ } @pkeys );
+
+        # Skip columns which we've been asked to filter out.
+        next COLUMN if ( first { $col eq $_ } @$filter );
+
+        my ( $key, $value ) = $self->_extract_column_value( $row, $col );
+
+        $cols{ $key } = $value;
+    }
+
+    return \%cols;
+}
+
+sub _summarise_relationships : Private {
+
+    my ( $self, $obj, $relationship, $cols ) = @_;
+
+    my @related;
+    foreach my $rel ( $obj->$relationship ) {
+        my %relhash;
+        foreach my $col ( @$cols ) {
+            my ( $key, $value ) = $self->_extract_column_value( $rel, $col );
+            $relhash{ $key } = $value;
+        }
+
+        # This is perhaps a little out of place but it's a convenient spot to do this.
+        if ( $relationship eq 'test_results' ) {
+            $relhash{ 'value' } = _get_test_value( $rel );
+        }
+
+        push @related, \%relhash;
+    }
+
+    return \@related;
+}
+
+sub _extract_column_value : Private {
+
+    my ( $self, $obj, $col ) = @_;
+
+    my $source  = $obj->result_source();
+
+    my ( $key, $value );
+    if ( $source->has_relationship( $col ) ) {
+        my $relsource = $source->related_source( $col );
+        ( $key ) = ( $col =~ m/(.*)_id/ );
+
+        # Might it be better to set up default stringification methods in the ORM? FIXME.
+        if ( $relsource->source_name() eq 'ControlledVocab' ) {
+            if ( my $cv = $obj->$col ) {
+                $value = $cv->get_column('value');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'PriorGroup' ) {
+            if ( my $pg = $obj->$col ) {
+                $value = $pg->type_id()->get_column('value') . ': ' . $pg->get_column('name');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'EmergentGroup' ) {
+            if ( my $eg = $obj->$col ) {
+                $value = $eg->type_id()->get_column('value') . ': ' . $eg->get_column('name');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'Test' ) {
+            if ( my $test = $obj->$col ) {
+                $value = $test->get_column('name');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'Patient' ) {
+            $key = 'trial_id';
+            if ( my $test = $obj->$col ) {
+                $value = $test->get_column('trial_id');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'Visit' ) {
+            $key = 'visit_id';
+            if ( my $test = $obj->$col ) {
+                $value = $test->get_column('id');
+            }
+        }
+        elsif ( $relsource->source_name() eq 'AssayBatch' ) {
+            if ( my $ab = $obj->$col ) {
+                $value = $ab->get_column('name') . ' (' . $ab->get_column('date') . ')';
+            }
+        }
+    }
+    else {
+        $key   = $col;
+        $value = $obj->get_column( $col );
+    }
+
+    return ( $key, $value );
+}
+
+sub _extract_patient_relationships : Private {
+
+    my ( $self, $res, $patient ) = @_;
+
+    # Various relationships (e.g. Visit, Study, AdverseEvents). Note
+    # that ideally anything not covered by a full query_* action would
+    # be dumped in its entirety here (FIXME). In such cases we don't
+    # bother returning the id value. ALSO FIXME consider only
+    # returning a subset of these by default, depending on how well
+    # these queries perform.
+    my %relationship = (
+        adverse_events       => [ qw(id type start_date) ],
+        clinical_features    => [ qw(type_id) ],
+        comorbidities        => [ qw(condition_name date) ],
+        diagnoses            => [ qw(id date condition_name_id) ],
+        disease_events       => [ qw(type_id start_date) ],
+        prior_observations   => [ qw(type_id value date) ],
+        patient_prior_groups => [ qw(prior_group_id) ],
+        prior_treatments     => [ qw(id type_id value) ],
+        risk_factors         => [ qw(type_id) ],
+        studies              => [ qw(type_id external_id) ],
+        system_involvements  => [ qw(type_id) ],
+        transplants          => [ qw(id date organ_type_id) ],
+        visits               => [ qw(id date nominal_timepoint_id) ],
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $patient->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+
+    return;
+}        
+
+sub _extract_visit_relationships : Private {
+
+    my ( $self, $res, $visit ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        drugs                 => [qw(name_id dose dose_unit_id dose_freq_id dose_regime)],
+        # test_result value is dealt with in _summarise_relationships.
+        test_results          => [qw(test_id date)],
+        visit_emergent_groups => [qw(emergent_group_id)],
+        samples               => [qw(id name cell_type_id material_type_id)],
+        phenotype_quantities  => [qw(type_id value)],
+        visit_data_files      => [qw(filename type_id)], 
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_sample_relationships : Private {
+
+    my ( $self, $res, $sample ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        assays                 => [qw(filename identifier assay_batch_id)],
+        sample_data_files      => [qw(filename type_id)], 
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_assay_relationships : Private {
+
+    my ( $self, $res, $assay ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        samples                 => [qw(id name cell_type_id material_type_id)],
+        assay_qc_values         => [qw(name type value)],
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_prior_treatment_relationships : Private {
+
+    my ( $self, $res, $prior_treatment ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        drugs                 => [qw(name_id dose dose_unit_id dose_freq_id dose_regime)],
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
 
 =head2 dump_assay_entity
 
