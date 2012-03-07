@@ -41,9 +41,44 @@ ClinStudy::Web::Controller::Query - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Catalyst Controller.
+Catalyst Controller providing JSON-based queries of the
+database. There are two main approaches which are supported by this
+module:
 
-=head1 METHODS
+=head2 "Canned" queries
+
+This query mechanism is likely to be the more useful of the two
+approaches, and will usually take less time and complexity to retrieve
+the desired information. The module makes a series of actions
+available (e.g. 'patients', 'visits'), each of which take a set list
+of optional query parameters and use them to retrieve predefined
+chunks of data. Each query parameter can include the wildcard
+characters '*' and '?', and the query may consist of a list of such
+terms. For example, the following JSON would be a valid 'patients' query:
+
+ {
+   "study":"IBD",
+   "trial_id":["V10?","T3*","X495"],
+   "include_relationships":"1"
+ }
+
+Note that such a query would combine all trial_id terms using OR,
+followed by the inclusion of other search terms using AND.
+
+The 'include_relationships' flag is deserving of a special mention. By
+default the query returns only those data which are directly contained
+in the database table of interest (in this case, "patient"). However,
+if 'include_relationships' is set to a defined value, all the linked
+database tables are queried and far more information is returned.
+
+=head2 Low level generic queries
+
+In those cases which are not easily addressed using the canned query
+mechanism, this module also allows for completely generic database
+queries in the spirit of the Perl module SQL::Abstract. See below for
+details.
+
+=head1 AUTHENTICATION API
 
 =cut
 
@@ -51,8 +86,8 @@ Catalyst Controller.
 
 This is the primary authentication method which is to be used prior to
 any other queries in order to obtain an authenticated connection. See
-e.g. the curl documentation for details on how this may be used (RCurl
-example available in the associated ClinStudyWeb R package). Success
+e.g. the curl documentation for details on how this may be used (an RCurl
+example is available in the associated ClinStudyWeb R package). Success
 or failure is denoted by a boolean "success" flag in the returned
 object.
 
@@ -105,6 +140,8 @@ sub json_logout : Global {
     return;        
 }
 
+=head1 GENERIC QUERY API
+
 =head2 index
 
 This is the core of the generic JSON query API. JSON parameters are as
@@ -112,6 +149,24 @@ follows: resultSet, condition, attributes. These parameters are passed
 in as a hashref named "data". Return values are similarly passed under
 a "data" key. Success or failure is denoted by a boolean "success"
 flag in the returned object.
+
+Queries must be constructed in a form understandable by the
+DBIx::Class::ResultSet search() method. In essence this means that the
+query is to be broken down into a 'condition' hashref, containing the
+components of an SQL WHERE clause encoded in a form supported by the
+SQL::Abstract module, and an 'attributes' hashref which contains
+further query qualifiers (most commonly, JOIN clauses). An example would be:
+
+ $query = {
+    resultSet  => 'Assay',
+    condition  => { 'patient_id.trial_id' => $some_trial_id },
+    attributes => { join => { channels => { sample_id => { visit_id => 'patient_id' }}}}
+ };
+
+This query would return all the assays linked to a patient having
+trial_id=$some_trial_id. In principle it should be possible to
+construct any desired query using this mechanism, although in practice
+it may be easier and quicker to use the canned query API instead.
 
 =cut
 
@@ -169,7 +224,13 @@ sub index : Path {
     return;        
 }
 
+=head1 MISCELLANEOUS QUERIES
+
 =head2 assay_dump
+
+A method used by the R client to annotate data sets. A candidate for
+deprecation, this method may be replaced in future by calls to the
+canned query API. Use at your own risk.
 
 =cut
 
@@ -211,6 +272,10 @@ sub assay_dump : Local {
 
 =head2 sample_dump
 
+A method used by the R client to annotate data sets. A candidate for
+deprecation, this method may be replaced in future by calls to the
+canned query API. Use at your own risk.
+
 =cut
 
 sub sample_dump : Local {
@@ -246,6 +311,14 @@ sub sample_dump : Local {
 }
 
 =head2 assay_drugs
+
+A method used to retrieve drug information linked to a set of
+assays. Query terms are 'filename' or 'identifier' (one of these is
+required), and the optional terms 'prior_treatment_type',
+'months_prior' and 'drug_type' which can be used to limit the scope of
+the search. For example, one might search for drug treatments using an
+immunosuppressant drug type, up to 6 months prior to the visit related
+to this assay.
 
 =cut
 
@@ -288,6 +361,20 @@ sub assay_drugs : Local {
 ## Note that the next few actions could all be implemented via the
 ## index query action, but at a cost of greater complexity in the
 ## client. Since these are core use cases we make them easier to use.
+
+=head2 list_tests
+
+Simple method to return a list of test names and database IDs;
+originally designed for use with the annotation picker Tcl/Tk
+interface in the R client. Takes an optional 'pattern' argument which
+can use '*' and '?' wildcards to filter the results. A 'retrieve_all'
+argument is also available which, when set to a non-zero value, will
+retrieve all tests. The default is to return only those tests which
+are not children of other test types; this is far more often the
+desired result.
+
+=cut
+
 sub list_tests : Local {
 
     my ( $self, $c ) = @_;
@@ -331,6 +418,15 @@ sub list_tests : Local {
     return;
 }
 
+=head2 list_phenotypes
+
+Simple method to return a list of phenotype quantities and database
+IDs; originally designed for use with the annotation picker Tcl/Tk
+interface in the R client. Takes an optional 'pattern' argument which
+can use '*' and '?' wildcards to filter the results.
+
+=cut
+
 sub list_phenotypes : Local {
 
     my ( $self, $c ) = @_;
@@ -366,6 +462,14 @@ sub list_phenotypes : Local {
     return;
 }
 
+=head2 patient_entry_date
+
+Method to return the entry date for a patient. Since this is not much
+simpler than the corresponding canned query, this method may also be
+deprecated in future. Query parameters: 'trial_id'.
+
+=cut
+
 sub patient_entry_date : Local {
 
     my ( $self, $c ) = @_;
@@ -398,6 +502,15 @@ sub patient_entry_date : Local {
 
     return;
 }
+
+=head2 visit_dates
+
+Method to retrieve all the visit dates for a given patient
+('trial_id'), optionally filtered by nominal timepoint name
+('timepoint'). Owing to its similarity with the corresponding visit
+canned query method, this is likely to be deprecated in future.
+
+=cut
 
 sub visit_dates : Local {
 
@@ -447,7 +560,7 @@ sub visit_dates : Local {
     return;
 }
 
-# New query API. This is intended as an "optimised" version of the
+# New "canned" query API. This is intended as an "optimised" version of the
 # generic JSON query API in that it will allow users to query just
 # Patient, Visit, Sample, Assay and Transplant tables, pulling out all
 # the data for a given entry. The idea is that the R client will
@@ -458,6 +571,41 @@ sub visit_dates : Local {
 # overhead. We only support a defined subset of query terms here, and
 # handle the joining complexity at this level rather than in the
 # client.
+
+=head1 CANNED QUERY API
+
+All the following methods also accept the 'include_relationships' flag
+as described above.
+
+=head2 patients
+
+Canned query method for patients. Available query terms include:
+
+=over 2
+
+=item trial_id
+
+The patient trial ID. Not to be confused with 'id' below, which is the
+internal database identifier.
+
+=item id
+
+The patient internal database ID. This is provided as a query term
+purely for the sake of convenience.
+
+=item study
+
+The name of a study to which the patient must belong.
+
+=item diagnosis
+
+The name of a diagnosis which the patient must have received at some
+point. Note that this queries all diagnoses, and not just the most
+recent.
+
+=back
+
+=cut
 
 sub patients : Local {
 
@@ -491,6 +639,32 @@ sub patients : Local {
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Patient', $query->{$EXTENDED_FLAG} );
 }
 
+=head2 visits
+
+Canned query method for clinic visits. Available query terms include:
+
+=over 2
+
+=item trial_id
+
+The trial ID for the patient linked to the visit.
+
+=item id
+
+The internal visit database ID.
+
+=item date
+
+The visit date.
+
+=item nominal_timepoint
+
+The timepoint assigned to the visit.
+
+=back
+
+=cut
+
 sub visits : Local {
 
     my ( $self, $c ) = @_;
@@ -522,6 +696,42 @@ sub visits : Local {
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit', $query->{$EXTENDED_FLAG} );
 }
+
+=head2 samples
+
+Canned query method for samples. Available query terms include:
+
+=over 2
+
+=item trial_id
+
+The trial ID for the patient linked to the sample.
+
+=item id
+
+The sample internal database ID.
+
+=item name
+
+The sample name as recorded in the database. Note that this is often
+not as useful as a combination of trial_id, date, cell_type and
+material_type.
+
+=item date
+
+The date of the clinic visit for the sample.
+
+=item cell_type
+
+The controlled cell type term (e.g. "CD4").
+
+=item material_type
+
+The controlled material type term (e.g. "RNA").
+
+=back
+
+=cut
 
 sub samples : Local {
 
@@ -560,6 +770,37 @@ sub samples : Local {
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample', $query->{$EXTENDED_FLAG} );
 }
 
+=head2 assays
+
+Canned query method for assays. Available query terms include:
+
+=over 2
+
+=item id
+
+The assay internal database ID.
+
+=item filename
+
+The filename associated with the assay.
+
+=item identifier
+
+The assay identifier. This might be a barcode or other standardised
+identifier depending on your local practice.
+
+=item date
+
+The date upon which the assay was performed.
+
+=item batch
+
+The name of the AssayBatch to which this assay belongs.
+
+=back
+
+=cut
+
 sub assays : Local {
 
     my ( $self, $c ) = @_;
@@ -592,6 +833,32 @@ sub assays : Local {
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay', $query->{$EXTENDED_FLAG} );
 }
 
+=head2 transplants
+
+Canned query method for transplants. Available query terms include:
+
+=over 2
+
+=item trial_id
+
+The trial ID for the patient linked to the transplant.
+
+=item id
+
+The internal transplant database ID.
+
+=item date
+
+The transplant date.
+
+=item organ_type
+
+The type of organ transplanted (e.g. "kidney").
+
+=back
+
+=cut
+
 sub transplants : Local {
 
     my ( $self, $c ) = @_;
@@ -623,6 +890,28 @@ sub transplants : Local {
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Transplant', $query->{$EXTENDED_FLAG} );
 }
+
+=head2 prior_treatments
+
+Canned query method for prior treatments. Available query terms include:
+
+=over 2
+
+=item trial_id
+
+The trial ID for the patient linked to the treatment.
+
+=item id
+
+The internal prior_treatment database ID.
+
+=item type
+
+The type of treatment (e.g. "drug therapy at entry").
+
+=back
+
+=cut
 
 sub prior_treatments : Local {
 
@@ -659,6 +948,13 @@ sub prior_treatments : Local {
 ###################
 # Private methods #
 ###################
+
+=head1 PRIVATE METHODS
+
+These methods are not accessible to web site users, and are documented
+here merely for the benefit of developers.
+
+=cut
 
 sub _decode_json : Private {
 
@@ -1436,7 +1732,7 @@ Tim F. Rayner <tfrayner@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010 by Tim F. Rayner
+Copyright (C) 2010-2012 by Tim F. Rayner
 
 This library is released under version 3 of the GNU General Public
 License (GPL).
