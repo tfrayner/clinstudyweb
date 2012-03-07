@@ -31,6 +31,10 @@ require DateTime::Format::MySQL;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
+# Set a query flag which can be used to ask for more detail in
+# returned data.
+my $EXTENDED_FLAG = 'include_relationships';
+
 =head1 NAME
 
 ClinStudy::Web::Controller::Query - Catalyst Controller
@@ -455,7 +459,7 @@ sub visit_dates : Local {
 # handle the joining complexity at this level rather than in the
 # client.
 
-sub query_patients : Local {
+sub patients : Local {
 
     my ( $self, $c ) = @_;
 
@@ -484,10 +488,10 @@ sub query_patients : Local {
         push @{ $attrs{ 'join' } }, { 'diagnoses' => 'condition_name_id' };
     }
 
-    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Patient' );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Patient', $query->{$EXTENDED_FLAG} );
 }
 
-sub query_visits : Local {
+sub visits : Local {
 
     my ( $self, $c ) = @_;
 
@@ -516,10 +520,10 @@ sub query_visits : Local {
         push @{ $attrs{ 'join' } }, 'nominal_timepoint_id';
     }
 
-    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit' );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit', $query->{$EXTENDED_FLAG} );
 }
 
-sub query_samples : Local {
+sub samples : Local {
 
     my ( $self, $c ) = @_;
 
@@ -553,10 +557,10 @@ sub query_samples : Local {
         push @{ $attrs{ 'join' } }, 'material_type_id';
     }
 
-    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample' );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample', $query->{$EXTENDED_FLAG} );
 }
 
-sub query_assays : Local {
+sub assays : Local {
 
     my ( $self, $c ) = @_;
 
@@ -585,10 +589,10 @@ sub query_assays : Local {
         push @{ $attrs{ 'join' } }, 'assay_batch_id';
     }
 
-    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay' );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay', $query->{$EXTENDED_FLAG} );
 }
 
-sub query_transplants : Local {
+sub transplants : Local {
 
     my ( $self, $c ) = @_;
 
@@ -617,7 +621,39 @@ sub query_transplants : Local {
         push @{ $attrs{ 'join' } }, 'organ_type_id';
     }
 
-    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Transplant' );
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Transplant', $query->{$EXTENDED_FLAG} );
+}
+
+sub prior_treatments : Local {
+
+    my ( $self, $c ) = @_;
+
+    my $query = $self->_decode_json( $c );
+
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id type) ] );
+
+    my ( %cond, %attrs );
+    $attrs{ 'join' } = [];
+    $cond{ -and }    = [];
+    
+    foreach my $qterm ( qw(id) ) {
+        if ( my $value = $query->{$qterm} ) {
+            push @{ $cond{-and} },
+                { -or => $self->_qterm_to_sqlabstract_like_in( $value, $qterm ) };
+        }
+    }
+    if ( my $trial_id = $query->{'trial_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
+        push @{ $attrs{ 'join' } }, 'patient_id';
+    }
+    if ( my $tpoint = $query->{'type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'type_id.value' ) };
+        push @{ $attrs{ 'join' } }, 'type_id';
+    }
+
+    $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'PriorTreatment', $query->{$EXTENDED_FLAG} );
 }
 
 ###################
@@ -646,12 +682,13 @@ sub _check_query_terms : Private {
 
     my ( $self, $c, $query, $known ) = @_;
 
-    my %okay = map { $_ => 1 } @$known;
+    my %okay = map { $_ => 1 } ( @$known, $EXTENDED_FLAG );
     my @missing = grep { ! defined $okay{$_} } keys %$query;
     if ( scalar @missing ) {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' } = qq{Unknown terms in query: } . join(", ", @missing)
-                                   . qq{. Allowed query terms are: } . join(", ", @$known);
+                                   . qq{. Allowed query terms are: } . join(", ", @$known)
+                                   . qq{. Allowed flags are: } . $EXTENDED_FLAG;
         $c->detach( $c->view( 'JSON' ) );
     }
 
@@ -679,13 +716,14 @@ sub _qterm_to_sqlabstract_like_in : Private {
 
 sub _prepare_query_data_and_detach : Private {
 
-    my ( $self, $c, $cond, $attrs, $class ) = @_;
+    my ( $self, $c, $cond, $attrs, $class, $dump_rels ) = @_;
 
     my %methodmap = (
-        'Visit'       => '_extract_visit_relationships',
-        'Patient'     => '_extract_patient_relationships',
-        'Sample'      => '_extract_sample_relationships',
-        'Assay'       => '_extract_assay_relationships',
+        'Visit'          => '_extract_visit_relationships',
+        'Patient'        => '_extract_patient_relationships',
+        'Sample'         => '_extract_sample_relationships',
+        'Assay'          => '_extract_assay_relationships',
+        'PriorTreatment' => '_extract_prior_treatment_relationships',
 
         # FIXME this will become more important after upcoming additions to the schema.
 #        'Transplant'  => '_extract_transplant_relationships',
@@ -710,8 +748,11 @@ sub _prepare_query_data_and_detach : Private {
         my $cols = $self->_extract_db_columns( $res );
         @obj{ keys %$cols } = values %$cols;
 
-        # This call updates %obj with 1..n and n..n relationships.
-        if ( my $method = $methodmap{ $class } ) {
+        # This call updates %obj with 1..n and n..n relationships. We
+        # only do this when specifically requested as it adds a
+        # substantial db query load.
+        my $method = $methodmap{ $class };
+        if ( defined $method && defined $dump_rels ) {
             $self->$method( $res, \%obj );
         }
 
@@ -912,6 +953,21 @@ sub _extract_assay_relationships : Private {
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
         $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+    }
+                                        
+    return;
+}        
+
+sub _extract_prior_treatment_relationships : Private {
+
+    my ( $self, $res, $prior_treatment ) = @_;
+
+    # See notes for the corresponding patient method.
+    my %relationship = (
+        drugs                 => [qw(name_id dose dose_unit_id dose_freq_id dose_regime)],
+    );
+    while ( my ( $rel, $cols ) = each %relationship ) {
+        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
     }
                                         
     return;
