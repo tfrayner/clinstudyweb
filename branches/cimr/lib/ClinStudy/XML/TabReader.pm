@@ -176,7 +176,8 @@ sub recursive_cols_to_elements {
         my %attrhash;
         while ( my ( $key, $value ) = each %$colhash ) {
 	    my ( $col_class, $attrname ) = split /\|/, $key;
-            if ( $col_class && $col_class eq $class ) {
+            if ( $col_class && $col_class eq $class
+                && defined $attrname && $attrname ne q{} ) {
 
                 # Record that we've at least considered this column.
                 $self->_used()->{ $key }++;

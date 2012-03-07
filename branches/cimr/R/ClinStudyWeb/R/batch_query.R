@@ -248,7 +248,7 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     return(qry)
 }        
 
-.batchDBQuery <- function(files, samples=NULL,
+.batchDBQuery <- function(files, samples=NULL, barcodes=NULL,
                           categories=NULL, pattern=NULL, auth=NULL, ... ) {
 
     ## Since this is a batch query function it's convenient to catch
@@ -271,8 +271,12 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     ## csWebQuery
     message("Querying the database for annotation...")
     if ( is.null(samples) )
-        p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL,
-                    sample.name=NULL, query=anno.qry, auth=auth, ...)
+        if ( is.null(barcodes) )
+            p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL,
+                        sample.name=NULL, query=anno.qry, auth=auth, ...)
+        else
+            p <- lapply(as.list(barcodes), csWebQuery, assay.file=NULL,
+                        sample.name=NULL, query=anno.qry, auth=auth, ...)
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL,
                     assay.barcode=NULL, query=anno.qry, auth=auth, ...)
