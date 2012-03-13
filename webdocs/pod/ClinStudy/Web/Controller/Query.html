@@ -20,15 +20,51 @@
 
         <li><a href="#name">NAME</a></li>
         <li><a href="#description">DESCRIPTION</a></li>
-        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#canned_queries">&quot;Canned&quot; queries</a></li>
+                <li><a href="#low_level_generic_queries">Low level generic queries</a></li>
+        </ul>
+
+        <li><a href="#authentication_api">AUTHENTICATION API</a></li>
         <ul>
 
                 <li><a href="#json_login">json_login</a></li>
                 <li><a href="#json_logout">json_logout</a></li>
+        </ul>
+
+        <li><a href="#generic_query_api">GENERIC QUERY API</a></li>
+        <ul>
+
                 <li><a href="#index">index</a></li>
+        </ul>
+
+        <li><a href="#miscellaneous_queries">MISCELLANEOUS QUERIES</a></li>
+        <ul>
+
                 <li><a href="#assay_dump">assay_dump</a></li>
                 <li><a href="#sample_dump">sample_dump</a></li>
                 <li><a href="#assay_drugs">assay_drugs</a></li>
+                <li><a href="#list_tests">list_tests</a></li>
+                <li><a href="#list_phenotypes">list_phenotypes</a></li>
+                <li><a href="#patient_entry_date">patient_entry_date</a></li>
+                <li><a href="#visit_dates">visit_dates</a></li>
+        </ul>
+
+        <li><a href="#canned_query_api">CANNED QUERY API</a></li>
+        <ul>
+
+                <li><a href="#patients">patients</a></li>
+                <li><a href="#visits">visits</a></li>
+                <li><a href="#samples">samples</a></li>
+                <li><a href="#assays">assays</a></li>
+                <li><a href="#transplants">transplants</a></li>
+                <li><a href="#prior_treatments">prior_treatments</a></li>
+        </ul>
+
+        <li><a href="#private_methods">PRIVATE METHODS</a></li>
+        <ul>
+
                 <li><a href="#dump_assay_entity">dump_assay_entity</a></li>
                 <li><a href="#dump_sample_entity">dump_sample_entity</a></li>
         </ul>
@@ -43,27 +79,277 @@
 <p>ClinStudy::Web::Controller::Query - Catalyst Controller</p>
 <hr />
 <h1><a name="description">DESCRIPTION</a></h1>
-<p>Catalyst Controller.</p>
+<p>Catalyst Controller providing JSON-based queries of the
+database. There are two main approaches which are supported by this
+module:</p>
+<h2><a name="canned_queries">"Canned" queries</a></h2>
+<p>This query mechanism is likely to be the more useful of the two
+approaches, and will usually take less time and complexity to
+retrieve the desired information. The module makes a series of
+actions available (e.g. 'patients', 'visits'), each of which take a
+set list of optional query parameters and use them to retrieve
+predefined chunks of data. Each query parameter can include the
+wildcard characters '*' and '?', and the query may consist of a
+list of such terms. For example, the following JSON would be a
+valid 'patients' query:</p>
+<pre>
+ {
+   "study":"IBD",
+   "trial_id":["V10?","T3*","X495"],
+   "include_relationships":"1"
+ }
+</pre>
+<p>Note that such a query would combine all trial_id terms using
+OR, followed by the inclusion of other search terms using AND.</p>
+<p>The 'include_relationships' flag is deserving of a special
+mention. By default the query returns only those data which are
+directly contained in the database table of interest (in this case,
+"patient"). However, if 'include_relationships' is set to a defined
+value, all the linked database tables are queried and far more
+information is returned.</p>
+<h2><a name="low_level_generic_queries">Low level generic
+queries</a></h2>
+<p>In those cases which are not easily addressed using the canned
+query mechanism, this module also allows for completely generic
+database queries in the spirit of the Perl module SQL::Abstract.
+See below for details.</p>
 <hr />
-<h1><a name="methods">METHODS</a></h1>
+<h1><a name="authentication_api">AUTHENTICATION API</a></h1>
 <h2><a name="json_login">json_login</a></h2>
 <p>This is the primary authentication method which is to be used
 prior to any other queries in order to obtain an authenticated
 connection. See e.g. the curl documentation for details on how this
-may be used (RCurl example available in the associated ClinStudyWeb
-R package). Success or failure is denoted by a boolean "success"
-flag in the returned object.</p>
+may be used (an RCurl example is available in the associated
+ClinStudyWeb R package). Success or failure is denoted by a boolean
+"success" flag in the returned object.</p>
 <h2><a name="json_logout">json_logout</a></h2>
 <p>A method which simply deauthenticates the user.</p>
+<hr />
+<h1><a name="generic_query_api">GENERIC QUERY API</a></h1>
 <h2><a name="index">index</a></h2>
 <p>This is the core of the generic JSON query API. JSON parameters
 are as follows: resultSet, condition, attributes. These parameters
 are passed in as a hashref named "data". Return values are
 similarly passed under a "data" key. Success or failure is denoted
 by a boolean "success" flag in the returned object.</p>
+<p>Queries must be constructed in a form understandable by the
+DBIx::Class::ResultSet <code>search()</code> method. In essence
+this means that the query is to be broken down into a 'condition'
+hashref, containing the components of an SQL WHERE clause encoded
+in a form supported by the SQL::Abstract module, and an
+'attributes' hashref which contains further query qualifiers (most
+commonly, JOIN clauses). An example would be:</p>
+<pre>
+ $query = {
+    resultSet  =&gt; 'Assay',
+    condition  =&gt; { 'patient_id.trial_id' =&gt; $some_trial_id },
+    attributes =&gt; { join =&gt; { channels =&gt; { sample_id =&gt; { visit_id =&gt; 'patient_id' }}}}
+ };
+</pre>
+<p>This query would return all the assays linked to a patient
+having trial_id=$some_trial_id. In principle it should be possible
+to construct any desired query using this mechanism, although in
+practice it may be easier and quicker to use the canned query API
+instead.</p>
+<hr />
+<h1><a name="miscellaneous_queries">MISCELLANEOUS QUERIES</a></h1>
 <h2><a name="assay_dump">assay_dump</a></h2>
+<p>A method used by the R client to annotate data sets. A candidate
+for deprecation, this method may be replaced in future by calls to
+the canned query API. Use at your own risk.</p>
 <h2><a name="sample_dump">sample_dump</a></h2>
+<p>A method used by the R client to annotate data sets. A candidate
+for deprecation, this method may be replaced in future by calls to
+the canned query API. Use at your own risk.</p>
 <h2><a name="assay_drugs">assay_drugs</a></h2>
+<p>A method used to retrieve drug information linked to a set of
+assays. Query terms are 'filename' or 'identifier' (one of these is
+required), and the optional terms 'prior_treatment_type',
+'months_prior' and 'drug_type' which can be used to limit the scope
+of the search. For example, one might search for drug treatments
+using an immunosuppressant drug type, up to 6 months prior to the
+visit related to this assay.</p>
+<h2><a name="list_tests">list_tests</a></h2>
+<p>Simple method to return a list of test names and database IDs;
+originally designed for use with the annotation picker Tcl/Tk
+interface in the R client. Takes an optional 'pattern' argument
+which can use '*' and '?' wildcards to filter the results. A
+'retrieve_all' argument is also available which, when set to a
+non-zero value, will retrieve all tests. The default is to return
+only those tests which are not children of other test types; this
+is far more often the desired result.</p>
+<h2><a name="list_phenotypes">list_phenotypes</a></h2>
+<p>Simple method to return a list of phenotype quantities and
+database IDs; originally designed for use with the annotation
+picker Tcl/Tk interface in the R client. Takes an optional
+'pattern' argument which can use '*' and '?' wildcards to filter
+the results.</p>
+<h2><a name="patient_entry_date">patient_entry_date</a></h2>
+<p>Method to return the entry date for a patient. Since this is not
+much simpler than the corresponding canned query, this method may
+also be deprecated in future. Query parameters: 'trial_id'.</p>
+<h2><a name="visit_dates">visit_dates</a></h2>
+<p>Method to retrieve all the visit dates for a given patient
+('trial_id'), optionally filtered by nominal timepoint name
+('timepoint'). Owing to its similarity with the corresponding visit
+canned query method, this is likely to be deprecated in future.</p>
+<hr />
+<h1><a name="canned_query_api">CANNED QUERY API</a></h1>
+<p>All the following methods also accept the
+'include_relationships' flag as described above.</p>
+<h2><a name="patients">patients</a></h2>
+<p>Canned query method for patients. Available query terms
+include:</p>
+<dl>
+<dt><strong><a name="trial_id" class=
+"item">trial_id</a></strong></dt>
+<dd>
+<p>The patient trial ID. Not to be confused with 'id' below, which
+is the internal database identifier.</p>
+</dd>
+<dt><strong><a name="id" class="item">id</a></strong></dt>
+<dd>
+<p>The patient internal database ID. This is provided as a query
+term purely for the sake of convenience.</p>
+</dd>
+<dt><strong><a name="study" class="item">study</a></strong></dt>
+<dd>
+<p>The name of a study to which the patient must belong.</p>
+</dd>
+<dt><strong><a name="diagnosis" class=
+"item">diagnosis</a></strong></dt>
+<dd>
+<p>The name of a diagnosis which the patient must have received at
+some point. Note that this queries all diagnoses, and not just the
+most recent.</p>
+</dd>
+</dl>
+<h2><a name="visits">visits</a></h2>
+<p>Canned query method for clinic visits. Available query terms
+include:</p>
+<dl>
+<dt><strong>trial_id</strong></dt>
+<dd>
+<p>The trial ID for the patient linked to the visit.</p>
+</dd>
+<dt><strong>id</strong></dt>
+<dd>
+<p>The internal visit database ID.</p>
+</dd>
+<dt><strong><a name="date" class="item">date</a></strong></dt>
+<dd>
+<p>The visit date.</p>
+</dd>
+<dt><strong><a name="nominal_timepoint" class=
+"item">nominal_timepoint</a></strong></dt>
+<dd>
+<p>The timepoint assigned to the visit.</p>
+</dd>
+</dl>
+<h2><a name="samples">samples</a></h2>
+<p>Canned query method for samples. Available query terms
+include:</p>
+<dl>
+<dt><strong>trial_id</strong></dt>
+<dd>
+<p>The trial ID for the patient linked to the sample.</p>
+</dd>
+<dt><strong>id</strong></dt>
+<dd>
+<p>The sample internal database ID.</p>
+</dd>
+<dt><strong><a name="name" class="item">name</a></strong></dt>
+<dd>
+<p>The sample name as recorded in the database. Note that this is
+often not as useful as a combination of trial_id, date, cell_type
+and material_type.</p>
+</dd>
+<dt><strong>date</strong></dt>
+<dd>
+<p>The date of the clinic visit for the sample.</p>
+</dd>
+<dt><strong><a name="cell_type" class=
+"item">cell_type</a></strong></dt>
+<dd>
+<p>The controlled cell type term (e.g. "CD4").</p>
+</dd>
+<dt><strong><a name="material_type" class=
+"item">material_type</a></strong></dt>
+<dd>
+<p>The controlled material type term (e.g. "RNA").</p>
+</dd>
+</dl>
+<h2><a name="assays">assays</a></h2>
+<p>Canned query method for assays. Available query terms
+include:</p>
+<dl>
+<dt><strong>id</strong></dt>
+<dd>
+<p>The assay internal database ID.</p>
+</dd>
+<dt><strong><a name="filename" class=
+"item">filename</a></strong></dt>
+<dd>
+<p>The filename associated with the assay.</p>
+</dd>
+<dt><strong><a name="identifier" class=
+"item">identifier</a></strong></dt>
+<dd>
+<p>The assay identifier. This might be a barcode or other
+standardised identifier depending on your local practice.</p>
+</dd>
+<dt><strong>date</strong></dt>
+<dd>
+<p>The date upon which the assay was performed.</p>
+</dd>
+<dt><strong><a name="batch" class="item">batch</a></strong></dt>
+<dd>
+<p>The name of the AssayBatch to which this assay belongs.</p>
+</dd>
+</dl>
+<h2><a name="transplants">transplants</a></h2>
+<p>Canned query method for transplants. Available query terms
+include:</p>
+<dl>
+<dt><strong>trial_id</strong></dt>
+<dd>
+<p>The trial ID for the patient linked to the transplant.</p>
+</dd>
+<dt><strong>id</strong></dt>
+<dd>
+<p>The internal transplant database ID.</p>
+</dd>
+<dt><strong>date</strong></dt>
+<dd>
+<p>The transplant date.</p>
+</dd>
+<dt><strong><a name="organ_type" class=
+"item">organ_type</a></strong></dt>
+<dd>
+<p>The type of organ transplanted (e.g. "kidney").</p>
+</dd>
+</dl>
+<h2><a name="prior_treatments">prior_treatments</a></h2>
+<p>Canned query method for prior treatments. Available query terms
+include:</p>
+<dl>
+<dt><strong>trial_id</strong></dt>
+<dd>
+<p>The trial ID for the patient linked to the treatment.</p>
+</dd>
+<dt><strong>id</strong></dt>
+<dd>
+<p>The internal prior_treatment database ID.</p>
+</dd>
+<dt><strong><a name="type" class="item">type</a></strong></dt>
+<dd>
+<p>The type of treatment (e.g. "drug therapy at entry").</p>
+</dd>
+</dl>
+<hr />
+<h1><a name="private_methods">PRIVATE METHODS</a></h1>
+<p>These methods are not accessible to web site users, and are
+documented here merely for the benefit of developers.</p>
 <h2><a name="dump_assay_entity">dump_assay_entity</a></h2>
 <p>Given an Assay object from the database, construct a hashref
 suitable for passing back to the user (Private method).</p>
@@ -76,7 +362,7 @@ suitable for passing back to the user (Private method).</p>
 "mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>&gt;</p>
 <hr />
 <h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
-<p>Copyright (C) 2010 by Tim F. Rayner</p>
+<p>Copyright (C) 2010-2012 by Tim F. Rayner</p>
 <p>This library is released under version 3 of the GNU General
 Public License (GPL).</p>
 </body>
