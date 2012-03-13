@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Drug;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Drug
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Drug
+=head1 TABLE: C<drug>
 
 =cut
 
@@ -85,12 +89,6 @@ __PACKAGE__->table("drug");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 hospitalisation_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -116,29 +114,51 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "prior_treatment_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "hospitalisation_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
-__PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("name_id_4", ["name_id", "prior_treatment_id"]);
-__PACKAGE__->add_unique_constraint("name_id_3", ["name_id", "hospitalisation_id"]);
-__PACKAGE__->add_unique_constraint("name_id_2", ["name_id", "visit_id"]);
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 dose_unit_id
+=over 4
 
-Type: belongs_to
+=item * L</id>
 
-Related object: L<ClinStudy::ORM::ControlledVocab>
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "dose_unit_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "dose_unit_id" },
-);
+__PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<name_id_2>
+
+=over 4
+
+=item * L</name_id>
+
+=item * L</visit_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("name_id_2", ["name_id", "visit_id"]);
+
+=head2 C<name_id_3>
+
+=over 4
+
+=item * L</name_id>
+
+=item * L</prior_treatment_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("name_id_3", ["name_id", "prior_treatment_id"]);
+
+=head1 RELATIONS
 
 =head2 dose_freq_id
 
@@ -154,7 +174,7 @@ __PACKAGE__->belongs_to(
   { id => "dose_freq_id" },
 );
 
-=head2 name_id
+=head2 dose_unit_id
 
 Type: belongs_to
 
@@ -163,61 +183,9 @@ Related object: L<ClinStudy::ORM::ControlledVocab>
 =cut
 
 __PACKAGE__->belongs_to(
-  "name_id",
+  "dose_unit_id",
   "ClinStudy::ORM::ControlledVocab",
-  { id => "name_id" },
-);
-
-=head2 locale_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "locale_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "locale_id" },
-);
-
-=head2 visit_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Visit>
-
-=cut
-
-__PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
-
-=head2 prior_treatment_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::PriorTreatment>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "prior_treatment_id",
-  "ClinStudy::ORM::PriorTreatment",
-  { id => "prior_treatment_id" },
-);
-
-=head2 hospitalisation_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "hospitalisation_id",
-  "ClinStudy::ORM::Hospitalisation",
-  { id => "hospitalisation_id" },
+  { id => "dose_unit_id" },
 );
 
 =head2 duration_unit_id
@@ -234,9 +202,61 @@ __PACKAGE__->belongs_to(
   { id => "duration_unit_id" },
 );
 
+=head2 locale_id
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:THWXIIb7JIsXGh+n4adqnw
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "locale_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "locale_id" },
+);
+
+=head2 name_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "name_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "name_id" },
+);
+
+=head2 prior_treatment_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::PriorTreatment>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "prior_treatment_id",
+  "ClinStudy::ORM::PriorTreatment",
+  { id => "prior_treatment_id" },
+);
+
+=head2 visit_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Visit>
+
+=cut
+
+__PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
+
+
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:onhep2VHFpnAyAGVg+UW8Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

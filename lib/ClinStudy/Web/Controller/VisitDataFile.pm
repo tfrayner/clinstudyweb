@@ -17,16 +17,16 @@
 #
 # $Id$
 
-package ClinStudy::Web::Controller::Hospitalisation;
+package ClinStudy::Web::Controller::VisitDataFile;
 
 use Moose;
 use namespace::autoclean;
 
-BEGIN {extends 'ClinStudy::Web::Controller::PatientLinkedObject'; }
+BEGIN {extends 'ClinStudy::Web::Controller::VisitLinkedObject'; }
 
 =head1 NAME
 
-ClinStudy::Web::Controller::Hospitalisation - Catalyst Controller
+ClinStudy::Web::Controller::VisitDataFile - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -40,8 +40,8 @@ sub BUILD {
 
     my ( $self, $params ) = @_;
 
-    $self->my_model_class( 'DB::Hospitalisation' );
-    $self->my_sort_field( 'date' );
+    $self->my_model_class( 'DB::VisitDataFile' );
+    $self->my_sort_field( 'filename' );
 
     return;
 }
@@ -59,6 +59,6 @@ License (GPL).
 
 =cut
 
-__PACKAGE__->meta->make_immutable();
+__PACKAGE__->meta->make_immutable;
 
 1;

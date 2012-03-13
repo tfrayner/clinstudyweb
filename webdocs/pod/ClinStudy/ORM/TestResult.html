@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::TestResult</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,28 +19,34 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__test_result">TABLE: <code>test_result</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
                 <li><a href="#id">id</a></li>
                 <li><a href="#test_id">test_id</a></li>
                 <li><a href="#visit_id">visit_id</a></li>
-                <li><a href="#hospitalisation_id">hospitalisation_id</a></li>
                 <li><a href="#value">value</a></li>
                 <li><a href="#controlled_value_id">controlled_value_id</a></li>
                 <li><a href="#date">date</a></li>
                 <li><a href="#needs_reparenting">needs_reparenting</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#test_id_2"><code>test_id_2</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
+                <li><a href="#controlled_value_id">controlled_value_id</a></li>
                 <li><a href="#test_aggregation_aggregate_result_ids">test_aggregation_aggregate_result_ids</a></li>
                 <li><a href="#test_aggregation_test_result_ids">test_aggregation_test_result_ids</a></li>
                 <li><a href="#test_id">test_id</a></li>
                 <li><a href="#visit_id">visit_id</a></li>
-                <li><a href="#hospitalisation_id">hospitalisation_id</a></li>
-                <li><a href="#controlled_value_id">controlled_value_id</a></li>
         </ul>
 
 </ul>
@@ -49,6 +55,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::TestResult</p>
+<hr />
+<h1><a name="table__test_result">TABLE:
+<code>test_result</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -67,13 +76,7 @@
 <pre>
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 1
-</pre>
-<h2><a name="hospitalisation_id">hospitalisation_id</a></h2>
-<pre>
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 </pre>
 <h2><a name="value">value</a></h2>
 <pre>
@@ -98,7 +101,29 @@
   is_nullable: 1
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id31" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="test_id_2"><code>test_id_2</code></a></h2>
+<ul>
+<li><strong><a name="test_id2" class="item"></a><a href=
+"#test_id">test_id</a></strong></li>
+<li><strong><a name="date2" class="item"></a><a href=
+"#date">date</a></strong></li>
+<li><strong><a name="visit_id3" class="item"></a><a href=
+"#visit_id">visit_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
+<h2><a name="controlled_value_id">controlled_value_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
+ClinStudy::ORM::ControlledVocab manpage</a></p>
 <h2><a name=
 "test_aggregation_aggregate_result_ids">test_aggregation_aggregate_result_ids</a></h2>
 <p>Type: has_many</p>
@@ -121,15 +146,5 @@ ClinStudy::ORM::Test manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Visit.html">the
 ClinStudy::ORM::Visit manpage</a></p>
-<h2><a name="hospitalisation_id">hospitalisation_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Hospitalisation.html">the
-ClinStudy::ORM::Hospitalisation manpage</a></p>
-<h2><a name="controlled_value_id">controlled_value_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
-ClinStudy::ORM::ControlledVocab manpage</a></p>
 </body>
 </html>

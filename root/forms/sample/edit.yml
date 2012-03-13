@@ -42,6 +42,17 @@ elements:
         category: CellType
       label_column: value
 
+  - type: Text
+    name: cell_purity
+    label: Cell Purity
+    label_attributes:
+      tooltipText: The sample cell purity (expressed as the percentage of the population consisting of the desired cell type).
+    constraints:
+      - type: Number
+      - type: Length
+        max:  12
+        min:  0
+
   - type: Select
     name: material_type_id
     label: Material Type
@@ -109,9 +120,9 @@ elements:
 
   - type: Text
     name: concentration
-    label: Concentration
+    label: RNA Concentration
     label_attributes:
-      tooltipText: The sample concentration (ng/ul).
+      tooltipText: The sample RNA concentration (ng/ul).
     constraints:
       - type: Number
       - type: Length
@@ -120,9 +131,9 @@ elements:
 
   - type: Text
     name: purity
-    label: Purity
+    label: RNA Purity
     label_attributes:
-      tooltipText: The sample purity (260/280 ratio).
+      tooltipText: The sample RNA purity (260/280 ratio).
     constraints:
       - type: Number
       - type: Length
@@ -143,6 +154,14 @@ elements:
       condition:
         category: QualityScore
       label_column: value
+
+  - type: Checkbox
+    name: has_expired
+    label: Sample Unavailable/Expired
+    default_empty_value: 0
+    label_attributes:
+      tooltipText: >-
+        Is the sample no longer available in storage, or has it been discarded from future studies?
 
   - type: Textarea
     name: notes

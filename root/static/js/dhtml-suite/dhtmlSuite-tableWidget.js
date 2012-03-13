@@ -1370,9 +1370,13 @@ DHTMLSuite.tableWidget.prototype={
 	var obj=document.getElementById(this.idOfTable);
 	obj.parentNode.className='DHTMLSuite_widget_tableDiv';
 	if(navigator.userAgent.toLowerCase().indexOf('safari')==-1&&!this.noCssLayout){
-	if(!DHTMLSuite.clientInfoObj.isMSIE)
-	obj.parentNode.style.overflow='hidden';
-	else {
+        if(!DHTMLSuite.clientInfoObj.isMSIE) {
+        // Fix for Firefox 4 scrollbar bug taken from
+        // https://dhtmlgoodies.com/forum/viewtopic.php?f=42&t=13396
+        //	obj.parentNode.style.overflow='hidden';
+	obj.parentNode.style.overflowX='hidden';
+	obj.parentNode.style.overflowY='scroll';
+	} else {
 	obj.parentNode.style.overflowX='hidden';
 	obj.parentNode.style.overflowY='scroll';
 	}

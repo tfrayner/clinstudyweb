@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::GraftFailure;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::GraftFailure
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::GraftFailure
+=head1 TABLE: C<graft_failure>
 
 =cut
 
@@ -61,7 +65,31 @@ __PACKAGE__->add_columns(
   "transplant_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<transplant_id>
+
+=over 4
+
+=item * L</transplant_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("transplant_id", ["transplant_id"]);
 
 =head1 RELATIONS
@@ -81,8 +109,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cAZj9RaU77Jf92SQ7ZRisQ
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/Z8KoEuRAoBpK3w1Zg+JZA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

@@ -1,4 +1,4 @@
-<div >
+<div>
 <p>From here, you can: </p>
 <ul>
   <li>
@@ -17,6 +17,7 @@
       <li><a href="[% c.uri_for('/assaybatch/list') %]">Assay batches</a></li> 
       <li><a href="[% c.uri_for('/adverseevent') %]">Adverse events</a></li> 
       <li><a href="[% c.uri_for('/sample/assay_report') %]">Sample assay reports</a></li> 
+      <li><a href="[% c.uri_for("/controlledvocab/list") | html %]">Controlled Vocabulary terms</a></li> 
     </ul>
   </li>
   <li>
@@ -32,7 +33,6 @@
     <h4>Administrate the database</h4>
     <ul class="linklist">
       <li><a href="[% c.uri_for("/user/list") | html %]">Manage local database users</a></li> 
-      <li><a href="[% c.uri_for("/controlledvocab/list") | html %]">Manage controlled vocabulary terms</a></li> 
       <li><a href="[% c.uri_for("/termsource/list") | html %]">Manage CV term sources</a></li> 
       <li><a href="[% c.uri_for("/test/list") | html %]">Manage clinical tests</a></li>
       <li><a href="[% c.uri_for("/priorgroup/list") | html %]">Manage patient 'prior groups'</a></li> 
@@ -57,29 +57,5 @@
 [% END %]
 
 </ul>
-<ul>
-</ul> 
 </div> 
 
-<div class="linklist">
-<ul>
-</ul>
-</div>
-
-<div class="thawte_seal">
-  <table width="10" border="0" cellspacing="0" align="center">
-    <tr>
-      <td>
-        <script src="https://siteseal.thawte.com/cgi/server/thawte_seal_generator.exe"></script>
-      </td>
-    </tr>
-    <tr>
-      <td height="0" align="center">
-        <a style="color:#AD0034" target="_new"
-        href="http://www.thawte.com/digital-certificates/">
-         <span style="font-family:arial; font-size:8px; color:#AD0034">
-          ABOUT SSL CERTIFICATES</span></a>
-      </td>
-    </tr>
-  </table>
-</div>

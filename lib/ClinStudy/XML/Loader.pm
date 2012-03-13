@@ -92,6 +92,9 @@ my %external_value_map = (
                 ethnicity_id         => 'Ethnicity',
                 home_centre_id       => 'HomeCentre',
             },
+            PhenotypeQuantity => {
+                type_id              => 'PhenotypeQuantityType',
+            },
             PriorObservation => {
                 type_id              => 'ObservationType',
             },
@@ -108,6 +111,9 @@ my %external_value_map = (
                 material_type_id     => 'MaterialType',
                 quality_score_id     => 'QualityScore',
             },
+            SampleDataFile => {
+                type_id              => 'SampleDataType',
+            },
             SystemInvolvement => {
                 type_id              => 'SystemInvolvement',
             },
@@ -122,6 +128,7 @@ my %external_value_map = (
             },
             Transplant => {
                 sensitisation_status_id => 'SensitisationStatus',
+                delayed_graft_function_id => 'DelayedGraftFunction',
                 organ_type_id           => 'OrganType',
                 reperfusion_quality_id  => 'ReperfusionQuality',
                 donor_type_id           => 'DonorType',
@@ -129,6 +136,9 @@ my %external_value_map = (
             Visit => {
                 disease_activity_id  => 'DiseaseActivity',
                 nominal_timepoint_id => 'NominalTimepoint',
+            },
+            VisitDataFile => {
+                type_id              => 'VisitDataType',
             },
         },
     },
@@ -188,9 +198,9 @@ sub _update_testresult_attrs {
     return;
 }
 
-sub load_element {
+sub load_element_message {
 
-    my  ( $self, $element, $parent_ref ) = @_;
+    my ( $self, $element ) = @_;
 
     my $class = $element->nodeName();
 
@@ -200,6 +210,17 @@ sub load_element {
     elsif ( $class eq 'AssayBatch' ) {
         warn("Importing data for assay batch " . $element->getAttribute('name') . "...\n");
     }
+    
+    return;
+}
+
+sub load_element {
+
+    my  ( $self, $element, $parent_ref ) = @_;
+
+    my $class = $element->nodeName();
+
+    $self->load_element_message( $element );
 
     my $rs = $self->database()->resultset($class)
         or die("Error: Unable to find a ResultSet for $class elements.");
@@ -224,7 +245,7 @@ sub load_element {
                 or croak("Error: Unable to find parent TestResult ($parent_id).");
 
             # Link the child to the same container as the parents.
-            foreach my $col ( qw(visit_id hospitalisation_id) ) {
+            foreach my $col ( qw(visit_id) ) {
                 $parent_ref->{$col} = $parent->$col;
             }
 

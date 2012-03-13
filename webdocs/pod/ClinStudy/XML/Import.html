@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::XML::Import</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -39,6 +39,7 @@
                 <li><a href="#process_attr">process_attr</a></li>
                 <li><a href="#load_element">load_element</a></li>
                 <li><a href="#load_object">load_object</a></li>
+                <li><a href="#load_element_message">load_element_message</a></li>
         </ul>
 
         <li><a href="#export">EXPORT</a></li>
@@ -184,6 +185,10 @@ database.</p>
 hashref of values to update_or_create and a DBIx::Class::ResultSet.
 This method is split out like this so we can easily subclass and
 override the loading behaviour, e.g. for ControlledVocab.</p>
+<h2><a name="load_element_message">load_element_message</a></h2>
+<p>Simple user-friendly message function; overridden in subclasses
+which might be doing something quite different (see e.g.
+SemanticValidator).</p>
 <hr />
 <h1><a name="export">EXPORT</a></h1>
 <p>None by default.</p>

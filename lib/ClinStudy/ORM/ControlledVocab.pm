@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::ControlledVocab;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::ControlledVocab
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::ControlledVocab
+=head1 TABLE: C<controlled_vocab>
 
 =cut
 
@@ -47,7 +51,7 @@ __PACKAGE__->table("controlled_vocab");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =cut
 
@@ -61,28 +65,50 @@ __PACKAGE__->add_columns(
   "value",
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "term_source_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
-__PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("category", ["category", "value"]);
-__PACKAGE__->add_unique_constraint("accession", ["accession"]);
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 adverse_event_severity_ids
+=over 4
 
-Type: has_many
+=item * L</id>
 
-Related object: L<ClinStudy::ORM::AdverseEvent>
+=back
 
 =cut
 
-__PACKAGE__->has_many(
-  "adverse_event_severity_ids",
-  "ClinStudy::ORM::AdverseEvent",
-  { "foreign.severity_id" => "self.id" },
-  {},
-);
+__PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<accession>
+
+=over 4
+
+=item * L</accession>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("accession", ["accession"]);
+
+=head2 C<category>
+
+=over 4
+
+=item * L</category>
+
+=item * L</value>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("category", ["category", "value"]);
+
+=head1 RELATIONS
 
 =head2 adverse_event_action_ids
 
@@ -111,6 +137,21 @@ __PACKAGE__->has_many(
   "adverse_event_outcome_ids",
   "ClinStudy::ORM::AdverseEvent",
   { "foreign.outcome_id" => "self.id" },
+  {},
+);
+
+=head2 adverse_event_severity_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::AdverseEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "adverse_event_severity_ids",
+  "ClinStudy::ORM::AdverseEvent",
+  { "foreign.severity_id" => "self.id" },
   {},
 );
 
@@ -174,20 +215,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 term_source_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::TermSource>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "term_source_id",
-  "ClinStudy::ORM::TermSource",
-  { id => "term_source_id" },
-);
-
 =head2 diagnosis_condition_name_ids
 
 Type: has_many
@@ -218,7 +245,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 diagnosis_previous_course_ids
+=head2 diagnosis_disease_extent_ids
 
 Type: has_many
 
@@ -227,9 +254,9 @@ Related object: L<ClinStudy::ORM::Diagnosis>
 =cut
 
 __PACKAGE__->has_many(
-  "diagnosis_previous_course_ids",
+  "diagnosis_disease_extent_ids",
   "ClinStudy::ORM::Diagnosis",
-  { "foreign.previous_course_id" => "self.id" },
+  { "foreign.disease_extent_id" => "self.id" },
   {},
 );
 
@@ -248,7 +275,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 diagnosis_disease_extent_ids
+=head2 diagnosis_previous_course_ids
 
 Type: has_many
 
@@ -257,9 +284,9 @@ Related object: L<ClinStudy::ORM::Diagnosis>
 =cut
 
 __PACKAGE__->has_many(
-  "diagnosis_disease_extent_ids",
+  "diagnosis_previous_course_ids",
   "ClinStudy::ORM::Diagnosis",
-  { "foreign.disease_extent_id" => "self.id" },
+  { "foreign.previous_course_id" => "self.id" },
   {},
 );
 
@@ -278,21 +305,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 drug_dose_unit_ids
-
-Type: has_many
-
-Related object: L<ClinStudy::ORM::Drug>
-
-=cut
-
-__PACKAGE__->has_many(
-  "drug_dose_unit_ids",
-  "ClinStudy::ORM::Drug",
-  { "foreign.dose_unit_id" => "self.id" },
-  {},
-);
-
 =head2 drug_dose_freq_ids
 
 Type: has_many
@@ -308,7 +320,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 drug_name_ids
+=head2 drug_dose_unit_ids
 
 Type: has_many
 
@@ -317,9 +329,24 @@ Related object: L<ClinStudy::ORM::Drug>
 =cut
 
 __PACKAGE__->has_many(
-  "drug_name_ids",
+  "drug_dose_unit_ids",
   "ClinStudy::ORM::Drug",
-  { "foreign.name_id" => "self.id" },
+  { "foreign.dose_unit_id" => "self.id" },
+  {},
+);
+
+=head2 drug_duration_unit_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Drug>
+
+=cut
+
+__PACKAGE__->has_many(
+  "drug_duration_unit_ids",
+  "ClinStudy::ORM::Drug",
+  { "foreign.duration_unit_id" => "self.id" },
   {},
 );
 
@@ -338,7 +365,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 drug_duration_unit_ids
+=head2 drug_name_ids
 
 Type: has_many
 
@@ -347,9 +374,9 @@ Related object: L<ClinStudy::ORM::Drug>
 =cut
 
 __PACKAGE__->has_many(
-  "drug_duration_unit_ids",
+  "drug_name_ids",
   "ClinStudy::ORM::Drug",
-  { "foreign.duration_unit_id" => "self.id" },
+  { "foreign.name_id" => "self.id" },
   {},
 );
 
@@ -413,6 +440,21 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 phenotype_quantities
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::PhenotypeQuantity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "phenotype_quantities",
+  "ClinStudy::ORM::PhenotypeQuantity",
+  { "foreign.type_id" => "self.id" },
+  {},
+);
+
 =head2 prior_groups
 
 Type: has_many
@@ -473,21 +515,6 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 related_vocab_target_ids
-
-Type: has_many
-
-Related object: L<ClinStudy::ORM::RelatedVocab>
-
-=cut
-
-__PACKAGE__->has_many(
-  "related_vocab_target_ids",
-  "ClinStudy::ORM::RelatedVocab",
-  { "foreign.target_id" => "self.id" },
-  {},
-);
-
 =head2 related_vocab_relationship_ids
 
 Type: has_many
@@ -500,6 +527,21 @@ __PACKAGE__->has_many(
   "related_vocab_relationship_ids",
   "ClinStudy::ORM::RelatedVocab",
   { "foreign.relationship_id" => "self.id" },
+  {},
+);
+
+=head2 related_vocab_target_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::RelatedVocab>
+
+=cut
+
+__PACKAGE__->has_many(
+  "related_vocab_target_ids",
+  "ClinStudy::ORM::RelatedVocab",
+  { "foreign.target_id" => "self.id" },
   {},
 );
 
@@ -530,6 +572,21 @@ __PACKAGE__->has_many(
   "sample_cell_type_ids",
   "ClinStudy::ORM::Sample",
   { "foreign.cell_type_id" => "self.id" },
+  {},
+);
+
+=head2 sample_data_files
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::SampleDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.type_id" => "self.id" },
   {},
 );
 
@@ -593,6 +650,20 @@ __PACKAGE__->has_many(
   {},
 );
 
+=head2 term_source_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::TermSource>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "term_source_id",
+  "ClinStudy::ORM::TermSource",
+  { id => "term_source_id" },
+);
+
 =head2 test_possible_values
 
 Type: has_many
@@ -623,7 +694,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 transplant_sensitisation_status_ids
+=head2 transplant_delayed_graft_function_ids
 
 Type: has_many
 
@@ -632,9 +703,24 @@ Related object: L<ClinStudy::ORM::Transplant>
 =cut
 
 __PACKAGE__->has_many(
-  "transplant_sensitisation_status_ids",
+  "transplant_delayed_graft_function_ids",
   "ClinStudy::ORM::Transplant",
-  { "foreign.sensitisation_status_id" => "self.id" },
+  { "foreign.delayed_graft_function_id" => "self.id" },
+  {},
+);
+
+=head2 transplant_donor_type_ids
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::Transplant>
+
+=cut
+
+__PACKAGE__->has_many(
+  "transplant_donor_type_ids",
+  "ClinStudy::ORM::Transplant",
+  { "foreign.donor_type_id" => "self.id" },
   {},
 );
 
@@ -668,7 +754,7 @@ __PACKAGE__->has_many(
   {},
 );
 
-=head2 transplant_donor_type_ids
+=head2 transplant_sensitisation_status_ids
 
 Type: has_many
 
@@ -677,9 +763,24 @@ Related object: L<ClinStudy::ORM::Transplant>
 =cut
 
 __PACKAGE__->has_many(
-  "transplant_donor_type_ids",
+  "transplant_sensitisation_status_ids",
   "ClinStudy::ORM::Transplant",
-  { "foreign.donor_type_id" => "self.id" },
+  { "foreign.sensitisation_status_id" => "self.id" },
+  {},
+);
+
+=head2 visit_data_files
+
+Type: has_many
+
+Related object: L<ClinStudy::ORM::VisitDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
   {},
 );
 
@@ -714,8 +815,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-11-04 17:45:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Z5Mpc77xFwPjLPx3XbSHYw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-29 16:21:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4+lV6E8ADnB2mZq17yqf7A
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -826,10 +927,22 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(
+  "phenotype_quantities",
+  "ClinStudy::ORM::PhenotypeQuantity",
+  { "foreign.type_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
   "system_involvements",
   "ClinStudy::ORM::SystemInvolvement",
   { "foreign.type_id" => "self.id" },
   { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.type_id" => "self.id" },
+  { "cascade_delete"  => 0 },
 );
 __PACKAGE__->has_many(
   "studies",
@@ -898,6 +1011,12 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(
+  "transplant_delayed_graft_function_ids",
+  "ClinStudy::ORM::Transplant",
+  { "foreign.delayed_graft_function_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
   "transplant_donor_type_ids",
   "ClinStudy::ORM::Transplant",
   { "foreign.donor_type_id" => "self.id" },
@@ -907,6 +1026,12 @@ __PACKAGE__->has_many(
   "visits",
   "ClinStudy::ORM::Visit",
   { "foreign.disease_activity_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "visit_data_files",
+  "ClinStudy::ORM::VisitDataFile",
+  { "foreign.type_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );
 __PACKAGE__->has_many(

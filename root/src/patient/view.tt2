@@ -28,7 +28,7 @@
 
 <fieldset class="data_view">
 <legend>Diagnoses <span><a href="[% c.uri_for("/diagnosis/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.diagnoses.blessed %]
+[% IF object.diagnoses_rs.count == 1 %]
   [% SET objects = [ object.diagnoses ] %]
 [% ELSE %]
   [% SET objects = object.diagnoses.list %]
@@ -38,7 +38,7 @@
 
 <fieldset class="data_view">
 <legend>Associated Studies <span><a href="[% c.uri_for("/study/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.studies.blessed %]
+[% IF object.studies_rs.count == 1 %]
   [% SET objects = [ object.studies ] %]
 [% ELSE %]
   [% SET objects = object.studies.list %]
@@ -48,7 +48,7 @@
 
 <fieldset class="data_view">
 <legend>Experimental Groups <span><a href="[% c.uri_for("/patient/edit", object.id) %]">Edit</a></span></legend>
-[% IF object.prior_groups.blessed %]
+[% IF object.prior_groups_rs.count == 1 %]
   [% SET objects = [ object.prior_groups ] %]
 [% ELSE %]
   [% SET objects = object.prior_groups.list %]
@@ -58,7 +58,7 @@
 
 <fieldset class="data_view">
 <legend>Clinic Visits <span><a href="[% c.uri_for("/visit/add_to_patient", object.id) %]">Add</a></span></legend>
-[% IF object.visits.blessed %]
+[% IF object.visits_rs.count == 1 %]
   [% SET objects = [ object.visits ] %]
 [% ELSE %]
   [% SET objects = object.visits.list %]
@@ -68,7 +68,7 @@
 
 <fieldset class="data_view">
 <legend>Previous Disease Events <span><a href="[% c.uri_for("/diseaseevent/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.disease_events.blessed %]
+[% IF object.disease_events_rs.count == 1 %]
   [% SET objects = [ object.disease_events ] %]
 [% ELSE %]
   [% SET objects = object.disease_events.list %]
@@ -103,7 +103,7 @@
 
 <fieldset class="data_view">
 <legend>Adverse Events <span><a href="[% c.uri_for("/adverseevent/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.adverse_events.blessed %]
+[% IF object.adverse_events_rs.count == 1 %]
   [% SET objects = [ object.adverse_events ] %]
 [% ELSE %]
   [% SET objects = object.adverse_events.list %]
@@ -113,7 +113,7 @@
 
 <fieldset class="data_view">
 <legend>Comorbidities <span><a href="[% c.uri_for("/comorbidity/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.comorbidities.blessed %]
+[% IF object.comorbidities_rs.count == 1 %]
   [% SET objects = [ object.comorbidities ] %]
 [% ELSE %]
   [% SET objects = object.comorbidities.list %]
@@ -123,7 +123,7 @@
 
 <fieldset class="data_view">
 <legend>Risk Factors <span><a href="[% c.uri_for("/riskfactor/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.risk_factors.blessed %]
+[% IF object.risk_factors_rs.count == 1 %]
   [% SET objects = [ object.risk_factors ] %]
 [% ELSE %]
   [% SET objects = object.risk_factors.list %]
@@ -133,7 +133,7 @@
 
 <fieldset class="data_view">
 <legend>Prior Observations <span><a href="[% c.uri_for("/priorobservation/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.prior_observations.blessed %]
+[% IF object.prior_observations_rs.count == 1 %]
   [% SET objects = [ object.prior_observations ] %]
 [% ELSE %]
   [% SET objects = object.prior_observations.list %]
@@ -143,7 +143,7 @@
 
 <fieldset class="data_view">
 <legend>Prior Treatments <span><a href="[% c.uri_for("/priortreatment/add_to_patient", object.id) | html %]">Add</a></span></legend>
-[% IF object.prior_treatments.blessed %]
+[% IF object.prior_treatments_rs.count == 1 %]
   [% SET objects = [ object.prior_treatments ] %]
 [% ELSE %]
   [% SET objects = object.prior_treatments.list %]
@@ -152,13 +152,13 @@
 </fieldset>
 
 <fieldset class="data_view">
-<legend>Hospitalisation Events <span><a href="[% c.uri_for("/hospitalisation/add_to_patient", object.id) %]">Add</a></span></legend>
-[% IF object.hospitalisations.blessed %]
-  [% SET objects = [ object.hospitalisations ] %]
+<legend>Transplants <span><a href="[% c.uri_for("/transplant/add_to_patient", object.id) | html %]">Add</a></span></legend>
+[% IF object.transplants_rs.count == 1 %]
+  [% SET objects = [ object.transplants ] %]
 [% ELSE %]
-  [% SET objects = object.hospitalisations.list %]
+  [% SET objects = object.transplants.list %]
 [% END %]
-[% INCLUDE app/hospitalisation_list.tt2 %]
+[% INCLUDE app/transplants_list.tt2 %]
 </fieldset>
 
 <div class="linklist">

@@ -1,0 +1,106 @@
+default namespace = ""
+
+namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
+
+start =
+  notAllowed
+  | element ClinStudyAdminML {
+      attribute xsi:noNamespaceSchemaLocation { xsd:anyURI }?,
+      element ControlledVocabs {
+        element ControlledVocab {
+          attribute term_source_ref {
+            xsd:string { minLength = "1" maxLength = "31" }
+          }?,
+          attribute value {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          attribute category {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          attribute accession {
+            xsd:string { minLength = "1" maxLength = "31" }
+          },
+          element RelatedVocabs {
+            element RelatedVocab {
+              attribute relationship_ref {
+                xsd:string { minLength = "1" maxLength = "31" }
+              },
+              attribute target_ref {
+                xsd:string { minLength = "1" maxLength = "31" }
+              }
+            }+
+          }?
+        }+
+      }?,
+      element TermSources {
+        element TermSource {
+          attribute uri {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute version {
+            xsd:string { minLength = "1" maxLength = "31" }
+          }?,
+          attribute name {
+            xsd:string { minLength = "1" maxLength = "31" }
+          }
+        }+
+      }?,
+      element Tests {
+        element Test {
+          attribute name {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          element TestPossibleValues {
+            element TestPossibleValue {
+              attribute value {
+                xsd:string { minLength = "1" maxLength = "255" }
+              },
+              attribute category {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }+
+          }?
+        }+
+      }?,
+      element Users {
+        element User {
+          attribute date_accessed {
+            xsd:string {
+              pattern =
+                "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
+            }
+          }?,
+          attribute date_modified {
+            xsd:string {
+              pattern =
+                "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
+            }
+          }?,
+          attribute date_created {
+            xsd:string {
+              pattern =
+                "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
+            }
+          }?,
+          attribute password {
+            xsd:string { minLength = "1" maxLength = "40" }
+          },
+          attribute email {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute name {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute username {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          element UserRoles {
+            element UserRole {
+              attribute role {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }+
+          }?
+        }+
+      }?
+    }

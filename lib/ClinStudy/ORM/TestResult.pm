@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::TestResult;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::TestResult
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::TestResult
+=head1 TABLE: C<test_result>
 
 =cut
 
@@ -35,13 +39,7 @@ __PACKAGE__->table("test_result");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 1
-
-=head2 hospitalisation_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 value
 
@@ -73,9 +71,7 @@ __PACKAGE__->add_columns(
   "test_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "visit_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "hospitalisation_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "value",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "controlled_value_id",
@@ -85,11 +81,52 @@ __PACKAGE__->add_columns(
   "needs_reparenting",
   { data_type => "tinyint", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("test_id_3", ["test_id", "date", "hospitalisation_id"]);
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<test_id_2>
+
+=over 4
+
+=item * L</test_id>
+
+=item * L</date>
+
+=item * L</visit_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("test_id_2", ["test_id", "date", "visit_id"]);
 
 =head1 RELATIONS
+
+=head2 controlled_value_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "controlled_value_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "controlled_value_id" },
+);
 
 =head2 test_aggregation_aggregate_result_ids
 
@@ -141,37 +178,9 @@ Related object: L<ClinStudy::ORM::Visit>
 
 __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
 
-=head2 hospitalisation_id
 
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Hospitalisation>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "hospitalisation_id",
-  "ClinStudy::ORM::Hospitalisation",
-  { id => "hospitalisation_id" },
-);
-
-=head2 controlled_value_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "controlled_value_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "controlled_value_id" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-09-15 17:08:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DZyuxwlmnExYENNg5Ju2aw
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-09 15:54:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:j/1N3tjUn23rJ4rxOi125w
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

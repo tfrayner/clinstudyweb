@@ -39,18 +39,25 @@ importClassesFrom(Biobase, ExpressionSet)
 importClassesFrom(limma, MAList, RGList)
 
 importFrom(affy, ReadAffy)
-importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-')
+importFrom(oligo, read.celfiles)
+importFrom(Biobase, sampleNames, pData, varLabels, 'pData<-', varMetadata, 'varMetadata<-')
 importFrom(limma, read.maimages)
 
 importFrom(RCurl, getURLContent, curlEscape)
 
 export(
        getCredentials,
+       getCSWebHandle,
+       logoutCSWebHandle,
        csWebQuery,
        csWebReannotate,
+       csWebDrugInfo,
        csWebAffyBatch,
+       csWebGeneFeatureSet,
        csWebRGList,
        csJSONQuery,
+       csDrugQuery,
+       csDrugList,
        csFindAssays
        )
 

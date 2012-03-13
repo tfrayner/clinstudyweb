@@ -25,7 +25,7 @@
 
 <fieldset class="data_view">
 <legend>Channels</legend>
-[% IF object.channels.blessed %]
+[% IF object.channels_rs.count == 1 %]
   [% SET objects = [ object.channels ] %]
 [% ELSE %]
   [% SET objects = object.channels.list %]
@@ -35,7 +35,7 @@
 
 <fieldset class="data_view">
 <legend>QC <span><a href="[% c.uri_for("/assayqcvalue/add_to_assay", object.id) %]">Add</a></span></legend>
-[% IF object.assay_qc_values.blessed %]
+[% IF object.assay_qc_values_rs.count == 1 %]
   [% SET objects = [ object.assay_qc_values ] %]
 [% ELSE %]
   [% SET objects = object.assay_qc_values.list %]

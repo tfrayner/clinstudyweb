@@ -14,7 +14,7 @@
       [% FOREACH treatment = objects.sort('date') %]
       <tr>
         <td>[% treatment.type_id.value | ucfirst | replace('_+', ' ') | html %]</td>
-        <td>[% IF treatment.drugs.blessed %]
+        <td>[% IF treatment.drugs_rs.count == 1 %]
               [% SET drugs = [ treatment.drugs ] %]
             [% ELSE %]
               [% SET drugs = treatment.drugs.list %]

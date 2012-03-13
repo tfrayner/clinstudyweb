@@ -278,15 +278,26 @@ sub _find_reference {
     if ( my $field = $self->external_id_map()->{$class} ) {
         my @rel_objs = $rs->search({ $field => $value });
         unless ( scalar @rel_objs ) {
-            croak("Unable to find a $class with $field = $value.");
+            $rel_obj = $self->handle_missing_referent( $class, $field, $value );
         }
-        $rel_obj = $rel_objs[0];
+        else {
+            $rel_obj = $rel_objs[0];
+        }
     }
     else {
         croak("Unrecognised class $class in _find_reference().");
     }
 
     return($rel_obj);
+}
+
+# This method is overridden in the SemanticValidator subclass to allow
+# us to move past objects not yet loaded.
+sub handle_missing_referent {
+
+    my ( $self, $class, $field, $value ) = @_;
+
+    croak("Unable to find a $class with $field = $value.");
 }
 
 sub load_object {
@@ -466,6 +477,11 @@ Method used to load all objects into the database. Takes a hashref of
 values to update_or_create and a DBIx::Class::ResultSet. This method is split
 out like this so we can easily subclass and override the loading
 behaviour, e.g. for ControlledVocab.
+
+=head2 load_element_message
+
+Simple user-friendly message function; overridden in subclasses which
+might be doing something quite different (see e.g. SemanticValidator).
 
 =head1 EXPORT
 

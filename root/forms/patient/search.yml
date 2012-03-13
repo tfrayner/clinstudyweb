@@ -110,6 +110,21 @@ elements:
               attributes:
                 order_by: value
                 
+      - type: Select
+        name: home_centre_id
+        label: Home Centre
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: HomeCentre
+          label_column: value
+          attributes:
+            order_by: value
+                
       - type: Text
         name: year_of_birth
         label: Year of Birth

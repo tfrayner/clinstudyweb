@@ -107,7 +107,6 @@ elements:
     empty_first: 1
     empty_first_label: -select-
     constraints:
-      - Required
       - AutoSet
     model_config:
       resultset: ControlledVocab
@@ -570,22 +569,55 @@ elements:
 #####################
 
   - type: Fieldset
-    legend: Kidney Transplant
+    legend: Transplant
 
   - type: Repeatable
-    nested_name: hospitalisations
+    nested_name: transplants
     model_config:
-      new_empty_row: date
+      new_empty_row: organ_type_id
       empty_rows: 1
-    counter_name: hospitalisation_count
+    counter_name: transplant_count
     elements:
-      - type: Hidden
-        name: reason_for_admission
-        label: Kidney Transplant
-        value: kidney transplant
+      - type: Select
+        name: organ_type_id
+        label: Transplant Organ
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+          - type: DependOn
+            others:
+              - date
+              - donor_type_id
+            message: Required if Transplant Organ is given
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: OrganType
+          label_column: value
+          delete_if_empty: 1
+        label_attributes:
+          tooltipText: >-
+            Has the patient received a transplant? If so,
+            please select the organ which was transplanted.
+      - type: Select
+        name: donor_type_id
+        label: Donor Type
+        empty_first: 1
+        empty_first_label: -select-
+        constraints:
+          - AutoSet
+        model_config:
+          resultset: ControlledVocab
+          condition:
+            category: DonorType
+          label_column: value
+        label_attributes:
+          tooltipText: >-
+            Please select the type of donor used.
       - type: Text
         name: date
-        label: Kidney Transplant Date
+        label: Transplant Date
         constraints:
           - type: DateTime
             parser: &PARSER
@@ -593,18 +625,15 @@ elements:
           - type: Length
             max:  10
             min:  0
-        model_config:
-          delete_if_empty: 1
         label_attributes:
           tooltipText: >-
-            Has the patient received a kidney transplant? If so,
-            please enter the date of the transplant. Click on the
+            Please enter the date of the transplant. Click on the
             entry box for a pop-up calendar.
       - type: Hidden
         name: id
     
   - type: Hidden
-    name: hospitalisation_count
+    name: transplant_count
 
 ###############
 # Other notes #

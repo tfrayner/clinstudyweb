@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::UserRole</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__user_role">TABLE: <code>user_role</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -27,11 +28,18 @@
                 <li><a href="#role_id">role_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#user_id"><code>user_id</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#user_id">user_id</a></li>
                 <li><a href="#role_id">role_id</a></li>
+                <li><a href="#user_id">user_id</a></li>
         </ul>
 
 </ul>
@@ -40,6 +48,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::UserRole</p>
+<hr />
+<h1><a name="table__user_role">TABLE:
+<code>user_role</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -61,16 +72,32 @@
   is_nullable: 0
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id34" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="user_id"></a><a href=
+"#user_id"><code>user_id</code></a></h2>
+<ul>
+<li><strong><a name="user_id" class="item"></a><a href=
+"#user_id">user_id</a></strong></li>
+<li><strong><a name="role_id" class="item"></a><a href=
+"#role_id">role_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name="user_id">user_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/User.html">the
-ClinStudy::ORM::User manpage</a></p>
 <h2><a name="role_id">role_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/Role.html">the
 ClinStudy::ORM::Role manpage</a></p>
+<h2><a name="user_id">user_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/User.html">the
+ClinStudy::ORM::User manpage</a></p>
 </body>
 </html>

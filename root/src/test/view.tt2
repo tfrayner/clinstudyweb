@@ -7,7 +7,7 @@
      <tr><th>Test Name:</th>
          <td>[% object.name | html %]</td></tr>
      <tr><th>Controlled Values:</th>
-         <td>[% IF object.possible_values.blessed %]
+         <td>[% IF object.possible_values_rs.count == 1 %]
                [% SET objects = [ object.possible_values ] %]
              [% ELSE %]
                [% SET objects = object.possible_values.list %]

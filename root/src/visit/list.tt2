@@ -27,7 +27,7 @@
         <tr> 
         <td> [% visit.date | html %] &nbsp; </td>
         <td> [% visit.patient_id.trial_id | html %]</td>
-[% IF visit.patient_id.studies.blessed %]
+[% IF visit.patient_id.studies_rs.count == 1 %]
   [% SET studies = [ visit.patient_id.studies ] %]
 [% ELSE %]
   [% SET studies = visit.patient_id.studies.list %]

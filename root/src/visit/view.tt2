@@ -1,6 +1,6 @@
 [% META title = 'Visit Details' %]
 
-<h3>[% object.patient_id.trial_id | html %] on [% object.date %]</h3>
+<h3>Patient [% object.patient_id.trial_id | html %] on visit date [% object.date %]</h3>
 
 <fieldset class="data_view">
 <legend>Visit <span><a href="[% c.uri_for("/visit/edit", object.id) | html %]">Edit</a>; <a href="[% c.uri_for("/visit/edit_for_type", object.id) | html %]">Study-Specific data</a></span></legend>
@@ -21,13 +21,18 @@
         [%- ELSE %] No
         [%- END %]</td></tr>
 
+<tr><th>Has infection:</th>
+    <td>[% IF object.has_infection == 1 -%] Yes
+        [%- ELSE %] No
+        [%- END %]</td></tr>
+
 <tr><th>Notes:</th>
 <td>[% object.notes | html | html_line_break %]</td></tr></table>
 </fieldset>
 
 <fieldset class="data_view">
 <legend>Samples <span><a href="[% c.uri_for("/sample/add_to_visit", object.id) | html %]">Add</a></span></legend>
-[% IF object.samples.blessed %]
+[% IF object.samples_rs.count == 1 %]
   [% SET objects = [ object.samples ] %]
 [% ELSE %]
   [% SET objects = object.samples.list %]
@@ -37,7 +42,7 @@
 
 <fieldset class="data_view">
 <legend>Patient Groups <span><a href="[% c.uri_for("/visit/edit", object.id) %]">Edit</a></span></legend>
-[% IF object.emergent_groups.blessed %]
+[% IF object.emergent_groups_rs.count == 1 %]
   [% SET objects = [ object.emergent_groups ] %]
 [% ELSE %]
   [% SET objects = object.emergent_groups.list %]
@@ -47,7 +52,7 @@
 
 <fieldset class="data_view">
 <legend>Drugs <span><a href="[% c.uri_for("/drug/add_to_visit", object.id) | html %]">Add</a></span></legend>
-[% IF object.drugs.blessed %]
+[% IF object.drugs_rs.count == 1 %]
   [% SET objects = [ object.drugs ] %]
 [% ELSE %]
   [% SET objects = object.drugs.list %]
@@ -57,7 +62,7 @@
 
 <fieldset class="data_view">
 <legend>Test Results <span><a href="[% c.uri_for("/testresult/add_to_visit", object.id) | html %]">Add</a></span></legend>
-[% IF object.test_results.blessed %]
+[% IF object.test_results_rs.count == 1 %]
   [% SET allobjects = [ object.test_results ] %]
 [% ELSE %]
   [% SET allobjects = object.test_results.list %]
@@ -69,3 +74,22 @@
 [% INCLUDE app/test_result_list.tt2 %]
 </fieldset>
 
+<fieldset class="data_view">
+<legend>Phenotypes <span><a href="[% c.uri_for("/phenotypequantity/add_to_visit", object.id) | html %]">Add</a></span></legend>
+[% IF object.phenotype_quantities_rs.count == 1 %]
+  [% SET objects = [ object.phenotype_quantities ] %]
+[% ELSE %]
+  [% SET objects = object.phenotype_quantities.list %]
+[% END %]
+[% INCLUDE app/phenotype_quantity_list.tt2 %]
+</fieldset>
+
+<fieldset>
+<legend>Data Files</legend>
+[% IF object.visit_data_files_rs.count == 1 %]
+  [% SET objects = [ object.visit_data_files ] %]
+[% ELSE %]
+  [% SET objects = object.visit_data_files.list %]
+[% END %]
+[% INCLUDE 'app/visit_data_files_list.tt2' %]
+</fieldset>

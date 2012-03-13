@@ -19,7 +19,7 @@
           <td>[% channel.label_id.value | html %]</td>
           <td>[% sample.name | html %]</td>
           <td>[% sample.visit_id.patient_id.trial_id | html  %]</td>
-[% IF sample.visit_id.patient_id.diagnoses.blessed %]
+[% IF sample.visit_id.patient_id.diagnoses_rs.count == 1 %]
   [% SET diagnoses = [ sample.visit_id.patient_id.diagnoses ] %]
 [% ELSE %]
   [% SET diagnoses = sample.visit_id.patient_id.diagnoses.list %]

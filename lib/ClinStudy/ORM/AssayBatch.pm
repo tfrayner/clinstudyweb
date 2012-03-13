@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::AssayBatch;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::AssayBatch
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::AssayBatch
+=head1 TABLE: C<assay_batch>
 
 =cut
 
@@ -48,6 +52,11 @@ __PACKAGE__->table("assay_batch");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -61,8 +70,34 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "platform_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "notes",
+  { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<name>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("name", ["name"]);
 
 =head1 RELATIONS
@@ -97,8 +132,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L8c9mYYFiUGR1iOon5kZtg
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:T/uLvDKj7/JLdg/SxSvBTA
 
 
 # Custom has_many so that we track the cascade_delete behaviour of the
