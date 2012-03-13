@@ -780,6 +780,10 @@ Canned query method for assays. Available query terms include:
 
 The assay internal database ID.
 
+=item sample_id
+
+The internal database ID for samples used in the assay.
+
 =item filename
 
 The filename associated with the assay.
@@ -807,7 +811,7 @@ sub assays : Local {
 
     my $query = $self->_decode_json( $c );
 
-    $self->_check_query_terms( $c, $query, [ qw(id filename identifier date batch) ] );
+    $self->_check_query_terms( $c, $query, [ qw(id filename identifier date batch sample_id) ] );
 
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
@@ -828,6 +832,11 @@ sub assays : Local {
         push @{ $cond{-and} },
             { -or => $self->_qterm_to_sqlabstract_like_in( $batch, 'assay_batch_id.name' ) };
         push @{ $attrs{ 'join' } }, 'assay_batch_id';
+    }
+    if ( my $sample_id = $query->{'sample_id'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $sample_id, 'channels.sample_id' ) };
+        push @{ $attrs{ 'join' } }, 'channels';
     }
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Assay', $query->{$EXTENDED_FLAG} );
@@ -1069,13 +1078,9 @@ sub _extract_db_columns : Private {
     my %cols;
 
     my $source  = $row->result_source();
-    my @pkeys   = $source->primary_columns();
 
     COLUMN:
     foreach my $col ( $source->columns() ) {
-
-        # Skip primary key columns.
-        next COLUMN if ( first { $col eq $_ } @pkeys );
 
         # Skip columns which we've been asked to filter out.
         next COLUMN if ( first { $col eq $_ } @$filter );
