@@ -17,12 +17,11 @@
 ##
 ## $Id$
 
-csPatients <- function( trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL, extended=FALSE, ... ) {
+csPatients <- function(trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL,
+                       extended=FALSE, ... ) {
 
-    query <- list(trial_id=trial_id,
-                  id=id,
-                  study=study,
-                  diagnosis=diagnosis)
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
 
     if ( extended )
         query$include_relationships <- 1
@@ -30,9 +29,111 @@ csPatients <- function( trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL, exte
     res <- .csJSONGeneric( query=query, action='query/patients', ... )
 
     ## Reorganise the results into data frames.
-    dat <- .csCannedJSONToDFs(res, 'patients', 'trial_id')
+    dat <- .csCannedJSONToDFs(res, 'patients', list(trial_id='trial_id'))
 
     return(dat)
+}
+
+csVisits <- function(trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
+                     extended=FALSE, ... ) {
+
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
+
+    if ( extended )
+        query$include_relationships <- 1
+
+    res <- .csJSONGeneric( query=query, action='query/visits', ... )
+
+    ## Reorganise the results into data frames.
+    dat <- .csCannedJSONToDFs(res, 'visits', list(trial_id='trial_id', date='visit_date') )
+
+    return(dat)
+}
+
+csSamples <- function(trial_id=NULL, id=NULL, name=NULL, date=NULL,
+                      cell_type=NULL, material_type=NULL,
+                      extended=FALSE, ... ) {
+
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
+
+    if ( extended )
+        query$include_relationships <- 1
+
+    res <- .csJSONGeneric( query=query, action='query/samples', ... )
+
+    ## Reorganise the results into data frames.
+    dat <- .csCannedJSONToDFs(res, 'samples', list(name='sample_name') )
+
+    return(dat)
+}
+
+csAssays <- function(id=NULL, sample_id=NULL, filename=NULL, identifier=NULL,
+                     date=NULL, batch=NULL,
+                     extended=FALSE, ... ) {
+
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
+
+    if ( extended )
+        query$include_relationships <- 1
+
+    res <- .csJSONGeneric( query=query, action='query/assays', ... )
+
+    ## Reorganise the results into data frames.
+    dat <- .csCannedJSONToDFs(res, 'assays', list(identifier='assay_identifier') )
+
+    return(dat)
+}
+
+csTransplants <- function(trial_id=NULL, id=NULL, date=NULL, organ_type=NULL,
+                              extended=FALSE, ... ) {
+
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
+
+    if ( extended )
+        query$include_relationships <- 1
+
+    res <- .csJSONGeneric( query=query, action='query/transplants', ... )
+
+    ## Reorganise the results into data frames.
+    dat <- .csCannedJSONToDFs(res, 'transplants', list(trial_id='trial_id', date='transplant_date') )
+
+    return(dat)
+}
+
+csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
+                              extended=FALSE, ... ) {
+
+    ## Generate a query list from our arguments.
+    query <- .csQueryList(c('extended', '...'))
+
+    if ( extended )
+        query$include_relationships <- 1
+
+    res <- .csJSONGeneric( query=query, action='query/prior_treatments', ... )
+
+    ## Reorganise the results into data frames.
+    dat <- .csCannedJSONToDFs(res, 'prior_treatments', list(trial_id='trial_id') )
+
+    return(dat)
+}
+
+.csQueryList <- function(badargs) {
+
+    ## Returns a list composed of the caller's arguments and values,
+    ## with badargs removed.
+    fn <- sys.function(sys.parent())
+    n  <- names(formals(fn))
+    if ( ! missing(badargs) )
+        n  <- n[! n %in% badargs]
+
+    query <- lapply(n, get, envir=parent.frame(n=1))
+    names(query) <- n
+
+    return(query)
 }
 
 .csCannedJSONToDFs <- function( res, coreAttr, recordIdAttr ) {
@@ -46,14 +147,22 @@ csPatients <- function( trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL, exte
     dat <- list()
     dat[[coreAttr]] <- as.data.frame(do.call('rbind', lapply(res, function(x) {x[!w]})))
 
-    ## For extended data, we include the trial_id as a column.
-    res <- lapply(res, function(r) {
-        lapply(r, function(x) {
-            if ( ! is.list(x) || length(x) == 0 )
-                return(x)
-            return(lapply(x, function(y) { y[[recordIdAttr]] <- r[[recordIdAttr]]; y }))
+    ## For extended data, we include a record id columns. recordIdAttr
+    ## is a list of source=target column names.
+    if ( ! missing(recordIdAttr) ) {
+        res <- lapply(res, function(r) {
+            lapply(r, function(x) {
+                if ( ! is.list(x) || length(x) == 0 )
+                    return(x)
+                return(lapply(x, function(y) {
+                    for ( attr in names(recordIdAttr) ) {
+                        n <- recordIdAttr[[attr]]
+                        y[[n]] <- r[[attr]]
+                    }
+                    return(y) }))
+            } )
         } )
-    } )
+    }
 
     ## Assumes that extended annotation only goes one level deep.
     for ( n in names(res[[1]])[w] ) {
