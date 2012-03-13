@@ -519,6 +519,19 @@ sub _my_error_redirect {
     }
 }
 
+sub _derive_nametag {
+
+    my ( $self ) = @_;
+
+    my $name = $self->my_model_class()
+        or confess("Error: CIMR database class not set in PatientLinkedObject controller " . ref $self);
+    $name =~ s/\A DB:://xms;
+    $name =~ s/([a-z])([A-Z])/$1 $2/g;
+    $name = lc( $name );
+
+    return $name;
+}
+
 # These are just some sensible generic defaults which will often be
 # overridden in the subclasses.
 sub _set_my_editing_message {
@@ -705,7 +718,7 @@ sub process_search_form {
                 # Merge %search with %$subsearch, and %attrs with
                 # %$subattrs. Note that key collisions are unlikely
                 # but possible; example would be simultaneous search for
-                # drugs.name_id from both Visit and Hospitalisation.
+                # drugs.name_id from both Visit and PriorTreatment.
                 @{$attrs{join}}{ keys %$subattrs } = values %$subattrs;
                 @search{ keys %$subsearch }        = values %$subsearch;
             }

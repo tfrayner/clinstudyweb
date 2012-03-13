@@ -23,7 +23,7 @@
 
 <fieldset class="data_view">
 <legend>Relationships <span><a href="[% c.uri_for("/relatedvocab/add_to_controlled_vocab", object.id) %]"> Add </a></span></legend>
-[% IF object.related_vocab_controlled_vocab_ids.blessed %]
+[% IF object.related_vocab_controlled_vocab_ids_rs.count == 1 %]
   [% SET objects = [ object.related_vocab_controlled_vocab_ids ] %]
 [% ELSE %]
   [% SET objects = object.related_vocab_controlled_vocab_ids %]

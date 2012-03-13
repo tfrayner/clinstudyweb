@@ -3,6 +3,8 @@
 \alias{csWebReannotate-methods}
 \alias{csWebReannotate,AffyBatch-method}
 \alias{csWebReannotate,ExpressionSet-method}
+\alias{csWebReannotate,ExonFeatureSet-method}
+\alias{csWebReannotate,GeneFeatureSet-method}
 \alias{csWebReannotate,RGList-method}
 \alias{csWebReannotate,MAList-method}
 
@@ -23,6 +25,16 @@
       file names.}
 
     \item{data = "ExpressionSet"}{ When passed an ExpressionSet object, this
+      method will replace the pData slot with an updated annotation data
+      frame. The data sampleNames() must correspond to the original CEL
+      file names.}
+
+    \item{data = "GeneFeatureSet"}{ When passed an GeneFeatureSet object, this
+      method will replace the pData slot with an updated annotation data
+      frame. The data sampleNames() must correspond to the original CEL
+      file names.}
+
+    \item{data = "ExonFeatureSet"}{ When passed an ExonFeatureSet object, this
       method will replace the pData slot with an updated annotation data
       frame. The data sampleNames() must correspond to the original CEL
       file names.}

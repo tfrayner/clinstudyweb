@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
+<title>ClinStudy::XML::PhenoData</title>
+<link rel="stylesheet" href="/trunk/webdocs/style.css" type=
+"text/css" />
+<meta http-equiv="content-type" content=
+"text/html; charset=us-ascii" />
+<link rev="made" href="mailto:&#116;&#102;&#114;&#97;&#121;&#110;&#101;&#114;&#64;&#99;&#97;&#108;&#105;&#98;&#97;&#110;&#46;&#108;&#111;&#99;&#97;&#108;" />
+</head>
+<body>
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+<!--
+
+<ul>
+
+        <li><a href="#name">NAME</a></li>
+        <li><a href="#synopsis">SYNOPSIS</a></li>
+        <li><a href="#description">DESCRIPTION</a></li>
+        <li><a href="#attributes">ATTRIBUTES</a></li>
+        <ul>
+
+                <li><a href="#spreadsheet">spreadsheet</a></li>
+        </ul>
+
+        <li><a href="#methods">METHODS</a></li>
+        <ul>
+
+                <li><a href="#read">read</a></li>
+                <li><a href="#dump">dump</a></li>
+        </ul>
+
+        <li><a href="#see_also">SEE ALSO</a></li>
+        <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+        <li><a href="#bugs">BUGS</a></li>
+</ul>
+
+--></div>
+<!-- INDEX END -->
+<h1><a name="name">NAME</a></h1>
+<p>ClinStudy::XML::PhenoData - XML generation from
+immunophenotyping spreadsheets.</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ use ClinStudy::XML::PhenoData;
+ use ClinStudy::XML::Spreadsheet;
+ my $reader = ClinStudy::XML::Spreadsheet-&gt;new({
+     file =&gt; 'filename.txt',
+ });
+ my $builder = ClinStudy::XML::PhenoData-&gt;new({
+     spreadsheet =&gt; $reader,
+     schema      =&gt; $xsd,
+ });
+</pre>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Simple conversion of a spreadsheet containing many columns of
+immunophenotyping data into ClinStudyML. Currently the database
+requires that all values be expressed as real numbers. Three
+further columns are required:</p>
+<pre>
+ Patient|trial_id
+ Visit|date
+ Patient|entry_date
+</pre>
+<p>Note that if you have the first two columns one can use the
+TabReannotator class to retrieve the third, although you may need
+to convert to plain tab-delimited text format to do so.</p>
+<hr />
+<h1><a name="attributes">ATTRIBUTES</a></h1>
+<p>See <a href="/trunk/webdocs/pod/ClinStudy/XML/Builder.html">the
+ClinStudy::XML::Builder manpage</a> for superclass attributes, some
+of which are required.</p>
+<h2><a name="spreadsheet">spreadsheet</a></h2>
+<p>A ClinStudy::XML::Spreadsheet object to use to read in the
+data.</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<h2><a name="read">read</a></h2>
+<p>Read in the data, and create an XML tree in memory.</p>
+<h2><a name="dump">dump</a></h2>
+<p>Write out the XML to disk (see the ClinStudy::XML::Builder
+superclass for details).</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><a href="/trunk/webdocs/pod/ClinStudy/XML/Spreadsheet.html">the
+ClinStudy::XML::Spreadsheet manpage</a>, <a href=
+"/trunk/webdocs/pod/ClinStudy/XML/Builder.html">the
+ClinStudy::XML::Builder manpage</a></p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2011 by Tim F. Rayner, University of Cambridge</p>
+<p>This library is released under version 2 of the GNU General
+Public License (GPL).</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Probably.</p>
+</body>
+</html>

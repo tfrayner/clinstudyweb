@@ -1,4 +1,4 @@
-[% META title = "Edit a hospitalisation event" %]
+[% META title = "Edit a visit data file record" %]
 
     <script type="text/javascript">
         DHTMLSuite.include("calendar"); 

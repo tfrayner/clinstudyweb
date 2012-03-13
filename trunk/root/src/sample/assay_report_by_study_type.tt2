@@ -12,7 +12,8 @@
    <font color="[%- site.rgb.green -%]">all assays run</font>;
    <font color="[%- site.rgb.orange -%]">partial assays run</font>;
    <font color="[%- site.rgb.red -%]">no assays run</font>;
-   <font color="[%- site.rgb.grey2 -%]">missing sample</font>
+   <font color="[%- site.rgb.grey2 -%]">missing sample</font>;
+   <font color="[%- site.rgb.black -%]">sample not good</font>
 </p>
 
 <table class="bigtable">
@@ -33,19 +34,23 @@
       [%- ELSE %]&nbsp;[% END %]</td>
   [% FOREACH ct = celltypes -%]
     [%- SET type = ct -%]
-        [%- IF row.sample.$type.defined -%]
-          [%- IF row.sample.$type >= 1 -%]
-            <td bgcolor="[% site.rgb.green %]">&nbsp;</td>
+    [%- SET cellcol = site.rgb.grey2 -%]
+      [%- IF row.sample.$type.defined -%]
+        [%- IF row.sample.$type >= 1 -%]
+          [%- SET cellcol = site.rgb.green -%]
+        [%- ELSE -%]
+          [%- IF row.expired.$type -%]
+            [%- SET cellcol = site.rgb.black -%]
           [%- ELSE -%]
             [%- IF row.sample.$type > 0 -%]
-              <td bgcolor="[% site.rgb.orange %]">&nbsp;</td>
+              [%- SET cellcol = site.rgb.orange -%]
             [%- ELSE -%]
-              <td bgcolor="[% site.rgb.red %]">&nbsp;</td>
+              [%- SET cellcol = site.rgb.red -%]
             [%- END -%]
           [%- END -%]
-        [%- ELSE -%]
-          <td bgcolor="[% site.rgb.grey2 %]">&nbsp;</td>
         [%- END -%]
+      [%- END -%]
+    <td bgcolor="[% cellcol %]">&nbsp;</td>
   [%- END %]
   </tr>  
 [% END %]

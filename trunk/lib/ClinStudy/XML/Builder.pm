@@ -119,31 +119,34 @@ my %local_key_field = (
     Channel           => [ qw(label) ],
     ClinicalFeature   => [ qw(type) ],
     Comorbidity       => [ qw(condition_name date) ],
-    Diagnosis         => [ qw(condition_name date) ], # Not really.
+    Diagnosis         => [ qw(condition_name) ],
     DiseaseEvent      => [ qw(type start_date) ],
     Drug              => [ qw(name) ],
     EmergentGroup     => [ qw(name basis type) ],
     GraftFailure      => [ qw(date) ],
-    Hospitalisation   => [ qw(date) ],
     Patient           => [ qw(trial_id) ],
+    PhenotypeQuantity => [ qw(type) ],
     PriorGroup        => [ qw(name type) ],
     PriorObservation  => [ qw(type value date) ],
     PriorTreatment    => [ qw(type) ],
     RiskFactor        => [ qw(type) ],
     Sample            => [ qw(name) ],
+    SampleDataFile    => [ qw(filename) ],
     Study             => [ qw(type) ],
     SystemInvolvement => [ qw(type) ],
     TestResult        => [ qw(test date) ],
-    Transplant        => [ qw(organ_type) ],  # Date is taken care of by Hospitalisation.
+    Transplant        => [ qw(date) ],
     Visit             => [ qw(date) ],
+    VisitDataFile     => [ qw(filename) ],
 );
 
 # Note that this is identical to that in ClinStudy::XML::Dumper;
 my %irregular_plurals = (
-    AssayBatch  => 'AssayBatches',
-    Comorbidity => 'Comorbidities',
-    Diagnosis   => 'Diagnoses',
-    Study       => 'Studies',
+    AssayBatch        => 'AssayBatches',
+    Comorbidity       => 'Comorbidities',
+    Diagnosis         => 'Diagnoses',
+    PhenotypeQuantity => 'PhenotypeQuantities',
+    Study             => 'Studies',
 );
 
 sub _xml_escape {
@@ -169,7 +172,7 @@ sub update_or_create_element {
 
     my $groupname = $irregular_plurals{$class} || $class . 's';
 
-    my @keyfields = @{ $local_key_field{ $class || [] } };
+    my @keyfields = @{ $local_key_field{ $class } || [] };
     unless ( scalar @keyfields ) {
         confess("Error: Unrecognised class $class has no key fields.");
     }
@@ -221,8 +224,13 @@ sub update_or_create_element {
 
     # This is update_or_create, so we'd better update non-key attributes.
     while ( my ( $key, $val ) = each %$attrhash ) {
-        $obj->setAttribute($key, $val)
-            if ( defined $val && $val !~ $is_undef );
+        if ( defined $val && $val !~ $is_undef ) {
+            my $pre = $obj->getAttribute($key);
+            if ( defined $pre && $pre ne $val ) {
+                warn(qq{Warning: Modifying $class $key attribute from "$pre" to "$val".\n});
+            } 
+            $obj->setAttribute($key, $val)
+        }
     }
 
     return $obj;

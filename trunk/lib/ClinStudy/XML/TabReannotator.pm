@@ -99,7 +99,7 @@ sub read {
     $self->next::method(@_);
 }
                     
-sub _process_columns {
+sub recursive_cols_to_elements {
 
     # Here we override the business end of the parent TabReader class.
     my ( $self, $colhash, $tree, $parent, $level, $db_parent ) = @_;
@@ -153,7 +153,7 @@ sub _recurse_element_tree {
             ATTR:
             while ( my ( $colname, $value ) = each %{ \%attrhash } ) {
 
-                next ATTR unless ( defined $value && $value ne q{} );
+                next ATTR unless ( defined $value && $value !~ m/\A \s* \z/xms );
 
                 # Extra work needed on *_id columns, e.g. cell_type_id.
                 my $relname = $colname . '_id';
@@ -191,7 +191,7 @@ sub _recurse_element_tree {
                         Data::Dumper->Dump( [ \%query_attrs ], [ qw(query) ] ));
             }
 
-            # We need to fill in $colhash here where the values eq q{}.
+            # We need to fill in $colhash here where the values are whitespace-only.
             my %db_col = $db_object->get_columns;
             COLUMN:
             while ( my ( $colname, $value ) = each %db_col ) {
@@ -205,7 +205,7 @@ sub _recurse_element_tree {
                 }
 
                 my $colattr = "$class|$colname";
-                if ( exists $colhash->{ $colattr } && $colhash->{ $colattr } eq q{} ) {
+                if ( exists $colhash->{ $colattr } && $colhash->{ $colattr } =~ m/\A \s* \z/xms ) {
                     $colhash->{ $colattr } = $value;
                 }
             }

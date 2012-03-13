@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::Sample;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::Sample
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::Sample
+=head1 TABLE: C<sample>
 
 =cut
 
@@ -84,10 +88,27 @@ __PACKAGE__->table("sample");
   is_nullable: 1
   size: [12,5]
 
+=head2 cell_purity
+
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+
+=head2 auto_cell_purity
+
+  data_type: 'decimal'
+  is_nullable: 1
+  size: [12,5]
+
 =head2 quality_score_id
 
   data_type: 'integer'
   is_foreign_key: 1
+  is_nullable: 1
+
+=head2 has_expired
+
+  data_type: 'tinyint'
   is_nullable: 1
 
 =head2 notes
@@ -120,15 +141,59 @@ __PACKAGE__->add_columns(
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "purity",
   { data_type => "decimal", is_nullable => 1, size => [12, 5] },
+  "cell_purity",
+  { data_type => "decimal", is_nullable => 1, size => [12, 5] },
+  "auto_cell_purity",
+  { data_type => "decimal", is_nullable => 1, size => [12, 5] },
   "quality_score_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "has_expired",
+  { data_type => "tinyint", is_nullable => 1 },
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<name>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("name", ["name"]);
 
 =head1 RELATIONS
+
+=head2 cell_type_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "cell_type_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "cell_type_id" },
+);
 
 =head2 channels
 
@@ -143,30 +208,6 @@ __PACKAGE__->has_many(
   "ClinStudy::ORM::Channel",
   { "foreign.sample_id" => "self.id" },
   {},
-);
-
-=head2 visit_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::Visit>
-
-=cut
-
-__PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
-
-=head2 cell_type_id
-
-Type: belongs_to
-
-Related object: L<ClinStudy::ORM::ControlledVocab>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "cell_type_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "cell_type_id" },
 );
 
 =head2 material_type_id
@@ -197,9 +238,34 @@ __PACKAGE__->belongs_to(
   { id => "quality_score_id" },
 );
 
+=head2 sample_data_files
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5wXCiiRCBMEC1wVJ6OHFmQ
+Type: has_many
+
+Related object: L<ClinStudy::ORM::SampleDataFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
+  { "foreign.sample_id" => "self.id" },
+  {},
+);
+
+=head2 visit_id
+
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::Visit>
+
+=cut
+
+__PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" });
+
+
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-02-13 14:43:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bsyaKZyWmX6pkLQx5zZgew
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
@@ -207,6 +273,12 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->has_many(
   "channels",
   "ClinStudy::ORM::Channel",
+  { "foreign.sample_id" => "self.id" },
+  { "cascade_delete"     => 0 },
+);
+__PACKAGE__->has_many(
+  "sample_data_files",
+  "ClinStudy::ORM::SampleDataFile",
   { "foreign.sample_id" => "self.id" },
   { "cascade_delete"     => 0 },
 );

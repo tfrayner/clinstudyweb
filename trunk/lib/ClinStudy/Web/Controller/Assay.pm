@@ -46,6 +46,26 @@ sub BUILD {
     return;
 }
 
+=head2 list
+
+=cut
+
+sub list : Local {
+
+    my ( $self, $c ) = @_;
+
+    unless ( exists $c->stash()->{'search_terms'} ) {
+
+        # There's really no occasion where one would want to pull down
+        # every single assay in the database. This is a safety measure
+        # to prevent that.
+        $c->res->redirect( $c->uri_for('/assaybatch/list'));
+    }
+    else {
+        $self->next::method( $c );
+    }
+}
+
 =head2 add_to_sample
 
 Add a new assay to the Sample with the specified database ID.

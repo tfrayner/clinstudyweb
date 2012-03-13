@@ -126,6 +126,12 @@ Add a new CV term in one of the pre-existing CV categories.
 
 sub add : Local { 
     my ($self, $c) = @_; 
+
+    if ( ! $c->check_any_user_role('admin') ) {
+        $c->stash->{error} = 'Sorry, you are not authorised to add CV terms.';
+        $c->detach( '/access_denied' );
+    }
+
     $c->stash->{template} = 'controlledvocab/edit.tt2'; 
     $c->forward('common_edit', [undef]); 
 }
@@ -182,7 +188,7 @@ sub common_edit : Private {
 
     my ( $self, $c, $id, $template ) = @_;
 
-    if ( ! $c->check_any_user_role('editor') ) {
+    if ( ! $c->check_any_user_role('admin') ) {
         $c->stash->{error} = 'Sorry, you are not authorised to edit this record.';
         $c->detach( '/access_denied' );
     }
@@ -238,6 +244,22 @@ sub common_edit : Private {
     }
 
     $c->stash->{breadcrumbs} = $self->_set_my_breadcrumbs($c, $cv);    
+}
+
+=head2 delete
+
+=cut
+
+sub delete : Local {
+
+    my ( $self, $c, @args ) = @_;
+
+    if ( ! $c->check_any_user_role('admin') ) {
+        $c->stash->{error} = 'Sorry, you are not authorised to delete CV terms.';
+        $c->detach('/access_denied');
+    }
+
+    $self->next::method( $c, @args );
 }
 
 =head1 AUTHOR

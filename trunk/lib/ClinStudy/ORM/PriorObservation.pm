@@ -1,17 +1,21 @@
+use utf8;
 package ClinStudy::ORM::PriorObservation;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+ClinStudy::ORM::PriorObservation
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-
-=head1 NAME
-
-ClinStudy::ORM::PriorObservation
+=head1 TABLE: C<prior_observation>
 
 =cut
 
@@ -62,23 +66,20 @@ __PACKAGE__->add_columns(
   "date",
   { data_type => "date", is_nullable => 1 },
 );
-__PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 type_id
+=over 4
 
-Type: belongs_to
+=item * L</id>
 
-Related object: L<ClinStudy::ORM::ControlledVocab>
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "type_id",
-  "ClinStudy::ORM::ControlledVocab",
-  { id => "type_id" },
-);
+__PACKAGE__->set_primary_key("id");
+
+=head1 RELATIONS
 
 =head2 patient_id
 
@@ -94,9 +95,23 @@ __PACKAGE__->belongs_to(
   { id => "patient_id" },
 );
 
+=head2 type_id
 
-# Created by DBIx::Class::Schema::Loader v0.07000 @ 2010-07-29 13:19:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NTmK+2T2peXUg87JM7jxog
+Type: belongs_to
+
+Related object: L<ClinStudy::ORM::ControlledVocab>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "type_id",
+  "ClinStudy::ORM::ControlledVocab",
+  { id => "type_id" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:02gyHn5/IRVxPp6iP7Vawg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="generator" content=
-"HTML Tidy for Mac OS X (vers 25 March 2009), see www.w3.org" />
+"HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org" />
 <title>ClinStudy::ORM::Diagnosis</title>
 <link rel="stylesheet" href="/trunk/webdocs/style.css" type=
 "text/css" />
@@ -19,6 +19,7 @@
 <ul>
 
         <li><a href="#name">NAME</a></li>
+        <li><a href="#table__diagnosis">TABLE: <code>diagnosis</code></a></li>
         <li><a href="#accessors">ACCESSORS</a></li>
         <ul>
 
@@ -34,15 +35,22 @@
                 <li><a href="#disease_extent_id">disease_extent_id</a></li>
         </ul>
 
+        <li><a href="#primary_key">PRIMARY KEY</a></li>
+        <li><a href="#unique_constraints">UNIQUE CONSTRAINTS</a></li>
+        <ul>
+
+                <li><a href="#patient_id"><code>patient_id</code></a></li>
+        </ul>
+
         <li><a href="#relations">RELATIONS</a></li>
         <ul>
 
-                <li><a href="#patient_id">patient_id</a></li>
                 <li><a href="#condition_name_id">condition_name_id</a></li>
                 <li><a href="#confidence_id">confidence_id</a></li>
-                <li><a href="#previous_course_id">previous_course_id</a></li>
-                <li><a href="#disease_staging_id">disease_staging_id</a></li>
                 <li><a href="#disease_extent_id">disease_extent_id</a></li>
+                <li><a href="#disease_staging_id">disease_staging_id</a></li>
+                <li><a href="#patient_id">patient_id</a></li>
+                <li><a href="#previous_course_id">previous_course_id</a></li>
         </ul>
 
 </ul>
@@ -51,6 +59,9 @@
 <!-- INDEX END -->
 <h1><a name="name">NAME</a></h1>
 <p>ClinStudy::ORM::Diagnosis</p>
+<hr />
+<h1><a name="table__diagnosis">TABLE:
+<code>diagnosis</code></a></h1>
 <hr />
 <h1><a name="accessors">ACCESSORS</a></h1>
 <h2><a name="id">id</a></h2>
@@ -113,12 +124,23 @@
   is_nullable: 1
 </pre>
 <hr />
+<h1><a name="primary_key">PRIMARY KEY</a></h1>
+<ul>
+<li><strong><a name="id9" class="item"></a><a href=
+"#id">id</a></strong></li>
+</ul>
+<hr />
+<h1><a name="unique_constraints">UNIQUE CONSTRAINTS</a></h1>
+<h2><a name="patient_id"></a><a href=
+"#patient_id"><code>patient_id</code></a></h2>
+<ul>
+<li><strong><a name="patient_id3" class="item"></a><a href=
+"#patient_id">patient_id</a></strong></li>
+<li><strong><a name="condition_name_id" class="item"></a><a href=
+"#condition_name_id">condition_name_id</a></strong></li>
+</ul>
+<hr />
 <h1><a name="relations">RELATIONS</a></h1>
-<h2><a name="patient_id">patient_id</a></h2>
-<p>Type: belongs_to</p>
-<p>Related object: <a href=
-"/trunk/webdocs/pod/ClinStudy/ORM/Patient.html">the
-ClinStudy::ORM::Patient manpage</a></p>
 <h2><a name="condition_name_id">condition_name_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
@@ -129,7 +151,7 @@ ClinStudy::ORM::ControlledVocab manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
-<h2><a name="previous_course_id">previous_course_id</a></h2>
+<h2><a name="disease_extent_id">disease_extent_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
@@ -139,7 +161,12 @@ ClinStudy::ORM::ControlledVocab manpage</a></p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the
 ClinStudy::ORM::ControlledVocab manpage</a></p>
-<h2><a name="disease_extent_id">disease_extent_id</a></h2>
+<h2><a name="patient_id">patient_id</a></h2>
+<p>Type: belongs_to</p>
+<p>Related object: <a href=
+"/trunk/webdocs/pod/ClinStudy/ORM/Patient.html">the
+ClinStudy::ORM::Patient manpage</a></p>
+<h2><a name="previous_course_id">previous_course_id</a></h2>
 <p>Type: belongs_to</p>
 <p>Related object: <a href=
 "/trunk/webdocs/pod/ClinStudy/ORM/ControlledVocab.html">the

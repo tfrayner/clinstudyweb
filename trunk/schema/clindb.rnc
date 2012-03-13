@@ -1,0 +1,377 @@
+default namespace = ""
+
+namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
+
+start =
+  notAllowed
+  | element ClinStudyML {
+      attribute xsi:noNamespaceSchemaLocation { xsd:anyURI }?,
+      element AssayBatches {
+        element AssayBatch {
+          attribute notes {
+            xsd:string { minLength = "1" }
+          }?,
+          attribute platform {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          attribute operator {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute name {
+            xsd:string { minLength = "1" maxLength = "31" }
+          },
+          attribute date { xsd:date },
+          element Assays {
+            element Assay {
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute filename {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute identifier {
+                xsd:string { minLength = "1" maxLength = "255" }
+              },
+              element AssayQcValues {
+                element AssayQcValue {
+                  attribute type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute value {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute name {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }
+                }*
+              }?,
+              element Channels {
+                element Channel {
+                  attribute sample_ref {
+                    xsd:string { minLength = "1" maxLength = "31" }
+                  },
+                  attribute label {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }
+                }+
+              }
+            }*
+          }?
+        }*
+      }?,
+      element Patients {
+        element Patient {
+          attribute study_type {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute notes {
+            xsd:string { minLength = "1" }
+          }?,
+          attribute entry_date { xsd:date },
+          attribute home_centre {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute ethnicity {
+            xsd:string { minLength = "1" maxLength = "255" }
+          }?,
+          attribute trial_id {
+            xsd:string { minLength = "1" maxLength = "255" }
+          },
+          attribute sex { xsd:string "M" | xsd:string "F" }?,
+          attribute year_of_birth {
+            xsd:integer { totalDigits = "4" }
+          }?,
+          element AdverseEvents {
+            element AdverseEvent {
+              attribute trial_related {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute outcome {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute action {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute severity {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute end_date { xsd:date }?,
+              attribute start_date { xsd:date },
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element ClinicalFeatures {
+            element ClinicalFeature {
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element Comorbidities {
+            element Comorbidity {
+              attribute date { xsd:date }?,
+              attribute condition_name {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element Diagnoses {
+            element Diagnosis {
+              attribute disease_extent {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute disease_staging {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute previous_duration_months { xsd:decimal }?,
+              attribute previous_course {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute previous_episodes { xsd:byte }?,
+              attribute date { xsd:date }?,
+              attribute confidence {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute condition_name {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element DiseaseEvents {
+            element DiseaseEvent {
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute start_date { xsd:date },
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element Hospitalisations {
+            element Hospitalisation {
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute reason_for_admission {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute postop_days_duration { xsd:integer }?,
+              attribute days_duration { xsd:integer }?,
+              attribute date { xsd:date },
+              element Drugs { drugGroup }?,
+              element TestResults { testResultGroup }?,
+              element Transplants {
+                element Transplant {
+                  attribute donor_cmv { xsd:byte }?,
+                  attribute donor_cause_of_death {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute donor_age { xsd:integer }?,
+                  attribute donor_type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute hla_mismatch {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute reperfusion_quality {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute mins_cold_ischaemic { xsd:integer }?,
+                  attribute organ_type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute days_delayed_function { xsd:integer }?,
+                  attribute delayed_graft_function { xsd:byte }?,
+                  attribute recip_cmv { xsd:byte }?,
+                  attribute sensitisation_status {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute number { xsd:integer }?,
+                  attribute date { xsd:date }?,
+                  element GraftFailures {
+                    element GraftFailure {
+                      attribute notes {
+                        xsd:string { minLength = "1" }
+                      }?,
+                      attribute reason {
+                        xsd:string { minLength = "1" maxLength = "255" }
+                      }?,
+                      attribute date { xsd:date }
+                    }?
+                  }?
+                }*
+              }?
+            }*
+          }?,
+          element PriorGroups {
+            element PriorGroup {
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              },
+              attribute name {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element PriorObservations {
+            element PriorObservation {
+              attribute date { xsd:date }?,
+              attribute value {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element PriorTreatments {
+            element PriorTreatment {
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute value {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              },
+              element Drugs { drugGroup }?
+            }*
+          }?,
+          element RiskFactors {
+            element RiskFactor {
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element Studies {
+            element Study {
+              attribute external_id {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element SystemInvolvements {
+            element SystemInvolvement {
+              attribute type {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }
+            }*
+          }?,
+          element Visits {
+            element Visit {
+              attribute has_infection { xsd:byte }?,
+              attribute treatment_escalation { xsd:byte }?,
+              attribute nominal_timepoint {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute disease_activity {
+                xsd:string { minLength = "1" maxLength = "255" }
+              }?,
+              attribute notes {
+                xsd:string { minLength = "1" }
+              }?,
+              attribute date { xsd:date },
+              element Drugs { drugGroup }?,
+              element EmergentGroups {
+                element EmergentGroup {
+                  attribute type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute basis {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute name {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }
+                }*
+              }?,
+              element Samples {
+                element Sample {
+                  attribute notes {
+                    xsd:string { minLength = "1" }
+                  }?,
+                  attribute has_expired { xsd:byte }?,
+                  attribute quality_score {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute purity { xsd:decimal }?,
+                  attribute concentration { xsd:decimal }?,
+                  attribute box_slot {
+                    xsd:string { minLength = "1" maxLength = "31" }
+                  }?,
+                  attribute freezer_box {
+                    xsd:string { minLength = "1" maxLength = "31" }
+                  }?,
+                  attribute freezer_location {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }?,
+                  attribute num_aliquots { xsd:integer }?,
+                  attribute material_type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute cell_type {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  },
+                  attribute name {
+                    xsd:string { minLength = "1" maxLength = "255" }
+                  }
+                }*
+              }?,
+              element TestResults { testResultGroup }?
+            }*
+          }?
+        }+
+      }?
+    }
+drugGroup =
+  (notAllowed
+   | element Drug {
+       attribute locale {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute dose_regime {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute duration_unit {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute dose_duration { xsd:decimal }?,
+       attribute dose_freq {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute dose_unit {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute dose { xsd:decimal }?,
+       attribute name {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }
+     })*,
+  empty
+testResultGroup =
+  (notAllowed
+   | element TestResult {
+       attribute date { xsd:date },
+       attribute value {
+         xsd:string { minLength = "1" maxLength = "255" }
+       }?,
+       attribute test {
+         xsd:string { minLength = "1" maxLength = "255" }
+       },
+       element ChildTestResults { testResultGroup }?
+     })*,
+  empty
