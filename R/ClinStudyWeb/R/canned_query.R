@@ -133,6 +133,10 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
     query <- lapply(n, get, envir=parent.frame(n=1))
     names(query) <- n
 
+    ## Throw an error here if there are no query terms at all.
+    if ( length(unlist(query)) == 0 )
+        stop("Must provide some query parameters.")
+
     return(query)
 }
 
@@ -182,5 +186,32 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
           } )))
     }
 
+    ## Rename common columns to more distinctive values
+    for ( n in names(dat) ) {
+        nn <- .csDepluralise(n)
+        cn <- colnames(dat[[n]])
+        cn <- sub( '^(date|type|id|value|name|notes)$', paste(nn, '\\1', sep='_'), cn)
+        colnames(dat[[n]]) <- cn
+    }
+
     return(dat)
 }
+
+.csDepluralise <- function(x) {
+
+    irreg <- list(diagnoses='diagnosis',
+                  studies='study',
+                  assay_batches='assay_batch',
+                  phenotype_quantities='phenotype_quantity',
+                  comorbidities='comorbidity')
+
+    .deplural <- function(x) {
+        if ( x %in% names(irreg) )
+            return(irreg[[x]])
+        else
+            x <- sub('s$', '', x)
+        return(x)
+    }
+
+    return(sapply(x, .deplural))
+} 
