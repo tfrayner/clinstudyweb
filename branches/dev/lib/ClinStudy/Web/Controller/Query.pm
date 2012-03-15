@@ -1731,6 +1731,24 @@ sub _get_test_value : Private {
     return $value;
 }
 
+=head2 access_denied
+
+The default action called if the user attempts to access the JSON API
+while not logged in.
+
+=cut
+
+sub access_denied : Private {
+
+    my ( $self, $c, $action ) = @_;
+
+    $c->res->status('403');
+
+    $c->stash->{ 'errorMessage' } = qq{Error: Not logged in.};
+    $c->stash->{ 'success' } = JSON::Any->false();
+    $c->detach( $c->view( 'JSON' ) );
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>
