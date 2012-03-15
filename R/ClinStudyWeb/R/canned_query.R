@@ -138,6 +138,10 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
 
 .csCannedJSONToDFs <- function( res, coreAttr, recordIdAttr ) {
 
+    ## Somewhat overcomplicated function which processes the results
+    ## from the JSON query into a series of data frames more easily
+    ## handled in R.
+
     if ( length(res) == 0 )
         return(NULL)
 
@@ -145,7 +149,9 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
 
     ## Core data
     dat <- list()
-    dat[[coreAttr]] <- as.data.frame(do.call('rbind', lapply(res, function(x) {x[!w]})))
+    dat[[coreAttr]] <- as.data.frame(do.call('rbind', lapply(res, function(x) {
+      sapply(x[!w], function(y) ifelse(is.null(y), NA, y))
+    })))
 
     ## For extended data, we include a record id columns. recordIdAttr
     ## is a list of source=target column names.
@@ -168,7 +174,12 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
     for ( n in names(res[[1]])[w] ) {
         dat[[n]] <- as.data.frame(do.call('rbind',
                                           lapply(res,
-                                                 function(r) { do.call('rbind', r[[n]]) } )))
+                                                 function(r) {
+            do.call('rbind', lapply(r[[n]],
+                                    function(x) {
+                                      sapply(x, function(y) ifelse(is.null(y), NA, y))
+                                    } ))
+          } )))
     }
 
     return(dat)
