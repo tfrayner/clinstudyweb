@@ -100,4 +100,6 @@ __PACKAGE__->many_to_many(
     "users" => "user_roles", "user_id"
 );
 
+use overload '""' => sub { shift->rolename }, fallback => 1;
+
 1;

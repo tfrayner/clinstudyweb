@@ -59,7 +59,7 @@ has 'report'       => ( is       => 'rw',
 
 {
     
-my %BAD_CV;
+my ( %BAD_CV, %BAD_PARENT );
 
 sub check_semantics {
 
@@ -80,16 +80,40 @@ sub check_semantics {
         $self->_append_report("\nNo invalid ControlledVocab terms found.\n");
     }
 
+    if ( scalar grep { defined $_ } values %BAD_PARENT ) {
+        $self->_append_report("\nIllegal reparenting of objects:\n\n");
+        foreach my $class ( sort keys %BAD_PARENT ) {
+            $self->_append_report("  $class:\n");
+            foreach my $obj ( @{$BAD_PARENT{$class}} ) {
+                $self->_append_report("    $obj\n");
+            }
+        }
+    }
+    else {
+        $self->_append_report("\nNo object reparenting errors found.\n");
+    }
+
     return ! $self->failure_flag;
 }
 
 sub load_object {
 
-    my ( $self, $hashref, $rs ) = @_;
+    my ( $self, $hashref, $rs, $parent_attr ) = @_;
 
-    my $class = $rs->result_source()->source_name();
+    my $source = $rs->result_source();
+    my $class  = $source->source_name();
 
-    my $obj = $rs->find( $hashref );
+    my ( $query_attr, $update_attr )
+        = $self->separate_unique_attributes( $source, $hashref, $parent_attr );
+
+    my $obj = $rs->find( $query_attr );
+
+    if ( $obj && defined $parent_attr ) {
+        if ( $hashref->{ $parent_attr } ne $obj->get_column($parent_attr) ) {
+            push @{ $BAD_PARENT{$class} }, $obj . q{};
+            $self->failure_flag(1);
+        }
+    }
 
     # These are never elements in their own right, so must be checked here.
     if ( $class eq 'ControlledVocab' ) {

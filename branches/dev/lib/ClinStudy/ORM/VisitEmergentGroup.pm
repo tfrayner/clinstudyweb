@@ -111,5 +111,6 @@ __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" 
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IK8eVHZMPcoMKI40VW+zUQ
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+use overload '""' => sub { join(':', $_[0]->visit_id, $_[0]->emergent_group_id) }, fallback => 1;
+
 1;

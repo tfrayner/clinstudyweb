@@ -117,4 +117,7 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 
+# Default stringification method.
+use overload '""' => sub { shift->name }, fallback => 1;
+
 1;

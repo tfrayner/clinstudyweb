@@ -157,6 +157,6 @@ __PACKAGE__->many_to_many(
 );
 
 # Default stringification method.
-use overload '""' => sub { $_[0]->type_id()->value . ':' . $_[0]->name }, fallback => 1;
+use overload '""' => sub { $_[0]->type_id . ':' . $_[0]->name }, fallback => 1;
 
 1;
