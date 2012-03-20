@@ -131,4 +131,7 @@ __PACKAGE__->many_to_many(
     "possible_values" => "test_possible_values", "possible_value_id"
 );
 
+# Default stringification method.
+use overload '""' => sub { shift->name }, fallback => 1;
+
 1;
