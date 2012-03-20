@@ -169,6 +169,22 @@ sub process_attr {
     return( $parent_ref );
 }
 
+sub node_name_to_parent_attr {
+
+    # Converts an XML node name (e.g. Patient) to the appropriate
+    # database relationship name (patient_id).
+    my ( $self, $name ) = @_;
+
+    # Top level doesn't count.
+    return if $name eq 'ClinStudyML';
+
+    $name =~ s/(?<=.)([A-Z])/_$1/g;
+    $name .= '_id';
+    $name = lc($name);
+
+    return $name;
+}
+
 sub load_element {
 
     # Core database loading method; can be overridden in subclasses
@@ -179,6 +195,10 @@ sub load_element {
     my ( $self, $element, $parent_ref ) = @_;
 
     $parent_ref ||= {};
+
+    my $parent_attr = $self->node_name_to_parent_attr(
+        $element->parentNode()->parentNode()->nodeName()
+    );
 
     my $class = $element->nodeName();
     my $rs = $self->database()->resultset($class)
@@ -199,7 +219,7 @@ sub load_element {
         $self->process_attr( $attr, $row_ref );
     }
 
-    my $obj = $self->load_object( $row_ref, $rs );
+    my $obj = $self->load_object( $row_ref, $rs, $parent_attr );
 
     return $obj;
 }
@@ -214,11 +234,10 @@ sub _load_clindb_element {
     foreach my $child_group ( $element->getChildrenByTagName('*') ) {
 
         # Camelcase to underscore-delim.
-        my $relname = $element->nodeName();
-        $relname =~ s/(?<=.)([A-Z])/_$1/g;
+        my $relname = $self->node_name_to_parent_attr( $element->nodeName() );
 
         # FIXME derive the PK field name by introspection.
-        my $new_ref = { lc($relname) . '_id' => $obj->id() };
+        my $new_ref = { $relname => $obj->id() };
 
         $self->_load_group_element( $child_group, $new_ref );
     }
@@ -250,7 +269,10 @@ sub _load_related {
                 }
             }
         }
-        $rel_obj = $self->load_object( \%attr, $rs );
+
+        # parent_attr is not required here since %attr contains no
+        # parent relationship ID.
+        $rel_obj = $self->load_object( \%attr, $rs ); 
     }
     else {
         croak("Unrecognised class $class in _load_related().");
@@ -300,20 +322,64 @@ sub handle_missing_referent {
     croak("Unable to find a $class with $field = $value.");
 }
 
+sub separate_unique_attributes {
+
+    my ( $self, $source, $hashref, $parent_attr ) = @_;
+
+    my %constraints = $source->unique_constraints();
+    my %unique      = map { $_ => 1 } map { @$_ } values %constraints;
+    my ( %query_attr, %update_attr );
+    while ( my ( $key, $value ) = each %$hashref ) {
+        if ( exists $unique{ $key } ) {
+            $query_attr{ $key } = $value;
+        }
+        elsif ( ! defined $parent_attr || $key ne $parent_attr ) {
+            $update_attr{ $key } = $value;
+        }
+    }
+
+    return( \%query_attr, \%update_attr );
+}
+
 sub load_object {
 
     # Method used to load all objects into the database. This is split
     # out like this so we can easily subclass and override the loading
-    # behaviour, e.g. for ControlledVocab.
-    my ( $self, $hashref, $rs ) = @_;
+    # behaviour, e.g. for ControlledVocab. Note that $parent_attr is
+    # optional and only needed if the parent relationship is not part
+    # of a unique key (e.g. sample -> visit).
+    my ( $self, $hashref, $rs, $parent_attr ) = @_;
 
     if ( my $callback = $self->onload_callback() ) {
         $hashref = $callback->( $rs->result_class, $hashref );
     }
-    
+
+    my $source = $rs->result_source();
+
+    my ( $query_attr, $update_attr )
+        = $self->separate_unique_attributes( $source, $hashref, $parent_attr );
+
     my $obj;
     $self->database->txn_do(
-        sub { $obj = $rs->update_or_create( $hashref ); }
+        sub {
+            $obj = $rs->find( $hashref );
+            if ( ! $obj ) {
+                @{ $query_attr }{ keys %$update_attr } = values %$update_attr;
+                $obj = $rs->create( $query_attr );
+            }
+            else {
+                if ( $parent_attr ) {
+                    if ( $obj->get_column($parent_attr) ne $hashref->{$parent_attr} ) {
+                        croak(sprintf("Error: attempting to reparent %s object illegally.\n",
+                                      $source->source_name()));
+                    }
+                }
+                while ( my ( $key, $value ) = each %$update_attr ) {
+                    $obj->set_column( $key, $value );
+                }
+                $obj->update();
+            }
+        }
     );
 
     return $obj;
@@ -474,9 +540,11 @@ object which has been loaded into the database.
 =head2 load_object
 
 Method used to load all objects into the database. Takes a hashref of
-values to update_or_create and a DBIx::Class::ResultSet. This method is split
-out like this so we can easily subclass and override the loading
-behaviour, e.g. for ControlledVocab.
+values to update_or_create, a DBIx::Class::ResultSet, and the optional
+name of the parent object attribute (e.g. patient_id for Visit). The
+latter is used to check against inadvertant reparenting during
+loading. This method is split out like this so we can easily subclass
+and override the loading behaviour, e.g. for ControlledVocab.
 
 =head2 load_element_message
 

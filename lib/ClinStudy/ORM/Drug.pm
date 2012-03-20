@@ -259,5 +259,19 @@ __PACKAGE__->belongs_to("visit_id", "ClinStudy::ORM::Visit", { id => "visit_id" 
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:onhep2VHFpnAyAGVg+UW8Q
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+# Default stringification method. This one's a bit complicated by the parentage options.
+use overload '""' => sub {
+    my $parent;
+    if ( $parent = $_[0]->visit_id ) {
+        sprintf('Visit %s:%s:%s', $parent->patient_id,
+                $parent->date, $_[0]->name_id);
+    }
+    elsif ( $parent = $_[0]->prior_treatment_id ) { 
+        sprintf('PriorTreatment %s:%s:%s', $parent->patient_id,
+                $parent->type_id, $_[0]->name_id);
+    }
+    else {
+        $_[0]->name_id;
+    } }, fallback => 1;
+
 1;

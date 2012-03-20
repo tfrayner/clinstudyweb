@@ -115,5 +115,6 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BgXyF7ilAJwJFat3O2qSsw
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+use overload '""' => sub { join(':', $_[0]->patient_id, $_[0]->type_id) }, fallback => 1;
+
 1;
