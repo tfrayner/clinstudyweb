@@ -333,7 +333,10 @@ sub separate_unique_attributes {
         if ( exists $unique{ $key } ) {
             $query_attr{ $key } = $value;
         }
-        elsif ( ! defined $parent_attr || $key ne $parent_attr ) {
+        else {
+
+            # Must have parent_attr in update_attr to allow creation
+            # of new objects.
             $update_attr{ $key } = $value;
         }
     }
