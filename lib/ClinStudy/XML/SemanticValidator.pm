@@ -128,6 +128,19 @@ sub load_object {
 
 } # End of BAD_CV scope.
 
+sub find_in_resultset {
+
+    my ( $self, $rs, $query ) = @_;
+
+    my $obj;
+    if ( defined $query ) {
+        $obj = $self->next::method( $rs, $query );
+    }
+
+    # Return the found object if we can; if not, return a dummy.
+    return $obj ? $obj : ClinStudy::XML::DummyObject->new( id => undef );
+}
+
 sub load_element {
 
     my ( $self, $element, $parent_ref ) = @_;
