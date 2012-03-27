@@ -114,6 +114,6 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rpqD2h+9SKD4ClXw5/J+uQ
 
+use overload '""' => sub { join(':', $_[0]->patient_id, $_[0]->prior_group_id) }, fallback => 1;
 
-# You can replace this text with custom content, and it will be preserved on regeneration
 1;

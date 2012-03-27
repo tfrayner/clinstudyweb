@@ -430,3 +430,12 @@ alter table transplant add key `delayed_graft_function_id` (`delayed_graft_funct
 alter table transplant add constraint `transplant_ibfk_6` foreign key (`delayed_graft_function_id`) references `controlled_vocab` (`id`);
 
 alter table transplant drop column delayed_graft_function;
+
+--
+-- Adding unique keys to a few tables which need them.
+--
+alter table adverse_event add unique key (`patient_id`,`type`,`start_date`);
+alter table study add unique key (`patient_id`,`type_id`);
+alter table disease_event add unique key (`patient_id`,`type_id`,`start_date`);
+alter table risk_factor add unique key (`patient_id`,`type_id`);
+alter table prior_observation add unique key (`patient_id`,`type_id`,`date`);

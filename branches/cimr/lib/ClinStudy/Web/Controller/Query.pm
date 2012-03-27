@@ -1,21 +1,19 @@
-#
-# This file is part of BeerFestDB, a beer festival product management
-# system.
+# Copyright 2012 Tim Rayner, University of Cambridge
 # 
-# Copyright (C) 2010 Tim F. Rayner
-#
-# This program is free software: you can redistribute it and/or modify
+# This file is part of ClinStudy::Web.
+# 
+# ClinStudy::Web is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
+# 
+# ClinStudy::Web is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
 # $Id$
 
@@ -206,19 +204,27 @@ sub index : Path {
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->detach( $c->view( 'JSON' ) );
     }
-    else {
-        $c->stash->{ 'success' } = JSON::Any->true();
 
-        # Just take the column values and put them in a hash for JSON encoding.
-        my @hashes;
-        foreach my $res ( @results ) {
-            push @hashes, { $res->get_columns() };
-        }
-
-        $c->stash->{ 'data' } = \@hashes;
+    # These are here for safety's sake; set config options to reduce
+    # the risk of denial-of-service.
+    my $obj_limit = $c->config->{ 'max_json_objects' };
+    if ( defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Query returns more than $obj_limit items; please use a more specific query.};
+        $c->detach( $c->view( 'JSON' ) );
     }
-    
+
+    # Just take the column values and put them in a hash for JSON encoding.
+    my @hashes;
+    foreach my $res ( @results ) {
+        push @hashes, { $res->get_columns() };
+    }
+
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' } = \@hashes;
     $c->detach( $c->view( 'JSON' ) );
 
     return;        
@@ -1047,6 +1053,24 @@ sub _prepare_query_data_and_detach : Private {
         $c->detach( $c->view( 'JSON' ) );
     }
 
+    # These are here for safety's sake; set config options to reduce
+    # the risk of denial-of-service.
+    my $obj_limit = $c->config->{ 'max_json_objects' };
+    if ( defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Query returns more than $obj_limit items; please use a more specific query.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+    $obj_limit = $c->config->{ 'max_json_objects_extended' };
+    if ( $dump_rels && defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Extended query returns more than $obj_limit items; please use a more }.
+                qq{specific query or omit the request for extended relationship annotation.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
     foreach my $res ( @results ) {
         my %obj;
 
@@ -1127,43 +1151,18 @@ sub _extract_column_value : Private {
         my $relsource = $source->related_source( $col );
         ( $key ) = ( $col =~ m/(.*)_id/ );
 
-        # Might it be better to set up default stringification methods in the ORM? FIXME.
-        if ( $relsource->source_name() eq 'ControlledVocab' ) {
-            if ( my $cv = $obj->$col ) {
-                $value = $cv->get_column('value');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'PriorGroup' ) {
-            if ( my $pg = $obj->$col ) {
-                $value = $pg->type_id()->get_column('value') . ': ' . $pg->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'EmergentGroup' ) {
-            if ( my $eg = $obj->$col ) {
-                $value = $eg->type_id()->get_column('value') . ': ' . $eg->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Test' ) {
-            if ( my $test = $obj->$col ) {
-                $value = $test->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Patient' ) {
-            $key = 'trial_id';
-            if ( my $test = $obj->$col ) {
-                $value = $test->get_column('trial_id');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Visit' ) {
+        # Visit is a special case because there isn't really a formal
+        # identifier that one can use to pull out more visits.
+        if ( $relsource->source_name() eq 'Visit' ) {
             $key = 'visit_id';
             if ( my $test = $obj->$col ) {
                 $value = $test->get_column('id');
             }
         }
-        elsif ( $relsource->source_name() eq 'AssayBatch' ) {
-            if ( my $ab = $obj->$col ) {
-                $value = $ab->get_column('name') . ' (' . $ab->get_column('date') . ')';
-            }
+        else {
+
+            # The affected ResultSets all have stringification methods.
+            $value = $obj->$col . q{};
         }
     }
     else {
@@ -1180,10 +1179,8 @@ sub _extract_patient_relationships : Private {
 
     # Various relationships (e.g. Visit, Study, AdverseEvents). Note
     # that ideally anything not covered by a full query_* action would
-    # be dumped in its entirety here (FIXME). In such cases we don't
-    # bother returning the id value. ALSO FIXME consider only
-    # returning a subset of these by default, depending on how well
-    # these queries perform.
+    # be dumped in its entirety here. In such cases we don't
+    # bother returning the id value.
     my %relationship = (
         adverse_events       => [ qw(id type start_date) ],
         clinical_features    => [ qw(type_id) ],
@@ -1757,7 +1754,7 @@ Tim F. Rayner <tfrayner@gmail.com>
 
 Copyright (C) 2010-2012 by Tim F. Rayner
 
-This library is released under version 3 of the GNU General Public
+This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut

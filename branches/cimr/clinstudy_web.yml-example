@@ -39,6 +39,16 @@ Model::DB:
 #static:
 #    logging: 1
 
+# Set maximum numbers of objects retrieved by the canned JSON query
+# system (this is to protect against DoS). These values can be tuned
+# to suit a local installation.
+#
+# The number of objects returned by a generic or simple canned query:
+max_json_objects: 5000
+#
+# The number of objects returned by an extended canned query:
+max_json_objects_extended: 2000
+
 # Study-specific forms.  This config entry maps the possible values of
 # the StudyType CV to form configs specific to those study
 # types. There should ideally be one entry per StudyType term in the

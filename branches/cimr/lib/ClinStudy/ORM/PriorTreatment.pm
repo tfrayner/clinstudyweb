@@ -153,4 +153,6 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 
+use overload '""' => sub { join(':', $_[0]->patient_id, $_[0]->type_id) }, fallback => 1;
+
 1;
