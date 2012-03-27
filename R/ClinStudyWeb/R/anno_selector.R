@@ -105,9 +105,17 @@ csAnnoPicker <- function (testnames=list(), phenotypes=list(), parent) {
 
     tkwait.window(dlg)
 
-    ## Names here need to match the JSON query parameters defined in the
-    ## ClinStudy::Web::Controller::Query perl module.
-    return(list(test_ids=testChoice,
-                phenotype_ids=phenoChoice,
-                include_transplant=txChoice))
+    ## Names here need to match the JSON query parameters defined in
+    ## the ClinStudy::Web::Controller::Query perl module. Note that we
+    ## omit empty lists because some versions of rjson don't encode
+    ## them well.
+    retval <- list(include_transplant=txChoice)
+
+    if ( length(testChoice) > 0 )
+        retval$test_ids=testChoice
+
+    if ( length(phenoChoice) > 0 )
+        retval$phenotype_ids=phenoChoice
+
+    return(retval)
 }
