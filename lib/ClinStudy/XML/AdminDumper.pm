@@ -51,10 +51,11 @@ sub BUILD {
     });
 
     $self->boundaries({
-        ControlledVocab => [ qw(AssayBatch AdverseEvent Channel ClinicalFeature Diagnosis
-                                DiseaseEvent Drug EmergentGroup Patient PriorGroup PriorObservation
-                                PriorTreatment RiskFactor Sample Study SystemInvolvement
-                                TestPossibleValue TestResult Transplant Visit) ],
+        ControlledVocab => [ qw(AdverseEvent AssayBatch Channel ClinicalFeature Diagnosis
+                                DiseaseEvent Drug EmergentGroup Patient PhenotypeQuantity
+                                PriorGroup PriorObservation PriorTreatment RiskFactor Sample
+                                SampleDataFile Study SystemInvolvement TestPossibleValue
+                                TestResult Transplant Visit VisitDataFile) ],
         TermSource => [ qw(ControlledVocab) ],
         Test => [ qw(TestResult) ],
     });

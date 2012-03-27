@@ -79,6 +79,24 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<patient_id>
+
+=over 4
+
+=item * L</patient_id>
+
+=item * L</type_id>
+
+=item * L</date>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("patient_id", ["patient_id", "type_id", "date"]);
+
 =head1 RELATIONS
 
 =head2 patient_id
@@ -110,9 +128,10 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07015 @ 2011-12-12 13:28:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:02gyHn5/IRVxPp6iP7Vawg
+# Created by DBIx::Class::Schema::Loader v0.07015 @ 2012-03-20 18:17:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nrzizW6W3uixwDGYnjHkGQ
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+use overload '""' => sub { join(':', $_[0]->patient_id, $_[0]->type_id) }, fallback => 1;
+
 1;

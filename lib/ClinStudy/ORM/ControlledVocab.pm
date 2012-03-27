@@ -1104,4 +1104,7 @@ __PACKAGE__->many_to_many(
   { "cascade_delete"   => 0 },
 );
 
+# Default stringification method.
+use overload '""' => sub { shift->value }, fallback => 1;
+
 1;
