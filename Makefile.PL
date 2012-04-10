@@ -29,7 +29,7 @@ all_from 'lib/ClinStudy/Web.pm';
 
 requires 'Catalyst::Runtime'                              => '5.71';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
-requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
+requires 'Catalyst::Plugin::Static'                       => '0.11';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
 requires 'Catalyst::Controller::REST'                     => '0.89';
 requires 'Catalyst::Controller::HTML::FormFu'             => '0.06001';
