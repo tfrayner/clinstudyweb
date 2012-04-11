@@ -317,7 +317,7 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     return(x$p)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, logfile=NULL) {
+calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -327,8 +327,8 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
     else
         logconn <- NULL
 
-    if ( is.null(cred) )
-        cred <- ClinStudyWeb::getCredentials()
+    if ( is.null(auth) )
+        auth <- ClinStudyWeb::getCSWebHandle(uri=uri, .opts=.opts)
 
     writeLog <- function(x) {
         if ( ! is.null(logconn) ) {
@@ -342,7 +342,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
 
     writeLog("\n** Starting Cell Purity Calculation Pipeline...")
 
-    .retrieveFileInfo <- function(sample_id, type, uri, .opts, cred) {
+    .retrieveFileInfo <- function(sample_id, type, uri, .opts, auth) {
 
         uri <- sub( '/+$', '', uri )
 
@@ -352,7 +352,7 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
                             attributes=list('join'='type_id'),
                             uri=uri,
                             .opts=.opts,
-                            auth=cred)
+                            auth=auth)
 
         if ( length(file) < 1 ) {
             warning("File not found: ", type, " file for sample ", sample_id, ". Skipping.")
@@ -362,20 +362,14 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
             return()
         }
 
-        ## FIXME better to centralise this redirection somewhere. ORM
-        ## fix to automate file uri attribute?
-        file.uri <- NULL
-        if ( ! is.null(file) )
-            file.uri <- paste(uri, 'static/datafiles/sample', file[[1]]$filename, sep='/')
-
-        return(file.uri)
+        return(file[[1]]$uri)
     }
 
-    .downloadFile <- function( uri, outfile, .opts=list() ) {
+    .downloadFile <- function( uri, outfile, auth, .opts=list() ) {
         ## FIXME at some point it would be good to password-protect
         ## these files, at which point we need to use an authenticated
         ## RCurl session.
-        content <- getBinaryURL(uri, .opts=.opts)
+        content <- getBinaryURL(uri, curl=auth, .opts=.opts)
         writeBin(content, outfile)
         return();
     }
@@ -386,12 +380,14 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
     cond    <- list('auto_cell_purity'=NULL,
                     'type_id.value'='FACS positive')
     attrs   <- list(join=list('sample_data_files'='type_id'))
+
+    writeLog("Querying database for sample data files...")
     samples <- csJSONQuery(resultSet='Sample',
                            condition=cond,
                            attributes=attrs,
                            uri=uri,
                            .opts=.opts,
-                           auth=cred)
+                           auth=auth)
 
     ## Loop over the samples, pull down the two files required
     ## (recheck that they're both present).
@@ -406,8 +402,8 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
 
         writeLog(sprintf("Commencing analysis for sample %s...", samp$name))
 
-        pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, cred)
-        pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, cred)
+        pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, auth)
+        pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, auth)
 
         if ( any(sapply(list(pre, pos), is.null) ) ) {
             writeLog("Either pre or pos files not found.")
@@ -419,14 +415,14 @@ calculateCellPurities <- function(uri, .opts=list(), cred=NULL, verbose=FALSE, l
                           condition=list(id=samp$cell_type_id),
                           uri=uri,
                           .opts=.opts,
-                          auth=cred)
+                          auth=auth)
 
         ## Download both files to a temporary location.
         writeLog("Downloading files...")
         fn.pre <- tempfile()
         fn.pos <- tempfile()
-        .downloadFile(pre, fn.pre, .opts)
-        .downloadFile(pos, fn.pos, .opts)
+        .downloadFile(pre, fn.pre, auth, .opts)
+        .downloadFile(pos, fn.pos, auth, .opts)
 
         ## Attempt cell purity calculation.
         writeLog(sprintf("Calculating purity (%s)...", ct[[1]]$value))
