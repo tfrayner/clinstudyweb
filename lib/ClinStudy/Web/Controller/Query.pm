@@ -220,7 +220,14 @@ sub index : Path {
     # Just take the column values and put them in a hash for JSON encoding.
     my @hashes;
     foreach my $res ( @results ) {
-        push @hashes, { $res->get_columns() };
+        my %data = $res->get_columns();
+        if ( $dbclass eq 'DB::SampleDataFile' ) {
+            _add_sample_uri_path( \%data, $c );
+        }
+        elsif ( $dbclass eq 'DB::VisitDataFile' ) {
+            _add_visit_uri_path( \%data, $c );
+        }
+        push @hashes, \%data;
     }
 
     $c->stash->{ 'success' } = JSON::Any->true();
@@ -228,6 +235,21 @@ sub index : Path {
     $c->detach( $c->view( 'JSON' ) );
 
     return;        
+}
+
+sub _add_sample_uri_path : Private {
+    my ( $data, $c ) = @_;
+    _add_datafile_uri_path( $data, $c, 'sample' );
+}
+
+sub _add_visit_uri_path : Private {
+    my ( $data, $c ) = @_;
+    _add_datafile_uri_path( $data, $c, 'visit' );
+}
+
+sub _add_datafile_uri_path : Private {
+    my ( $data, $c, $type ) = @_;
+    $data->{'uri'} = $c->uri_for("/static/datafiles/$type/" . $data->{'filename'}) . q{};    
 }
 
 =head1 MISCELLANEOUS QUERIES
@@ -1082,7 +1104,7 @@ sub _prepare_query_data_and_detach : Private {
         # substantial db query load.
         my $method = $methodmap{ $class };
         if ( defined $method && defined $dump_rels ) {
-            $self->$method( $res, \%obj );
+            $self->$method( $res, \%obj, $c );
         }
 
         push @objs, \%obj;            
@@ -1119,7 +1141,7 @@ sub _extract_db_columns : Private {
 
 sub _summarise_relationships : Private {
 
-    my ( $self, $obj, $relationship, $cols ) = @_;
+    my ( $self, $obj, $relationship, $cols, $c ) = @_;
 
     my @related;
     foreach my $rel ( $obj->$relationship ) {
@@ -1132,6 +1154,14 @@ sub _summarise_relationships : Private {
         # This is perhaps a little out of place but it's a convenient spot to do this.
         if ( $relationship eq 'test_results' ) {
             $relhash{ 'value' } = _get_test_value( $rel );
+        }
+
+        # We add phenodata file URIs here.
+        if ( $relationship eq 'sample_data_files' ) {
+            _add_sample_uri_path( \%relhash, $c );
+        }
+        elsif ( $relationship eq 'visit_data_files' ) {
+            _add_visit_uri_path( \%relhash, $c );
         }
 
         push @related, \%relhash;
@@ -1175,7 +1205,7 @@ sub _extract_column_value : Private {
 
 sub _extract_patient_relationships : Private {
 
-    my ( $self, $res, $patient ) = @_;
+    my ( $self, $res, $patient, $c ) = @_;
 
     # Various relationships (e.g. Visit, Study, AdverseEvents). Note
     # that ideally anything not covered by a full query_* action would
@@ -1197,7 +1227,7 @@ sub _extract_patient_relationships : Private {
         visits               => [ qw(id date nominal_timepoint_id) ],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $patient->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $patient->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
 
     return;
@@ -1205,7 +1235,7 @@ sub _extract_patient_relationships : Private {
 
 sub _extract_visit_relationships : Private {
 
-    my ( $self, $res, $visit ) = @_;
+    my ( $self, $res, $visit, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1218,7 +1248,7 @@ sub _extract_visit_relationships : Private {
         visit_data_files      => [qw(filename type_id)], 
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1226,7 +1256,7 @@ sub _extract_visit_relationships : Private {
 
 sub _extract_sample_relationships : Private {
 
-    my ( $self, $res, $sample ) = @_;
+    my ( $self, $res, $sample, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1234,7 +1264,7 @@ sub _extract_sample_relationships : Private {
         sample_data_files      => [qw(filename type_id)], 
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1242,7 +1272,7 @@ sub _extract_sample_relationships : Private {
 
 sub _extract_assay_relationships : Private {
 
-    my ( $self, $res, $assay ) = @_;
+    my ( $self, $res, $assay, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1250,7 +1280,7 @@ sub _extract_assay_relationships : Private {
         assay_qc_values         => [qw(name type value)],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1258,14 +1288,14 @@ sub _extract_assay_relationships : Private {
 
 sub _extract_prior_treatment_relationships : Private {
 
-    my ( $self, $res, $prior_treatment ) = @_;
+    my ( $self, $res, $prior_treatment, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
         drugs                 => [qw(name_id dose dose_unit_id dose_freq_id dose_regime)],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
