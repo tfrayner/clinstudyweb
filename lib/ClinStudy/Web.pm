@@ -170,6 +170,7 @@ __PACKAGE__->deny_access( '/query' );
 
 # Block access to the static pages; this includes the datafiles
 # directories which we don't want the world to see.
+__PACKAGE__->allow_access( '/static/secure_white' ); # CIMR branch only.
 __PACKAGE__->allow_access_if( '/static', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/static' );
 

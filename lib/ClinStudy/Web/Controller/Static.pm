@@ -63,6 +63,18 @@ sub favicon : Path('/favicon.ico') {
     $c->serve_static;
 }
 
+=head2 secure_white
+
+=cut
+
+# CIMR branch only: also handle requests for /secure_white.gif
+sub secure_white : Path('/static/images/secure_white.gif') {
+
+    my ( $self, $c ) = @_;
+
+    $c->serve_static('image/gif');
+}
+
 sub end : Private {
 
     my ( $self, $c ) = @_;
