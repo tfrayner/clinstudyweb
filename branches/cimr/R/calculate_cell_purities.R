@@ -28,7 +28,23 @@
 ## - CD19 is to be quite honest a bit of a mess. Not sure at all how
 ##   to deal with this cell type.
 
-facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FALSE ) {
+cellTypeHeuristic <- function(ct) {
+
+    ## This map lists points near the centre of the target
+    ## cluster. One hopes that these are sufficiently consistent that
+    ## this will work. Note that we're assuming elsewhere that the
+    ## ordering here is consistent with an X, Y interpretation in
+    ## plots.
+    ct.maplist <- list(CD4  = list(`FL1-H`=2.2, `FL2-H`=3.2),
+                       CD16 = list(`FL1-H`=2.5, `FL2-H`=3),
+                       CD14 = list(`FL1-H`=1.5, `FL2-H`=3.5),
+                       CD8  = list(`FL2-H`=3.2, `FL4-H`=2.9),
+                       CD19 = list(`FL1-H`=2.4, `FL2-H`=2.2))
+
+    return(ct.maplist[[ct]])
+}
+
+facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1:6 ) {
 
     require(flowCore)
     require(flowClust)
@@ -55,20 +71,10 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
         return(w)
     }
 
-    ## This map lists points near the centre of the target
-    ## cluster. One hopes that these are sufficiently consistent that
-    ## this will work. Note that we're assuming elsewhere that the
-    ## ordering here is consistent with an X, Y interpretation in
-    ## plots.
-    ct.maplist <- list(CD4  = list(`FL1-H`=2.2, `FL2-H`=3.2),
-                       CD16 = list(`FL1-H`=2.5, `FL2-H`=3),
-                       CD14 = list(`FL1-H`=1.5, `FL2-H`=3.5),
-                       CD8  = list(`FL2-H`=3.2, `FL4-H`=2.9),
-                       CD19 = list(`FL1-H`=2.4, `FL2-H`=2.2))
 
     livegate <- list(up=2.5, down=1, left=2.3, right=3.5)
 
-    ct.map <- ct.maplist[[ cell.type ]]
+    ct.map <- cellTypeHeuristic( cell.type )
     if ( is.null(ct.map) )
         stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
@@ -317,7 +323,39 @@ facsCellPurity <- function( pre, pos, cell.type, B=100, K.start=1:6, verbose=FAL
     return(x$p)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL) {
+spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3 ) {
+
+    require(spade)
+
+    ct.map <- cellTypeHeuristic( cell.type )
+    if ( is.null(ct.map) )
+        stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
+
+    SPADE.driver(pos, out_dir=output_dir, cluster_cols=c(names(ct.map), "FSC-H", "SSC-H"))
+    gfile <- file.path(output_dir,
+                       paste(basename(pos), ".density.fcs.cluster.fcs.medians.gml",
+                             sep=''))
+    message("Reading in graph file ", gfile, "...")
+    mst    <- igraph:::read.graph(gfile, format="gml")
+    layout <- read.table(file.path(output_dir, "layout.table"))
+    SPADE.plot.trees(mst, output_dir,
+                     out_dir=file.path(output_dir, "pdf"),
+                     layout=as.matrix(layout))
+    
+    bins <- lapply(names(ct.map), function(ch) {
+      ch <- sub('-', '', ch)
+      med <- paste('medians', ch, '_clust', sep='')
+      cvs <- paste('cvs', ch, '_clust', sep='')
+      b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
+      b == 1
+    } )
+
+    maxpop <- apply(do.call('rbind', bins), 2, all)
+
+    return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
+}
+
+calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -426,7 +464,7 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
 
         ## Attempt cell purity calculation.
         writeLog(sprintf("Calculating purity (%s)...", ct[[1]]$value))
-        rc <- try(pur <- facsCellPurity( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose ))
+        rc <- try(pur <- purity.fun( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose ))
 
         if ( inherits(rc, 'try-error') ) {
             writeLog(sprintf("Error encountered: %s", rc))
