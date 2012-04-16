@@ -125,7 +125,11 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
     ## rectangle as the live cell population.
     ld.pops <- split(ld, ld.gated)
     w <- .findLivePops(ld.pops, livegate)
-    ld.pops <- as(ld.pops[w], 'flowSet')
+
+    ## Merge the +ve population in to give the algorithm a better hint.
+    ld.pops <- as(ld.pops[w], 'flowSet')  # Replace this line with the following two lines to include the hint.
+#    ct       <- .readAndLogTransform(pos)
+#    ld.pops <- as(append(ld.pops[w], ct), 'flowSet')
     ld.pops <- as(ld.pops, 'flowFrame')
 
     ## Identify the 'best' number of clusters to fit.
@@ -323,7 +327,7 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
     return(x$p)
 }
 
-spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3 ) {
+spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3, archive_dir ) {
 
     require(spade)
 
@@ -341,6 +345,12 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     SPADE.plot.trees(mst, output_dir,
                      out_dir=file.path(output_dir, "pdf"),
                      layout=as.matrix(layout))
+
+    if ( ! missing(archive_dir) ) {
+        outfile <- file.path(archive_dir, paste(basename(pos), ".gml", sep=''))
+        message("Writing graph file ", outfile, "...")
+        igraph::write.graph(mst, outfile, format="gml")
+    }
     
     bins <- lapply(names(ct.map), function(ch) {
       ch <- sub('-', '', ch)
@@ -350,12 +360,14 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
       b == 1
     } )
 
-    maxpop <- apply(do.call('rbind', bins), 2, all)
+    ## A quick look with Cytoscape/SPADE suggests that we can accept a
+    ## maxpop call in any, rather than all, channels.
+    maxpop <- apply(do.call('rbind', bins), 2, any)
 
     return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
 }
 
-calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity) {
+calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -415,9 +427,12 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
     ## Connect to the clinical database; pull down a list of
     ## samples lacking cell purities but having the files required to
     ## attempt a calculation.
+    writeLog("Querying the database for appropriate samples...")
     cond    <- list('auto_cell_purity'=NULL,
+                    'home_centre_id.value'='Cambridge',
                     'type_id.value'='FACS positive')
-    attrs   <- list(join=list('sample_data_files'='type_id'))
+    attrs   <- list(join=list('sample_data_files'='type_id',
+                              'visit_id'=list('patient_id'='home_centre_id')))
 
     writeLog("Querying database for sample data files...")
     samples <- csJSONQuery(resultSet='Sample',
@@ -457,14 +472,15 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
 
         ## Download both files to a temporary location.
         writeLog("Downloading files...")
-        fn.pre <- tempfile()
-        fn.pos <- tempfile()
+        tmpdir <- tempdir()
+        fn.pre <- file.path(tmpdir, basename(pre))
+        fn.pos <- file.path(tmpdir, basename(pos))
         .downloadFile(pre, fn.pre, auth, .opts)
         .downloadFile(pos, fn.pos, auth, .opts)
 
         ## Attempt cell purity calculation.
         writeLog(sprintf("Calculating purity (%s)...", ct[[1]]$value))
-        rc <- try(pur <- purity.fun( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose ))
+        rc <- try(pur <- purity.fun( fn.pre, fn.pos, ct[[1]]$value, verbose=verbose, ... ))
 
         if ( inherits(rc, 'try-error') ) {
             writeLog(sprintf("Error encountered: %s", rc))
