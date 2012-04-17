@@ -148,8 +148,11 @@ sub load_element {
     my $class = $element->nodeName();
 
     my $obj = $self->next::method( $element, $parent_ref );
-    
-    if ( $class eq 'Visit' ) {
+
+    if ( $class eq 'Patient' ) {
+        $self->_apply_patient_checks( $element, $parent_ref, $obj );
+    }
+    elsif ( $class eq 'Visit' ) {
         $self->_apply_visit_checks( $element, $parent_ref, $obj );
     }
     elsif ( $class eq 'Sample' ) {
@@ -211,6 +214,24 @@ sub handle_missing_referent {
     my ( $self, $class, $field, $value ) = @_;
 
     return ClinStudy::XML::DummyObject->new( id => undef );
+}
+
+sub _apply_patient_checks {
+
+    my ( $self, $element, $parent_ref, $obj ) = @_;
+
+    # Check for inadvertant changes to patient entry_date. This may
+    # also help detect duplicate trial ID assignments. Consider adding
+    # more such checks? FIXME.
+    my $trial_id   = $element->getAttribute('trial_id');
+    my $entry_date = $element->getAttribute('entry_date');
+    my $patient = $self->database()->resultset('Patient')->find({ trial_id => $trial_id} );
+    if ( $patient && $patient->entry_date() ne $entry_date ) {
+        $self->_append_report("Warning: Change detected in entry date for patient $trial_id.\n");
+        $self->warning_flag(1);
+    }
+
+    return;
 }
 
 sub _apply_visit_checks {
