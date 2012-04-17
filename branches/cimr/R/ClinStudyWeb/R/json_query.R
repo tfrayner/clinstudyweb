@@ -66,7 +66,13 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, ... ) {
                                  writefunction=status$update)
         
     ## Check the response for errors.
-    status  <- rjson::fromJSON(status$value())
+    rc <- try(status  <- rjson::fromJSON(status$value()))
+
+    ## A message such as this indicates a possible bug in .csUriFromCurlHandle:
+    ##      "Error in rjson::fromJSON(status$value()) : no data to parse"
+    if ( inherits(rc, 'try-error') )
+        stop(sprintf("Error encountered: %s", rc))
+
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
@@ -101,6 +107,6 @@ setMethod('.csJSONGeneric', signature(auth='list', uri='missing'), .csJSONUriCom
     ## expected place. That allows us to forego the requirement to
     ## pass uri around everywhere.
     uri <- RCurl::getCurlInfo(curl)[['effective.url']]
-    uri <- sub('/(query|json).*$', '', uri)  # Ugly as sin. FIXME!!!
+    uri <- sub('/(query|json|static).*$', '', uri)  # Ugly as sin. FIXME!!!
     return(uri)
 }
