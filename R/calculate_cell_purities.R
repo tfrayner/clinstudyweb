@@ -352,19 +352,23 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
         igraph::write.graph(mst, outfile, format="gml")
     }
     
-    bins <- lapply(names(ct.map), function(ch) {
-      ch <- sub('-', '', ch)
-      med <- paste('medians', ch, '_clust', sep='')
-      cvs <- paste('cvs', ch, '_clust', sep='')
-      b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
-      b == 1
-    } )
+    bins <- lapply(names(ct.map), spadeAssignBins, mst=mst, tolerance=tolerance )
 
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
     ## maxpop call in any, rather than all, channels.
     maxpop <- apply(do.call('rbind', bins), 2, any)
 
     return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
+}
+
+## Wrapper function to link the output of cellTypeHeuristic to the
+## input of igraphCliques.
+spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
+    ch <- sub('-', '', ch)
+    med <- paste('medians', ch, suffix, sep='')
+    cvs <- paste('cvs', ch, suffix, sep='')
+    b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
+    b == 1
 }
 
 calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
@@ -515,4 +519,45 @@ if ( ! interactive() ) {
     args <- commandArgs(TRUE)
     res  <- calculateCellPurities(uri=args[1])
     outputCSV(res, file=args[2])
+}
+
+recalculateSpadePurities <- function( files, accept=c('all','any'), tolerance=3 ) {
+
+    ## Recalculate purities from a list of GML files. Function assumes
+    ## the naming convention adopted by util/facs_clinstudyml.pl which
+    ## is effectively recycled by spadeCellPurity() above, when passed
+    ## the archive_dir argument.
+
+    require(igraph)
+    
+    accept <- match.arg(accept)
+
+    .safeAssign <- function(ch, mst, ...) {
+        rc <- try( bins <- spadeAssignBins(ch, mst, ...) )
+        if ( inherits(rc, 'try-error') )
+            return(rep(NA, length(V(mst))))
+        return(bins)
+    }
+
+    res <- list()
+    for ( f in files ) {
+
+        cell.type <- strsplit(f, '_')[[1]][3]
+        ct.map <- cellTypeHeuristic( cell.type )
+        if ( is.null(ct.map) )
+            stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
+
+        mst    <- igraph:::read.graph(f, format="gml")
+        bins   <- lapply(names(ct.map), .safeAssign, mst=mst,
+                         tolerance=tolerance, suffix='clust' )
+
+        if ( accept == 'all')
+            maxpop <- apply(do.call('rbind', bins), 2, all)
+        else
+            maxpop <- apply(do.call('rbind', bins), 2, any)
+
+        res[[f]] <- sum(V(mst)$percenttotal[ as.logical(maxpop) ])
+    }
+
+    return(res)
 }
