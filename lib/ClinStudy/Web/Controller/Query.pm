@@ -784,6 +784,11 @@ sub samples : Local {
             { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
         push @{ $attrs{ 'join' } }, { 'visit_id' => 'patient_id' };
     }
+    if ( my $date = $query->{'date'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $date, 'visit_id.date' ) };
+        push @{ $attrs{ 'join' } }, 'visit_id';
+    }
     if ( my $tpoint = $query->{'cell_type'} ) {
         push @{ $cond{-and} },
             { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'cell_type_id.value' ) };
