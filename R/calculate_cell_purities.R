@@ -327,9 +327,12 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
     return(x$p)
 }
 
-spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3, archive_dir ) {
+spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3, archive_dir, plot=FALSE, cleanup=FALSE ) {
 
     require(spade)
+
+    if ( plot & cleanup )
+        stop("Can't set both plot and cleanup; you'll be deleting your precious plots!")
 
     ct.map <- cellTypeHeuristic( cell.type )
     if ( is.null(ct.map) )
@@ -341,10 +344,13 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
                              sep=''))
     message("Reading in graph file ", gfile, "...")
     mst    <- igraph:::read.graph(gfile, format="gml")
-    layout <- read.table(file.path(output_dir, "layout.table"))
-    SPADE.plot.trees(mst, output_dir,
-                     out_dir=file.path(output_dir, "pdf"),
-                     layout=as.matrix(layout))
+
+    if ( plot ) {
+        layout <- read.table(file.path(output_dir, "layout.table"))
+        SPADE.plot.trees(mst, output_dir,
+                         out_dir=file.path(output_dir, "pdf"),
+                         layout=as.matrix(layout))
+    }
 
     ## Beware that round-tripping via GML seems to strip underscores
     ## from attribute names.
@@ -359,6 +365,10 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
     ## maxpop call in any, rather than all, channels.
     maxpop <- apply(do.call('rbind', bins), 2, all)
+
+    if ( cleanup )
+        for ( f in dir(path=output_dir) )
+            file.remove( file.path(output_dir, f) )
 
     return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
 }
