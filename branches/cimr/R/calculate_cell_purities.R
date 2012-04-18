@@ -346,6 +346,8 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
                      out_dir=file.path(output_dir, "pdf"),
                      layout=as.matrix(layout))
 
+    ## Beware that round-tripping via GML seems to strip underscores
+    ## from attribute names.
     if ( ! missing(archive_dir) ) {
         outfile <- file.path(archive_dir, paste(basename(pos), ".gml", sep=''))
         message("Writing graph file ", outfile, "...")
@@ -356,7 +358,7 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
 
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
     ## maxpop call in any, rather than all, channels.
-    maxpop <- apply(do.call('rbind', bins), 2, any)
+    maxpop <- apply(do.call('rbind', bins), 2, all)
 
     return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
 }
@@ -367,6 +369,7 @@ spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
     ch <- sub('-', '', ch)
     med <- paste('medians', ch, suffix, sep='')
     cvs <- paste('cvs', ch, suffix, sep='')
+    stopifnot( all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
     b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
     b == 1
 }
