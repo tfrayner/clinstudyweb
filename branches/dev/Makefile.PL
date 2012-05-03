@@ -63,6 +63,11 @@ requires 'XML::Simple'                                    => '2.18';
 
 test_requires 'Test::DBIx::Class' => '0.09';
 
+# Some earlier versions don't seem to play nicely with
+# Catalyst::Plugin::Static, leading to broken image links. Only needed
+# when running under FastCGI.
+recommends 'FCGI' => '0.74';
+
 # These are only required for MAGE-TAB export, a non-essential function.
 recommends 'Bio::MAGETAB' => '1.1';
 recommends 'LWP::UserAgent';
