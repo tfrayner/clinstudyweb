@@ -72,6 +72,7 @@ sub secure_white : Path('/static/images/secure_white.gif') {
 
     my ( $self, $c ) = @_;
 
+    $c->res->headers->header( 'Cache-Control' => 'max-age=604800' );
     $c->serve_static('image/gif');
 }
 
