@@ -48,6 +48,13 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, ... ) {
     if ( ! is.list(.opts) )
         stop("Error: .opts must be a list object")
 
+    ## Workaround for a known SSL session reuse bug
+    ## ("SSL3_GET_RECORD:bad decompression"). Presumably this would
+    ## also be fixable on the server, but it doesn't hurt to have a
+    ## fix here as well.
+    if ( is.null( .opts$ssl.sessionid.cache ) )
+        .opts$ssl.sessionid.cache <- FALSE
+
     uri <- .csUriFromCurlHandle(auth)
 
     require(rjson)
