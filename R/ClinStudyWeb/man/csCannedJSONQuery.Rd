@@ -15,10 +15,10 @@ csPatients( trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL,
 extended=FALSE, ... )
 
 csVisits( trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
-extended=FALSE, ... )
+data_file=NULL, extended=FALSE, ... )
 
 csSamples( trial_id=NULL, id=NULL, name=NULL, date=NULL, cell_type=NULL,
-material_type=NULL, extended=FALSE, ... )
+material_type=NULL, data_file=NULL, extended=FALSE, ... )
 
 csAssays( id=NULL, sample_id=NULL, filename=NULL, identifier=NULL,
 date=NULL, batch=NULL, extended=FALSE, ... )
@@ -50,6 +50,10 @@ extended=FALSE, ... )
   \item{cell_type}{Cell types for samples.}
 
   \item{material_type}{Material types for samples.}
+
+  \item{data_file}{The name of a data file (typically FACS data)
+    associated with the sample or visit. This is distinct from assay
+    filename, below.)}
 
   \item{sample_id}{Internal database sample identifier (used to query
     assays).}

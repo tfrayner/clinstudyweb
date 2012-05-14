@@ -47,7 +47,7 @@ sub default : Path('/static') {
     my ( $self, $c ) = @_;
 
     # Optional, allow the browser to cache the content
-    $c->res->headers->header( 'Cache-Control' => 'max-age=86400' );
+    $c->res->headers->header( 'Cache-Control' => 'max-age=604800' );
     $c->serve_static; # from Catalyst::Plugin::Static
 }
 
@@ -60,6 +60,7 @@ sub favicon : Path('/favicon.ico') {
 
     my ( $self, $c ) = @_;
 
+    $c->res->headers->header( 'Cache-Control' => 'max-age=604800' );
     $c->serve_static('image/vnd.microsoft.icon');
 }
 
