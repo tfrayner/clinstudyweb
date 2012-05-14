@@ -699,7 +699,7 @@ sub visits : Local {
 
     my $query = $self->_decode_json( $c );
 
-    $self->_check_query_terms( $c, $query, [ qw(trial_id id date nominal_timepoint) ] );
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id date nominal_timepoint data_file) ] );
 
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
@@ -720,6 +720,11 @@ sub visits : Local {
         push @{ $cond{-and} },
             { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'nominal_timepoint_id.value' ) };
         push @{ $attrs{ 'join' } }, 'nominal_timepoint_id';
+    }
+    if ( my $file = $query->{'data_file'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $file, 'visit_data_files.filename' ) };
+        push @{ $attrs{ 'join' } }, 'visit_data_files';
     }
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit', $query->{$EXTENDED_FLAG} );
@@ -767,7 +772,7 @@ sub samples : Local {
 
     my $query = $self->_decode_json( $c );
 
-    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type) ] );
+    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type data_file) ] );
 
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
@@ -789,15 +794,20 @@ sub samples : Local {
             { -or => $self->_qterm_to_sqlabstract_like_in( $date, 'visit_id.date' ) };
         push @{ $attrs{ 'join' } }, 'visit_id';
     }
-    if ( my $tpoint = $query->{'cell_type'} ) {
+    if ( my $ct = $query->{'cell_type'} ) {
         push @{ $cond{-and} },
-            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'cell_type_id.value' ) };
+            { -or => $self->_qterm_to_sqlabstract_like_in( $ct, 'cell_type_id.value' ) };
         push @{ $attrs{ 'join' } }, 'cell_type_id';
     }
-    if ( my $tpoint = $query->{'material_type'} ) {
+    if ( my $mt = $query->{'material_type'} ) {
         push @{ $cond{-and} },
-            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'material_type_id.value' ) };
+            { -or => $self->_qterm_to_sqlabstract_like_in( $mt, 'material_type_id.value' ) };
         push @{ $attrs{ 'join' } }, 'material_type_id';
+    }
+    if ( my $file = $query->{'data_file'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $file, 'sample_data_files.filename' ) };
+        push @{ $attrs{ 'join' } }, 'sample_data_files';
     }
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample', $query->{$EXTENDED_FLAG} );

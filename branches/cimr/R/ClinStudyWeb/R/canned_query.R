@@ -35,7 +35,7 @@ csPatients <- function(trial_id=NULL, id=NULL, study=NULL, diagnosis=NULL,
 }
 
 csVisits <- function(trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
-                     extended=FALSE, ... ) {
+                     data_file=NULL, extended=FALSE, ... ) {
 
     ## Generate a query list from our arguments.
     query <- .csQueryList(c('extended', '...'))
@@ -52,7 +52,7 @@ csVisits <- function(trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
 }
 
 csSamples <- function(trial_id=NULL, id=NULL, name=NULL, date=NULL,
-                      cell_type=NULL, material_type=NULL,
+                      cell_type=NULL, material_type=NULL, data_file=NULL,
                       extended=FALSE, ... ) {
 
     ## Generate a query list from our arguments.
