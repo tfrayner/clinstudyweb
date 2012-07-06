@@ -46,7 +46,7 @@ csVisits <- function(trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
     res <- .csJSONGeneric( query=query, action='query/visits', ... )
 
     ## Reorganise the results into data frames.
-    dat <- .csCannedJSONToDFs(res, 'visits', list(trial_id='trial_id', date='visit_date') )
+    dat <- .csCannedJSONToDFs(res, 'visits', list(patient='trial_id', date='visit_date', id='visit_id') )
 
     return(dat)
 }
