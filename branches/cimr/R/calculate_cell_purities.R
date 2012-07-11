@@ -360,10 +360,13 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
         igraph::write.graph(mst, outfile, format="gml")
     }
     
-    bins <- lapply(names(ct.map), spadeAssignBins, mst=mst, tolerance=tolerance )
+    bins <- lapply(names(ct.map), spadeInBiggestBin, mst=mst, tolerance=tolerance )
 
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
-    ## maxpop call in any, rather than all, channels.
+    ## maxpop call in any, rather than all, channels. UPDATE: actually
+    ## this varies by cell population; CD19s, for example, will
+    ## probably want to use 'any' here; may depend on the exact panel
+    ## we end up using.
     maxpop <- apply(do.call('rbind', bins), 2, all)
 
     if ( cleanup )
@@ -373,15 +376,49 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
 }
 
-## Wrapper function to link the output of cellTypeHeuristic to the
+## Wrapper functions to link the output of cellTypeHeuristic to the
 ## input of igraphCliques.
+spadeInBiggestBin <- function(...) {
+    b <- spadeAssignBins(...)
+    b == 1
+}
 spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
-    ch <- sub('-', '', ch)
-    med <- paste('medians', ch, suffix, sep='')
-    cvs <- paste('cvs', ch, suffix, sep='')
+    med <- .getChannelName(ch, type='medians')
+    cvs <- .getChannelName(ch, type='cvs')
     stopifnot( all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
     b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
-    b == 1
+}
+
+.getChannelName <- function(ch, type=c('medians', 'cvs'), suffix='_clust' ) {
+    type <- match.arg(type)
+    ch <- sub('-', '', ch)
+    ch <- paste('medians', ch, suffix, sep='')
+    return(ch)
+}
+
+## Function to identify the clusters in mst which represent bead
+## carry-over (we want to discard these before doing much else). These
+## bead events are high-end outliers in the SSC-H channel.
+##
+## clusterBy would typically be all of the informative channels (FLs
+## and scatter). ch is the channel to use for detection of outlying
+## bins. The idea here is that we look for outlier cliques on the high
+## side of SSC-H. Here we look for as many different cliques as
+## possible. This does mean that sooner or later we'll want to run
+## something like MyLib::serialGrubbs to address more than one clique
+## falling into the bead zone.
+spadeBeadEvents <- function(clusterBy, mst, ch='SSC-H', tolerance, cutoff=0.05) {
+    bins <- lapply(clusterBy, spadeAssignBins, mst, tolerance=tolerance)
+    bins <- factor(apply(as.data.frame(bins), 1, function(x) { paste(as.numeric(x), collapse='') }))
+
+    ssc <- get.vertex.attribute(mst, .getChannelName(ch, 'medians'))
+    bin.meds <- aggregate(ssc, list(bins), mean)
+    
+    t <- grubbs.test(bin.meds$x)
+    if ( strsplit(t$alternative, ' ')[[1]][1] == 'highest' && t$p.value < cutoff )
+        return(bins==bin.meds$Group.1[which.max(bin.meds$x)])
+    else
+        return(rep(FALSE, length(bins)))
 }
 
 calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
