@@ -360,20 +360,18 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
         igraph::write.graph(mst, outfile, format="gml")
     }
     
-    bins <- lapply(names(ct.map), spadeInBiggestBin, mst=mst, tolerance=tolerance )
-
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
     ## maxpop call in any, rather than all, channels. UPDATE: actually
     ## this varies by cell population; CD19s, for example, will
     ## probably want to use 'any' here; may depend on the exact panel
     ## we end up using.
-    maxpop <- apply(do.call('rbind', bins), 2, all)
+    purity <- .spadePurityCalculation( names(ct.map), mst, tolerance=tolerance, accept='all' )
 
     if ( cleanup )
         for ( f in dir(path=output_dir) )
             file.remove( file.path(output_dir, f) )
 
-    return( sum(V(mst)$percenttotal[ as.logical(maxpop) ]) )
+    return( purity )
 }
 
 ## Wrapper functions to link the output of cellTypeHeuristic to the
@@ -382,9 +380,9 @@ spadeInBiggestBin <- function(...) {
     b <- spadeAssignBins(...)
     b == 1
 }
-spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
-    med <- .getChannelName(ch, type='medians')
-    cvs <- .getChannelName(ch, type='cvs')
+spadeAssignBins <- function(ch, mst, tolerance=3, suffix='_clust') {
+    med <- .getChannelName(ch, type='medians', suffix)
+    cvs <- .getChannelName(ch, type='cvs', suffix)
     stopifnot( all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
     b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
 }
@@ -392,7 +390,7 @@ spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
 .getChannelName <- function(ch, type=c('medians', 'cvs'), suffix='_clust' ) {
     type <- match.arg(type)
     ch <- sub('-', '', ch)
-    ch <- paste('medians', ch, suffix, sep='')
+    ch <- paste(type, ch, suffix, sep='')
     return(ch)
 }
 
@@ -407,18 +405,29 @@ spadeAssignBins <- function(ch, mst, tolerance, suffix='_clust') {
 ## possible. This does mean that sooner or later we'll want to run
 ## something like MyLib::serialGrubbs to address more than one clique
 ## falling into the bead zone.
-spadeBeadEvents <- function(clusterBy, mst, ch='SSC-H', tolerance, cutoff=0.05) {
-    bins <- lapply(clusterBy, spadeAssignBins, mst, tolerance=tolerance)
+spadeBeadEvents <- function(clusterBy, mst, ch='SSC-H', tolerance, cutoff=0.05, suffix='_clust') {
+
+    require(outliers)
+
+    bins <- lapply(clusterBy, spadeAssignBins, mst, tolerance=tolerance, suffix=suffix)
     bins <- factor(apply(as.data.frame(bins), 1, function(x) { paste(as.numeric(x), collapse='') }))
 
-    ssc <- get.vertex.attribute(mst, .getChannelName(ch, 'medians'))
-    bin.meds <- aggregate(ssc, list(bins), mean)
+    default <- rep(FALSE, length(bins))
     
+    ssc <- get.vertex.attribute(mst, .getChannelName(ch, 'medians', suffix))
+    bin.meds <- aggregate(ssc, list(bins), mean)
+
+    ## The best we can do if there aren't enough cliques to pass to
+    ## grubbs.test. This seems to be mainly an issue for CD16s, which
+    ## are often just too clean I guess.
+    if ( nrow(bin.meds) < 3 )
+        return(default)
+
     t <- grubbs.test(bin.meds$x)
     if ( strsplit(t$alternative, ' ')[[1]][1] == 'highest' && t$p.value < cutoff )
         return(bins==bin.meds$Group.1[which.max(bin.meds$x)])
     else
-        return(rep(FALSE, length(bins)))
+        return(default)
 }
 
 calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
@@ -564,14 +573,37 @@ outputCSV <- function(results, file) {
     return()
 }
 
-## USAGE: Rscript $0 uri outfile
-if ( ! interactive() ) {
-    args <- commandArgs(TRUE)
-    res  <- calculateCellPurities(uri=args[1])
-    outputCSV(res, file=args[2])
+.spadePurityCalculation <- function(ch, mst, accept=c('all','any'),
+                                    suffix='_clust', ...) {
+
+    ## Core function used to calculate cell purities. ch should be
+    ## only the fluorophore channels as specified by
+    ## cellTypeHeuristic.
+
+    require(igraph)
+
+    accept <- match.arg(accept)
+
+    ## FIXME it might be good to rationalise the number of times we
+    ## call the clique functions.
+    bins   <- lapply(ch, spadeInBiggestBin, mst, suffix=suffix, ...)
+
+    ## This also figures out cliques, but using scatter channels as well.
+    is.bead <- spadeBeadEvents(c(ch, 'FSC-H','SSC-H'), mst,
+                               ch='SSC-H', tolerance=3, suffix=suffix)
+
+    if ( accept == 'all')
+        maxpop <- apply(do.call('rbind', bins), 2, all)
+    else
+        maxpop <- apply(do.call('rbind', bins), 2, any)
+
+    total  <- sum(V(mst)$percenttotal[ !is.bead ])
+    purity <- sum(V(mst)$percenttotal[ as.logical(maxpop) & !is.bead ]) / total
+
+    return(purity*100)
 }
 
-recalculateSpadePurities <- function( files, accept=c('all','any'), tolerance=3 ) {
+recalculateSpadePurities <- function( files, verbose=FALSE, ... ) {
 
     ## Recalculate purities from a list of GML files. Function assumes
     ## the naming convention adopted by util/facs_clinstudyml.pl which
@@ -580,17 +612,11 @@ recalculateSpadePurities <- function( files, accept=c('all','any'), tolerance=3 
 
     require(igraph)
     
-    accept <- match.arg(accept)
-
-    .safeAssign <- function(ch, mst, ...) {
-        rc <- try( bins <- spadeAssignBins(ch, mst, ...) )
-        if ( inherits(rc, 'try-error') )
-            return(rep(NA, length(V(mst))))
-        return(bins)
-    }
-
     res <- list()
     for ( f in files ) {
+
+        if (verbose)
+            message("Processing file ", f)
 
         cell.type <- strsplit(f, '_')[[1]][3]
         ct.map <- cellTypeHeuristic( cell.type )
@@ -598,16 +624,22 @@ recalculateSpadePurities <- function( files, accept=c('all','any'), tolerance=3 
             stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
         mst    <- igraph:::read.graph(f, format="gml")
-        bins   <- lapply(names(ct.map), .safeAssign, mst=mst,
-                         tolerance=tolerance, suffix='clust' )
 
-        if ( accept == 'all')
-            maxpop <- apply(do.call('rbind', bins), 2, all)
+        ## Reading the graph back in from disk removes the "_" from "_clust".
+        rc <- try(purity <- .spadePurityCalculation(names(ct.map), mst, suffix='clust', ...))
+        if ( inherits(rc, 'try-error') )
+            res[[f]] <- NA
         else
-            maxpop <- apply(do.call('rbind', bins), 2, any)
-
-        res[[f]] <- sum(V(mst)$percenttotal[ as.logical(maxpop) ])
+            res[[f]] <- purity
     }
 
     return(res)
 }
+
+## USAGE: Rscript $0 uri outfile
+if ( ! interactive() ) {
+    args <- commandArgs(TRUE)
+    res  <- calculateCellPurities(uri=args[1])
+    outputCSV(res, file=args[2])
+}
+
