@@ -405,7 +405,7 @@ spadeAssignBins <- function(ch, mst, tolerance=3, suffix='_clust') {
 ## possible. This does mean that sooner or later we'll want to run
 ## something like MyLib::serialGrubbs to address more than one clique
 ## falling into the bead zone.
-spadeBeadEvents <- function(clusterBy, mst, ch='SSC-H', tolerance, cutoff=0.05, suffix='_clust') {
+spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance, cutoff=0.05, suffix='_clust', draw.plot=FALSE) {
 
     require(outliers)
 
@@ -414,20 +414,35 @@ spadeBeadEvents <- function(clusterBy, mst, ch='SSC-H', tolerance, cutoff=0.05, 
 
     default <- rep(FALSE, length(bins))
     
-    ssc <- get.vertex.attribute(mst, .getChannelName(ch, 'medians', suffix))
+    fsc <- get.vertex.attribute(mst, .getChannelName(ch1, 'medians', suffix))
+    ssc <- get.vertex.attribute(mst, .getChannelName(ch2, 'medians', suffix))
     bin.meds <- aggregate(ssc, list(bins), mean)
 
-    ## The best we can do if there aren't enough cliques to pass to
-    ## grubbs.test. This seems to be mainly an issue for CD16s, which
-    ## are often just too clean I guess.
-    if ( nrow(bin.meds) < 3 )
-        return(default)
+    ## Sometimes we get rubbish at the lower end of the distribution;
+    ## multiple clusters in a clique with low SSC-H, all equal. This
+    ## will affect the grubbs test result so we strip them out.
+    w  <- which.min(bin.meds$x)
+    ws <- bins!=bin.meds$Group.1[w]
+    m  <- ssc[ !ws ]
+    if ( length(m) > 1 && var(m) == 0 ) {
+        default  <- default | !ws   # Effectively count the low SSC-H rubbish as "bead events".
+    }
 
-    t <- grubbs.test(bin.meds$x)
-    if ( strsplit(t$alternative, ' ')[[1]][1] == 'highest' && t$p.value < cutoff )
-        return(bins==bin.meds$Group.1[which.max(bin.meds$x)])
-    else
-        return(default)
+    ## We deliberatly force the line through the origin.
+    resids <- residuals(lm(ssc[ws]~0+fsc[ws]))
+
+    ## Find all the clusters which look like outliers in the model.
+    ol <- ! serialGrubbs(resids, p.value=1e-6, strip='highest')
+
+    ## Discard all cliques containing a cluster in the outlier list.
+    default[ws] <- default[ws] | bins[ws] %in% bins[ws][ol]
+
+    ## This may turn out to be a useful diagnostic plot. Note we're
+    ## plotting clusters here, not events.
+    if (draw.plot)
+        plot(fsc, ssc, col=cols[factor(default)])
+
+    return(default)
 }
 
 calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
@@ -574,7 +589,7 @@ outputCSV <- function(results, file) {
 }
 
 .spadePurityCalculation <- function(ch, mst, accept=c('all','any'),
-                                    suffix='_clust', ...) {
+                                    suffix='_clust', plot.beadEvents=FALSE, ...) {
 
     ## Core function used to calculate cell purities. ch should be
     ## only the fluorophore channels as specified by
@@ -586,11 +601,11 @@ outputCSV <- function(results, file) {
 
     ## FIXME it might be good to rationalise the number of times we
     ## call the clique functions.
-    bins   <- lapply(ch, spadeInBiggestBin, mst, suffix=suffix, ...)
+    bins   <- lapply(c(ch, 'FSC-H','SSC-H'), spadeInBiggestBin, mst, suffix=suffix, ...)
 
     ## This also figures out cliques, but using scatter channels as well.
     is.bead <- spadeBeadEvents(c(ch, 'FSC-H','SSC-H'), mst,
-                               ch='SSC-H', tolerance=3, suffix=suffix)
+                               tolerance=3, suffix=suffix, draw.plot=plot.beadEvents)
 
     if ( accept == 'all')
         maxpop <- apply(do.call('rbind', bins), 2, all)
