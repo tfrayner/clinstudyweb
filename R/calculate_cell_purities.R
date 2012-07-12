@@ -422,20 +422,33 @@ spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance,
     ## multiple clusters in a clique with low SSC-H, all equal. This
     ## will affect the grubbs test result so we strip them out.
     w  <- which.min(bin.meds$x)
-    ws <- bins!=bin.meds$Group.1[w]
-    m  <- ssc[ !ws ]
+    w  <- bins!=bin.meds$Group.1[w]
+    m  <- ssc[ !w ]
+    ws <- TRUE
     if ( length(m) > 1 && var(m) == 0 ) {
+        ws       <- w
         default  <- default | !ws   # Effectively count the low SSC-H rubbish as "bead events".
+        bins     <- bins[ws]        # From here on we only look at interesting clusters.
     }
 
     ## We deliberatly force the line through the origin.
     resids <- residuals(lm(ssc[ws]~0+fsc[ws]))
 
     ## Find all the clusters which look like outliers in the model.
-    ol <- ! serialGrubbs(resids, p.value=1e-6, strip='highest')
+    ol <- ! serialGrubbs(resids, p.value=1e-3, strip='highest')
 
-    ## Discard all cliques containing a cluster in the outlier list.
-    default[ws] <- default[ws] | bins[ws] %in% bins[ws][ol]
+    ## Control for the clique mean SSC being an appropriately high
+    ## (outlier?) value. This might catch more of the larger bead
+    ## cliques while omitting the occasional main clique falsely
+    ## discarded by this function (i.e. both the clique and at least
+    ## one cluster in the clique must be outliers, albeit at different
+    ## thresholds).
+    bin.resids <- aggregate(resids, list(bins), mean)
+    olb <- ! serialGrubbs(bin.resids$x, p.value=0.05, strip='highest')
+
+    ## Discard all cliques containing a cluster in the outlier
+    ## list.
+    default[ws] <- default[ws] | (bins %in% bins[ol] & bins %in% bin.resids$Group.1[olb])
 
     ## This may turn out to be a useful diagnostic plot. Note we're
     ## plotting clusters here, not events.
