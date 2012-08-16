@@ -48,6 +48,13 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, ... ) {
     if ( ! is.list(.opts) )
         stop("Error: .opts must be a list object")
 
+    ## Workaround for a known SSL session reuse bug
+    ## ("SSL3_GET_RECORD:bad decompression"). Presumably this would
+    ## also be fixable on the server, but it doesn't hurt to have a
+    ## fix here as well.
+    if ( is.null( .opts$ssl.sessionid.cache ) )
+        .opts$ssl.sessionid.cache <- FALSE
+
     uri <- .csUriFromCurlHandle(auth)
 
     require(rjson)
@@ -66,7 +73,13 @@ csJSONQuery <- function( resultSet, condition=NULL, attributes=NULL, ... ) {
                                  writefunction=status$update)
         
     ## Check the response for errors.
-    status  <- rjson::fromJSON(status$value())
+    rc <- try(status  <- rjson::fromJSON(status$value()))
+
+    ## A message such as this indicates a possible bug in .csUriFromCurlHandle:
+    ##      "Error in rjson::fromJSON(status$value()) : no data to parse"
+    if ( inherits(rc, 'try-error') )
+        stop(sprintf("Error encountered: %s", rc))
+
     if ( ! isTRUE(status$success) )
         stop(status$errorMessage)
 
@@ -101,6 +114,6 @@ setMethod('.csJSONGeneric', signature(auth='list', uri='missing'), .csJSONUriCom
     ## expected place. That allows us to forego the requirement to
     ## pass uri around everywhere.
     uri <- RCurl::getCurlInfo(curl)[['effective.url']]
-    uri <- sub('/(query|json).*$', '', uri)  # Ugly as sin. FIXME!!!
+    uri <- sub('/(query|json|static).*$', '', uri)  # Ugly as sin. FIXME!!!
     return(uri)
 }

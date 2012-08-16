@@ -170,4 +170,7 @@ __PACKAGE__->many_to_many(
     "samples" => "channels", "sample_id"
 );
 
+# Default stringification method.
+use overload '""' => sub { shift->identifier }, fallback => 1;
+
 1;

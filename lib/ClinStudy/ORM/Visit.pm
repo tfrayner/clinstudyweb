@@ -293,4 +293,7 @@ __PACKAGE__->many_to_many(
     "emergent_groups" => "visit_emergent_groups", "emergent_group_id"
 );
 
+# Default stringification method.
+use overload '""' => sub { join(':', $_[0]->patient_id, $_[0]->date) }, fallback => 1;
+
 1;

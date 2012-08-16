@@ -148,4 +148,7 @@ __PACKAGE__->has_many(
   { "cascade_delete"     => 0 },
 );
 
+# Default stringification method.
+use overload '""' => sub { $_[0]->name . ' (' . $_[0]->date . ')' }, fallback => 1;
+
 1;

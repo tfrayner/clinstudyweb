@@ -37,7 +37,7 @@ use Catalyst::Runtime '5.70';
 
 use parent qw/Catalyst/;
 use Catalyst qw/ConfigLoader
-                Static::Simple
+                Static
 
                 Session
                 Session::State::Cookie
@@ -167,6 +167,12 @@ __PACKAGE__->deny_access( '/assayqcvalue' );
 # application to be able to manage session info.
 __PACKAGE__->allow_access_if( '/query', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/query' );
+
+# Block access to the static pages; this includes the datafiles
+# directories which we don't want the world to see.
+__PACKAGE__->allow_access( '/static/end' );
+__PACKAGE__->allow_access_if( '/static', [ qw( user ) ] );
+__PACKAGE__->deny_access( '/static' );
 
 # These are currently admin-only.
 __PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( user ) ] );

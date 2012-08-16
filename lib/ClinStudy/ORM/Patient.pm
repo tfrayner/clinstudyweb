@@ -432,4 +432,7 @@ __PACKAGE__->many_to_many(
     "prior_groups" => "patient_prior_groups", "prior_group_id"
 );
 
+# Default stringification method.
+use overload '""' => sub { shift->trial_id }, fallback => 1;
+
 1;

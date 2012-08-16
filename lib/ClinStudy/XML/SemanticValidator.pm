@@ -59,7 +59,7 @@ has 'report'       => ( is       => 'rw',
 
 {
     
-my %BAD_CV;
+my ( %BAD_CV, %BAD_PARENT );
 
 sub check_semantics {
 
@@ -80,16 +80,40 @@ sub check_semantics {
         $self->_append_report("\nNo invalid ControlledVocab terms found.\n");
     }
 
+    if ( scalar grep { defined $_ } values %BAD_PARENT ) {
+        $self->_append_report("\nIllegal reparenting of objects:\n\n");
+        foreach my $class ( sort keys %BAD_PARENT ) {
+            $self->_append_report("  $class:\n");
+            foreach my $obj ( @{$BAD_PARENT{$class}} ) {
+                $self->_append_report("    $obj\n");
+            }
+        }
+    }
+    else {
+        $self->_append_report("\nNo object reparenting errors found.\n");
+    }
+
     return ! $self->failure_flag;
 }
 
 sub load_object {
 
-    my ( $self, $hashref, $rs ) = @_;
+    my ( $self, $hashref, $rs, $parent_attr ) = @_;
 
-    my $class = $rs->result_source()->source_name();
+    my $source = $rs->result_source();
+    my $class  = $source->source_name();
 
-    my $obj = $rs->find( $hashref );
+    my ( $query_attr, $update_attr )
+        = $self->separate_unique_attributes( $source, $hashref, $parent_attr );
+
+    my $obj = $rs->find( $query_attr );
+
+    if ( $obj && defined $parent_attr ) {
+        if ( $hashref->{ $parent_attr } ne $obj->get_column($parent_attr) ) {
+            push @{ $BAD_PARENT{$class} }, $obj . q{};
+            $self->failure_flag(1);
+        }
+    }
 
     # These are never elements in their own right, so must be checked here.
     if ( $class eq 'ControlledVocab' ) {
@@ -104,6 +128,19 @@ sub load_object {
 
 } # End of BAD_CV scope.
 
+sub find_in_resultset {
+
+    my ( $self, $rs, $query ) = @_;
+
+    my $obj;
+    if ( defined $query ) {
+        $obj = $self->next::method( $rs, $query );
+    }
+
+    # Return the found object if we can; if not, return a dummy.
+    return $obj ? $obj : ClinStudy::XML::DummyObject->new( id => undef );
+}
+
 sub load_element {
 
     my ( $self, $element, $parent_ref ) = @_;
@@ -111,8 +148,11 @@ sub load_element {
     my $class = $element->nodeName();
 
     my $obj = $self->next::method( $element, $parent_ref );
-    
-    if ( $class eq 'Visit' ) {
+
+    if ( $class eq 'Patient' ) {
+        $self->_apply_patient_checks( $element, $parent_ref, $obj );
+    }
+    elsif ( $class eq 'Visit' ) {
         $self->_apply_visit_checks( $element, $parent_ref, $obj );
     }
     elsif ( $class eq 'Sample' ) {
@@ -174,6 +214,24 @@ sub handle_missing_referent {
     my ( $self, $class, $field, $value ) = @_;
 
     return ClinStudy::XML::DummyObject->new( id => undef );
+}
+
+sub _apply_patient_checks {
+
+    my ( $self, $element, $parent_ref, $obj ) = @_;
+
+    # Check for inadvertant changes to patient entry_date. This may
+    # also help detect duplicate trial ID assignments. Consider adding
+    # more such checks? FIXME.
+    my $trial_id   = $element->getAttribute('trial_id');
+    my $entry_date = $element->getAttribute('entry_date');
+    my $patient = $self->database()->resultset('Patient')->find({ trial_id => $trial_id} );
+    if ( $patient && $patient->entry_date() ne $entry_date ) {
+        $self->_append_report("Warning: Change detected in entry date for patient $trial_id.\n");
+        $self->warning_flag(1);
+    }
+
+    return;
 }
 
 sub _apply_visit_checks {
