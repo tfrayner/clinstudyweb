@@ -36,6 +36,7 @@ extends 'ClinStudy::XML::Schema';
 
 use XML::LibXML;
 use Storable qw(dclone);
+use List::Util qw(first);
 
 has 'database' => ( is    => 'ro',
                     isa   => 'DBIx::Class::Schema', );
@@ -176,7 +177,7 @@ sub node_name_to_parent_attr {
     my ( $self, $name ) = @_;
 
     # Top level doesn't count.
-    return if $name eq 'ClinStudyML';
+    return if first { $name eq $_ } qw(ClinStudyML ClinStudyAdminML);
 
     $name =~ s/(?<=.)([A-Z])/_$1/g;
     $name .= '_id';
