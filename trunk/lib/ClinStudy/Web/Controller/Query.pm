@@ -1,21 +1,19 @@
-#
-# This file is part of BeerFestDB, a beer festival product management
-# system.
+# Copyright 2012 Tim Rayner, University of Cambridge
 # 
-# Copyright (C) 2010 Tim F. Rayner
-#
-# This program is free software: you can redistribute it and/or modify
+# This file is part of ClinStudy::Web.
+# 
+# ClinStudy::Web is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
+# 
+# ClinStudy::Web is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with ClinStudy::Web.  If not, see <http://www.gnu.org/licenses/>.
 #
 # $Id$
 
@@ -206,22 +204,52 @@ sub index : Path {
     if ( $@ ) {
         $c->stash->{ 'success' } = JSON::Any->false();
         $c->stash->{ 'errorMessage' } = qq{Error in SQL query: $@};
+        $c->detach( $c->view( 'JSON' ) );
     }
-    else {
-        $c->stash->{ 'success' } = JSON::Any->true();
 
-        # Just take the column values and put them in a hash for JSON encoding.
-        my @hashes;
-        foreach my $res ( @results ) {
-            push @hashes, { $res->get_columns() };
+    # These are here for safety's sake; set config options to reduce
+    # the risk of denial-of-service.
+    my $obj_limit = $c->config->{ 'max_json_objects' };
+    if ( defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Query returns more than $obj_limit items; please use a more specific query.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
+    # Just take the column values and put them in a hash for JSON encoding.
+    my @hashes;
+    foreach my $res ( @results ) {
+        my %data = $res->get_columns();
+        if ( $dbclass eq 'DB::SampleDataFile' ) {
+            _add_sample_uri_path( \%data, $c );
         }
-
-        $c->stash->{ 'data' } = \@hashes;
+        elsif ( $dbclass eq 'DB::VisitDataFile' ) {
+            _add_visit_uri_path( \%data, $c );
+        }
+        push @hashes, \%data;
     }
-    
+
+    $c->stash->{ 'success' } = JSON::Any->true();
+    $c->stash->{ 'data' } = \@hashes;
     $c->detach( $c->view( 'JSON' ) );
 
     return;        
+}
+
+sub _add_sample_uri_path : Private {
+    my ( $data, $c ) = @_;
+    _add_datafile_uri_path( $data, $c, 'sample' );
+}
+
+sub _add_visit_uri_path : Private {
+    my ( $data, $c ) = @_;
+    _add_datafile_uri_path( $data, $c, 'visit' );
+}
+
+sub _add_datafile_uri_path : Private {
+    my ( $data, $c, $type ) = @_;
+    $data->{'uri'} = $c->uri_for("/static/datafiles/$type/" . $data->{'filename'}) . q{};    
 }
 
 =head1 MISCELLANEOUS QUERIES
@@ -671,7 +699,7 @@ sub visits : Local {
 
     my $query = $self->_decode_json( $c );
 
-    $self->_check_query_terms( $c, $query, [ qw(trial_id id date nominal_timepoint) ] );
+    $self->_check_query_terms( $c, $query, [ qw(trial_id id date nominal_timepoint data_file) ] );
 
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
@@ -692,6 +720,11 @@ sub visits : Local {
         push @{ $cond{-and} },
             { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'nominal_timepoint_id.value' ) };
         push @{ $attrs{ 'join' } }, 'nominal_timepoint_id';
+    }
+    if ( my $file = $query->{'data_file'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $file, 'visit_data_files.filename' ) };
+        push @{ $attrs{ 'join' } }, 'visit_data_files';
     }
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Visit', $query->{$EXTENDED_FLAG} );
@@ -739,7 +772,7 @@ sub samples : Local {
 
     my $query = $self->_decode_json( $c );
 
-    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type) ] );
+    $self->_check_query_terms( $c, $query, [ qw(id name trial_id date cell_type material_type data_file) ] );
 
     my ( %cond, %attrs );
     $attrs{ 'join' } = [];
@@ -756,15 +789,25 @@ sub samples : Local {
             { -or => $self->_qterm_to_sqlabstract_like_in( $trial_id, 'patient_id.trial_id' ) };
         push @{ $attrs{ 'join' } }, { 'visit_id' => 'patient_id' };
     }
-    if ( my $tpoint = $query->{'cell_type'} ) {
+    if ( my $date = $query->{'date'} ) {
         push @{ $cond{-and} },
-            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'cell_type_id.value' ) };
+            { -or => $self->_qterm_to_sqlabstract_like_in( $date, 'visit_id.date' ) };
+        push @{ $attrs{ 'join' } }, 'visit_id';
+    }
+    if ( my $ct = $query->{'cell_type'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $ct, 'cell_type_id.value' ) };
         push @{ $attrs{ 'join' } }, 'cell_type_id';
     }
-    if ( my $tpoint = $query->{'material_type'} ) {
+    if ( my $mt = $query->{'material_type'} ) {
         push @{ $cond{-and} },
-            { -or => $self->_qterm_to_sqlabstract_like_in( $tpoint, 'material_type_id.value' ) };
+            { -or => $self->_qterm_to_sqlabstract_like_in( $mt, 'material_type_id.value' ) };
         push @{ $attrs{ 'join' } }, 'material_type_id';
+    }
+    if ( my $file = $query->{'data_file'} ) {
+        push @{ $cond{-and} },
+            { -or => $self->_qterm_to_sqlabstract_like_in( $file, 'sample_data_files.filename' ) };
+        push @{ $attrs{ 'join' } }, 'sample_data_files';
     }
 
     $self->_prepare_query_data_and_detach( $c, \%cond, \%attrs, 'Sample', $query->{$EXTENDED_FLAG} );
@@ -1047,6 +1090,24 @@ sub _prepare_query_data_and_detach : Private {
         $c->detach( $c->view( 'JSON' ) );
     }
 
+    # These are here for safety's sake; set config options to reduce
+    # the risk of denial-of-service.
+    my $obj_limit = $c->config->{ 'max_json_objects' };
+    if ( defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Query returns more than $obj_limit items; please use a more specific query.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+    $obj_limit = $c->config->{ 'max_json_objects_extended' };
+    if ( $dump_rels && defined $obj_limit && scalar @results > $obj_limit ) {
+        $c->stash->{ 'success' } = JSON::Any->false();
+        $c->stash->{ 'errorMessage' }
+            = qq{Error: Extended query returns more than $obj_limit items; please use a more }.
+                qq{specific query or omit the request for extended relationship annotation.};
+        $c->detach( $c->view( 'JSON' ) );
+    }
+
     foreach my $res ( @results ) {
         my %obj;
 
@@ -1058,7 +1119,7 @@ sub _prepare_query_data_and_detach : Private {
         # substantial db query load.
         my $method = $methodmap{ $class };
         if ( defined $method && defined $dump_rels ) {
-            $self->$method( $res, \%obj );
+            $self->$method( $res, \%obj, $c );
         }
 
         push @objs, \%obj;            
@@ -1095,7 +1156,7 @@ sub _extract_db_columns : Private {
 
 sub _summarise_relationships : Private {
 
-    my ( $self, $obj, $relationship, $cols ) = @_;
+    my ( $self, $obj, $relationship, $cols, $c ) = @_;
 
     my @related;
     foreach my $rel ( $obj->$relationship ) {
@@ -1108,6 +1169,14 @@ sub _summarise_relationships : Private {
         # This is perhaps a little out of place but it's a convenient spot to do this.
         if ( $relationship eq 'test_results' ) {
             $relhash{ 'value' } = _get_test_value( $rel );
+        }
+
+        # We add phenodata file URIs here.
+        if ( $relationship eq 'sample_data_files' ) {
+            _add_sample_uri_path( \%relhash, $c );
+        }
+        elsif ( $relationship eq 'visit_data_files' ) {
+            _add_visit_uri_path( \%relhash, $c );
         }
 
         push @related, \%relhash;
@@ -1127,43 +1196,18 @@ sub _extract_column_value : Private {
         my $relsource = $source->related_source( $col );
         ( $key ) = ( $col =~ m/(.*)_id/ );
 
-        # Might it be better to set up default stringification methods in the ORM? FIXME.
-        if ( $relsource->source_name() eq 'ControlledVocab' ) {
-            if ( my $cv = $obj->$col ) {
-                $value = $cv->get_column('value');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'PriorGroup' ) {
-            if ( my $pg = $obj->$col ) {
-                $value = $pg->type_id()->get_column('value') . ': ' . $pg->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'EmergentGroup' ) {
-            if ( my $eg = $obj->$col ) {
-                $value = $eg->type_id()->get_column('value') . ': ' . $eg->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Test' ) {
-            if ( my $test = $obj->$col ) {
-                $value = $test->get_column('name');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Patient' ) {
-            $key = 'trial_id';
-            if ( my $test = $obj->$col ) {
-                $value = $test->get_column('trial_id');
-            }
-        }
-        elsif ( $relsource->source_name() eq 'Visit' ) {
+        # Visit is a special case because there isn't really a formal
+        # identifier that one can use to pull out more visits.
+        if ( $relsource->source_name() eq 'Visit' ) {
             $key = 'visit_id';
             if ( my $test = $obj->$col ) {
                 $value = $test->get_column('id');
             }
         }
-        elsif ( $relsource->source_name() eq 'AssayBatch' ) {
-            if ( my $ab = $obj->$col ) {
-                $value = $ab->get_column('name') . ' (' . $ab->get_column('date') . ')';
-            }
+        else {
+
+            # The affected ResultSets all have stringification methods.
+            $value = $obj->$col . q{};
         }
     }
     else {
@@ -1176,14 +1220,12 @@ sub _extract_column_value : Private {
 
 sub _extract_patient_relationships : Private {
 
-    my ( $self, $res, $patient ) = @_;
+    my ( $self, $res, $patient, $c ) = @_;
 
     # Various relationships (e.g. Visit, Study, AdverseEvents). Note
     # that ideally anything not covered by a full query_* action would
-    # be dumped in its entirety here (FIXME). In such cases we don't
-    # bother returning the id value. ALSO FIXME consider only
-    # returning a subset of these by default, depending on how well
-    # these queries perform.
+    # be dumped in its entirety here. In such cases we don't
+    # bother returning the id value.
     my %relationship = (
         adverse_events       => [ qw(id type start_date) ],
         clinical_features    => [ qw(type_id) ],
@@ -1200,7 +1242,7 @@ sub _extract_patient_relationships : Private {
         visits               => [ qw(id date nominal_timepoint_id) ],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $patient->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $patient->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
 
     return;
@@ -1208,7 +1250,7 @@ sub _extract_patient_relationships : Private {
 
 sub _extract_visit_relationships : Private {
 
-    my ( $self, $res, $visit ) = @_;
+    my ( $self, $res, $visit, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1221,7 +1263,7 @@ sub _extract_visit_relationships : Private {
         visit_data_files      => [qw(filename type_id)], 
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $visit->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1229,7 +1271,7 @@ sub _extract_visit_relationships : Private {
 
 sub _extract_sample_relationships : Private {
 
-    my ( $self, $res, $sample ) = @_;
+    my ( $self, $res, $sample, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1237,7 +1279,7 @@ sub _extract_sample_relationships : Private {
         sample_data_files      => [qw(filename type_id)], 
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $sample->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1245,7 +1287,7 @@ sub _extract_sample_relationships : Private {
 
 sub _extract_assay_relationships : Private {
 
-    my ( $self, $res, $assay ) = @_;
+    my ( $self, $res, $assay, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
@@ -1253,7 +1295,7 @@ sub _extract_assay_relationships : Private {
         assay_qc_values         => [qw(name type value)],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $assay->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1261,14 +1303,14 @@ sub _extract_assay_relationships : Private {
 
 sub _extract_prior_treatment_relationships : Private {
 
-    my ( $self, $res, $prior_treatment ) = @_;
+    my ( $self, $res, $prior_treatment, $c ) = @_;
 
     # See notes for the corresponding patient method.
     my %relationship = (
         drugs                 => [qw(name_id dose dose_unit_id dose_freq_id dose_regime)],
     );
     while ( my ( $rel, $cols ) = each %relationship ) {
-        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols );
+        $prior_treatment->{ $rel } = $self->_summarise_relationships( $res, $rel, $cols, $c );
     }
                                         
     return;
@@ -1731,6 +1773,24 @@ sub _get_test_value : Private {
     return $value;
 }
 
+=head2 access_denied
+
+The default action called if the user attempts to access the JSON API
+while not logged in.
+
+=cut
+
+sub access_denied : Private {
+
+    my ( $self, $c, $action ) = @_;
+
+    $c->res->status('403');
+
+    $c->stash->{ 'errorMessage' } = qq{Error: Not logged in.};
+    $c->stash->{ 'success' } = JSON::Any->false();
+    $c->detach( $c->view( 'JSON' ) );
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>
@@ -1739,7 +1799,7 @@ Tim F. Rayner <tfrayner@gmail.com>
 
 Copyright (C) 2010-2012 by Tim F. Rayner
 
-This library is released under version 3 of the GNU General Public
+This library is released under version 2 of the GNU General Public
 License (GPL).
 
 =cut

@@ -207,4 +207,6 @@ __PACKAGE__->many_to_many(
   { "cascade_delete"   => 0 },
 );
 
+use overload '""' => sub { join(':', $_[0]->visit_id, $_[0]->test_id, $_[0]->date) }, fallback => 1;
+
 1;

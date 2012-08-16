@@ -129,5 +129,8 @@ __PACKAGE__->belongs_to("sample_id", "ClinStudy::ORM::Sample", { id => "sample_i
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:arZlH0otz5z9IuXe+E4tdQ
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+# Default stringification method.
+use overload '""' => sub { join(':', $_[0]->assay_id,
+                                $_[0]->sample_id, $_[0]->label_id) }, fallback => 1;
+
 1;

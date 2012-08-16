@@ -156,4 +156,7 @@ __PACKAGE__->many_to_many(
   { "cascade_delete"   => 0 },
 );
 
+# Default stringification method.
+use overload '""' => sub { $_[0]->type_id . ':' . $_[0]->name }, fallback => 1;
+
 1;

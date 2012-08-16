@@ -21,6 +21,7 @@ no_index:
     - t
 recommends:
   Bio::MAGETAB: 1.1
+  FCGI: 0.74
   FCGI::ProcManager: 0
   LWP::UserAgent: 0
   Term::ReadKey: 0
@@ -36,7 +37,7 @@ requires:
   Catalyst::Plugin::Session: 0.19
   Catalyst::Plugin::Session::State::Cookie: 0.09
   Catalyst::Plugin::Session::Store::FastMmap: 0.05
-  Catalyst::Plugin::Static::Simple: 0.20
+  Catalyst::Plugin::Static: 0.11
   Catalyst::Runtime: 5.71
   Catalyst::View::JSON: 0.30
   Catalyst::View::TT: 0.34

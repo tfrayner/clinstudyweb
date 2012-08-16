@@ -29,7 +29,7 @@ all_from 'lib/ClinStudy/Web.pm';
 
 requires 'Catalyst::Runtime'                              => '5.71';
 requires 'Catalyst::Plugin::ConfigLoader'                 => '0.20';
-requires 'Catalyst::Plugin::Static::Simple'               => '0.20';
+requires 'Catalyst::Plugin::Static'                       => '0.11';
 requires 'Catalyst::Action::RenderView'                   => '0.08';
 requires 'Catalyst::Controller::REST'                     => '0.89';
 requires 'Catalyst::Controller::HTML::FormFu'             => '0.06001';
@@ -62,6 +62,11 @@ requires 'Spreadsheet::Read'                              => '0.45';
 requires 'XML::Simple'                                    => '2.18';
 
 test_requires 'Test::DBIx::Class' => '0.09';
+
+# Some earlier versions don't seem to play nicely with
+# Catalyst::Plugin::Static, leading to broken image links. Only needed
+# when running under FastCGI.
+recommends 'FCGI' => '0.74';
 
 # These are only required for MAGE-TAB export, a non-essential function.
 recommends 'Bio::MAGETAB' => '1.1';

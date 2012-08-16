@@ -142,5 +142,8 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4AljLqD1KHHQd2xSo+ZYVw
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+use overload '""' => sub { join(':', $_[0]->controlled_vocab_id,
+                                $_[0]->relationship_id,
+                                $_[0]->target_id ) }, fallback => 1;
+
 1;

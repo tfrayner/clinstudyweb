@@ -111,5 +111,6 @@ __PACKAGE__->belongs_to("test_id", "ClinStudy::ORM::Test", { id => "test_id" });
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NC063OQ4p7LgI8IQSx9dVQ
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+use overload '""' => sub { join(':', $_[0]->test_id, $_[0]->possible_value_id) }, fallback => 1;
+
 1;

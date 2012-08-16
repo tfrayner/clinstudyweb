@@ -171,7 +171,8 @@ sub _update_testresult_attrs {
     }
 
     # Remap value to controlled_value as appropriate.
-    my $test = $self->database()->resultset('Test')->find($row_ref->{'test_id'});
+    my $test = $self->find_in_resultset(
+        $self->database()->resultset('Test'), $row_ref->{'test_id'});
 
     # Rewrite $row_ref to repoint controlled_values to the correct
     # ControlledVocab row.
@@ -228,7 +229,7 @@ sub load_element {
     my $obj;
     if ( $class eq 'TestResult' ) {
 
-        if ( exists( $parent_ref->{'test_result_id'} ) ) {
+        if ( defined $parent_ref->{'test_result_id'} ) {
 
             # We handle nested ChildTestResults here as a special
             # case. The alternative would have been another many-to-many
@@ -241,7 +242,7 @@ sub load_element {
             $self->_update_testresult_attrs( $element, $parent_ref );
 
             # Retrieve the parent TestResult.
-            my $parent = $rs->find( $parent_id )
+            my $parent = $self->find_in_resultset( $rs, $parent_id )
                 or croak("Error: Unable to find parent TestResult ($parent_id).");
 
             # Link the child to the same container as the parents.
@@ -250,14 +251,14 @@ sub load_element {
             }
 
             # Create the child TestResult.
-            my $obj = $self->load_object($parent_ref, $rs);
+            my $obj = $self->load_object($parent_ref, $rs); # no parent_attr required.
 
             # Link it to its parent.
             my $sub_rs = $self->database()->resultset('TestAggregation');
             $self->load_object({
                 aggregate_result_id => $parent->id(),
                 test_result_id      => $obj->id(),
-            }, $sub_rs);
+            }, $sub_rs);  # no parent_attr required.
         }
         else {
 
@@ -280,7 +281,8 @@ sub load_element {
             $self->process_attr( $attr, $parent_ref );
         }
         
-        my $visit = $self->database()->resultset('Visit')->find($parent_id)
+        my $visit = $self->find_in_resultset(
+            $self->database()->resultset('Visit'), $parent_id )
             or croak("Error: Unable to find parent Visit ($parent_id).");
 
         my $obj = $self->load_object( $parent_ref, $rs );
@@ -300,7 +302,8 @@ sub load_element {
             $self->process_attr( $attr, $parent_ref );
         }
         
-        my $patient = $self->database()->resultset('Patient')->find($parent_id)
+        my $patient = $self->find_in_resultset(
+            $self->database()->resultset('Patient'), $parent_id)
             or croak("Error: Unable to find parent Patient ($parent_id).");
 
         my $obj = $self->load_object( $parent_ref, $rs );
@@ -324,13 +327,13 @@ sub load_object {
     # attempts to load invalid CVs. Note that it would be nice if we
     # could prevalidate XML against the database to avoid such
     # attempts.
-    my ( $self, $hashref, $rs ) = @_;
+    my ( $self, $hashref, $rs, $parent_attr ) = @_;
 
     my $class = $rs->result_source()->source_name();
 
     my $obj;
     if ( $class eq 'ControlledVocab' && $self->is_constrained() ) {
-        $obj = $rs->find( $hashref );
+        $obj = $self->find_in_resultset( $rs, $hashref );
         unless ( $obj ) {
             my $mess =
                 sprintf("Error: Attempting to load an invalid ControlledVocab term (%s => %s). Allowed values:\n",
@@ -341,10 +344,19 @@ sub load_object {
         }
     }
     else {
-        $obj = $self->next::method( $hashref, $rs );
+        $obj = $self->next::method( $hashref, $rs, $parent_attr );
     }
 
     return $obj;
+}
+
+sub find_in_resultset {
+
+    # This is also overridden in the SemanticValidator subclass so
+    # that XML can be checked without e.g. loading in all the Visits.
+    my ( $self, $rs, $query ) = @_;
+
+    return $rs->find( $query );
 }
 
 1;

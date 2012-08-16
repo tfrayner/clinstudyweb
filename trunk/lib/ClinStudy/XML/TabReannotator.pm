@@ -172,6 +172,7 @@ sub _recurse_element_tree {
                 # database column naming conventions. FIXME maybe look
                 # at generalising this using introspection?
                 my $parent_class = $db_parent->result_source->source_name();
+                $parent_class =~ s/(?<!^)([A-Z])/_$1/g;
                 my $parent_attr  = lc $parent_class . '_id';
                 $query_attrs{ $parent_attr } = $db_parent->id();
             }
