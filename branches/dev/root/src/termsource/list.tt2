@@ -18,7 +18,7 @@
         <tr> 
         <td> [% ts.name | html %] </td>
         <td> [% ts.version | html %] &nbsp; </td>
-        <td> [% ts.uri | truncate(30) | html %] &nbsp; </td>
+        <td> [% ts.uri | truncate(60) | html %] &nbsp; </td>
         <td> <a href="[% c.uri_for("/termsource/edit/$ts.id") | html %]">Edit</a>
              <a href="[% c.uri_for("/termsource/delete/$ts.id") | html %]"     
              onclick="return confirm('Really delete term source [% ts.name %] ?');">Delete</a> </td>
