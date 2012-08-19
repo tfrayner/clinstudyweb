@@ -64,6 +64,10 @@ sub favicon : Path('/favicon.ico') {
     $c->serve_static('image/vnd.microsoft.icon');
 }
 
+=head2 end
+
+=cut
+
 sub end : Private {
 
     my ( $self, $c ) = @_;
