@@ -8,11 +8,11 @@ use CSWTestLib;
 BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
 BEGIN { use_ok 'ClinStudy::Web::Controller::EmergentGroup' }
 
-ok( request('/emergentgroup')->is_success,        'Index request should succeed'  );
-ok( request('/emergentgroup/list')->is_success,   'List request should succeed'   );
-ok( request('/emergentgroup/view')->is_success,   'View request should succeed'   );
-ok( request('/emergentgroup/edit')->is_success,   'Edit request should succeed'   );
-ok( request('/emergentgroup/search')->is_success, 'Search request should succeed' );
-ok( request('/emergentgroup/delete')->is_success, 'Delete request should succeed' );
+is( request('/emergentgroup')->code, 403,        'Index action should exist but be blocked (403)'  );
+is( request('/emergentgroup/list')->code, 403,   'List action should exist but be blocked (403)'   );
+is( request('/emergentgroup/view')->code, 403,   'View action should exist but be blocked (403)'   );
+is( request('/emergentgroup/edit')->code, 403,   'Edit action should exist but be blocked (403)'   );
+is( request('/emergentgroup/search')->code, 403, 'Search action should exist but be blocked (403)' );
+is( request('/emergentgroup/delete')->code, 403, 'Delete action should exist but be blocked (403)' );
 
 

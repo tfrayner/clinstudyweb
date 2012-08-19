@@ -8,11 +8,11 @@ use CSWTestLib;
 BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
 BEGIN { use_ok 'ClinStudy::Web::Controller::Study' }
 
-ok( request('/study')->is_success,        'Index request should succeed'  );
-ok( request('/study/list')->is_success,   'List request should succeed'   );
-ok( request('/study/view')->is_success,   'View request should succeed'   );
-ok( request('/study/edit')->is_success,   'Edit request should succeed'   );
-ok( request('/study/search')->is_success, 'Search request should succeed' );
-ok( request('/study/delete')->is_success, 'Delete request should succeed' );
+is( request('/study')->code, 403,        'Index action should exist but be blocked (403)'  );
+is( request('/study/list')->code, 403,   'List action should exist but be blocked (403)'   );
+is( request('/study/view')->code, 403,   'View action should exist but be blocked (403)'   );
+is( request('/study/edit')->code, 403,   'Edit action should exist but be blocked (403)'   );
+is( request('/study/search')->code, 403, 'Search action should exist but be blocked (403)' );
+is( request('/study/delete')->code, 403, 'Delete action should exist but be blocked (403)' );
 
 
