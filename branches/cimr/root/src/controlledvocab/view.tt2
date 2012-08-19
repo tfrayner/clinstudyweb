@@ -12,7 +12,7 @@
          <td>[% object.value | html %]</td></tr>
      <tr><th>Term Source:</th>
          <td>[% IF object.term_source_id.defined -%]
-               [%- object.term_source_id.name | html -%]
+               <a href="[% c.uri_for("/termsource/view", object.term_source_id.id) %]">[% object.term_source_id.name | html -%]</a>
              [%- ELSE -%]
                Locally defined term
              [%- END %]

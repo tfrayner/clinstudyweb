@@ -8,11 +8,11 @@ use CSWTestLib;
 BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
 BEGIN { use_ok 'ClinStudy::Web::Controller::RiskFactor' }
 
-ok( request('/riskfactor')->is_success,        'Index request should succeed'  );
-ok( request('/riskfactor/list')->is_success,   'List request should succeed'   );
-ok( request('/riskfactor/view')->is_success,   'View request should succeed'   );
-ok( request('/riskfactor/edit')->is_success,   'Edit request should succeed'   );
-ok( request('/riskfactor/search')->is_success, 'Search request should succeed' );
-ok( request('/riskfactor/delete')->is_success, 'Delete request should succeed' );
+is( request('/riskfactor')->code, 403,        'Index action should exist but be blocked (403)'  );
+is( request('/riskfactor/list')->code, 403,   'List action should exist but be blocked (403)'   );
+is( request('/riskfactor/view')->code, 403,   'View action should exist but be blocked (403)'   );
+is( request('/riskfactor/edit')->code, 403,   'Edit action should exist but be blocked (403)'   );
+is( request('/riskfactor/search')->code, 403, 'Search action should exist but be blocked (403)' );
+is( request('/riskfactor/delete')->code, 403, 'Delete action should exist but be blocked (403)' );
 
 
