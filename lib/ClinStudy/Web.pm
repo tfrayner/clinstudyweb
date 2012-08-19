@@ -163,6 +163,12 @@ __PACKAGE__->deny_access( '/assaybatch' );
 __PACKAGE__->allow_access_if( '/assayqcvalue', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/assayqcvalue' );
 
+__PACKAGE__->allow_access_if( '/sampledatafile', [ qw( user ) ] );
+__PACKAGE__->deny_access( '/sampledatafile' );
+
+__PACKAGE__->allow_access_if( '/visitdatafile', [ qw( user ) ] );
+__PACKAGE__->deny_access( '/visitdatafile' );
+
 # This means the JSON query infrastructure needs the connecting
 # application to be able to manage session info.
 __PACKAGE__->allow_access_if( '/query', [ qw( user ) ] );
@@ -175,10 +181,16 @@ __PACKAGE__->allow_access( '/static/end' );
 __PACKAGE__->allow_access_if( '/static', [ qw( user ) ] );
 __PACKAGE__->deny_access( '/static' );
 
-# These are currently admin-only.
 __PACKAGE__->allow_access_if( '/controlledvocab',   [ qw( user ) ] );
 __PACKAGE__->deny_access( '/controlledvocab' );
 
+__PACKAGE__->allow_access_if( '/termsource',   [ qw( user ) ] );
+__PACKAGE__->deny_access( '/termsource' );
+
+__PACKAGE__->allow_access_if( '/phenotypequantity',   [ qw( user ) ] );
+__PACKAGE__->deny_access( '/phenotypequantity' );
+
+# These are currently admin-only.
 __PACKAGE__->allow_access_if( '/relatedvocab',   [ qw( admin ) ] );
 __PACKAGE__->deny_access( '/relatedvocab' );
 

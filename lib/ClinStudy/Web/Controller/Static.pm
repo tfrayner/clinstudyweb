@@ -77,6 +77,10 @@ sub secure_white : Path('/static/images/secure_white.gif') {
     $c->serve_static('image/gif');
 }
 
+=head2 end
+
+=cut
+
 sub end : Private {
 
     my ( $self, $c ) = @_;

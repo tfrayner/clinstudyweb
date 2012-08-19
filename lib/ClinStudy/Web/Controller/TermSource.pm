@@ -59,6 +59,42 @@ sub add : Local {
     $c->forward('edit', [undef]); 
 }
 
+=head2 edit
+
+Edit a given term source. This is restricted to admin-level users.
+
+=cut
+
+sub edit : Local { 
+
+    my ($self, $c, @args) = @_; 
+
+    if ( ! $c->check_any_user_role('admin') ) {
+        $c->stash->{error} = 'Sorry, you are not authorised to edit term sources.';
+        $c->detach( '/access_denied' );
+    }
+
+    $self->next::method( $c, @args )
+}
+
+=head2 delete
+
+Delete a given term source. This is restricted to admin-level users.
+
+=cut
+
+sub delete : Local { 
+
+    my ($self, $c, @args) = @_; 
+
+    if ( ! $c->check_any_user_role('admin') ) {
+        $c->stash->{error} = 'Sorry, you are not authorised to delete term sources.';
+        $c->detach( '/access_denied' );
+    }
+
+    $self->next::method( $c, @args )
+}
+
 =head1 AUTHOR
 
 Tim F. Rayner <tfrayner@gmail.com>

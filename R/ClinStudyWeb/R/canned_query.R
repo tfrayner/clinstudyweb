@@ -46,7 +46,7 @@ csVisits <- function(trial_id=NULL, id=NULL, date=NULL, nominal_timepoint=NULL,
     res <- .csJSONGeneric( query=query, action='query/visits', ... )
 
     ## Reorganise the results into data frames.
-    dat <- .csCannedJSONToDFs(res, 'visits', list(trial_id='trial_id', date='visit_date') )
+    dat <- .csCannedJSONToDFs(res, 'visits', list(patient='trial_id', date='visit_date', id='visit_id') )
 
     return(dat)
 }
@@ -133,6 +133,9 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
     query <- lapply(n, get, envir=parent.frame(n=1))
     names(query) <- n
 
+    query <- query[ ! sapply(query, is.null) ]
+    query <- lapply(query, as.character)
+
     ## Throw an error here if there are no query terms at all.
     if ( length(unlist(query)) == 0 )
         stop("Must provide some query parameters.")
@@ -155,7 +158,7 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
     dat <- list()
     dat[[coreAttr]] <- as.data.frame(do.call('rbind', lapply(res, function(x) {
       sapply(x[!w], function(y) ifelse(is.null(y), NA, y))
-    })))
+    })), stringsAsFactors=FALSE)
 
     ## For extended data, we include a record id columns. recordIdAttr
     ## is a list of source=target column names.
@@ -183,7 +186,7 @@ csPriorTreatments <- function(trial_id=NULL, id=NULL, type=NULL,
                                     function(x) {
                                       sapply(x, function(y) ifelse(is.null(y), NA, y))
                                     } ))
-          } )))
+          } )), stringsAsFactors=FALSE)
     }
 
     ## Rename common columns to more distinctive values
