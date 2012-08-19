@@ -49,9 +49,12 @@ $_->title_is($main_title, "Check for main page title") for $ua1, $ua2;
 $_->content_contains("Not logged in.",
     "Check we are NOT logged in") for $ua1, $ua2;
 
-$_->get_ok("http://localhost/patient/list", "Check patient list URL") for $ua1, $ua2;
-$_->content_contains($denied,
-                     "Check restricted access to patient list") for $ua1, $ua2;
+# Check that we can't just dive in and browse without logging in.
+foreach ( $ua1, $ua2 ) {
+    my @links = $_->find_all_links( url_regex => qr(patient) );
+    ok( scalar @links > 0, "Check there are links to patient data" );
+    $_->link_status_is( \@links, 403, "Check that patient data is restricted" );
+}
 
 # Log in as each user
 # Specify username and password on the URL
@@ -94,13 +97,13 @@ $_->content_contains(qq{/logout\">Log out</a>},
     "Both users should have a 'Log out' link") for $ua1, $ua2;
 
 # Check on user listing access.
-$ua1->content_lacks("List local database users", "testuser has no link to user listing");
-$ua2->content_contains("List local database users", "admin has link to user listing");
-$_->get_ok("http://localhost/user/list", "Navigate to user list") for $ua1, $ua2;
+$ua1->content_lacks("Manage local database users", "testuser has no link to user listing");
+$ua2->content_contains("Manage local database users", "admin has link to user listing");
+$ua2->get_ok("http://localhost/user/list", "Navigate to user list");
 
 # Regular user should be denied.
-$ua1->title_is("Access denied", "Check for denial of access");
-$ua1->content_contains($denied, "Check that regular users have no access to user list");
+$ua1->get("http://localhost/user/list");
+ok( $ua1->status == 403, "Check for denial of access");
 
 # Admin user gets access.
 $ua2->title_is("User List", "Check for admin-level user list title");

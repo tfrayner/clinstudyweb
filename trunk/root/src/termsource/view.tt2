@@ -9,7 +9,9 @@
      <tr><th>Version:</th>
          <td>[% object.version | html %]</td></tr>
      <tr><th>URI:</th>
-         <td>[% object.uri | html %]</td></tr>
+         <td>[% IF object.uri.defined -%]
+            <a href="[% object.uri | html %]">[% object.uri | html %]</a>
+             [%- END %]</td></tr>
   </tbody>
 </table>
 </fieldset>
