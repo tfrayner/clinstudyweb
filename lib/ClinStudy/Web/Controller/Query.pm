@@ -374,7 +374,7 @@ sub assay_drugs : Local {
 
     if ( $assay ) {
         $c->stash->{ 'success' } = JSON::Any->true();
-        $c->stash->{ 'data' } = $self->dump_assay_drugs($c, $assay, $query);
+        $c->stash->{ 'data' } = $self->_dump_assay_drugs($c, $assay, $query);
     }
     else {
         $c->stash->{ 'success' } = JSON::Any->false();
@@ -1432,7 +1432,7 @@ sub dump_sample_entity : Private {
     $dump{has_infection} = $visit->has_infection();
 
     ## Test results; default is now to dump nothing.
-    my $test_results = $self->dump_test_results( $c, $visit, $query );
+    my $test_results = $self->_dump_test_results( $c, $visit, $query );
 
     # We only want those TestResults which have no parents. FIXME is
     # there a better way via SQL::Abstract?
@@ -1441,18 +1441,18 @@ sub dump_sample_entity : Private {
                 @$test_results;
     $dump{test_result} = \%tests;
 
-    my $phenotypes = $self->dump_phenotype_quantities( $c, $visit, $query );
+    my $phenotypes = $self->_dump_phenotype_quantities( $c, $visit, $query );
 
     $dump{phenotype} = { map { $_->type_id()->value() => $_->value() } @$phenotypes };
 
-    my $transplant = $self->dump_transplant_data( $c, $visit, $query );
+    my $transplant = $self->_dump_transplant_data( $c, $visit, $query );
 
     $dump{transplant} = $transplant;
 
     return \%dump;
 }
 
-sub dump_test_results : Private {
+sub _dump_test_results : Private {
 
     my ( $self, $c, $visit, $query ) = @_;
 
@@ -1478,7 +1478,7 @@ sub dump_test_results : Private {
     return \@test_results;
 }
 
-sub dump_phenotype_quantities : Private {
+sub _dump_phenotype_quantities : Private {
 
     my ( $self, $c, $visit, $query ) = @_;
 
@@ -1543,7 +1543,7 @@ sub _find_closest_transplant : Private {
     return $sorted[0];
 }
 
-sub dump_transplant_data : Private {
+sub _dump_transplant_data : Private {
 
     my ( $self, $c, $visit, $query ) = @_;
 
@@ -1569,7 +1569,7 @@ sub dump_transplant_data : Private {
     return \%transplant;
 }
 
-sub dump_assay_drugs : Private {
+sub _dump_assay_drugs : Private {
 
     my ( $self, $c, $assay, $query ) = @_;
 
@@ -1581,7 +1581,7 @@ sub dump_assay_drugs : Private {
         push @chdata, {
             label   => $ch->label_id()->value(),
             sample  => $ch->sample_id()->name(),
-            drugs   => $self->dump_sample_drugs( $c, $ch->sample_id(), $query ),
+            drugs   => $self->_dump_sample_drugs( $c, $ch->sample_id(), $query ),
         };
     }
     $dump{channels} = \@chdata;
@@ -1589,7 +1589,7 @@ sub dump_assay_drugs : Private {
     return \%dump;
 }
 
-sub dump_sample_drugs : Private {
+sub _dump_sample_drugs : Private {
 
     my ( $self, $c, $sample, $query ) = @_;
 

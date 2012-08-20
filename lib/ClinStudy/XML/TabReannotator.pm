@@ -315,6 +315,12 @@ out in the appropriate column order (i.e. alphabetically sorted). The
 method then hands off control to the read method in the superclass
 (see L<ClinStudy::XML::TabReader>).
 
+=head2 recursive_cols_to_elements
+
+Core superclass method overridden here to redirect the code into
+building annotation trees for mapping onto tab-delimited file column
+names. Not designed for direct use.
+
 =head1 SEE ALSO
 
 L<ClinStudy::XML::Builder>,

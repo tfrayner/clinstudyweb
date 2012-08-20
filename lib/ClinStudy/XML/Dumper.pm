@@ -352,6 +352,9 @@ documentation on the superclass method.
 
 =head2 rel_to_attr
 
+Overridden method from the ClinStudy::XML::Export superclass which
+knows which class attributes reference other classes.
+
 =head1 SEE ALSO
 
 ClinStudy::XML::Export, ClinStudy::XML::Schema, ClinStudy::XML::Loader
