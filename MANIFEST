@@ -8,10 +8,12 @@ R/ClinStudyWeb/NAMESPACE
 R/ClinStudyWeb/R/anno_selector.R
 R/ClinStudyWeb/R/authentication.R
 R/ClinStudyWeb/R/batch_query.R
+R/ClinStudyWeb/R/canned_query.R
 R/ClinStudyWeb/R/csweb_query.R
 R/ClinStudyWeb/R/drug_query.R
 R/ClinStudyWeb/R/find_assays.R
 R/ClinStudyWeb/R/json_query.R
+R/ClinStudyWeb/man/csCannedJSONQuery.Rd
 R/ClinStudyWeb/man/csDrugList.Rd
 R/ClinStudyWeb/man/csDrugQuery.Rd
 R/ClinStudyWeb/man/csFindAssays.Rd
@@ -107,6 +109,7 @@ lib/ClinStudy/Web/Controller/RiskFactor.pm
 lib/ClinStudy/Web/Controller/Root.pm
 lib/ClinStudy/Web/Controller/Sample.pm
 lib/ClinStudy/Web/Controller/SampleDataFile.pm
+lib/ClinStudy/Web/Controller/Static.pm
 lib/ClinStudy/Web/Controller/Study.pm
 lib/ClinStudy/Web/Controller/TermSource.pm
 lib/ClinStudy/Web/Controller/Test.pm
@@ -590,6 +593,7 @@ t/controller_RelatedVocab.t
 t/controller_RiskFactor.t
 t/controller_Sample.t
 t/controller_SampleDataFile.t
+t/controller_Static.t
 t/controller_Study.t
 t/controller_TermSource.t
 t/controller_Test.t
@@ -611,5 +615,7 @@ util/clinstudy_import.pl
 util/clinstudy_magetab.pl
 util/import_affy_data.pl
 util/merge_clinstudyml.pl
+util/pheno2clinstudy.pl
+util/reannotate_tab.pl
 util/recalculate_aggregate_tests.pl
 util/tab2clinstudy.pl
