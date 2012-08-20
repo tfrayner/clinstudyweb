@@ -13,7 +13,7 @@
    <font color="[%- site.rgb.orange -%]">partial assays run</font>;
    <font color="[%- site.rgb.red -%]">no assays run</font>;
    <font color="[%- site.rgb.grey2 -%]">missing sample</font>;
-   <font color="[%- site.rgb.black -%]">sample not good</font>
+   <font color="[%- site.rgb.black -%]">sample expired</font>
 </p>
 
 <table class="bigtable">

@@ -1183,6 +1183,13 @@ This method should not be called directly, but is called for you during
 C<< $form->process >> by fields that inherit from
 L<HTML::FormFu::Element::_Group>. This includes:
 
+=head2 is_direct_child
+
+Arguments: [$base], [$field]
+
+Returns 0 if there is a node with nested_name set on the path from
+$field to the $base form object.
+
 =over
 
 =item L<HTML::FormFu::Element::Select>
