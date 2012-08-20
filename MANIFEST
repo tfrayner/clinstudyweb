@@ -33,6 +33,7 @@ README
 TODO
 clinstudy_web.yml-example
 clinstudy_web_testing.yml
+inc/File/Copy/Recursive.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
