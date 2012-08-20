@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use Test::More tests => 18;
 
+use lib 't/lib';
+use CSWTestLib;
+
 BEGIN { use_ok 'Catalyst::Test', 'ClinStudy::Web' }
 BEGIN { use_ok 'ClinStudy::Web::Controller::Query' }
 
