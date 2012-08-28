@@ -17,8 +17,12 @@
 ##
 ## $Id$
 
+## This file contains code implementing two different approaches to
+## automated gating of FACS cell purity data; so-called "heuristic"
+## and "spade" approaches. The latter approach is the more promising
+## of the two by a sizeable margin.
 
-## Current status:
+## Heuristic approach; Current status:
 ##
 ## - CD4, CD8 and CD14 will probably work with just a little tweaking.
 ##
@@ -375,7 +379,8 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
 }
 
 ## Wrapper functions to link the output of cellTypeHeuristic to the
-## input of igraphCliques.
+## input of igraphCliques (this function can be found in the
+## accompanying file, clique_igraph.R).
 spadeInBiggestBin <- function(...) {
     b <- spadeAssignBins(...)
     b == 1
