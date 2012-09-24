@@ -408,7 +408,7 @@ spadeAssignBins <- function(ch, mst, tolerance=3, suffix='_clust') {
 ## bins. The idea here is that we look for outlier cliques on the high
 ## side of SSC-H. Here we look for as many different cliques as
 ## possible. This does mean that sooner or later we'll want to run
-## something like MyLib::serialGrubbs to address more than one clique
+## something like serialGrubbs to address more than one clique
 ## falling into the bead zone.
 spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance, cutoff=0.05, suffix='_clust', draw.plot=FALSE) {
 
@@ -583,6 +583,10 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
             next
         }
 
+        ## NULL doesn't behave well downstream.
+        if (is.null(samp$cell_purity))
+            samp$cell_purity <- NA
+
         writeLog(sprintf("Results: %s=%f (%s)", samp$name, pur, samp$cell_purity))
 
         results[[n]] <- c(sample=samp$name, purity=pur, manual=samp$cell_purity)
@@ -676,3 +680,35 @@ if ( ! interactive() ) {
     outputCSV(res, file=args[2])
 }
 
+## Function which just runs grubbs.test over and over again until
+## we're happy. Don't use this for any analytical purposes.
+serialGrubbs <- function(x, p.value=0.05, strip=c('both','highest','lowest')) {
+
+    require(outliers)
+
+    strip <- match.arg(strip)
+
+    w <- rep(TRUE, length(x))
+
+    t <- grubbs.test(x)
+
+    while ( t$p.value < p.value ) {
+        althyp <- strsplit(t$alternative, ' ')[[1]][1]
+        if ( althyp == 'highest' )
+            if ( strip %in% c('both','highest') )
+                w[w][which.max(x[w])] <- FALSE
+            else
+                break
+        else if ( althyp == 'lowest' )
+            if ( strip %in% c('both','lowest') )
+                w[w][which.min(x[w])] <- FALSE
+            else
+                break
+        else
+            stop("Unclear alternative hypothesis from grubbs.test: ", t$alternative)
+
+        t <- grubbs.test(x[w])
+    }
+
+    return(w)
+}
