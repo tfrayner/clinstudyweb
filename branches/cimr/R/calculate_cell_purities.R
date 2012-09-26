@@ -331,7 +331,7 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
     return(x$p)
 }
 
-spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=3, archive_dir, plot=FALSE, cleanup=FALSE ) {
+spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=4, archive_dir, plot=FALSE, cleanup=FALSE ) {
 
     require(spade)
 
@@ -385,7 +385,7 @@ spadeInBiggestBin <- function(...) {
     b <- spadeAssignBins(...)
     b == 1
 }
-spadeAssignBins <- function(ch, mst, tolerance=3, suffix='_clust') {
+spadeAssignBins <- function(ch, mst, tolerance=4, suffix='_clust') {
     med <- .getChannelName(ch, type='medians', suffix)
     cvs <- .getChannelName(ch, type='cvs', suffix)
     stopifnot( all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
