@@ -623,16 +623,18 @@ outputCSV <- function(results, file) {
 
     ## FIXME it might be good to rationalise the number of times we
     ## call the clique functions.
-    bins   <- lapply(c(ch, 'FSC-H','SSC-H'), spadeInBiggestBin, mst, suffix=suffix, ...)
+    bins   <- lapply(c(ch, 'FSC-H','SSC-H'), spadeAssignBins, mst, suffix=suffix, ...)
 
     ## This also figures out cliques, but using scatter channels as well.
     is.bead <- spadeBeadEvents(c(ch, 'FSC-H','SSC-H'), mst,
                                tolerance=3, suffix=suffix, draw.plot=plot.beadEvents)
 
-    if ( accept == 'all')
-        maxpop <- apply(do.call('rbind', bins), 2, all)
-    else
+    if ( accept == 'all') {
+        cbins  <- apply(do.call('rbind', bins), 2, paste, collapse=':')
+        maxpop <- cbins == names(which.max(table(cbins)))
+    } else {
         maxpop <- apply(do.call('rbind', bins), 2, any)
+    }
 
     total  <- sum(V(mst)$percenttotal[ !is.bead ])
     purity <- sum(V(mst)$percenttotal[ as.logical(maxpop) & !is.bead ]) / total
