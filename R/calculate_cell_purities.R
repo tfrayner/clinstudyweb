@@ -50,6 +50,11 @@ cellTypeHeuristic <- function(ct) {
 
 facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1:6 ) {
 
+    if ( any(sapply(list(pre, pos), is.null) ) ) {
+        writeLog("Either pre or pos files not found.")
+        next
+    }
+
     require(flowCore)
     require(flowClust)
     require(flowViz)
@@ -333,6 +338,11 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
 
 spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=4, archive_dir, plot=FALSE, cleanup=FALSE ) {
 
+    if ( is.null(pos) ) {  # pre not actually required for spade calculations.
+        writeLog("Required pos file not found.")
+        next
+    }
+
     require(spade)
 
     if ( plot & cleanup )
@@ -554,8 +564,8 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
         pre <- .retrieveFileInfo(samp$id, 'FACS pre', uri, .opts, auth)
         pos <- .retrieveFileInfo(samp$id, 'FACS positive', uri, .opts, auth)
 
-        if ( any(sapply(list(pre, pos), is.null) ) ) {
-            writeLog("Either pre or pos files not found.")
+        if ( is.null(pos) ) {  # pre not actually required for spade calculations.
+            writeLog("Required pos file not found.")
             next
         }
 
@@ -569,7 +579,9 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
         ## Download both files to a temporary location.
         writeLog("Downloading files...")
         tmpdir <- tempdir()
-        fn.pre <- file.path(tmpdir, basename(pre))
+        fn.pre <- NULL
+        if ( !is.null(pre) )
+            fn.pre <- file.path(tmpdir, basename(pre))
         fn.pos <- file.path(tmpdir, basename(pos))
         .downloadFile(pre, fn.pre, auth, .opts)
         .downloadFile(pos, fn.pos, auth, .opts)
