@@ -1389,6 +1389,7 @@ sub dump_sample_entity : Private {
         material_type  => $sample->material_type_id()->value(),
         cell_type      => $sample->cell_type_id()->value(),
         cell_purity    => $sample->cell_purity(),
+        auto_cell_purity => $sample->auto_cell_purity(),
         studies        => join(', ', map { $_->type_id()->value() } $patient->studies() ),
     );
 
