@@ -336,7 +336,14 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
     return(x$p)
 }
 
-spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=4, archive_dir, plot=FALSE, cleanup=FALSE ) {
+spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=4, archive_dir, plot=FALSE, cleanup=FALSE, overwrite_gml=TRUE ) {
+
+    .runSpade <- function(pos, output_dir, ct.map) {
+        SPADE.driver(pos, out_dir=output_dir, cluster_cols=c(names(ct.map), "FSC-H", "SSC-H"))
+        message("Reading in graph file ", gfile, "...")
+        mst    <- igraph:::read.graph(gfile, format="gml")
+        return(mst)
+    }
 
     if ( is.null(pos) ) {  # pre not actually required for spade calculations.
         writeLog("Required pos file not found.")
@@ -352,12 +359,19 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     if ( is.null(ct.map) )
         stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
-    SPADE.driver(pos, out_dir=output_dir, cluster_cols=c(names(ct.map), "FSC-H", "SSC-H"))
     gfile <- file.path(output_dir,
                        paste(basename(pos), ".density.fcs.cluster.fcs.medians.gml",
                              sep=''))
-    message("Reading in graph file ", gfile, "...")
-    mst    <- igraph:::read.graph(gfile, format="gml")
+    if ( ! missing(archive_dir) ) {
+        outfile <- file.path(archive_dir, paste(basename(pos), ".gml", sep=''))
+        if ( ! file.exists(outfile) | overwrite_gml ) {
+            mst <- .runSpade(pos, output_dir, ct.map)
+        } else {
+            mst <- igraph:::read.graph(outfile, format="gml")
+        }
+    } else {
+        mst <- .runSpade(pos, output_dir, ct.map)
+    }
 
     if ( plot ) {
         layout <- read.table(file.path(output_dir, "layout.table"))
@@ -368,7 +382,7 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
 
     ## Beware that round-tripping via GML seems to strip underscores
     ## from attribute names.
-    if ( ! missing(archive_dir) ) {
+    if ( ! missing(archive_dir) & overwrite_gml ) {
         outfile <- file.path(archive_dir, paste(basename(pos), ".gml", sep=''))
         message("Writing graph file ", outfile, "...")
         igraph::write.graph(mst, outfile, format="gml")
@@ -396,17 +410,24 @@ spadeInBiggestBin <- function(...) {
     b == 1
 }
 spadeAssignBins <- function(ch, mst, tolerance=4, suffix='_clust') {
-    med <- .getChannelName(ch, type='medians', suffix)
-    cvs <- .getChannelName(ch, type='cvs', suffix)
-    stopifnot( all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
+    med <- .getChannelName(ch, type='medians', suffix, mst)
+    cvs <- .getChannelName(ch, type='cvs', suffix, mst)
+
+    if ( ! all( c(med, cvs) %in% list.vertex.attributes(mst) ) )
+        stop("Error: median and CV attributes not found: ", ch)
+
     b <- igraphCliques(mst, medians=med, cvs=cvs, tolerance=tolerance)
 }
 
-.getChannelName <- function(ch, type=c('medians', 'cvs'), suffix='_clust' ) {
+.getChannelName <- function(ch, type=c('medians', 'cvs'), suffix='_clust', mst ) {
     type <- match.arg(type)
-    ch <- sub('-', '', ch)
-    ch <- paste(type, ch, suffix, sep='')
-    return(ch)
+    ch   <- sub('-', '', ch)
+    chan <- paste(type, ch, suffix, sep='')
+    if ( ! chan %in% list.vertex.attributes(mst) ) {
+        suffix <- sub('_', '', suffix)
+        chan <- paste(type, ch, suffix, sep='')
+    }
+    return(chan)
 }
 
 ## Function to identify the clusters in mst which represent bead
@@ -429,8 +450,8 @@ spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance,
 
     default <- rep(FALSE, length(bins))
     
-    fsc <- get.vertex.attribute(mst, .getChannelName(ch1, 'medians', suffix))
-    ssc <- get.vertex.attribute(mst, .getChannelName(ch2, 'medians', suffix))
+    fsc <- get.vertex.attribute(mst, .getChannelName(ch1, 'medians', suffix, mst))
+    ssc <- get.vertex.attribute(mst, .getChannelName(ch2, 'medians', suffix, mst))
     bin.meds <- aggregate(ssc, list(bins), mean)
 
     ## Sometimes we get rubbish at the lower end of the distribution;
@@ -580,10 +601,11 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
         writeLog("Downloading files...")
         tmpdir <- tempdir()
         fn.pre <- NULL
-        if ( !is.null(pre) )
+        if ( !is.null(pre) ) {
             fn.pre <- file.path(tmpdir, basename(pre))
+            .downloadFile(pre, fn.pre, auth, .opts)
+        }
         fn.pos <- file.path(tmpdir, basename(pos))
-        .downloadFile(pre, fn.pre, auth, .opts)
         .downloadFile(pos, fn.pos, auth, .opts)
 
         ## Attempt cell purity calculation.
@@ -676,8 +698,11 @@ recalculateSpadePurities <- function( files, verbose=FALSE, ... ) {
 
         mst    <- igraph:::read.graph(f, format="gml")
 
-        ## Reading the graph back in from disk removes the "_" from "_clust".
-        rc <- try(purity <- .spadePurityCalculation(names(ct.map), mst, suffix='clust', ...))
+        ## Reading the graph back in from disk removes the "_" from
+        ## "_clust". However, we've made the core function a bit more
+        ## flexible so including the underscore is actually slightly
+        ## more robust to future changes.
+        rc <- try(purity <- .spadePurityCalculation(names(ct.map), mst, suffix='_clust', ...))
         if ( inherits(rc, 'try-error') )
             res[[f]] <- NA
         else
