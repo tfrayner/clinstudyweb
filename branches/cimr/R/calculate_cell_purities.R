@@ -494,7 +494,8 @@ spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance,
     return(default)
 }
 
-calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL, purity.fun=facsCellPurity, ...) {
+calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL,
+                                  purity.fun=spadeCellPurity, cond=list(), ...) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -543,9 +544,6 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
     }
 
     .downloadFile <- function( uri, outfile, auth, .opts=list() ) {
-        ## FIXME at some point it would be good to password-protect
-        ## these files, at which point we need to use an authenticated
-        ## RCurl session.
         content <- getBinaryURL(uri, curl=auth, .opts=.opts)
         writeBin(content, outfile)
         return();
@@ -555,9 +553,13 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
     ## samples lacking cell purities but having the files required to
     ## attempt a calculation.
     writeLog("Querying the database for appropriate samples...")
-    cond    <- list('auto_cell_purity'=NULL,
-                    'home_centre_id.value'='Cambridge',
-                    'type_id.value'='FACS positive')
+
+    ## Other appropriate conditions (passed in as arguments) might be:
+    ##
+    ## 'auto_cell_purity'     = NULL
+    ## 'home_centre_id.value' = 'Cambridge'
+    ##
+    cond$type_id.value='FACS positive'
     attrs   <- list(join=list('sample_data_files'='type_id',
                               'visit_id'=list('patient_id'='home_centre_id')))
 
@@ -568,6 +570,8 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
                            uri=uri,
                            .opts=.opts,
                            auth=auth)
+
+    writeLog(sprintf("Found %d samples...", length(samples)))
 
     ## Loop over the samples, pull down the two files required
     ## (recheck that they're both present).
@@ -627,7 +631,9 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
     }
 
     ## Beware large lists in this call FIXME.
-    results <- do.call('rbind', results)
+    results <- as.data.frame(do.call('rbind', results))
+    results$purity <- as.numeric(as.character(results$purity))
+    results$manual <- as.numeric(as.character(results$manual))
 
     return(results)
 }
@@ -716,7 +722,7 @@ recalculateSpadePurities <- function( files, verbose=FALSE, ... ) {
 if ( ! interactive() ) {
     args <- commandArgs(TRUE)
     res  <- calculateCellPurities(uri=args[1])
-    outputCSV(res, file=args[2])
+    outputCSV(res[,1:2], file=args[2])
 }
 
 ## Function which just runs grubbs.test over and over again until
