@@ -48,6 +48,59 @@ cellTypeHeuristic <- function(ct) {
     return(ct.maplist[[ct]])
 }
 
+spadeChannelHeuristic <- function(ct, x) {
+
+    ## Here x is either the output of flowCore::read.FCS or
+    ## igraph::read.graph. We check it to figure out which channel
+    ## names to use.
+
+    .mapToFileType <- function(ct, type) {
+        if ( type == 'CMB' ) {        ## Cambridge files
+            ct <- c(paste('FL', ct, '-H', sep=''), 'FSC-H','SSC-H')
+        } else if ( type == 'SNG' ) { ## Singapore files
+            ct <- c(paste('FL', ct, 'Lin', sep=' '), 'FS Lin', 'SS Lin')
+        } else {  ## FIXME implement something for Cambridge Fortessa files.
+            stop("Unrecognised file type mapping")
+        }
+        return(ct)
+    }
+
+    ct.maplist <- list(CD4  = c('1', '2'),
+                       CD16 = c('1', '2'),
+                       CD14 = c('1', '2'),
+                       CD8  = c('2', '4'),
+                       CD19 = c('1', '2'))
+
+    ct <- ct.maplist[[ct]]
+    if ( is.null(ct) )
+        stop("Unrecognised cell type in spadeChannelHeuristic")
+
+    if ( inherits(x, 'flowFrame') ) {
+
+        ## check parameters(x)$name contains FL1-H etc.
+        pn <- parameters(x)$name
+        if ( 'FL1-H' %in% pn )
+            ct <- .mapToFileType(ct, 'CMB')
+        else if ( 'FL 1 Lin' %in% pn )
+            ct <- .mapToFileType(ct, 'SNG')
+        else
+            ct <- NULL
+    } else if (inherits(x, 'igraph' ) ) {
+        ## check list.vertex.attributes(x), should contain mediansFL1H(?:clust)? etc.
+        pn <- sub('clust', '', list.vertex.attributes(x))
+        if ( 'mediansFL1H' %in% pn )
+            ct <- .mapToFileType(ct, 'CMB')
+        else if ( 'mediansFL1Lin' %in% pn ) # FIXME this was a guess
+            ct <- .mapToFileType(ct, 'SNG')
+        else
+            ct <- NULL
+    } else {
+        stop("Unrecognised input file object to spadeChannelHeuristic.")
+    }
+
+    return(ct)
+}
+
 facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1:6 ) {
 
     if ( any(sapply(list(pre, pos), is.null) ) ) {
@@ -339,7 +392,7 @@ facsCellPurity <- function( pre, pos, cell.type, verbose=FALSE, B=100, K.start=1
 spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=tempdir(), tolerance=4, archive_dir, plot=FALSE, cleanup=FALSE, overwrite_gml=TRUE ) {
 
     .runSpade <- function(pos, output_dir, ct.map) {
-        SPADE.driver(pos, out_dir=output_dir, cluster_cols=c(names(ct.map), "FSC-H", "SSC-H"))
+        SPADE.driver(pos, out_dir=output_dir, cluster_cols=ct.map)
         message("Reading in graph file ", gfile, "...")
         mst    <- igraph:::read.graph(gfile, format="gml")
         return(mst)
@@ -355,7 +408,10 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     if ( plot & cleanup )
         stop("Can't set both plot and cleanup; you'll be deleting your precious plots!")
 
-    ct.map <- cellTypeHeuristic( cell.type )
+    require(flowCore)
+    fcs <- read.FCS(pos)
+
+    ct.map <- spadeChannelHeuristic( cell.type, fcs )
     if ( is.null(ct.map) )
         stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
@@ -393,7 +449,7 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     ## this varies by cell population; CD19s, for example, will
     ## probably want to use 'any' here; may depend on the exact panel
     ## we end up using.
-    purity <- .spadePurityCalculation( names(ct.map), mst, tolerance=tolerance, accept='all' )
+    purity <- .spadePurityCalculation( ct.map, mst, tolerance=tolerance, accept='all' )
 
     if ( cleanup )
         for ( f in dir(path=output_dir) )
@@ -402,7 +458,7 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
     return( purity )
 }
 
-## Wrapper functions to link the output of cellTypeHeuristic to the
+## Wrapper functions to link the output of spadeChannelHeuristic to the
 ## input of igraphCliques (this function can be found in the
 ## accompanying file, clique_igraph.R).
 spadeInBiggestBin <- function(...) {
@@ -422,10 +478,12 @@ spadeAssignBins <- function(ch, mst, tolerance=4, suffix='_clust') {
 .getChannelName <- function(ch, type=c('medians', 'cvs'), suffix='_clust', mst ) {
     type <- match.arg(type)
     ch   <- sub('-', '', ch)
-    chan <- paste(type, ch, suffix, sep='')
-    if ( ! chan %in% list.vertex.attributes(mst) ) {
+    ch   <- gsub(' ', '', ch)
+    ch   <- paste(type, ch, sep='')
+    chan <- grep(sprintf("^%s.*%s$", ch, suffix), list.vertex.attributes(mst), value=TRUE)
+    if ( length(chan) == 0 ) {
         suffix <- sub('_', '', suffix)
-        chan <- paste(type, ch, suffix, sep='')
+        chan <- grep(sprintf("^%s.*%s$", ch, suffix), list.vertex.attributes(mst), value=TRUE)
     }
     return(chan)
 }
@@ -495,7 +553,7 @@ spadeBeadEvents <- function(clusterBy, mst, ch1='FSC-H', ch2='SSC-H', tolerance,
 }
 
 calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, logfile=NULL,
-                                  purity.fun=spadeCellPurity, cond=list(), ...) {
+                                  purity.fun=spadeCellPurity, cond=list(auto_cell_purity=NULL), ...) {
 
     require(RCurl)
     require(ClinStudyWeb)
@@ -556,10 +614,11 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
 
     ## Other appropriate conditions (passed in as arguments) might be:
     ##
-    ## 'auto_cell_purity'     = NULL
+    ## 'auto_cell_purity'     = NULL   (must be set on list creation, not subsequently </Rsucks>)
     ## 'home_centre_id.value' = 'Cambridge'
     ##
-    cond$type_id.value='FACS positive'
+    cond$type_id.value    <- 'FACS positive'
+    cond$home_centre_id.value <- 'Singapore NUH' # testing the SG files FIXME remove this later.
     attrs   <- list(join=list('sample_data_files'='type_id',
                               'visit_id'=list('patient_id'='home_centre_id')))
 
@@ -655,7 +714,7 @@ outputCSV <- function(results, file) {
 
     ## Core function used to calculate cell purities. ch should be
     ## only the fluorophore channels as specified by
-    ## cellTypeHeuristic.
+    ## spadeChannelHeuristic.
 
     require(igraph)
 
@@ -663,10 +722,10 @@ outputCSV <- function(results, file) {
 
     ## FIXME it might be good to rationalise the number of times we
     ## call the clique functions.
-    bins   <- lapply(c(ch, 'FSC-H','SSC-H'), spadeAssignBins, mst, suffix=suffix, ...)
+    bins   <- lapply(ch, spadeAssignBins, mst, suffix=suffix, ...)
 
     ## This also figures out cliques, but using scatter channels as well.
-    is.bead <- spadeBeadEvents(c(ch, 'FSC-H','SSC-H'), mst,
+    is.bead <- spadeBeadEvents(ch, mst, ch1=ch[3], ch2=ch[4], # FIXME inelegant
                                tolerance=3, suffix=suffix, draw.plot=plot.beadEvents)
 
     if ( accept == 'all') {
@@ -698,17 +757,18 @@ recalculateSpadePurities <- function( files, verbose=FALSE, ... ) {
             message("Processing file ", f)
 
         cell.type <- strsplit(f, '_')[[1]][3]
-        ct.map <- cellTypeHeuristic( cell.type )
-        if ( is.null(ct.map) )
-            stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
         mst    <- igraph:::read.graph(f, format="gml")
+
+        ct.map <- spadeChannelHeuristic( cell.type, mst )
+        if ( is.null(ct.map) )
+            stop(sprintf('Unrecognised cell type %s.', cell.type), call.=FALSE)
 
         ## Reading the graph back in from disk removes the "_" from
         ## "_clust". However, we've made the core function a bit more
         ## flexible so including the underscore is actually slightly
         ## more robust to future changes.
-        rc <- try(purity <- .spadePurityCalculation(names(ct.map), mst, suffix='_clust', ...))
+        rc <- try(purity <- .spadePurityCalculation(ct.map, mst, suffix='_clust', ...))
         if ( inherits(rc, 'try-error') )
             res[[f]] <- NA
         else
