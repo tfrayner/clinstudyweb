@@ -438,10 +438,12 @@ spadeCellPurity <- function( pre, pos, cell.type, verbose=FALSE, output_dir=temp
 
     ## Beware that round-tripping via GML seems to strip underscores
     ## from attribute names.
-    if ( ! missing(archive_dir) & overwrite_gml ) {
+    if ( ! missing(archive_dir) ) {
         outfile <- file.path(archive_dir, paste(basename(pos), ".gml", sep=''))
-        message("Writing graph file ", outfile, "...")
-        igraph::write.graph(mst, outfile, format="gml")
+        if ( overwrite_gml || ! file.exists(outfile) ) {
+            message("Writing graph file ", outfile, "...")
+            igraph::write.graph(mst, outfile, format="gml")
+        }
     }
     
     ## A quick look with Cytoscape/SPADE suggests that we can accept a
@@ -618,7 +620,7 @@ calculateCellPurities <- function(uri, .opts=list(), auth=NULL, verbose=FALSE, l
     ## 'home_centre_id.value' = 'Cambridge'
     ##
     cond$type_id.value    <- 'FACS positive'
-    cond$home_centre_id.value <- 'Singapore NUH' # testing the SG files FIXME remove this later.
+#    cond$home_centre_id.value <- 'Singapore NUH' # testing the SG files FIXME remove this later.
     attrs   <- list(join=list('sample_data_files'='type_id',
                               'visit_id'=list('patient_id'='home_centre_id')))
 
