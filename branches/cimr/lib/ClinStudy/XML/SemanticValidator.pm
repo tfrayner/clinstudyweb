@@ -178,31 +178,6 @@ sub load_element_message {
     return;
 }
 
-sub find_reference {
-
-    my ( $self, $class, $value ) = @_;
-
-    my $rs = $self->database()->resultset($class)
-        or die("Error: Unable to find a ResultSet for $class elements.");
-
-    # Attempt to retrieve the referenced object using the configured
-    # id column. If the referenced object is not in the database,
-    # return a dummy object. This 
-    my $rel_obj;
-    if ( my $field = $self->external_id_map()->{$class} ) {
-        my @rel_objs = $rs->search({ $field => $value });
-        unless ( scalar @rel_objs ) {
-            croak("Unable to find a $class with $field = $value.");
-        }
-        $rel_obj = $rel_objs[0];
-    }
-    else {
-        croak("Unrecognised class $class in find_reference().");
-    }
-
-    return($rel_obj);
-}
-
 # Missing referent objects will throw an error unless we silently
 # ignore them. In order for the XML to be syntactically valid the
 # referents must be present, it's just they're not in the database
@@ -374,6 +349,17 @@ Overridden loader method which contains much of the validation code.
 =head2 load_element_message
 
 Overridden loader method generating a user-friendly message.
+
+=head2 handle_missing_referent
+
+Overridden loader method used to ignore errors caused by references to
+previously-built objects. Returns a DummyObject (a struct with a
+single 'id' attribute).
+
+=head2 find_in_resultset
+
+Overridden loader method used to ignore errors caused by references to
+missing ControlledVocab objects (the errors are logged).
 
 =head1 COPYRIGHT AND LICENSE
 

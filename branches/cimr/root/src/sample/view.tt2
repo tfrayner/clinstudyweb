@@ -14,6 +14,8 @@
          <td>[% object.cell_type_id.value | html %]</td></tr>
      <tr><th>Cell Purity (%):</th>
          <td>[% object.cell_purity | format("%.02f") | html %]</td></tr>
+     <tr><th>Automated Cell Purity Estimate (%):</th>
+         <td>[% object.auto_cell_purity | format("%.02f") | html %]</td></tr>
      <tr><th>Sample Available:</th>
          <td>[% IF object.has_expired %]<font color="red">NO</font>[% ELSE %]Yes[% END %]</td></tr>
      <tr><th>Material Type:</th>

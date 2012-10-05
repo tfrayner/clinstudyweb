@@ -407,6 +407,16 @@ Special-cased method which, if C<$self->is_constrained>, refuses to
 load new ControlledVocab terms into the database. Otherwise hands off
 to the superclass method documented in L<ClinStudy::XML::Import>.
 
+=head2 load_element_message
+
+Overridden method providing a user-friendly message when loading
+certain classes.
+
+=head2 find_in_resultset
+
+Method overridden in SemanticValidator subclass; this allows one to
+bypass or otherwise override the checks on ControlledVocab terms.
+
 =head1 SEE ALSO
 
 L<ClinStudy::XML::Import>,
