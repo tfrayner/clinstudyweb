@@ -555,6 +555,26 @@ and override the loading behaviour, e.g. for ControlledVocab.
 Simple user-friendly message function; overridden in subclasses which
 might be doing something quite different (see e.g. SemanticValidator).
 
+=head2 handle_missing_referent
+
+Stub method overridden in subclasses such as SemanticValidator and
+used to handle references to previously-built objects. If the objects
+have not been built (e.g. in the database) then an overridden version
+of this method can be used to bypass any errors raised.
+
+=head2 node_name_to_parent_attr
+
+Convenience method to standardise the conversion from XML node names
+to database parent object attribute names. For example, Patient becomes
+patient_id.
+
+=head2 separate_unique_attributes
+
+Given a ResultSource object and a hashref of all DB object attributes,
+separates out those attributes which pertain to a unique constraint
+within the database from the rest, and returns the result as a pair of
+hashrefs.
+
 =head1 EXPORT
 
 None by default.
