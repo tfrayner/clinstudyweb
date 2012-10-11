@@ -5,6 +5,8 @@
 \alias{csWebReannotate,ExpressionSet-method}
 \alias{csWebReannotate,ExonFeatureSet-method}
 \alias{csWebReannotate,GeneFeatureSet-method}
+\alias{csWebReannotate,MethyLumiSet-method}
+\alias{csWebReannotate,MethyLumiM-method}
 \alias{csWebReannotate,RGList-method}
 \alias{csWebReannotate,MAList-method}
 
@@ -38,6 +40,16 @@
       method will replace the pData slot with an updated annotation data
       frame. The data sampleNames() must correspond to the original CEL
       file names.}
+
+    \item{data = "MethyLumiSet"}{ When passed an MethyLumiSet object, this
+      method will replace the pData slot with an updated annotation data
+      frame. The data sampleNames() will typically correspond to
+      Illumina 450K barcodes.}
+
+    \item{data = "MethyLumiM"}{ When passed an MethyLumiM object, this
+      method will replace the pData slot with an updated annotation data
+      frame. The data sampleNames() will typically correspond to
+      Illumina 450K barcodes.}
 
     \item{data = "RGList"}{ The targets attribute of the supplied RGList
       will be replaced with an updated targets data frame. The input
