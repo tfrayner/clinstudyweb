@@ -68,12 +68,15 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     return(RG)
 }
 
-.filenamesToPData <- function( files, ... ) {
+.filenamesToPData <- function( files, by.identifier=FALSE, ... ) {
 
     if ( ! length(files) > 1 )
         stop("No filenames provided to function.")
-    
-    p <- .batchDBQuery( files=files, samples=NULL, ... )
+
+    if ( by.identifier )
+        p <- .batchDBQuery( barcodes=files, samples=NULL, ... )
+    else
+        p <- .batchDBQuery( files=files, samples=NULL, ... )
     p <- .conformLists(p)
     p <- lapply(p, unlist)
 
@@ -87,11 +90,15 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     p <- as.data.frame(p2)
 
     ## Quick sanity check
-    ## Strip out file paths which won't have been stored in the database.
-    files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
-    stopifnot( all( as.character(p$filename) == files ) )
-    
-    rownames(p) <- as.character(p$filename)
+    if ( by.identifier ) {
+        stopifnot( all( as.character(p$identifier) == files ) )
+        rownames(p) <- as.character(p$identifier)
+    } else {
+        ## Strip out file paths which won't have been stored in the database.
+        files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
+        stopifnot( all( as.character(p$filename) == files ) )
+        rownames(p) <- as.character(p$filename)
+    }
 
     return(p)
 }
@@ -264,19 +271,19 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     ## Unless specified otherwise, retrieve the desired annotation terms.
     anno.qry <- .collateAnnotationRequest(pattern=pattern, categories=categories, auth=auth, ...)
 
-    ## Strip out file paths which won't have been stored in the database.
-    files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
-
     ## This call relies on assay.file being the first argument to
     ## csWebQuery
     message("Querying the database for annotation...")
     if ( is.null(samples) )
-        if ( is.null(barcodes) )
+        if ( is.null(barcodes) ) {
+            ## Strip out file paths which won't have been stored in the database.
+            files <- gsub( paste('.*', .Platform$file.sep, sep=''), '', files )
             p <- lapply(as.list(files), csWebQuery, assay.barcode=NULL,
                         sample.name=NULL, query=anno.qry, auth=auth, ...)
-        else
+        } else {
             p <- lapply(as.list(barcodes), csWebQuery, assay.file=NULL,
                         sample.name=NULL, query=anno.qry, auth=auth, ...)
+        }
     else
         p <- lapply(as.list(samples), csWebQuery, assay.file=NULL,
                     assay.barcode=NULL, query=anno.qry, auth=auth, ...)
@@ -293,7 +300,6 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
     if ( is.null(sample.column) ) {
         files <- as.character(sampleNames(data))
         p <- .filenamesToPData(files, ...)
-        stopifnot(all(as.character(p$filename) == as.character(files)))
     } else {
         stopifnot( sample.column %in% varLabels(data) )
         samples <- as.character(pData(data)[ , sample.column ])
@@ -321,7 +327,6 @@ csWebRGList <- function (files, pattern=NULL, categories=NULL, ...) {
         samples <- as.character(data$targets[, sample.column ])
         stopifnot( all( ! is.na(samples) ) )
         p <- .samplesToTargets(samples, ...)
-        stopifnot(all(as.character(p$sample_name) == samples))
         rownames(p) <- rownames(data$targets)
     }
         
@@ -338,6 +343,8 @@ setMethod('csWebReannotate', signature(data='ExpressionSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='AffyBatch'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='GeneFeatureSet'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='ExonFeatureSet'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='MethyLumiSet'), .reannotateEset)
+setMethod('csWebReannotate', signature(data='MethyLumiM'), .reannotateEset)
 setMethod('csWebReannotate', signature(data='MAList'), .reannotateMAList)
 setMethod('csWebReannotate', signature(data='RGList'), .reannotateMAList)
 
